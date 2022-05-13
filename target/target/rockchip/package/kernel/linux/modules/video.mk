@@ -220,9 +220,11 @@ endef
 
 $(eval $(call KernelPackage,fb-tft-ili9486))
 
+
 define KernelPackage/multimedia-input
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Multimedia input support
+  DEPENDS:=+kmod-input-core
   KCONFIG:=CONFIG_RC_CORE \
 	CONFIG_LIRC=y \
 	CONFIG_RC_DECODERS=y \
@@ -237,11 +239,13 @@ endef
 
 $(eval $(call KernelPackage,multimedia-input))
 
+
 define KernelPackage/drm
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Direct Rendering Manager (DRM) support
   HIDDEN:=1
-  DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight
+  DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight \
+	+(LINUX_5_15):kmod-fb
   KCONFIG:=CONFIG_DRM
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
@@ -314,7 +318,7 @@ $(eval $(call KernelPackage,drm-amdgpu))
 define KernelPackage/drm-imx
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Freescale i.MX DRM support
-  DEPENDS:=@TARGET_imx6 +kmod-drm-kms-helper
+  DEPENDS:=@TARGET_imx +kmod-drm-kms-helper
   KCONFIG:=CONFIG_DRM_IMX \
 	CONFIG_DRM_FBDEV_EMULATION=y \
 	CONFIG_DRM_FBDEV_OVERALLOC=100 \
@@ -376,7 +380,8 @@ define KernelPackage/drm-imx-ldb
 	CONFIG_DRM_PANEL_S6E8AA0=n \
 	CONFIG_DRM_PANEL_SITRONIX_ST7789V=n
   FILES:=$(LINUX_DIR)/drivers/gpu/drm/imx/imx-ldb.ko \
-	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko
+	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@gt5.10
   AUTOLOAD:=$(call AutoLoad,08,imx-ldb)
 endef
 
@@ -385,6 +390,45 @@ define KernelPackage/drm-imx-ldb/description
 endef
 
 $(eval $(call KernelPackage,drm-imx-ldb))
+
+define KernelPackage/drm-lima
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE:=Mali-4xx GPU support
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm
+  KCONFIG:= \
+	CONFIG_DRM_VGEM \
+	CONFIG_DRM_GEM_CMA_HELPER=y \
+	CONFIG_DRM_LIMA
+  FILES:= \
+	$(LINUX_DIR)/drivers/gpu/drm/vgem/vgem.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
+  AUTOLOAD:=$(call AutoProbe,lima vgem)
+endef
+
+define KernelPackage/drm-lima/description
+  Open-source reverse-engineered driver for Mali-4xx GPUs
+endef
+
+$(eval $(call KernelPackage,drm-lima))
+
+define KernelPackage/drm-panfrost
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm
+  KCONFIG:=CONFIG_DRM_PANFROST
+  FILES:= \
+	$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
+  AUTOLOAD:=$(call AutoProbe,panfrost)
+endef
+
+define KernelPackage/drm-panfrost/description
+  DRM driver for ARM Mali Midgard (T6xx, T7xx, T8xx) and
+  Bifrost (G3x, G5x, G7x) GPUs
+endef
+
+$(eval $(call KernelPackage,drm-panfrost))
 
 define KernelPackage/drm-radeon
   SUBMENU:=$(VIDEO_MENU)
@@ -409,18 +453,12 @@ $(eval $(call KernelPackage,drm-radeon))
 define KernelPackage/video-core
   SUBMENU:=$(VIDEO_MENU)
   TITLE=Video4Linux support
-  DEPENDS:=@PCI_SUPPORT||USB_SUPPORT +PACKAGE_kmod-i2c-core:kmod-i2c-core
+  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core
   KCONFIG:= \
 	CONFIG_MEDIA_SUPPORT \
 	CONFIG_MEDIA_CAMERA_SUPPORT=y \
 	CONFIG_VIDEO_DEV \
-	CONFIG_VIDEO_V4L1=y \
-	CONFIG_VIDEO_ALLOW_V4L1=y \
-	CONFIG_VIDEO_CAPTURE_DRIVERS=y \
-	CONFIG_V4L_USB_DRIVERS=y \
-	CONFIG_V4L_PCI_DRIVERS=y \
-	CONFIG_V4L_PLATFORM_DRIVERS=y \
-	CONFIG_V4L_ISA_PARPORT_DRIVERS=y
+	CONFIG_V4L_PLATFORM_DRIVERS=y
   FILES:= \
 	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
   AUTOLOAD:=$(call AutoLoad,60, videodev v4l2-common)
@@ -870,6 +908,21 @@ define KernelPackage/video-gspca-sq905c/description
 endef
 
 $(eval $(call KernelPackage,video-gspca-sq905c))
+
+
+define KernelPackage/video-gspca-sq930x
+  TITLE:=sq930x webcam support
+  KCONFIG:=CONFIG_USB_GSPCA_SQ930X
+  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sq930x.ko
+  AUTOLOAD:=$(call AutoProbe,gspca_sq930x)
+  $(call AddDepends/camera-gspca)
+endef
+
+define KernelPackage/video-gspca-sq930x/description
+ The SQ Technologies SQ930X based USB Camera Driver (sq930x) kernel module
+endef
+
+$(eval $(call KernelPackage,video-gspca-sq930x))
 
 
 define KernelPackage/video-gspca-stk014

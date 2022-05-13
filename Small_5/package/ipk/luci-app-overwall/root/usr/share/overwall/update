@@ -7,6 +7,9 @@ LOCK=/var/lock/overwall-update.lock
 touch $LOCK
 DIR=/usr/share/overwall
 TMP=/tmp/overwall
+X=$(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP
+Y=$(lua /usr/share/overwall/auth B)
+Z=$(lua /usr/share/overwall/auth C)
 
 log(){
 	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
@@ -14,11 +17,11 @@ log(){
 
 if [ $A = Y ];then
 	mkdir -p $TMP
-	while ! B=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/eFw58nNRXXfTwU4);do
+	while ! B=$(curl -Lfsm 5 -A "$Y" $X/eFw58nNRXXfTwU4$Z);do
 		sleep 2
 	done
 else
-	B=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/eFw58nNRXXfTwU4 || curl -Lfsm 9 https://raw.githubusercontent.com/yIwIoTT9A21nupT/2aXGmlWs/master/KkFCtZkeAP/eFw58nNRXXfTwU4)
+	B=$(curl -Lfsm 5 -A "$Y" $X/eFw58nNRXXfTwU4$Z)
 fi
 [ -n "$B" ] && echo "$B" | base64 -d > /tmp/china.txt
 
@@ -35,11 +38,11 @@ C=$(uci -q get overwall.@global[0].run_mode)
 if [ "$C" = router ];then
 	if [ $A = Y ];then
 		mkdir -p $TMP
-		while ! D=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/t8eOh94EJIHTXR6);do
+		while ! D=$(curl -Lfsm 5 -A "$Y" $X/t8eOh94EJIHTXR6$Z);do
 			sleep 2
 		done
 	else
-		D=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/t8eOh94EJIHTXR6 || curl -Lfsm 9 https://raw.githubusercontent.com/yIwIoTT9A21nupT/2aXGmlWs/master/KkFCtZkeAP/t8eOh94EJIHTXR6)
+		D=$(curl -Lfsm 5 -A "$Y" $X/t8eOh94EJIHTXR6$Z)
 	fi
 	[ -n "$D" ] && echo "$D" | base64 -d > /tmp/china_v6.txt
 
@@ -54,11 +57,11 @@ fi
 
 if [ "$C" = gfw -o "$(uci -q get overwall.@global[0].gfw_mode)" = 1 ];then
 	if [ $A = Y ];then
-		while ! curl -Lfsm 5 -o /tmp/gfw.b64 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/avtPeqDKt645Arm;do
+		while ! curl -Lfsm 5 -A "$Y" -o /tmp/gfw.b64 "$X/avtPeqDKt645Arm$Z";do
 			sleep 2
 		done
 	else
-		curl -Lfso /tmp/gfw.b64 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/avtPeqDKt645Arm || curl -Lfso /tmp/gfw.b64 https://raw.githubusercontent.com/yIwIoTT9A21nupT/2aXGmlWs/master/KkFCtZkeAP/avtPeqDKt645Arm
+		curl -Lfsm 5 -A "$Y" -o /tmp/gfw.b64 "$X/avtPeqDKt645Arm$Z"
 	fi
 	$DIR/gfw
 	if ! cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then

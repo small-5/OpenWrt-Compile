@@ -61,9 +61,23 @@
  
  		var table = E('table', { 'class': 'table' });
 
+--- a/target/linux/x86/Makefile
++++ b/target/linux/x86/Makefile
+@@ -10,8 +10,8 @@
+ FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
+ SUBTARGETS:=generic legacy geode 64
+ 
+-KERNEL_PATCHVER:=5.10
+-KERNEL_TESTING_PATCHVER:=5.15
++KERNEL_PATCHVER:=5.15
++KERNEL_TESTING_PATCHVER:=5.10
+ 
+ KERNELNAME:=bzImage
+ 
+
 --- a/target/linux/x86/64/config-5.10
 +++ b/target/linux/x86/64/config-5.10
-@@ -377,7 +377,7 @@
+@@ -371,7 +371,7 @@
  CONFIG_SCHED_MC_PRIO=y
  CONFIG_SCHED_SMT=y
  CONFIG_SCSI_VIRTIO=y

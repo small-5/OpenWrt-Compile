@@ -74,7 +74,7 @@
 @@ -12,8 +12,8 @@
  friendlyarm,nanopi-r2s|\
  xunlong,orangepi-r1-plus|\
- embedfire,doornet1)
+ xunlong,orangepi-r1-plus-lts)
 -	ucidef_set_led_netdev "wan" "WAN" "$boardname:green:wan" "eth0"
 -	ucidef_set_led_netdev "lan" "LAN" "$boardname:green:lan" "eth1"
 +	ucidef_set_led_netdev "wan" "WAN" "$boardname:green:wan" "eth1"
@@ -88,7 +88,7 @@
 @@ -12,7 +12,7 @@
  	friendlyarm,nanopi-r4s|\
  	xunlong,orangepi-r1-plus|\
- 	embedfire,doornet1)
+ 	xunlong,orangepi-r1-plus-lts)
 -		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
 +		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
  		;;

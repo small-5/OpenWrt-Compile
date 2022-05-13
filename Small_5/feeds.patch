@@ -1,63 +1,39 @@
---- a/feeds/luci/applications/luci-app-aria2/luasrc/controller/aria2.lua
-+++ b/feeds/luci/applications/luci-app-aria2/luasrc/controller/aria2.lua
-@@ -14,26 +14,26 @@
- 		return
- 	end
+--- a/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
++++ b/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
+@@ -1,5 +1,5 @@
+ {
+-	"admin/services/aria2": {
++	"admin/nas/aria2": {
+ 		"title": "Aria2",
+ 		"order": 30,
+ 		"action": {
+@@ -11,7 +11,7 @@
+ 		}
+ 	},
  
--	local e = entry({"admin", "services", "aria2"}, firstchild(), _("Aria2"))
-+	local e = entry({"admin", "nas", "aria2"}, firstchild(), _("Aria2"))
- 	e.dependent = false
- 	e.acl_depends = { "luci-app-aria2" }
+-	"admin/services/aria2/config": {
++	"admin/nas/aria2/config": {
+ 		"title": "Configuration",
+ 		"order": 10,
+ 		"action": {
+@@ -20,7 +20,7 @@
+ 		}
+ 	},
  
--	entry({"admin", "services", "aria2", "config"},
-+	entry({"admin", "nas", "aria2", "config"},
- 		cbi("aria2/config"), _("Configuration"), 1)
+-	"admin/services/aria2/files": {
++	"admin/nas/aria2/files": {
+ 		"title": "Files",
+ 		"order": 20,
+ 		"action": {
+@@ -29,7 +29,7 @@
+ 		}
+ 	},
  
--	entry({"admin", "services", "aria2", "file"},
-+	entry({"admin", "nas", "aria2", "file"},
- 		form("aria2/files"), _("Files"), 2)
- 
--	entry({"admin", "services", "aria2", "log"},
-+	entry({"admin", "nas", "aria2", "log"},
- 		firstchild(), _("Log"), 3)
- 
--	entry({"admin", "services", "aria2", "log", "view"},
-+	entry({"admin", "nas", "aria2", "log", "view"},
- 		template("aria2/log_template"))
- 
--	entry({"admin", "services", "aria2", "log", "read"},
-+	entry({"admin", "nas", "aria2", "log", "read"},
- 		call("action_log_read"))
- 
--	entry({"admin", "services", "aria2", "status"},
-+	entry({"admin", "nas", "aria2", "status"},
- 		call("action_status"))
- 
- end
-
---- a/feeds/luci/applications/luci-app-aria2/luasrc/view/aria2/log_template.htm
-+++ b/feeds/luci/applications/luci-app-aria2/luasrc/view/aria2/log_template.htm
-@@ -24,7 +24,7 @@
- 
- <script type="text/javascript" src="<%=resource%>/cbi.js"></script>
- <script type="text/javascript">//<![CDATA[
--	XHR.poll(10, '<%=url("admin/services/aria2/log/read")%>', null,
-+	XHR.poll(10, '<%=url("admin/nas/aria2/log/read")%>', null,
- 		function(x, data) {
- 			var logElm = document.getElementById('log_text');
- 			if (logElm) {
-
---- a/feeds/luci/applications/luci-app-aria2/luasrc/view/aria2/settings_header.htm
-+++ b/feeds/luci/applications/luci-app-aria2/luasrc/view/aria2/settings_header.htm
-@@ -39,7 +39,7 @@
- </fieldset>
- 
- <script type="text/javascript">//<![CDATA[
--XHR.poll(5, '<%=url("admin/services/aria2/status")%>', null,
-+XHR.poll(5, '<%=url("admin/nas/aria2/status")%>', null,
- 	function(x, data) {
- 		var tb = document.getElementById('aria2_status');
- 		if (data && tb) {
+-	"admin/services/aria2/log": {
++	"admin/nas/aria2/log": {
+ 		"title": "Log",
+ 		"order": 30,
+ 		"action": {
 
 --- a/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
 +++ b/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
@@ -173,7 +149,7 @@
  				-- no process running and NOT enabled
  				elseif pid == 0 and s['enabled'] == '0' then
  					next_update  = "Disabled"
-@@ -275,6 +282,18 @@
+@@ -276,6 +283,18 @@
  
  			return res
  		end
@@ -297,7 +273,7 @@
  
  						// XXX: is this actually useful?
  						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
-@@ -916,6 +917,7 @@
+@@ -933,6 +934,7 @@
  				ifc.renderFormOptions(s);
  
  				// Common interface options
@@ -305,7 +281,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Flag, 'defaultroute', _('Use default gateway'), _('If unchecked, no default route is configured'));
  				o.default = o.enabled;
  
-@@ -1012,6 +1014,7 @@
+@@ -1029,6 +1031,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Value, 'ip6weight', _('IPv6 preference'), _('When delegating prefixes to multiple downstreams, interfaces with a higher preference value are considered first when allocating subnets.'));
  				o.datatype = 'uinteger';
  				o.placeholder = '0';
@@ -401,6 +377,24 @@
 -	# eg. list extra_settings 'option=value'
 -	list extra_settings ''
 
+--- a/feeds/packages/net/ksmbd-tools/Makefile
++++ b/feeds/packages/net/ksmbd-tools/Makefile
+@@ -1,12 +1,12 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=ksmbd-tools
+-PKG_VERSION:=3.4.4
++PKG_VERSION:=3.4.3
+ PKG_RELEASE:=$(AUTORELEASE)
+ 
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ PKG_SOURCE_URL:=https://codeload.github.com/cifsd-team/ksmbd-tools/tar.gz/$(PKG_VERSION)?
+-PKG_HASH:=cc7cc2fcbeed052176894a8dbbf290919c3735b320401c6492cf17f1ba1a3548
++PKG_HASH:=ee6ead20ba371bbb29ad2cc2e01bdba6183453ebe4eb089b034637a21d1ec218
+ 
+ PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
+ PKG_LICENSE:=GPL-2.0-or-later
+
 --- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
 +++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
 @@ -62,6 +62,7 @@
@@ -427,122 +421,43 @@
  
  		[ "$use_stun" -eq 0 ] || {
  			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"
-
---- /dev/null
-+++ b/feeds/packages/net/miniupnpd/patches/301-options-force_forwarding-support.patch
-@@ -0,0 +1,100 @@
-+--- a/miniupnpd.c
-++++ b/miniupnpd.c
-+@@ -1241,6 +1241,10 @@ init(int argc, char * * argv, struct run
-+ 			case UPNPEXT_IP:
-+ 				use_ext_ip_addr = ary_options[i].value;
-+ 				break;
-++			case UPNP_FORCE_FORWARDING:
-++				if(strcmp(ary_options[i].value, "yes") == 0)
-++					SETFLAG(FORCEFORWARDINGMASK);
-++				break;
-+ 			case UPNPEXT_PERFORM_STUN:
-+ 				if(strcmp(ary_options[i].value, "yes") == 0)
-+ 					SETFLAG(PERFORMSTUNMASK);
-+--- a/miniupnpd.conf
-++++ b/miniupnpd.conf
-+@@ -9,6 +9,8 @@
-+ # Setting ext_ip is also useful in double NAT setup, you can declare here
-+ # the public IP address.
-+ #ext_ip=
-++#force forwarding enable for upnp: default is no
-++#force_forwarding=yes
-+ # WAN interface must have public IP address. Otherwise it is behind NAT
-+ # and port forwarding is impossible. In some cases WAN interface can be
-+ # behind unrestricted full-cone NAT 1:1 when all incoming traffic is NAT-ed and
-+--- a/options.c
-++++ b/options.c
-+@@ -34,6 +34,7 @@ static const struct {
-+ 	{ UPNPEXT_IFNAME6, "ext_ifname6" },
-+ #endif
-+ 	{ UPNPEXT_IP,	"ext_ip" },
-++	{ UPNP_FORCE_FORWARDING, "force_forwarding" },
-+ 	{ UPNPEXT_PERFORM_STUN, "ext_perform_stun" },
-+ 	{ UPNPEXT_STUN_HOST, "ext_stun_host" },
-+ 	{ UPNPEXT_STUN_PORT, "ext_stun_port" },
-+--- a/options.h
-++++ b/options.h
-+@@ -21,6 +21,7 @@ enum upnpconfigoptions {
-+ 	UPNPEXT_IFNAME6,		/* ext_ifname6 */
-+ #endif
-+ 	UPNPEXT_IP,				/* ext_ip */
-++	UPNP_FORCE_FORWARDING, /* force forwarding enable for upnp */
-+ 	UPNPEXT_PERFORM_STUN,		/* ext_perform_stun */
-+ 	UPNPEXT_STUN_HOST,		/* ext_stun_host */
-+ 	UPNPEXT_STUN_PORT,		/* ext_stun_port */
-+--- a/testgetifaddr.c
-++++ b/testgetifaddr.c
-+@@ -13,6 +13,8 @@
-+ #include "config.h"
-+ #include "getifaddr.h"
-+ 
-++int runtime_flags = 0;
-++
-+ #if defined(__sun)
-+ /* solaris 10 does not define LOG_PERROR */
-+ #define LOG_PERROR 0
-+--- a/testportinuse.c
-++++ b/testportinuse.c
-+@@ -14,6 +14,8 @@
-+ #include "config.h"
-+ #include "portinuse.h"
-+ 
-++int runtime_flags = 0;
-++
-+ int main(int argc, char * * argv)
-+ {
-+ #ifndef CHECK_PORTINUSE
-+--- a/upnpglobalvars.h
-++++ b/upnpglobalvars.h
-+@@ -84,6 +84,8 @@ extern int runtime_flags;
-+ 
-+ #define PERFORMSTUNMASK    0x1000
-+ 
-++#define FORCEFORWARDINGMASK 0x2000
-++
-+ #define SETFLAG(mask)	runtime_flags |= mask
-+ #define GETFLAG(mask)	(runtime_flags & mask)
-+ #define CLEARFLAG(mask)	runtime_flags &= ~mask
-+--- a/upnpredirect.c
-++++ b/upnpredirect.c
-+@@ -444,7 +444,7 @@ upnp_redirect_internal(const char * rhos
-+ {
-+ 	/*syslog(LOG_INFO, "redirecting port %hu to %s:%hu protocol %s for: %s",
-+ 		eport, iaddr, iport, protocol, desc);			*/
-+-	if(disable_port_forwarding)
-++	if(disable_port_forwarding && !GETFLAG(FORCEFORWARDINGMASK))
-+ 		return -1;
-+ 	if(add_redirect_rule2(ext_if_name, rhost, eport, iaddr, iport, proto,
-+ 	                      desc, timestamp) < 0) {
-+
-+--- a/upnpsoap.c
-++++ b/upnpsoap.c
-+@@ -346,7 +346,7 @@
-+ 			syslog(LOG_ERR, "Failed to get ip address for interface %s",
-+ 				ext_if_name);
-+ 			ext_ip_addr[0] = '\0';
-+-		} else if (addr_is_reserved(&addr)) {
-++		} else if (addr_is_reserved(&addr) && !GETFLAG(FORCEFORWARDINGMASK)) {
-+ 			syslog(LOG_NOTICE, "private/reserved address %s is not suitable for external IP", ext_ip_addr);
-+ 			ext_ip_addr[0] = '\0';
-+ 		}
+@@ -183,6 +186,7 @@
+ 
+ 	procd_open_instance
+ 	procd_set_param command "$PROG"
++	procd_set_param file "$conf"
+ 	procd_append_param command -f "$conf"
+ 	[ "$log_output" = "1" ] && procd_append_param command -d
+ 	procd_close_instance
 
 --- a/feeds/packages/net/miniupnpd/Makefile
 +++ b/feeds/packages/net/miniupnpd/Makefile
 @@ -9,7 +9,7 @@
  
  PKG_NAME:=miniupnpd
- PKG_VERSION:=2.2.2
--PKG_RELEASE:=3
-+PKG_RELEASE:=4
+ PKG_VERSION:=2.2.3
+-PKG_RELEASE:=$(AUTORELEASE)
++PKG_RELEASE:=2
  
  PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+@@ -41,6 +41,7 @@
+ 
+ define Package/miniupnpd-iptables
+   $(call Package/miniupnpd/Default)
++  CONFLICTS:=miniupnpd-nftables
+   DEPENDS+= \
+ 	+IPV6:ip6tables \
+ 	+IPV6:libip6tc \
+@@ -57,8 +58,6 @@
+ 	+libnftnl
+   TITLE+= (nftables)
+   VARIANT:=nftables
+-  DEFAULT_VARIANT:=1
+-  CONFLICTS:=miniupnpd-iptables
+ endef
+ 
+ define Package/miniupnpd/conffiles/Default
 
 --- a/feeds/packages/net/openvpn/files/etc/hotplug.d/openvpn/01-user
 +++ b/feeds/packages/net/openvpn/files/etc/hotplug.d/openvpn/01-user
@@ -767,7 +682,7 @@
 
 --- a/feeds/packages/net/smartdns/Makefile
 +++ b/feeds/packages/net/smartdns/Makefile
-@@ -1,18 +1,12 @@
+@@ -1,18 +1,13 @@
 -#
 -# Copyright (c) 2018-2020 Nick Peng (pymumu@gmail.com)
 -# This is free software, licensed under the GNU General Public License v3.
@@ -776,19 +691,19 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=smartdns
--PKG_VERSION:=1.2021.35
-+PKG_VERSION:=1.2021.999
+-PKG_VERSION:=1.2022.36
++PKG_VERSION:=1.2022.99
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
--PKG_SOURCE_VERSION:=f50e4dd0813da9300580f7188e44ed72a27ae79c
--PKG_MIRROR_HASH:=b4d825a48884101f647cd594f00b714a2d09ac419b958ee0317d302fd31b0038
-+PKG_SOURCE_VERSION:=a5887932218d007415dfee435c41f3b25a25bd97
+ PKG_SOURCE_VERSION:=24661c2419a81e660b11a0e3d35a3bc269cd4bfa
+-PKG_MIRROR_HASH:=0835be621f0359bec24fe2ec112f455aef8d403167be33a8366630db9fdbdbaa
++#不要更新5bd521c36bae56af229dbe96710c13df3c278272之後的版本，此次提交導致chinadns-ng的5337解析IP不正常，當前commit(24661c2419a81e660b11a0e3d35a3bc269cd4bfa)爲體積最佳的版本，之後的版本文件體積都有增大（都是用不上的功能）
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
-@@ -29,7 +23,7 @@
+@@ -29,7 +24,7 @@
    SECTION:=net
    CATEGORY:=Network
    TITLE:=smartdns server
@@ -797,7 +712,7 @@
    URL:=https://www.github.com/pymumu/smartdns/
  endef
  
-@@ -39,21 +33,9 @@
+@@ -39,21 +34,9 @@
  Unlike dnsmasq's all-servers, smartdns returns the fastest IP. 
  endef
  
@@ -821,6 +736,21 @@
  endef
  
  $(eval $(call BuildPackage,smartdns))
+
+--- a/feeds/packages/net/wsdd2/Makefile
++++ b/feeds/packages/net/wsdd2/Makefile
+@@ -5,9 +5,8 @@
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://github.com/Netgear/wsdd2.git
+-PKG_SOURCE_DATE:=2021-10-22
+-PKG_SOURCE_VERSION:=9831daf2e14e0e112b5ad95224e9167072d52aa3
+-PKG_MIRROR_HASH:=403d7d20bf2ae67e898db4543c61cc07f337cedf038a11c84a2af5504cfb82e9
++PKG_SOURCE_DATE:=2022-04-25
++PKG_SOURCE_VERSION:=e37443ac4c757dbf14167ec3f754ebe88244ad4b
+ 
+ PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
+ PKG_LICENSE:=GPL-3.0-only
 
 --- a/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
 +++ b/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
@@ -914,34 +844,30 @@
  			local option="$1"
  			local value="$2"
 +			[ "$1" = enabled ] && return 0
- 			echo "$option = $value" >> "$conf_file"
- 		}
- 		list_cb() {
-@@ -35,7 +35,12 @@
- 	fi
+ 			[ "$option" = "name" ] && \
+ 			sed -i "s/$CONFIG_SECTION/$value/g" "$conf_file" || \
+ 			echo "$option = $value" >> "$conf_file";
+@@ -43,6 +43,7 @@
  }
  
-+service_triggers(){
-+	procd_add_reload_trigger 'frpc'
-+}
-+
  start_service() {
 +	[ "$(uci -q get frpc.common.enabled)" = 1 ] || return 0
  	local init_cfg=" "
  	local conf_file="/var/etc/$NAME.ini"
  
-@@ -70,3 +75,11 @@
- 	[ -n "$env" ] && config_list_foreach "$init_cfg" env "procd_append_param env"
+@@ -78,7 +79,10 @@
  	procd_close_instance
  }
-+
+ 
 +stop_service(){
 +	rm -f /var/etc/$NAME.ini
 +}
 +
-+reload_service(){
+ reload_service() {
+-	stop
+-	start
 +	restart
-+}
+ }
 
 --- a/feeds/packages/net/frp/Makefile
 +++ b/feeds/packages/net/frp/Makefile
@@ -949,12 +875,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=f1a51eba18a85649122006289f5ac9c8a62b8c6e
++PKG_SOURCE_VERSION:=bd89eaba2fc465c0c3ba4509c7ce75b2ca49206d
 +
  PKG_NAME:=frp
--PKG_VERSION:=0.37.0
+-PKG_VERSION:=0.42.0
 -PKG_RELEASE:=$(AUTORELEASE)
-+PKG_VERSION:=0.37.0_git-$(PKG_SOURCE_VERSION)
++PKG_VERSION:=0.42.0_git-$(PKG_SOURCE_VERSION)
 +PKG_RELEASE:=1
 +PKG_LICENSE:=Apache-2.0
 +PKG_LICENSE_FILES:=LICENSE
@@ -962,7 +888,7 @@
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
--PKG_HASH:=fa82c81c81a7cab28e3f7dd749889be683050274cf5edda7735a93596987fa53
+-PKG_HASH:=4bb815e9c9a4588fce20c6ef33168f0ceb1f420937c4dcf03ce085666328043a
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
@@ -983,17 +909,25 @@
 
 --- a/feeds/packages/net/https-dns-proxy/Makefile
 +++ b/feeds/packages/net/https-dns-proxy/Makefile
-@@ -6,9 +6,7 @@
+@@ -1,14 +1,12 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=https-dns-proxy
+-PKG_VERSION:=2021-11-22
+-PKG_RELEASE:=3
++PKG_VERSION:=2022-05-05
++PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/aarond10/https_dns_proxy/
--PKG_SOURCE_DATE:=2021-09-27
- PKG_SOURCE_VERSION:=da2501f542a732167a78f1851a511d9c0abc2fd8
--PKG_MIRROR_HASH:=62c01f896947b9c285eb44dc1cede17ccd4dcb9c97136c99f3fe2e91a09aeaaf
- PKG_MAINTAINER:=Stan Grishin <stangri@melmac.net>
+-PKG_SOURCE_DATE:=2021-11-22
+-PKG_SOURCE_VERSION:=9336fd6272d67e8bb6e304fa54f3139a3d26f08f
+-PKG_MIRROR_HASH:=60b1ddabaf1db3a9ee19f3294a1df714364d580cef5e3c2161363c371a557456
++PKG_SOURCE_VERSION:=d310a378795790350703673388821558163944de
+ PKG_MAINTAINER:=Stan Grishin <stangri@melmac.ca>
  PKG_LICENSE:=MIT
  PKG_LICENSE_FILES:=LICENSE
-@@ -33,17 +31,9 @@
+@@ -33,19 +31,9 @@
  Please see https://docs.openwrt.melmac.net/https-dns-proxy/ for more information.
  endef
  
@@ -1002,13 +936,14 @@
 -endef
 -
  define Package/https-dns-proxy/install
--	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d ${1}/etc/config $(1)/etc/hotplug.d/iface
-+	$(INSTALL_DIR) $(1)/usr/sbin
+ 	$(INSTALL_DIR) $(1)/usr/sbin
+-	$(INSTALL_DIR) $(1)/etc/init.d
+-	$(INSTALL_DIR) ${1}/etc/config
+-	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/https_dns_proxy $(1)/usr/sbin/https-dns-proxy
 -	$(INSTALL_BIN) ./files/https-dns-proxy.init $(1)/etc/init.d/https-dns-proxy
 -	$(SED) "s|^\(PKG_VERSION\).*|\1='$(PKG_VERSION)-$(PKG_RELEASE)'|" $(1)/etc/init.d/https-dns-proxy
 -	$(INSTALL_CONF) ./files/https-dns-proxy.config $(1)/etc/config/https-dns-proxy
--	$(INSTALL_DATA) ./files/https-dns-proxy.hotplug.iface $(1)/etc/hotplug.d/iface/90-https-dns-proxy
  endef
  
  $(eval $(call BuildPackage,https-dns-proxy))
@@ -1019,18 +954,18 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=94c9cacf4f87118e5e7716a7c1c41835f4fc04c9
++PKG_SOURCE_VERSION:=b63eeb63010701c6f613693bacb51b71d805c5a3
 +
  PKG_NAME:=kcptun
--PKG_VERSION:=20201010
+-PKG_VERSION:=20210922
 +PKG_VERSION:=git-$(PKG_SOURCE_VERSION)
- PKG_RELEASE:=2
+ PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/xtaci/kcptun/tar.gz/v${PKG_VERSION}?
--PKG_SOURCE_DATE:=2020-10-10
--PKG_HASH:=afab2a087b787e59e129c7d4fbc578e1131d264c0da1ce23cd1282321fc3c189
+-PKG_SOURCE_DATE:=2021-09-22
+-PKG_HASH:=f6a08f0fe75fa85d15f9c0c28182c69a5ad909229b4c230a8cbe38f91ba2d038
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
@@ -1078,69 +1013,6 @@
  KCPTUN_COMPONENTS:=server client
  $(foreach component,$(KCPTUN_COMPONENTS), \
    $(eval $(call Package/kcptun/Default,$(component))) \
-
---- a/feeds/packages/net/ksmbd-tools/files/ksmbd.init
-+++ b/feeds/packages/net/ksmbd-tools/files/ksmbd.init
-@@ -39,7 +39,7 @@
- 	    -e "s#|DESCRIPTION|#$description#g" \
- 	    -e "s#|INTERFACES|#$interfaces#g" \
- 	    /etc/ksmbd/smb.conf.template > /var/etc/ksmbd/smb.conf
--		
-+
- 	{
- 		printf "\n######### Dynamic written config options #########\n"
- 
-@@ -149,10 +149,10 @@
- 		logger -p daemon.error -t 'ksmbd' "missing config /etc/ksmbd/smb.conf!"
- 		exit 1
- 	fi
--	
-+
- 	# NOTE: We don't do a soft-reload via signal, since [global] smb.conf setting changes will be ignored, so always reset hard.
- 	kill_server
--	
-+
- 	[ ! -e /sys/module/ksmbd ] && modprobe ksmbd 2> /dev/null
- 	if [ ! -e /sys/module/ksmbd ]; then
- 		logger -p daemon.error -t 'ksmbd' "modprobe of ksmbd module failed, can\'t start ksmbd!"
-@@ -172,19 +172,20 @@
- {
- 	logger -p daemon.notice -t 'ksmbd' "Stopping Ksmbd userspace service."
- 	killall ksmbd.mountd > /dev/null 2>&1
--	
-+
- 	[ -e /sys/module/ksmbd ] && rmmod ksmbd > /dev/null 2>&1
- 	# kill server if we cant rmmod
- 	[ -e /sys/module/ksmbd ] && kill_server
- 	# next try
- 	[ -e /sys/module/ksmbd ] && rmmod ksmbd > /dev/null 2>&1
--	
-+
- 	if [ -e /sys/module/ksmbd ]; then
- 		logger -p daemon.error -t 'ksmbd' "module still loaded after kill_server?"
- 	fi
- 	[ -f /tmp/ksmbd.lock ] && rm /tmp/ksmbd.lock
- }
- 
--# reload_service() {
--	# restart "$@"
--# }
-+boot(){
-+	sleep 5
-+	start
-+}
-
---- a/feeds/packages/net/ksmbd-tools/Makefile
-+++ b/feeds/packages/net/ksmbd-tools/Makefile
-@@ -2,7 +2,7 @@
- 
- PKG_NAME:=ksmbd-tools
- PKG_VERSION:=3.4.2
--PKG_RELEASE:=1
-+PKG_RELEASE:=2
- 
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
- PKG_SOURCE_URL:=https://codeload.github.com/cifsd-team/ksmbd-tools/tar.gz/$(PKG_VERSION)?
 
 --- a/feeds/packages/net/miniupnpd/files/upnpd.config
 +++ b/feeds/packages/net/miniupnpd/files/upnpd.config
@@ -1202,20 +1074,21 @@
  # - update cipher list by checking src/crypto.c:crypto_init()
  # - check if default mode has changed from being tcp_only
  #
-+PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=365465811113ed5018ee4c8d5b078b41095387fc
-+
- PKG_NAME:=shadowsocks-libev
+-PKG_NAME:=shadowsocks-libev
 -PKG_VERSION:=3.3.5
-+PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_VERSION)
- PKG_RELEASE:=1
+-PKG_RELEASE:=5
 -
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
 -PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
 -
 -PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
--
++PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
++PKG_SOURCE_VERSION:=1630764b02bbcbf0980d8080ea6ee8fd9b2cabf0
+ 
++PKG_NAME:=shadowsocks-libev
++PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_VERSION)
++PKG_RELEASE:=9
  PKG_LICENSE:=GPL-3.0-or-later
  PKG_LICENSE_FILES:=LICENSE
  
@@ -1265,7 +1138,7 @@
    endef
  
    define Package/shadowsocks-libev-$(1)/install
-@@ -82,34 +63,6 @@
+@@ -82,28 +63,6 @@
  endef
  $(eval $(call shadowsocks-libev/templates))
  
@@ -1276,31 +1149,25 @@
 -  SUBMENU:=Web Servers/Proxies
 -  TITLE:=shadowsocks-libev ss-rules
 -  URL:=https://github.com/shadowsocks/shadowsocks-libev
--  DEPENDS:=+ip +ipset +iptables-mod-tproxy +resolveip +shadowsocks-libev-ss-redir +shadowsocks-libev-config
+-  DEPENDS:=+firewall4 \
+-	   +ip \
+-	   +resolveip \
+-	   +ucode \
+-	   +ucode-mod-fs \
+-	   +shadowsocks-libev-ss-redir \
+-	   +shadowsocks-libev-config \
+-	   +kmod-nft-tproxy
 -endef
 -
 -define Package/shadowsocks-libev-ss-rules/install
--	$(INSTALL_DIR) $(1)/usr/bin
--	$(INSTALL_BIN) ./files/ss-rules $(1)/usr/bin
--	$(INSTALL_DIR) $(1)/etc/uci-defaults
--	$(INSTALL_DATA) ./files/firewall.ss-rules $(1)/etc
--	$(INSTALL_BIN) ./files/ss-rules.defaults $(1)/etc/uci-defaults
--endef
--
--define Package/shadowsocks-libev-ss-rules/prerm
--#!/bin/sh
--s=firewall.ss_rules
--uci get "$$s" >/dev/null || exit 0
--uci batch <<-EOF
--	delete $$s
--	commit firewall
--EOF
+-	$(INSTALL_DIR) $(1)/usr/share/ss-rules
+-	$(INSTALL_DATA) ./files/ss-rules/* $(1)/usr/share/ss-rules/
 -endef
 -
  define Build/Prepare
  	$(call Build/Prepare/Default)
  	$(FIND) $(PKG_BUILD_DIR) \
-@@ -129,8 +82,6 @@
+@@ -123,8 +82,6 @@
  TARGET_CFLAGS += -flto
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
@@ -1318,9 +1185,9 @@
  PKG_NAME:=sqm-scripts
 -PKG_SOURCE_VERSION:=5d7e7977e14e147d5bcfa8a5f01636c7ab230fa4
 -PKG_VERSION:=1.5.1
-+PKG_SOURCE_VERSION:=c8bbb47031be97095594cd5cee6d758a5bdcd26b
++PKG_SOURCE_VERSION:=1d489e58903b7c3e5f905f34401cb346db6ab7ab
 +PKG_VERSION:=1.5.1_git-$(PKG_SOURCE_VERSION)
- PKG_RELEASE:=1
+ PKG_RELEASE:=$(AUTORELEASE)
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
@@ -1329,69 +1196,22 @@
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
 
---- /dev/null
-+++ b/feeds/packages/net/sqm-scripts/patches/001-zh-cn.patch
-@@ -0,0 +1,42 @@
-+--- a/src/layer_cake.qos.help
-++++ b/src/layer_cake.qos.help
-+@@ -1,4 +1,4 @@
-+-This uses the cake qdisc as a replacement for both htb as shaper and fq_codel as leaf qdisc.
-+-This exercises cake's diffserv profile(s) as different "layers" of priority.
-+-This script requires that cake is selected as qdisc, and forces its usage.
-+-See: http://www.bufferbloat.net/projects/codel/wiki/Cake for more information
-++这个cake列队规则使用HTB作为过滤器，使用fq_codel作为叶列队规则。
-++这个cake规则将不同的文件分为不同的“层次”优先级。
-++该脚本需要将该cake选为列队规则。
-++请参阅：http://www.bufferbloat.net/projects/codel/wiki/Cake获取更多信息
-+
-+--- a/src/piece_of_cake.qos.help
-++++ b/src/piece_of_cake.qos.help
-+@@ -1,4 +1,4 @@
-+-This just uses the cake qdisc as a replacement for both htb as shaper and fq_codel as leaf qdisc.
-+-It just does not come any simpler than this, in other words it truely is a "piece of cake".
-+-This script requires that cake is selected as qdisc, and forces its usage.
-+-See: http://www.bufferbloat.net/projects/codel/wiki/Cake for more information
-++这个cake列队规则使用HTB作为过滤器，使用fq_codel作为叶列队规则。
-++它不会比这更简单，换句话说，它真的是“小菜一碟”。
-++该脚本需要将cake选为列队规则。
-++请参阅：http://www.bufferbloat.net/projects/codel/wiki/Cake获取更多信息
-+
-+--- a/src/simple.qos.help
-++++ b/src/simple.qos.help
-+@@ -1 +1 @@
-+-BW-limited three-tier prioritisation scheme with your qdisc on each queue. (default)
-++使用fq_codel列队规则在每个列队上进行三层优先级的带宽控制。（默认）
-+
-+--- a/src/simplest.qos.help
-++++ b/src/simplest.qos.help
-+@@ -1 +1 @@
-+-Simplest possible configuration: HTB rate limiter with your qdisc attached.
-++最简单的配置：使用带有HTB过滤器的列队规则来进行速率限制。
-+
-+--- a/src/simplest_tbf.qos.help
-++++ b/src/simplest_tbf.qos.help
-+@@ -1,2 +1 @@
-+-Simplest possible configuration (TBF): TBF rate limiter with your qdisc attached.
-+-TBF may give better performance than HTB on some architectures.
-++最简单的配置（TBF）：使用带有TBF过滤器的列队规则来进行速率限制。在某些架构上，TBF可能会比HTB提供更好的性能。
-
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
 @@ -1,18 +1,24 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=7038bded7bf77317f7be970c25c70f09aa4d75f0
++PKG_SOURCE_VERSION:=f046feb9caca6271591cc4fe55a081fa449ddcc4
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.4.5
--PKG_RELEASE:=$(AUTORELEASE)
-+PKG_VERSION:=1.5.0_git-$(PKG_SOURCE_VERSION)
-+PKG_RELEASE:=1
+-PKG_VERSION:=1.5.5
++PKG_VERSION:=1.5.5_git-$(PKG_SOURCE_VERSION)
+ PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=54c6a687dd463b25afe8d8eb44d37e18b8177f58308207cd1d74f6cd04619854
+-PKG_HASH:=3f8d04fef82a922c83bab43cac6c86a76386cf195eb510ccf1cc175982693893
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1407,14 +1227,7 @@
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
  PKG_USE_MIPS16:=0
-@@ -24,13 +30,13 @@
- 	$(GO_PKG)/core.version=$(PKG_VERSION)
- 
- include $(INCLUDE_DIR)/package.mk
--include ../../lang/golang/golang-package.mk
-+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
- 
- define Package/xray/template
+@@ -30,7 +36,7 @@
    TITLE:=A platform for building proxies to bypass network restrictions
    SECTION:=net
    CATEGORY:=Network
@@ -1444,7 +1257,7 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -61,48 +53,33 @@
+@@ -61,46 +53,33 @@
    $(call Package/xray/description)
  endef
  
@@ -1465,24 +1278,22 @@
 -/etc/config/xray
 -endef
 -
--GEOIP_VER:=202109060310
+-GEOIP_VER:=202204140052
 -GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
--
 -define Download/geoip
 -  URL:=https://github.com/v2fly/geoip/releases/download/$(GEOIP_VER)/
 -  URL_FILE:=geoip.dat
 -  FILE:=$(GEOIP_FILE)
--  HASH:=ed94122961f358abede9f1954722039d5a0300b614c77cc27d92618c08b97bb8
+-  HASH:=414ce866e265352970e8306b0611b7237280841d4a21778182864fe66c629ae0
 -endef
 -
--GEOSITE_VER:=20210906031055
+-GEOSITE_VER:=20220419022654
 -GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
--
 -define Download/geosite
 -  URL:=https://github.com/v2fly/domain-list-community/releases/download/$(GEOSITE_VER)/
 -  URL_FILE:=dlc.dat
 -  FILE:=$(GEOSITE_FILE)
--  HASH:=7618b876fd5a1066d0b44c1c8ce04608495ae991806890f8b1cbfafe79caf6c1
+-  HASH:=cacc5046f134153d7ad37d734ce72c6863a06a07d32dbd8a0d4a531b7ad1a25e
 -endef
 +define Package/xray-core/config
 +menu "Xray-core Configuration"
@@ -1519,7 +1330,7 @@
  endif
  endef
  
-@@ -110,31 +87,9 @@
+@@ -108,28 +87,9 @@
  	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
  	$(INSTALL_DIR) $(1)/usr/bin/
  	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/xray
@@ -1531,9 +1342,6 @@
 -	$(INSTALL_CONF) $(CURDIR)/files/xray.conf $(1)/etc/config/xray
 -	$(INSTALL_DIR) $(1)/etc/init.d/
 -	$(INSTALL_BIN) $(CURDIR)/files/xray.init $(1)/etc/init.d/xray
--
--	$(INSTALL_DIR) $(1)/etc/capabilities/
--	$(INSTALL_DATA) $(CURDIR)/files/xray.capabilities $(1)/etc/capabilities/xray.json
 -endef
 -
 -define Package/xray-example/install
@@ -1562,22 +1370,22 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=190e9464ce5db59e30ff21fdfff4d3f2f5a4a380
++PKG_SOURCE_VERSION:=7e46c8359231b4aa55c5d739462c4e5682d35755
  PKG_NAME:=zerotier
--PKG_VERSION:=1.6.6
-+PKG_VERSION:=1.6.6_git-$(PKG_SOURCE_VERSION)
- PKG_RELEASE:=2
+-PKG_VERSION:=1.8.9
++PKG_VERSION:=1.8.10_git-$(PKG_SOURCE_VERSION)
+ PKG_RELEASE:=$(AUTORELEASE)
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=6c95ffca4a64bf948abbf3e550a0c4881b17cf45ff2f55e2a389d095f9be81a5
+-PKG_HASH:=78fc0dda08d022b4fff9b88449d21a62016452304e930d4ee8393fe2930e65a8
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  
  PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
  PKG_LICENSE:=BSL 1.1
-@@ -59,10 +59,6 @@
+@@ -61,10 +61,6 @@
  TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
@@ -1588,7 +1396,7 @@
  define Package/zerotier/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
-@@ -72,9 +68,6 @@
+@@ -74,8 +70,6 @@
  ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
  endif
@@ -1597,683 +1405,292 @@
  endef
  
  $(eval $(call BuildPackage,zerotier))
--
 
---- a/feeds/luci/modules/luci-base/po/zh_Hans/base.po
-+++ b/feeds/luci/modules/luci-base/po/zh_Hans/base.po
-@@ -369,19 +369,19 @@
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:255
- msgid "Active IPv4 Routes"
--msgstr "活动的 <abbr title=\"互联网协议第 4 版\">IPv4</abbr> 路由"
-+msgstr "活动的 IPv4 路由"
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:258
- msgid "Active IPv4 Rules"
--msgstr "活跃的<abbr title=\"Internet Protocol Version 4\">IPv4</abbr>规则"
-+msgstr "活动的 IPv4 规则"
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:265
- msgid "Active IPv6 Routes"
--msgstr "活动的 <abbr title=\"互联网协议第 6 版\">IPv6</abbr> 路由"
-+msgstr "活动的 IPv6 路由"
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:268
- msgid "Active IPv6 Rules"
--msgstr "活跃的<abbr title=\"Internet Protocol Version 6\">IPv6</abbr>规则"
-+msgstr "活动的 IPv6 规则"
- 
- #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:205
- msgid "Active-Backup policy (active-backup, 1)"
+--- a/feeds/packages/utils/dockerd/Makefile
++++ b/feeds/packages/utils/dockerd/Makefile
+@@ -34,7 +34,7 @@
+   TITLE:=Docker Community Edition Daemon
+   URL:=https://www.docker.com/
+   DEPENDS:=$(GO_ARCH_DEPENDS) \
+-    +ca-certificates \
++    +ca-bundle \
+     +containerd \
+     +iptables \
+     +iptables-mod-extra \
 
 --- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
 +++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
-@@ -31,24 +31,19 @@
- 	--background-color-low-l: calc(var(--background-color-high-l) + var(--background-color-delta-l-sign) * var(--background-color-low-delta-l));
- 	--background-color-low: hsl(var(--background-color-low-h), var(--background-color-low-s), var(--background-color-low-l));
- 	--text-color-delta-l-sign: 1;
--	--text-color-highest-h: 0;
--	--text-color-highest-s: 0%;
--	--text-color-highest-l: 0%;
--	--text-color-highest: hsl(var(--text-color-highest-h), var(--text-color-highest-s), var(--text-color-highest-l));
--	--text-color-high-h: var(--text-color-highest-h);
--	--text-color-high-s: var(--text-color-highest-s);
--	--text-color-high-delta-l: calc(64 / 255 * 100%);
--	--text-color-high-l: calc(var(--text-color-highest-l) + var(--text-color-delta-l-sign) * var(--text-color-high-delta-l));
-+	--text-color-high-h: 0;
-+	--text-color-high-s: 0%;
-+	--text-color-high-l: calc(64 / 255 * 100%);
- 	--text-color-high: hsl(var(--text-color-high-h), var(--text-color-high-s), var(--text-color-high-l));
--	--text-color-medium-h: var(--text-color-highest-h);
--	--text-color-medium-s: var(--text-color-highest-s);
--	--text-color-medium-delta-l: calc(128 / 255 * 100%);
--	--text-color-medium-l: calc(var(--text-color-highest-l) + var(--text-color-delta-l-sign) * var(--text-color-medium-delta-l));
-+	--text-color-medium-h: var(--text-color-high-h);
-+	--text-color-medium-s: var(--text-color-high-s);
-+	--text-color-medium-delta-l: calc(64 / 255 * 100%);
-+	--text-color-medium-l: calc(var(--text-color-high-l) + var(--text-color-delta-l-sign) * var(--text-color-medium-delta-l));
- 	--text-color-medium: hsl(var(--text-color-medium-h), var(--text-color-medium-s), var(--text-color-medium-l));
--	--text-color-low-h: var(--text-color-highest-h);
--	--text-color-low-s: var(--text-color-highest-s);
--	--text-color-low-delta-l: calc(191 / 255 * 100%);
--	--text-color-low-l: calc(var(--text-color-highest-l) + var(--text-color-delta-l-sign) * var(--text-color-low-delta-l));
-+	--text-color-low-h: var(--text-color-high-h);
-+	--text-color-low-s: var(--text-color-high-s);
-+	--text-color-low-delta-l: calc(127 / 255 * 100%);
-+	--text-color-low-l: calc(var(--text-color-high-l) + var(--text-color-delta-l-sign) * var(--text-color-low-delta-l));
- 	--text-color-low: hsl(var(--text-color-low-h), var(--text-color-low-s), var(--text-color-low-l));
- 	--border-color-delta-l-sign: -1;
- 	--border-color-high-h: var(--background-color-high-h);
-@@ -77,9 +72,9 @@
- 		--background-color-high-s: 0%;
- 		--background-color-high-l: calc(34 / 255 * 100%);
- 		--text-color-delta-l-sign: -1;
--		--text-color-highest-h: 0;
--		--text-color-highest-s: 0%;
--		--text-color-highest-l: 100%;
-+		--text-color-high-h: 0;
-+		--text-color-high-s: 0%;
-+		--text-color-high-l: 100%;
- 		--border-color-delta-l-sign: 1;
- 	}
- }
-@@ -124,6 +119,13 @@ a:hover, a:active {
- 	outline: 0;
+@@ -257,18 +257,6 @@
+ 	vertical-align: top;
  }
  
-+footer,
-+header,
-+nav,
-+section {
-+	display: block;
-+}
-+
- sub, sup {
- 	font-size: 75%;
- 	line-height: 0;
-@@ -152,7 +154,7 @@ textarea {
- 	margin: 0;
- 	box-sizing: border-box;
- 	vertical-align: baseline;
--	line-height: 2em;
-+	line-height: normal;
- }
- 
- button::-moz-focus-inner, input::-moz-focus-inner {
-@@ -201,7 +203,8 @@ body {
- 	font-weight: normal;
- 	line-height: 18px;
+-.control-group {
+-	display: inline-flex;
+-	gap: .2em;
+-}
+-
+-.control-group > input + :not(input):not(select),
+-.control-group > select + :not(input):not(select) {
+-	margin-left: calc(-.2em + -2px);
+-	border-radius: 0 3px 3px 0;
+-	padding: 0 6px;
+-}
+-
+ /*
+  * Scaffolding
+  * Basic and global styles for generating a grid system, structural layout, and page templates
+@@ -614,7 +602,7 @@
+ 	margin-bottom: 4px;
+ 	box-shadow: 0 0 2px var(--border-color-high);
+ 	background: var(--background-color-high);
+-	padding: 6px 2em 6px 4px;
++	padding: 2px 2em 2px 4px;
+ 	border: 1px solid var(--border-color-high);
+ 	border-radius: 3px;
  	color: var(--text-color-high);
--	padding: 5px;
-+	padding: 18px 5px 5px 5px;
-+	margin-top: 40px;
+@@ -1721,6 +1709,25 @@
+ 	width: 100%;
  }
  
- .container {
-@@ -212,6 +215,16 @@ body {
- 	zoom: 1;
- }
- 
-+.container:before, .container:after {
-+	display: table;
-+	content: "";
-+	zoom: 1;
++input[type="text"] + .cbi-button,
++input[type="password"] + .cbi-button,
++select + .cbi-button,
++.cbi-select + .cbi-button {
++	border-radius: 0 3px 3px 0;
++	border-color: var(--border-color-high);
++	margin-left: -2px;
++	padding: 0 6px;
++	vertical-align: top;
++	height: 30px;
++	font-size: 14px;
++	line-height: 28px;
 +}
 +
-+.container:after {
-+	clear: both;
-+}
-+
- a {
- 	color: #0069d6;
- 	text-decoration: none;
-@@ -821,13 +834,13 @@ textarea[readonly] {
-  * Repeatable UI elements outside the base styles provided from the scaffolding
-  * ---------------------------------------------------------------------------- */
- header {
--	position: sticky;
-+	position: fixed;
- 	top: 0;
-+	left: 0;
-+	right: 0;
- 	z-index: 800;
- 	overflow: visible;
- 	color: #BFBFBF;
--	margin: -5px -5px 15px -5px;
--	display: flex;
- }
- 
- header a {
-@@ -835,14 +848,18 @@ header a {
- 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
- }
- 
--header .brand:hover, header ul .active > a {
-+header h3 a:hover, header .brand:hover, header ul .active > a {
- 	background-color: #333;
- 	background-color: rgba(255, 255, 255, 0.05);
- 	color: #fff;
- 	text-decoration: none;
- }
- 
--header .brand {
-+header h3 {
++select + .cbi-button,
++.cbi-select + .cbi-button {
 +	position: relative;
 +}
 +
-+header h3 a, header .brand {
- 	float: left;
- 	display: block;
- 	padding: 8px 20px 12px;
-@@ -858,7 +875,7 @@ header p {
- 	line-height: 40px;
+ .cbi-title-ref {
+ 	color: #37c;
  }
- 
--header {
-+header .fill {
- 	background-color: #222;
- 	background-repeat: repeat-x;
- 	background-image: linear-gradient(to bottom, #333333, #222222);
-@@ -866,7 +883,7 @@ header {
- 	padding: 0 5px;
+@@ -2537,7 +2544,3 @@
+ [data-darkmode="true"] [data-page="admin-statistics-graphs"] [data-plugin] img {
+ 	filter: invert(100%) hue-rotate(150deg);
  }
- 
--.nav {
-+header div > ul, .nav {
- 	display: block;
- 	float: left;
- 	margin: 0 10px 0 0;
-@@ -874,12 +891,12 @@ header {
- 	left: 0;
- }
- 
--.nav > li {
-+header div > ul > li, .nav > li {
- 	display: block;
- 	float: left;
- }
- 
--.nav a {
-+header div > ul a, .nav a {
- 	display: block;
- 	float: none;
- 	padding: 10px 10px 11px;
-@@ -887,34 +904,83 @@ header {
- 	text-decoration: none;
- }
- 
--.nav a:hover {
-+header div > ul a:hover, .nav a:hover {
- 	color: #fff;
- 	text-decoration: none;
- }
- 
--.nav .active > a {
-+header div > ul .active > a, .nav .active > a {
- 	background-color: #222;
- 	background-color: rgba(0, 0, 0, 0.5);
- }
- 
--.nav a.menu:hover {
-+header div > ul.secondary-nav, .nav.secondary-nav {
-+	float: right;
-+	margin-left: 10px;
-+	margin-right: 0;
-+}
-+
-+header div > ul.secondary-nav .menu-dropdown,
-+.nav.secondary-nav .menu-dropdown,
-+header div > ul.secondary-nav .dropdown-menu,
-+.nav.secondary-nav .dropdown-menu {
-+	right: 0;
-+	border: 0;
-+}
-+
-+header div > ul a.menu:hover,
-+.nav a.menu:hover,
-+header div > ul li.open .menu,
-+.nav li.open .menu,
-+header div > ul .dropdown-toggle:hover,
-+.nav .dropdown-toggle:hover,
-+header div > ul .dropdown.open .dropdown-toggle,
-+.nav .dropdown.open .dropdown-toggle {
- 	background: #444;
- 	background: rgba(255, 255, 255, 0.05);
- }
- 
-+header div > ul .menu-dropdown,
-+.nav .menu-dropdown,
-+header div > ul .dropdown-menu,
- .nav .dropdown-menu {
- 	background-color: #333;
- }
- 
--.nav .dropdown-menu a.menu {
-+header div > ul .menu-dropdown a.menu,
-+.nav .menu-dropdown a.menu,
-+header div > ul .dropdown-menu a.menu,
-+.nav .dropdown-menu a.menu,
-+header div > ul .menu-dropdown .dropdown-toggle,
-+.nav .menu-dropdown .dropdown-toggle,
-+header div > ul .dropdown-menu .dropdown-toggle,
-+.nav .dropdown-menu .dropdown-toggle {
- 	color: #fff;
- }
- 
-+header div > ul .menu-dropdown a.menu.open,
-+.nav .menu-dropdown a.menu.open,
-+header div > ul .dropdown-menu a.menu.open,
-+.nav .dropdown-menu a.menu.open,
-+header div > ul .menu-dropdown .dropdown-toggle.open,
-+.nav .menu-dropdown .dropdown-toggle.open,
-+header div > ul .dropdown-menu .dropdown-toggle.open,
-+.nav .dropdown-menu .dropdown-toggle.open {
-+	background: #444;
-+	background: rgba(255, 255, 255, 0.05);
-+}
-+
-+header div > ul .menu-dropdown li a,
-+.nav .menu-dropdown li a,
-+header div > ul .dropdown-menu li a,
- .nav .dropdown-menu li a {
- 	color: #999;
- 	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
- }
- 
-+header div > ul .menu-dropdown li a:hover,
-+.nav .menu-dropdown li a:hover,
-+header div > ul .dropdown-menu li a:hover,
- .nav .dropdown-menu li a:hover {
- 	background-color: #191919;
- 	background-repeat: repeat-x;
-@@ -922,11 +988,22 @@ header {
- 	color: #fff;
- }
- 
-+header div > ul .menu-dropdown .active a,
-+.nav .menu-dropdown .active a,
-+header div > ul .dropdown-menu .active a,
- .nav .dropdown-menu .active a {
- 	color: #fff;
- }
- 
--.nav .dropdown-menu li a {
-+header div > ul .menu-dropdown .divider,
-+.nav .menu-dropdown .divider,
-+header div > ul .dropdown-menu .divider,
-+.nav .dropdown-menu .divider {
-+	background-color: #222;
-+	border-color: #444;
-+}
-+
-+header ul .menu-dropdown li a, header ul .dropdown-menu li a {
- 	padding: 4px 15px;
- }
- 
-@@ -934,7 +1011,7 @@ li.menu, .dropdown {
- 	position: relative;
- }
- 
--a.menu:after {
-+a.menu:after, .dropdown-toggle:after {
- 	width: 0;
- 	height: 0;
- 	display: inline-block;
-@@ -949,7 +1026,7 @@ a.menu:after {
- 	opacity: 0.5;
- }
- 
--.dropdown-menu {
-+.menu-dropdown, .dropdown-menu {
- 	background-color: #fff;
- 	float: left;
- 	position: absolute;
-@@ -972,13 +1049,21 @@ a.menu:after {
- 	background-clip: padding-box;
- }
- 
--.dropdown-menu li {
-+.menu-dropdown li, .dropdown-menu li {
- 	float: none;
- 	display: block;
- 	background-color: transparent;
- }
- 
--.dropdown-menu a {
-+.menu-dropdown .divider, .dropdown-menu .divider {
-+	height: 1px;
-+	margin: 5px 0;
-+	overflow: hidden;
-+	background-color: #eee;
-+	border-bottom: 1px solid #fff;
-+}
-+
-+header .dropdown-menu a, .dropdown-menu a {
- 	display: block;
- 	padding: 4px 15px;
- 	clear: both;
-@@ -988,7 +1073,10 @@ a.menu:after {
- 	text-shadow: 0 1px 0 #fff;
- }
- 
--.dropdown-menu a:hover {
-+header .dropdown-menu a:hover,
-+.dropdown-menu a:hover,
-+header .dropdown-menu a.hover,
-+.dropdown-menu a.hover {
- 	background-color: #ddd;
- 	background-repeat: repeat-x;
- 	background-image: linear-gradient(to bottom, #eee, #ddd);
-@@ -997,6 +1085,22 @@ a.menu:after {
- 	box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.025), inset 0 -1px rgba(0, 0, 0, 0.025);
- }
- 
-+.open .menu,
-+.dropdown.open .menu,
-+.open .dropdown-toggle,
-+.dropdown.open .dropdown-toggle {
-+	color: #fff;
-+	background: #ccc;
-+	background: rgba(0, 0, 0, 0.3);
-+}
-+
-+.open .menu-dropdown,
-+.dropdown.open .menu-dropdown,
-+.open .dropdown-menu,
-+.dropdown.open .dropdown-menu {
-+	left: 0;
-+}
-+
- .dropdown:hover ul.dropdown-menu {
- 	left: 0;
- }
-@@ -1127,34 +1231,32 @@ a.menu:after {
- .breadcrumb {
- 	padding: 7px 14px;
- 	margin: 0 0 18px;
--	background: linear-gradient(to bottom, var(--background-color-high), var(--background-color-low));
--	border: 1px solid var(--border-color-medium);
-+	background-color: #f5f5f5;
-+	background-repeat: repeat-x;
-+	background-image: linear-gradient(to bottom, #fff, #f5f5f5);
-+	border: 1px solid #ddd;
- 	border-radius: 3px;
--	display: flex;
--	flex: 0;
-+	box-shadow: inset 0 1px 0 #fff;
- }
- 
- .breadcrumb li {
--	list-style: none;
-+	display: inline;
-+	text-shadow: 0 1px 0 #fff;
- }
- 
--.breadcrumb li:not(:last-child)::after {
--	content: "|";
-+.breadcrumb .divider {
- 	padding: 0 5px;
-+	color: #bfbfbf;
- }
- 
- .breadcrumb .active a {
--	color: var(--text-color-medium);
-+	color: #404040;
- }
- 
- footer {
--	padding-top: 17px;
- 	margin-top: 17px;
-+	padding-top: 17px;
- 	border-top: 1px solid var(--border-color-low);
--	display: flex;
--	flex-wrap: wrap;
--	align-items: baseline;
--	justify-content: space-between;
- }
- 
- #modal_overlay {
-@@ -1275,11 +1377,11 @@ body.modal-overlay-active #modal_overlay {
- 	cursor: pointer;
- 	display: inline-block;
- 	background: linear-gradient(var(--background-color-high), var(--background-color-high) 25%, var(--border-color-low)) no-repeat;
--	padding: 0 14px;
-+	padding: 5px 14px 6px;
- 	text-shadow: 0 1px 1px hsla(var(--background-color-high-h), var(--background-color-high-s), var(--background-color-high-l), 0.75);
- 	color: var(--text-color-high);
- 	font-size: 13px;
--	line-height: 2em;
-+	line-height: normal;
- 	border: 1px solid var(--border-color-high);
- 	border-radius: 4px;
- 	box-shadow: inset 0 1px 0 hsla(var(--background-color-high-h), var(--background-color-high-s), var(--background-color-high-l), 0.2), 0 1px 2px hsla(var(--text-color-high-h), var(--text-color-high-s), var(--text-color-high-l), 0.05);
-@@ -1833,14 +1935,11 @@ header [data-indicator][data-style="active"] {
- 
- form.inline { display: inline; margin-bottom: 0; }
- 
--header .pull-right { padding-top: 8px; margin-left: auto; }
-+header .pull-right { padding-top: 8px; }
- 
- #modemenu li:last-child span.divider { display: none }
- 
--#syslog {
--	width: 100%;
--	color: var(--text-color-highest);
+-
+-[data-page="admin-system-admin-sshkeys"] .cbi-dynlist {
+-	max-width: none;
 -}
-+#syslog {  width: 100%; }
- 
- .cbi-section-table .tr:hover .td,
- .cbi-section-table .tr:hover .th,
-@@ -1962,7 +2061,7 @@ table table td,
- 	background: linear-gradient(var(--background-color-high), var(--background-color-high) 25%, var(--background-color-medium));
- 	text-shadow: 0 1px 1px hsla(var(--background-color-high-h), var(--background-color-high-s), var(--background-color-high-l), 0.75);
- 	border-radius: 4px;
--	box-shadow: inset 0 1px 0 hsla(var(--text-color-low-h), var(--text-color-low-s), var(--text-color-low-l), 0.2), 0 1px 2px hsla(var(--text-color-highest-h), var(--text-color-highest-s), var(--text-color-highest-l), 0.05);
-+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
- 	display: inline-flex;
- 	flex-direction: column;
- 	line-height: 1.2em;
-@@ -1971,7 +2070,6 @@ table table td,
- 
- .ifacebox .ifacebox-head {
- 	border-bottom: 1px solid var(--border-color-high);
--	border-radius: 4px 4px 0 0;
- 	padding: 2px;
- 	background: #eee;
- 	color: #404040;
 
 --- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/mobile.css
 +++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/mobile.css
-@@ -3,6 +3,10 @@ header h3 a, header .brand {
+@@ -3,10 +3,6 @@
  }
  
  @media screen and (max-device-width: 600px) {
-+	#maincontent.container {
-+		margin-top: 30px;
-+	}
-+
+-	.modal {
+-		margin: 1.5em auto;
+-	}
+-
  	.tabs, .cbi-tabmenu {
  		background: linear-gradient(var(--background-color-high) 20%, var(--border-color-medium) 100%);
  		background-size: 1px 34px;
-@@ -159,16 +163,10 @@ header h3 a, header .brand {
+@@ -41,7 +37,7 @@
+ 	.table .th,
+ 	.table .td,
+ 	.table .tr::before {
+-		flex: 1 1 50%;
++		flex: 2 2 33%;
+ 		align-self: flex-start;
+ 		overflow: hidden;
+ 		text-overflow: ellipsis;
+@@ -79,8 +75,6 @@
  
- 	.cbi-value {
- 		padding-bottom: .5em;
--		border-bottom: 1px solid var(--border-color-high);
-+		border-bottom: 1px solid var(--border-color-medium);
- 		margin-bottom: .5em;
+ 	.td.cbi-value-field {
+ 		align-self: flex-start;
+-		flex-basis: 100%;
+-		margin-bottom: .3em;
  	}
  
--	.cbi-value .cbi-value:last-child {
--		border-bottom: none;
--		padding-bottom: inherit;
--		margin-bottom: inherit;
+ 	.td.cbi-value-field .cbi-button {
+@@ -118,15 +112,7 @@
+ 		border-bottom: 1px solid var(--border-color-medium);
+ 	}
+ 
+-	.td[data-title]::before {
+-		content: attr(data-title);
+-		font-weight: bold;
+-		display: block;
+-		overflow: hidden;
+-		text-overflow: ellipsis;
+-		white-space: pre-line;
 -	}
 -
- 	.cbi-value label.cbi-value-title {
- 		float: none;
++	.td[data-title]::before,
+ 	.td[data-description]::after {
+ 		display: block;
+ 	}
+@@ -135,11 +121,15 @@
+ 		align-self: flex-start;
+ 	}
+ 
++	.td[data-title] ~ .td.cbi-section-actions::before {
++		display: block;
++		content: "\a0";
++	}
++
+ 	.td.cbi-section-actions {
+ 		overflow: initial;
+ 		max-width: 100%;
+ 		padding: 3px 2px;
+-		flex-basis: 100%;
+ 	}
+ 
+ 	.hide-sm,
+@@ -147,13 +137,17 @@
+ 		display: none !important;
+ 	}
+ 
+-	.td.cbi-value-field[data-widget="CBI.DummyValue"],
+-	.td.cbi-value-field[data-widget="CBI.Button"],
+-	.td.cbi-value-field[data-widget="CBI.FlagValue"],
+-	.td.cbi-value-field[data-widget="dvalue"],
++	.td.cbi-value-field {
++		flex-basis: 100%;
++	}
++
++	.td.cbi-value-field[data-widget="dvalue"] {
++		flex-basis: 50%;
++	}
++
+ 	.td.cbi-value-field[data-widget="button"],
+ 	.td.cbi-value-field[data-widget="fvalue"] {
+-		flex-basis: 50%;
++		flex-basis: 25%;
+ 		text-align: left;
+ 	}
+ 
+@@ -163,10 +157,6 @@
+ 		background-color: transparent;
+ 	}
+ 
+-	.cbi-tab-descr {
+-		margin: 0 0 .5em 0;
+-	}
+-
+ 	.cbi-value {
+ 		padding-bottom: .5em;
+ 		border-bottom: 1px solid var(--border-color-high);
+@@ -188,17 +178,11 @@
  		font-weight: bold;
-@@ -223,9 +221,9 @@ header h3 a, header .brand {
+ 	}
+ 
+-	.cbi-value-field, .cbi-select, .cbi-dynlist, .cbi-dropdown:not(.btn):not(.cbi-button) {
++	.cbi-value-field, .cbi-select, .cbi-dropdown:not(.btn):not(.cbi-button) {
+ 		width: 100%;
  		margin: 0;
  	}
  
--	button, .btn, .cbi-button {
-+	.btn, .cbi-button {
- 		font-size: 14px !important;
--		padding: 0 8px;
-+		padding: 4px 8px;
+-	.cbi-dynlist > .item {
+-		min-height: 30px;
+-		display: flex;
+-		align-items: center;
+-	}
+-
+ 	input, textarea, select,
+ 	.cbi-dropdown > ul > li {
+ 		font-size: 16px !important;
+@@ -210,8 +194,7 @@
  	}
  
- 	.actions,
-@@ -281,6 +279,10 @@ header h3 a, header .brand {
- 		top: 23px;
+ 	select, input[type="text"], input[type="password"],
+-	.cbi-dropdown > ul > li input[type="text"],
+-	.cbi-value-field .control-group {
++	.cbi-dropdown > ul > li input[type="text"] {
+ 		width: 100%;
+ 		height: 30px;
+ 	}
+@@ -220,9 +203,25 @@
+ 		width: calc(100% - 25px);
  	}
  
-+	body {
-+		padding-top: 30px;
++	[data-dynlist] {
++		display: block;
 +	}
 +
- 	.cbi-optionals,
- 	.cbi-section-create {
- 		padding: 0 0 14px 0;
-@@ -338,34 +340,34 @@ header h3 a, header .brand {
++	[data-dynlist] > .add-item > input {
++		width: calc(100% - 21px);
++	}
++
++	[data-dynlist] > .add-item > .cbi-button {
++		margin-right: -1px;
++	}
++
+ 	input[type="text"] + .cbi-button,
+ 	input[type="password"] + .cbi-button,
+ 	select + .cbi-button {
++		font-size: 14px !important;
++		line-height:  28px;
++		height: 30px;
++		box-sizing: border-box;
+ 		overflow: hidden;
+ 		text-overflow: ellipsis;
+ 	}
+@@ -244,8 +243,9 @@
+ 		padding: 8px;
+ 	}
+ 
+-	[data-page="admin-status-overview"] .td[width="33%"] {
+-		flex-basis: 33%;
++	[data-page="admin-status-overview"] .cbi-section:nth-of-type(1) .td:first-child,
++	[data-page="admin-status-overview"] .cbi-section:nth-of-type(2) .td:first-child {
++		flex-grow: 1;
+ 	}
+ 
+ 	header .pull-right .label {
+@@ -300,6 +300,14 @@
+ 		flex-basis: 12%;
+ 	}
+ 
++	#cbi-network-switch_vlan .td.cbi-section-actions {
++		flex-basis: 100%;
++	}
++
++	#cbi-network-switch_vlan .td.cbi-section-actions::before {
++		display: none;
++	}
++
+ 	#cbi-network-switch_vlan .td.cbi-section-actions > * {
+ 		width: auto;
+ 		display: block;
+@@ -336,14 +344,6 @@
+ 	[data-name="bridge-vlan"] .td[data-title]::before {
+ 		content: attr(data-title);
+ 	}
+-
+-	[data-page="admin-network-network"] .td[data-name="_ifacebox"] {
+-		flex-basis: 40%;
+-	}
+-
+-	[data-page="admin-network-network"] .td[data-name="_ifacestat"] {
+-		flex-basis: 60%;
+-	}
  }
  
  @media screen and (max-device-width: 375px) {
-+	#maincontent.container {
-+		margin-top: 55px;
-+	}
-+
- 	.cbi-page-actions {
- 		display: flex;
-+		flex-wrap: wrap;
- 		justify-content: space-between;
- 		margin: 0 -1px;
- 		padding: 0;
+@@ -396,12 +396,9 @@
+ 	body[data-page="admin-network-wireless"] .td.cbi-section-actions::before {
+ 		content: none !important;
  	}
++}
  
--	.cbi-page-actions button {
-+	.cbi-page-actions .cbi-button:not(.cbi-dropdown) {
-+		flex: 1 1 calc(50% - 2px);
-+		margin: 1px !important;
- 		overflow: hidden;
- 		text-overflow: ellipsis;
- 	}
- 
--	.cbi-page-actions .cbi-button {
--		flex: 1;
--		margin: 1px !important;
--		line-height: 2em;
+-	[data-page="admin-network-network"] .td[data-name="_ifacebox"],
+-	[data-page="admin-network-network"] .td[data-name="_ifacestat"] {
+-		flex-basis: 100%;
 -	}
 -
- 	.cbi-page-actions .cbi-button-negative,
- 	.cbi-page-actions .cbi-button-primary,
- 	.cbi-page-actions .cbi-button-apply {
--		flex: 3;
-+		flex-basis: calc(100% - -2px);
- 	}
- 
- 	.cbi-section-actions .cbi-button {
- 		overflow: hidden;
- 		text-overflow: ellipsis;
--		margin: 1px !important;
- 	}
- 
- 	body[data-page="admin-network-wireless"] .td[data-name="_badge"] {
-@@ -389,6 +391,12 @@ header h3 a, header .brand {
- 	}
- }
- 
-+@media screen and (max-device-width: 200px) {
-+	#maincontent.container {
-+		margin-top: 230px;
-+	}
-+}
-+
- @media screen and (max-width: 375px) {
++@media screen and (max-width: 375px) {
  	.td .ifacebox {
  		width: 100%;
-@@ -399,7 +407,6 @@ header h3 a, header .brand {
- 	.td .ifacebox .ifacebox-head {
- 		min-width: 25%;
- 		justify-content: space-around;
--		border-radius: 4px 0 0 4px;
- 	}
- 
- 	.td .ifacebox .ifacebox-head,
-
---- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/resources/menu-bootstrap.js
-+++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/resources/menu-bootstrap.js
-@@ -22,6 +22,14 @@ return baseclass.extend({
- 			if (node)
- 				this.renderTabMenu(node, url);
- 		}
-+
-+		document.addEventListener('poll-start', this.handleBodyMargin);
-+		document.addEventListener('poll-stop', this.handleBodyMargin);
-+		document.addEventListener('uci-new-changes', this.handleBodyMargin);
-+		document.addEventListener('uci-clear-changes', this.handleBodyMargin);
-+		window.addEventListener('resize', this.handleBodyMargin);
-+
-+		this.handleBodyMargin();
- 	},
- 
- 	renderTabMenu: function(tree, url, level) {
-@@ -88,7 +96,9 @@ return baseclass.extend({
- 			var isActive = (L.env.requestpath.length ? children[i].name == L.env.requestpath[0] : i == 0);
- 
- 			ul.appendChild(E('li', { 'class': isActive ? 'active' : null }, [
--				E('a', { 'href': L.url(children[i].name) }, [ _(children[i].title) ])
-+				E('a', { 'href': L.url(children[i].name) }, [ _(children[i].title) ]),
-+				' ',
-+				E('span', { 'class': 'divider' }, [ '|' ])
- 			]));
- 
- 			if (isActive)
-@@ -97,5 +107,12 @@ return baseclass.extend({
- 
- 		if (ul.children.length > 1)
- 			ul.style.display = '';
-+	},
-+
-+	handleBodyMargin: function(ev) {
-+		var body = document.querySelector('body'),
-+		    head = document.querySelector('header');
-+
-+		body.style.marginTop = head.offsetHeight + 'px';
- 	}
- });
-
---- a/feeds/luci/themes/luci-theme-bootstrap/luasrc/view/themes/bootstrap/footer.htm
-+++ b/feeds/luci/themes/luci-theme-bootstrap/luasrc/view/themes/bootstrap/footer.htm
-@@ -8,9 +8,7 @@
- <% local ver = require "luci.version" %>
- 
-    <footer>
--    <span>
--      <a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %>
--    </span>
-+    <a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %>
-     <ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
-    </footer>
-   </div>
-
---- a/feeds/luci/themes/luci-theme-bootstrap/luasrc/view/themes/bootstrap/header.htm
-+++ b/feeds/luci/themes/luci-theme-bootstrap/luasrc/view/themes/bootstrap/header.htm
-@@ -39,9 +39,13 @@
- 
- 	<body class="lang_<%=luci.i18n.context.lang%> <% if node then %><%= striptags( node.title ) %><%- end %>" data-page="<%= pcdata(table.concat(disp.context.requestpath, "-")) %>">
- 		<header>
--			<a class="brand" href="/"><%=striptags(boardinfo.hostname or "?")%></a>
--			<ul class="nav" id="topmenu" style="display:none"></ul>
--			<div id="indicators" class="pull-right"></div>
-+			<div class="fill">
-+				<div class="container">
-+					<a class="brand" href="/"><%=striptags(boardinfo.hostname or "?")%></a>
-+					<ul class="nav" id="topmenu" style="display:none"></ul>
-+					<div id="indicators" class="pull-right"></div>
-+				</div>
-+			</div>
- 		</header>
- 
- 		<div id="maincontent" class="container">
+ 		margin: 0 !important;

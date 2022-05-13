@@ -1,11 +1,11 @@
 ﻿
 include $(TOPDIR)/rules.mk
 
-PKG_SOURCE_URL:=https://github.com/ntop/n2n.git
-PKG_SOURCE_VERSION:=3b187b4ac8aa435d5d1886c21209bdc1a8bd92be
+PKG_SOURCE_URL:=https://github.com/small-5/n2n.git
+PKG_SOURCE_VERSION:=8868e61fdad995f10f84e98f77f4232ed655e294
 
 PKG_NAME:=n2n
-PKG_VERSION:=2.9.0_git-$(PKG_SOURCE_VERSION)
+PKG_VERSION:=3.1.1_git-$(PKG_SOURCE_VERSION)
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL3
 

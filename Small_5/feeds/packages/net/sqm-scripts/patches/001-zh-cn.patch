@@ -1,0 +1,42 @@
+--- a/src/layer_cake.qos.help
++++ b/src/layer_cake.qos.help
+@@ -1,4 +1,4 @@
+-This uses the cake qdisc as a replacement for both htb as shaper and fq_codel as leaf qdisc.
+-This exercises cake's diffserv profile(s) as different "layers" of priority.
+-This script requires that cake is selected as qdisc, and forces its usage.
+-See: http://www.bufferbloat.net/projects/codel/wiki/Cake for more information
++这个cake列队规则使用HTB作为过滤器，使用fq_codel作为叶列队规则。
++这个cake规则将不同的文件分为不同的“层次”优先级。
++该脚本需要将该cake选为列队规则。
++请参阅：http://www.bufferbloat.net/projects/codel/wiki/Cake获取更多信息
+
+--- a/src/piece_of_cake.qos.help
++++ b/src/piece_of_cake.qos.help
+@@ -1,4 +1,4 @@
+-This just uses the cake qdisc as a replacement for both htb as shaper and fq_codel as leaf qdisc.
+-It just does not come any simpler than this, in other words it truely is a "piece of cake".
+-This script requires that cake is selected as qdisc, and forces its usage.
+-See: http://www.bufferbloat.net/projects/codel/wiki/Cake for more information
++这个cake列队规则使用HTB作为过滤器，使用fq_codel作为叶列队规则。
++它不会比这更简单，换句话说，它真的是“小菜一碟”。
++该脚本需要将cake选为列队规则。
++请参阅：http://www.bufferbloat.net/projects/codel/wiki/Cake获取更多信息
+
+--- a/src/simple.qos.help
++++ b/src/simple.qos.help
+@@ -1 +1 @@
+-BW-limited three-tier prioritisation scheme with your qdisc on each queue. (default)
++使用fq_codel列队规则在每个列队上进行三层优先级的带宽控制。（默认）
+
+--- a/src/simplest.qos.help
++++ b/src/simplest.qos.help
+@@ -1 +1 @@
+-Simplest possible configuration: HTB rate limiter with your qdisc attached.
++最简单的配置：使用带有HTB过滤器的列队规则来进行速率限制。
+
+--- a/src/simplest_tbf.qos.help
++++ b/src/simplest_tbf.qos.help
+@@ -1,2 +1 @@
+-Simplest possible configuration (TBF): TBF rate limiter with your qdisc attached.
+-TBF may give better performance than HTB on some architectures.
++最简单的配置（TBF）：使用带有TBF过滤器的列队规则来进行速率限制。在某些架构上，TBF可能会比HTB提供更好的性能。

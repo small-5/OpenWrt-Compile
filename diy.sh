@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="V3.3.0-12"
+VERSION="V3.3.1"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
@@ -40,9 +40,7 @@ elif [ $A = 2 ];then
 	cp -r target/target/rockchip/. Small_5
 	chmod 0775 Small_5/package/boot/arm-trusted-firmware-rockchip-vendor/*.sh
 elif [ $A = 3 ];then
-	rm -rf openwrt/package/boot/uboot-envtools openwrt/package/boot/uboot-fritz4040 openwrt/package/firmware/ipq-wifi openwrt/target/linux/ipq40xx
 	cp -r target/target/ipq40xx/. Small_5
-	chmod 0775 Small_5/target/linux/ipq40xx/base-files/etc/init.d/* Small_5/target/linux/ipq40xx/base-files/lib/upgrade/*
 fi
 
 cp -r Small_5/. openwrt

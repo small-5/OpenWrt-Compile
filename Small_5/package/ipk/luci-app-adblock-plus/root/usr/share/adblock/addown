@@ -22,7 +22,7 @@ if [ "$2" = 1 ];then
 	echo "`eval $D` [Check network status Successful]" >> $C
 	echo "`eval $D` [$E]" >> $C
 	X=1
-	while ! ($F https://cdn.jsdelivr.net/gh/small-5/ad-rules/dnsmasq.adblock || $F https://raw.githubusercontent.com/small-5/ad-rules/master/dnsmasq.adblock);do
+	while ! ($F https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/dnsmasq.adblock || $F https://cdn.jsdelivr.net/gh/small-5/ad-rules/dnsmasq.adblock);do
 		[ $X -ge 20 ] && A=1 && return || let X++
 		sleep 2
 	done

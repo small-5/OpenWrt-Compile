@@ -93,7 +93,7 @@ case $1 in
 esac
 
 if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
-	G=`curl -LSfso /tmp/adnew.conf https://cdn.jsdelivr.net/gh/small-5/ad-rules/easylistchina+easylist.txt 2>&1 || curl -LSfso /tmp/adnew.conf https://raw.githubusercontent.com/small-5/ad-rules/master/easylistchina%2Beasylist.txt 2>&1`
+	G=`curl -LSfso /tmp/adnew.conf https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/easylistchina%2Beasylist.txt 2>&1 || curl -LSfso /tmp/adnew.conf https://cdn.jsdelivr.net/gh/small-5/ad-rules/easylistchina+easylist.txt 2>&1`
 	if [ $? = 0 ];then
 		echo "`eval $E` [$A Successful]"
 		gen

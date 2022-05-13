@@ -79,10 +79,13 @@ function refresh()
 	local set=http.formvalue("set")
 	local icount=0
 	local r
+	local a=EXEC("echo -n $(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP")
+	local b=EXEC("echo -n $(lua /usr/share/overwall/auth B)")
+	local c=EXEC("echo -n $(lua /usr/share/overwall/auth C)")
 	if set=="0" then
-		sret=CALL("curl -Lfso /tmp/gfw.b64 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/avtPeqDKt645Arm")
+		sret=CALL("curl -Lfso /tmp/gfw.b64 -A \""..b.."\" "..a.."/avtPeqDKt645Arm"..c)
 		if sret==0 then
-			CALL("/usr/share/overwall/gfw")
+			EXEC("/usr/share/overwall/gfw")
 			icount=EXEC("cat /tmp/gfwnew.txt | wc -l")
 			if tonumber(icount)>1000 then
 				oldcount=EXEC("cat /tmp/overwall/gfw.list | wc -l")
@@ -95,40 +98,50 @@ function refresh()
 			else
 				r="-1"
 			end
-			EXEC("rm -f /tmp/gfwnew.txt ")
 		else
 			r="-1"
 		end
+		EXEC("rm -f /tmp/gfwnew.txt")
 	elseif set=="1" then
-		sret=CALL("A=`curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/eFw58nNRXXfTwU4 || curl -Lfsm 9 https://raw.githubusercontent.com/yIwIoTT9A21nupT/2aXGmlWs/master/KkFCtZkeAP/eFw58nNRXXfTwU4` && echo \"$A\" | base64 -d > /tmp/china.txt")
-		icount=EXEC("cat /tmp/china.txt | wc -l")
-		if sret==0 and tonumber(icount)>1000 then
-			oldcount=EXEC("cat /tmp/overwall/china.txt | wc -l")
-			if tonumber(icount)~=tonumber(oldcount) then
-				EXEC("cp -f /tmp/china.txt /tmp/overwall/china.txt && ipset list china_v4 >/dev/null 2>&1 && /usr/share/overwall/chinaipset")
-				r=tostring(tonumber(icount))
+		sret=CALL("curl -Lfso /tmp/china.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
+		if sret==0 then
+			EXEC("cat /tmp/china.tmp | base64 -d > /tmp/china.txt")
+			icount=EXEC("cat /tmp/china.txt | wc -l")
+			if tonumber(icount)>1000 then
+				oldcount=EXEC("cat /tmp/overwall/china.txt | wc -l")
+				if tonumber(icount)~=tonumber(oldcount) then
+					EXEC("cp -f /tmp/china.txt /tmp/overwall/china.txt && ipset list china_v4 >/dev/null 2>&1 && /usr/share/overwall/chinaipset")
+					r=tostring(tonumber(icount))
+				else
+					r="0"
+				end
 			else
-				r="0"
+				r="-1"
 			end
 		else
 			r="-1"
 		end
-		EXEC("rm -f /tmp/china.txt ")
+		EXEC("rm -f /tmp/china.txt /tmp/china.tmp")
 	elseif set=="2" then
-		sret=CALL("A=`curl -Lfsm 9 https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/KkFCtZkeAP/t8eOh94EJIHTXR6 || curl -Lfsm 9 https://raw.githubusercontent.com/yIwIoTT9A21nupT/2aXGmlWs/master/KkFCtZkeAP/t8eOh94EJIHTXR6` && echo \"$A\" | base64 -d > /tmp/china_v6.txt")
-		icount=EXEC("cat /tmp/china_v6.txt | wc -l")
-		if sret==0 and tonumber(icount)>1000 then
-			oldcount=EXEC("cat /tmp/overwall/china_v6.txt | wc -l")
-			if tonumber(icount)~=tonumber(oldcount) then
-				EXEC("cp -f /tmp/china_v6.txt /tmp/overwall/china_v6.txt && ipset list china_v6 >/dev/null 2>&1 && /usr/share/overwall/chinaipset v6")
-				r=tostring(tonumber(icount))
+		sret=CALL("curl -Lfso /tmp/china_v6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
+		if sret==0 then
+			EXEC("cat /tmp/china_v6.tmp | base64 -d > /tmp/china_v6.txt")
+			icount=EXEC("cat /tmp/china_v6.txt | wc -l")
+			if tonumber(icount)>1000 then
+				oldcount=EXEC("cat /tmp/overwall/china_v6.txt | wc -l")
+				if tonumber(icount)~=tonumber(oldcount) then
+					EXEC("cp -f /tmp/china_v6.txt /tmp/overwall/china_v6.txt && ipset list china_v6 >/dev/null 2>&1 && /usr/share/overwall/chinaipset v6")
+					r=tostring(tonumber(icount))
+				else
+					r="0"
+				end
 			else
-				r="0"
+				r="-1"
 			end
 		else
 			r="-1"
 		end
-		EXEC("rm -f /tmp/china_v6.txt ")
+		EXEC("rm -f /tmp/china_v6.txt /tmp/china_v6.tmp")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ret=r})

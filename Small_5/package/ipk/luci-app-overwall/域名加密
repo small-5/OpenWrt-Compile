@@ -1,0 +1,9 @@
+KEY="$(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}')"
+
+加密:
+echo https://srtmr25egk.hk01.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
+解密:
+echo U2FsdGVkX18fh5HF6TamCvbQGhA6oQLyEJ31IBD1Dm9DKZeZgUjHQ+vJvRkyfUJ8 | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
+
+OP生成QS(查詢字符串)
+qs=$(echo -n $(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}') | openssl aes-128-cbc -pbkdf2 -nosalt -k $(TZ=HKT-8 date '+%A%b%Y-%m-%d%H') -base64 | sed 's/[^A-Za-z0-9]//g')
