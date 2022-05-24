@@ -8,12 +8,12 @@ shift 3
 N=$(uci -q get overwall.@global[0].nf_ip)
 X=$(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP
 Y=$(lua /usr/share/overwall/auth B)
-Z=$(lua /usr/share/overwall/auth C)
+Z="lua /usr/share/overwall/auth C"
 
 nf(){
 	[ $E = 0 ] && return
 	B=1
-	while ! A=$(curl -Lfsm 5 -A "$Y" $X/$E$Z);do
+	while ! A=$(curl -Lfsm 5 -A "$Y" $X/$E$(eval $Z));do
 		[ $B -ge 20 ] && break || let B++
 		sleep 2
 	done
@@ -23,7 +23,7 @@ nf(){
 
 tg(){
 	B=1
-	while ! A=$(curl -Lfsm 5 -A "$Y" $X/ufk8kHo4ZpsOekg$Z);do
+	while ! A=$(curl -Lfsm 5 -A "$Y" $X/ufk8kHo4ZpsOekg$(eval $Z));do
 		[ $B -ge 20 ] && break || let B++
 		sleep 2
 	done
