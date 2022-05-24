@@ -377,6 +377,28 @@
 -	# eg. list extra_settings 'option=value'
 -	list extra_settings ''
 
+--- a/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
++++ b/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
+@@ -27,9 +27,8 @@
+ [ $use_https -eq 0 ] && use_https=1	# force HTTPS
+ 
+ # used variables
+-local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED
++local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED __TTL
+ local __URLBASE="https://api.cloudflare.com/client/v4"
+-local __TTL=120
+ 
+ # split __HOST __DOMAIN from $domain
+ # given data:
+@@ -188,6 +187,7 @@
+ # let's build data to send
+ # set proxied parameter
+ __PROXIED=$(grep -o '"proxied":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
++__TTL=$(grep -o '"ttl":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
+ 
+ # use file to work around " needed for json
+ cat > $DATFILE << EOF
+
 --- a/feeds/packages/net/ksmbd-tools/Makefile
 +++ b/feeds/packages/net/ksmbd-tools/Makefile
 @@ -1,12 +1,12 @@
