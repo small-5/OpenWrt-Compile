@@ -478,22 +478,25 @@
 
 --- /dev/null
 +++ b/package/ipk/luci-app-overwall/root/usr/share/overwall/downbin
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,25 @@
 +#!/bin/sh
 +[ "$1" = --down ] || exit 1
 +K=/tmp/overwall/bin
 +T=$K/tmp
++X=$(lua /usr/share/overwall/auth A)/2axgmlws/ONywPfH3Rh
++Y=$(lua /usr/share/overwall/auth B)
++Z="lua /usr/share/overwall/auth C"
 +kill -9 $(ps -w | grep $T | grep -v grep | awk '{print$1}') 2>/dev/null
 +mkdir -p $K
 +if [ $2 = 1 ];then
-+	while ! curl -m 9 -Lfso $T https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/ONywPfH3Rh/pWgXrfGEV6Vtmhy;do
++	while ! curl -m 9 -LfsA "$Y" -o $T $X/pWgXrfGEV6Vtmhy$(eval $Z);do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray
 +	chmod +x $K/xray
 +fi
 +if [ $3 = 1 ];then
-+	while ! curl -m 9 -Lfso $T https://cdn.jsdelivr.net/gh/yIwIoTT9A21nupT/2aXGmlWs/ONywPfH3Rh/AlCdr6hj5qHCJmp;do
++	while ! curl -m 9 -LfsA "$Y" -o $T $X/AlCdr6hj5qHCJmp$(eval $Z);do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray-plugin
