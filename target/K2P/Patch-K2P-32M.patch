@@ -20,7 +20,7 @@
 
 --- a/target/linux/ramips/image/mt7621.mk
 +++ b/target/linux/ramips/image/mt7621.mk
-@@ -1163,7 +1163,7 @@
+@@ -1241,7 +1241,7 @@
  
  define Device/phicomm_k2p
    $(Device/dsa-migration)
@@ -32,10 +32,10 @@
 
 --- a/.config
 +++ b/.config
-@@ -39,3 +39,8 @@
- CONFIG_LIBCURL_MBEDTLS=y
+@@ -38,3 +38,8 @@
+ #CURL
+ CONFIG_LIBCURL_OPENSSL=y
  # CONFIG_LIBCURL_WOLFSSL is not set
- CONFIG_LIBCURL_NGHTTP2=y
 +CONFIG_PACKAGE_automount=y
 +CONFIG_PACKAGE_kmod-usb2=y
 +CONFIG_PACKAGE_kmod-usb3=y
