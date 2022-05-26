@@ -627,7 +627,7 @@
  		for path in /etc/openvpn/*.conf; do
  			if [ -f "$path" ]; then
  				name="${path##*/}"; name="${name%.conf}"
-@@ -240,9 +194,7 @@
+@@ -240,14 +194,16 @@
  					continue
  				fi
  
@@ -638,6 +638,15 @@
  			fi
  		done
  	fi
+ }
+ 
++reload_service() {
++	restart
++}
++
+ service_triggers() {
+ 	procd_add_reload_trigger openvpn
+ }
 
 --- a/feeds/packages/net/openvpn/files/openvpn.options
 +++ b/feeds/packages/net/openvpn/files/openvpn.options
