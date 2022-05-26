@@ -1,6 +1,15 @@
 --- a/easyrsa3/easyrsa
 +++ b/easyrsa3/easyrsa
-@@ -1557,8 +1557,7 @@
+@@ -639,7 +639,7 @@
+ 
+ 	# Default CN only when not in global EASYRSA_BATCH mode:
+ 	# shellcheck disable=SC2015
+-	[ "$EASYRSA_BATCH" ] && opts="$opts -batch" || export EASYRSA_REQ_CN="Easy-RSA CA"
++	[ "$EASYRSA_BATCH" ] && opts="$opts -batch" || export EASYRSA_REQ_CN="${EASYRSA_REQ_CN:-Easy-RSA CA}"
+ 
+ 	out_key_tmp="$(easyrsa_mktemp)" || die "Failed to create temporary file"
+ 	out_file_tmp="$(easyrsa_mktemp)" || die "Failed to create temporary file"
+@@ -1667,8 +1667,7 @@
  	prog_file="$0"
  	prog_file2="$(which -- "$prog_file" 2>/dev/null)" && prog_file="$prog_file2"
  	prog_file2="$(readlink -f "$prog_file" 2>/dev/null)" && prog_file="$prog_file2"
@@ -10,7 +19,7 @@
  	# set up PKI path
  	pki_vars="${EASYRSA_PKI:-$PWD/pki}/vars"
  
-@@ -1588,9 +1587,9 @@
+@@ -1708,9 +1707,9 @@
  	fi
  	
  	# Set defaults, preferring existing env-vars if present
