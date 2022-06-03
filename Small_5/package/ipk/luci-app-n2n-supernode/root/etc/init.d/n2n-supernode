@@ -9,7 +9,7 @@ service_triggers(){
 start_service(){
 	[ "$(uci -q get n2n-supernode.@base[0].enabled)" = 0 ] && return 1
 	port=$(uci -q get n2n-supernode.@base[0].port) || return 1
-	community=$(uci -q get n2n-supernode.@base[0].community | sed "s/' '/\n/g" | sed "s/'//g")
+	community=$(uci -q show n2n-supernode.@base[0].community | sed 's/.*=//' | sed "s/' '/\n/g" | sed "s/'//g")
 	subnet=$(uci -q get n2n-supernode.@base[0].subnet)
 	param="-Mfp $port"
 	if [ -n "$community" ];then
