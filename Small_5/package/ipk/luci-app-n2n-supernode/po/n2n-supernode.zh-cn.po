@@ -13,11 +13,23 @@ msgstr "N2N 超级节点设置"
 msgid "Port"
 msgstr "端口"
 
-msgid "Subnet range"
+msgid "Subnet Range"
 msgstr "子网范围"
 
-msgid "Subnet range for auto ip address service(optional)<br / >For example: 192.168.0.0-192.168.255.0/24"
-msgstr "设置自动IP的范围和子网掩码(可选)<br / >例如: 192.168.0.0-192.168.255.0/24"
+msgid "Subnet range for auto ip address service(optional)<br/>For example: 192.168.0.0-192.168.255.0/24"
+msgstr "设置自动IP的范围和子网掩码(可选)<br/>例如: 192.168.0.0-192.168.255.0/24"
+
+msgid "Federation Name"
+msgstr "超级节点群组名称"
+
+msgid "Name of the supernode's federation<br/>Defaults to *Federation"
+msgstr "用于多个超级节点互联<br/>默认名称为 *Federation"
+
+msgid "Supernode Address"
+msgstr "超级节点地址"
+
+msgid "Address of other supernodes for multi supernodes connections<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777"
+msgstr "用于互联的其他超级节点地址<br/>例如: 192.168.1.1:3333 或 supernode.ntop.org:7777"
 
 msgid "Enable community verification"
 msgstr "启用网络组验证"
@@ -25,5 +37,5 @@ msgstr "启用网络组验证"
 msgid "Community Name"
 msgstr "网络组名称"
 
-msgid "Automatic IP segment can be specified after the network group name<br / >For example: MyN2N 192.168.1.0/24"
-msgstr "可以在网络组名称后面指定自动IP段和子网掩码<br / >例如: MyN2N 192.168.1.0/24"
+msgid "Automatic IP segment can be specified after the network group name<br/>For example: MyN2N 192.168.1.0/24"
+msgstr "可以在网络组名称后面指定自动IP段和子网掩码<br/>例如: MyN2N 192.168.1.0/24"

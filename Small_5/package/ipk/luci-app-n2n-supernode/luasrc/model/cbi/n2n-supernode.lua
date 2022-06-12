@@ -9,13 +9,14 @@ o.rmempty=false
 o=s:option(Value,"port",translate("Port"))
 o.datatype="port"
 o.rmempty=false
-o=s:option(Value,"subnet",translate("Subnet range"),
-	translate("Subnet range for auto ip address service(optional)<br / >For example: 192.168.0.0-192.168.255.0/24"))
+o=s:option(Value,"subnet",translate("Subnet Range"),translate("Subnet range for auto ip address service(optional)<br/>For example: 192.168.0.0-192.168.255.0/24"))
 o.placeholder="10.128.255.0-10.255.255.0/24"
+o=s:option(Value,"name",translate("Federation Name"),translate("Name of the supernode's federation<br/>Defaults to *Federation"))
+o.placeholder="*Federation"
+o=s:option(DynamicList,"server",translate("Supernode Address"),translate("Address of other supernodes for multi supernodes connections<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777"))
 o=s:option(Flag,"allowed",translate("Enable community verification"))
 o.rmempty=false
-o=s:option(DynamicList,"community",translate("Community Name"),
-	translate("Automatic IP segment can be specified after the network group name<br / >For example: MyN2N 192.168.1.0/24"))
+o=s:option(DynamicList,"community",translate("Community Name"),translate("Automatic IP segment can be specified after the network group name<br/>For example: MyN2N 192.168.1.0/24"))
 o:depends("allowed","1")
 
 return m
