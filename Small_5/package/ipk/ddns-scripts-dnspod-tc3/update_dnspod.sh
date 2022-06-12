@@ -22,7 +22,7 @@ build_command(){
 	# 绑定用于通信的主机/IP
 	if [ -n "$bind_network" ];then
 		local __DEVICE
-		network_get_physdev __DEVICE $bind_network || write_log 13 "Can not detect local device using 'network_get_physdev $bind_network' - Error: '$?'"
+		network_get_device __DEVICE $bind_network || write_log 13 "Can not detect local device using 'network_get_device $bind_network' - Error: '$?'"
 		write_log 7 "Force communication via device '$__DEVICE'"
 		__CMDBASE="$__CMDBASE --interface $__DEVICE"
 	fi
