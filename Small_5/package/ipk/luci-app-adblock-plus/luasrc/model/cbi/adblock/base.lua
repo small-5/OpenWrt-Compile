@@ -78,7 +78,8 @@ if luci.sys.call("[ -h /tmp/adblock/3rd/url ] || exit 9")==9 then
 end
 
 o=s:option(DynamicList,"url",translate("Anti-AD Rules Subscribe"))
-o:value("https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/adguard","AdGuard")
-o:value("https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/anti-ad","anti-AD")
+o:value("adguard","AdGuard")
+o:value("anti-ad","anti-AD")
+o:value("ad-wars","ad-wars")
 
 return m

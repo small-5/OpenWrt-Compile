@@ -10,7 +10,9 @@ B=/tmp/adblock
 C=/tmp/adupdate.log
 D="date +'%Y-%m-%d %H:%M:%S'"
 E="Download Adblock Plus Rules"
-F="curl --connect-timeout 5 -m 20 -Lfso $B/adblock.conf"
+H=$(lua /usr/share/adblock/auth A)/ad-rules
+I=$(lua /usr/share/adblock/auth B)
+J="lua /usr/share/adblock/auth C"
 
 if [ "$2" = 1 ];then
 	mkdir -p $B
@@ -22,7 +24,7 @@ if [ "$2" = 1 ];then
 	echo "`eval $D` [Check network status Successful]" >> $C
 	echo "`eval $D` [$E]" >> $C
 	X=1
-	while ! ($F https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/dnsmasq.adblock || $F https://cdn.jsdelivr.net/gh/small-5/ad-rules/dnsmasq.adblock);do
+	while ! curl --connect-timeout 5 -m 20 -A "$I" -Lfso $B/adblock.conf $H/dnsmasq.adblock$(eval $J);do
 		[ $X -ge 20 ] && A=1 && return || let X++
 		sleep 2
 	done

@@ -1,4 +1,6 @@
 module("luci.controller.adblock",package.seeall)
+CALL=luci.sys.call
+EXEC=luci.sys.exec
 function index()
 	if not nixio.fs.access("/etc/config/adblock") then
 		return
@@ -17,7 +19,7 @@ end
 
 function act_status()
 	local e={}
-	e.running=luci.sys.call("[ -s /tmp/dnsmasq.adblock/adblock.conf ]")==0
+	e.running=CALL("[ -s /tmp/dnsmasq.adblock/adblock.conf ]")==0
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end
@@ -27,44 +29,47 @@ local set=luci.http.formvalue("set")
 local icount=0
 
 if set=="0" then
-	sret=luci.sys.call("curl -Lfso /tmp/adnew.conf https://small_5.coding.net/p/ad-rules/d/ad-rules/git/raw/master/easylistchina%2Beasylist.txt || curl -Lfso /tmp/adnew.conf https://cdn.jsdelivr.net/gh/small-5/ad-rules/easylistchina+easylist.txt")
+	a=EXEC("echo -n $(lua /usr/share/adblock/auth A)/ad-rules")
+	b=EXEC("echo -n $(lua /usr/share/adblock/auth B)")
+	c=EXEC("echo -n $(lua /usr/share/adblock/auth C)")
+	sret=CALL("curl -m 20 -Lfso /tmp/ad.conf -A \""..b.."\" "..a.."/dnsmasq.adblock"..c)
 	if sret==0 then
-		luci.sys.call("/usr/share/adblock/adblock gen")
-		icount=luci.sys.exec("cat /tmp/ad.conf | wc -l")
+		CALL("/usr/share/adblock/adblock gen")
+		icount=EXEC("cat /tmp/ad.conf | wc -l")
 		if tonumber(icount)>0 then
-			oldcount=luci.sys.exec("cat /tmp/adblock/adblock.conf | wc -l")
+			oldcount=EXEC("cat /tmp/adblock/adblock.conf | wc -l")
 			if tonumber(icount) ~= tonumber(oldcount) then
-				luci.sys.exec("mv -f /tmp/ad.conf /tmp/adblock/adblock.conf")
-				luci.sys.exec("/etc/init.d/dnsmasq restart &")
+				EXEC("mv -f /tmp/ad.conf /tmp/adblock/adblock.conf")
+				EXEC("/etc/init.d/dnsmasq restart &")
 				retstring=tostring(math.ceil(tonumber(icount)))
 			else
 				retstring=0
 			end
-			luci.sys.call("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
+			CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 		else
 			retstring="-1"
 		end
-		luci.sys.exec("rm -f /tmp/ad.conf")
+		EXEC("rm -f /tmp/ad.conf")
 	else
 		retstring="-1"
 	end
 else
-	luci.sys.exec("/usr/share/adblock/adblock down")
-	icount=luci.sys.exec("find /tmp/ad_tmp/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
+	EXEC("/usr/share/adblock/adblock down")
+	icount=EXEC("find /tmp/ad_tmp/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
 	if tonumber(icount)>0 then
-		oldcount=luci.sys.exec("find /tmp/adblock/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
+		oldcount=EXEC("find /tmp/adblock/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
 		if tonumber(icount) ~= tonumber(oldcount) then
-			luci.sys.exec("[ -h /tmp/adblock/3rd/url ] && (rm -f /etc/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /etc/adblock) || (rm -f /tmp/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /tmp/adblock)")
-			luci.sys.exec("/etc/init.d/adblock restart &")
+			EXEC("[ -h /tmp/adblock/3rd/url ] && (rm -f /etc/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /etc/adblock) || (rm -f /tmp/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /tmp/adblock)")
+			EXEC("/etc/init.d/adblock restart &")
 			retstring=tostring(math.ceil(tonumber(icount)))
 		else
 			retstring=0
 		end
-		luci.sys.call("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
+		CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 	else
 		retstring="-1"
 	end
-	luci.sys.exec("rm -rf /tmp/ad_tmp")
+	EXEC("rm -rf /tmp/ad_tmp")
 end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json({ret=retstring,retcount=icount})

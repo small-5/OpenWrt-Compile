@@ -1,0 +1,48 @@
+require 'nixio'
+fs=require 'nixio.fs'
+sys=require 'luci.sys'
+nixio.signal(2,"dfl")
+if arg[1]==nil then
+	os.exit(1)
+end
+a=fs.readfile("/etc/openwrt_release")
+b=a:find("DISTRIB_DESCRIPTION")
+b=a:sub(b+21,-1)
+b=b:gsub("'.*","")
+if b:find("By Small_5")==nil then
+	A=sys.exec("echo -n $(openssl rand -base64 10 | sed 's/[^A-Za-z0-9]//g')")
+	if arg[1]=="A" then
+		print("https://www."..string.lower(A)..".com")
+	elseif arg[1]=="B" then
+		print(b)
+	elseif arg[1]=="C" then
+		print(A)
+	end
+	os.exit(1)
+end
+c=b:gsub("V.*By","By")
+c=c:gsub("Small_5 r.*","Small_5")
+d=a:find("DISTRIB_RELEASE")
+d=a:sub(d+17,-1)
+d=d:gsub("'.*","")
+d=d:gsub(".*By","By")
+d=c..d
+a=fs.readfile("/usr/lib/os-release")
+c=a:find("PRETTY_NAME")
+c=a:sub(c+13,-1)
+c=c:gsub("\".*","")
+c=c:gsub(".* By","By")
+d=d.." "..c
+if arg[1]=="A" then
+	A="U2FsdGVkX1/vbcxg1WS61q1QIjY4SbCUuynPGBhAKLTuERa6jVMleyhtov5/7G5u"
+	A=sys.exec("echo "..A.." | openssl aes-128-cbc -d -pbkdf2 -k \""..d.."\" -base64")
+	A=A:gsub("\n","")
+	print(A)
+elseif arg[1]=="B" then
+	print(b)
+elseif arg[1]=="C" then
+	t=os.date("!%A%b%Y-%m-%d%H",os.time()+3*60*60)
+	d=sys.exec("echo -n "..d.." | openssl aes-128-cbc -pbkdf2 -nosalt -k "..t.." -base64 | sed 's/[^A-Za-z0-9]//g'")
+	d=d:gsub("\n","")
+	print("?"..d)
+end

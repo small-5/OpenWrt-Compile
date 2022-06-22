@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-adblock-plus
 PKG_VERSION:=1.1
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 PKG_LICENSE:=GPLv2
 PKG_MAINTAINER:=Small_5
 
@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI support for Adblock Plus+
-  DEPENDS:=+curl +dnsmasq-full +ipset +luci-compat
+  DEPENDS:=+openssl-util +curl +dnsmasq-full +ipset +luci-compat
   PKGARCH:=all
 endef
 
@@ -22,8 +22,10 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/po/zh-cn/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+	chmod -R 755 luasrc/* root/*
+	find luasrc -type f -exec chmod 644 {} \;
+	find root -type f -exec chmod 644 {} \;
+	chmod 755 root/etc/init.d/* root/usr/share/adblock/*
 endef
 
 define Build/Compile
@@ -34,26 +36,11 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./luasrc/controller/* $(1)/usr/lib/lua/luci/controller/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/adblock
-	$(INSTALL_DATA) ./luasrc/model/cbi/adblock/* $(1)/usr/lib/lua/luci/model/cbi/adblock/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/adblock
-	$(INSTALL_DATA) ./luasrc/view/adblock/* $(1)/usr/lib/lua/luci/view/adblock/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/adblock.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/etc/adblock
-	$(INSTALL_DATA) ./root/etc/adblock/* $(1)/etc/adblock/
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./root/etc/config/* $(1)/etc/config/
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./root/etc/init.d/* $(1)/etc/init.d/
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults/
-	$(INSTALL_DIR) $(1)/usr/share/adblock
-	$(INSTALL_BIN) ./root/usr/share/adblock/* $(1)/usr/share/adblock/
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./root/acl.d/* $(1)/usr/share/rpcd/acl.d/
+	cp -pr luasrc/* $(1)/usr/lib/lua/luci
+	cp -pr root/* $(1)/
+	luac -s -o $(1)/usr/share/adblock/auth  $(1)/usr/share/adblock/auth
+	po2lmo po/zh-cn/adblock.po $(1)/usr/lib/lua/luci/i18n/adblock.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
