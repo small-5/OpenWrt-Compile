@@ -22,7 +22,7 @@ command -v sed >/dev/null 2>&1 || write_log 13 "Sed support is required to use A
 command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is required to use Alibaba Cloud API, please install first"
 
 # 变量声明
-local __TMP __N __I __D __HOST __DOMAIN __TYPE __CMDBASE __RECID __TTL
+local __TMP __I __HOST __DOMAIN __TYPE __CMDBASE __RECID __TTL
 
 # 设置记录类型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
@@ -160,11 +160,7 @@ update_domain(){
 # 获取子域名解析记录列表
 describe_domain(){
 	while ! aliyun_transfer "Action=DescribeDomains" "PageSize=100";do sleep 2;done
-	let __N=`JSON @.TotalCount`-1
-	for __I in $(seq 0 $__N);do
-		__D="$__D $(JSON @.Domains.Domain[$__I].PunyCode)"
-	done
-	for __I in $__D;do
+	for __I in $(JSON @.Domains.Domain[@].PunyCode);do
 		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;break;fi
 	done
 	if [ ! $__DOMAIN ];then

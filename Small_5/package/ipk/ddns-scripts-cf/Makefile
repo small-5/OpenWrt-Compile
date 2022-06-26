@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ddns-scripts-aliyun
-PKG_VERSION:=1.0.3
-PKG_RELEASE:=8
+PKG_NAME:=ddns-scripts-cf
+PKG_VERSION:=1.0
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Small_5
 
@@ -14,13 +14,14 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=IP Addresses and Names
-	TITLE:=DDNS extension for AliYun.com
+	TITLE:=DDNS extension for Cloudflare
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +curl +ddnsjson +openssl-util
+	DEPENDS:=+ddns-scripts +curl +ddnsjson
+	CONFLICTS:=ddns-scripts-cloudflare
 endef
 
 define Package/$(PKG_NAME)/description
-	Dynamic DNS Client scripts extension for AliYun.com
+	Dynamic DNS Client scripts extension for Cloudflare
 endef
 
 define Build/Configure
@@ -41,9 +42,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/update_aliyun_com.sh $(1)/usr/lib/ddns
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/update_cloudflare_com_v4.sh $(1)/usr/lib/ddns
 	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./aliyun.com.json $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./cloudflare.com-v4.json $(1)/usr/share/ddns/default
 endef
 
 define Package/$(PKG_NAME)/prerm

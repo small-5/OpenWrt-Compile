@@ -10,7 +10,7 @@
 command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is required to use Dnspod API, please install first"
 
 # 变量声明
-local __TMP __N __I __D __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __POST2 __POST3 __RECIP __RECID __TTL __CNT __A
+local __TMP __I __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __POST2 __POST3 __RECIP __RECID __TTL __CNT __A
 __APIHOST=dnspod.tencentcloudapi.com
 
 # 设置记录类型
@@ -126,11 +126,7 @@ update_domain(){
 # 获取域名解析记录
 describe_domain(){
 	while ! dnspod_transfer 0;do sleep 2;done
-	let __N=`JSON @.Response.DomainCountInfo.DomainTotal`-1
-	for __I in $(seq 0 $__N);do
-		__D="$__D $(JSON @.Response.DomainList[$__I].Punycode)"
-	done
-	for __I in $__D;do
+	for __I in $(JSON @.Response.DomainList[@].Punycode);do
 		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;break;fi
 	done
 	if [ ! $__DOMAIN ];then
