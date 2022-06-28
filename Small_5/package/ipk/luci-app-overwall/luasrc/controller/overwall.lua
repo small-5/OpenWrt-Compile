@@ -162,7 +162,7 @@ function checksrv()
 		elseif s.server and s.server_port then
 			n="%s:%s"%{s.server,s.server_port}
 		end
-		local dp=EXEC("netstat -unl | grep 5336 >/dev/null && echo -n 5336 || echo -n 53")
+		local dp=EXEC("netstat -unl | grep -q :5336 && echo -n 5336 || echo -n 53")
 		local ip=EXEC("echo "..s.server.." | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ || \\\
 		nslookup "..s.server.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ | sed -n 1p")
 		ip=EXEC("echo -n "..ip)
@@ -190,7 +190,7 @@ function ping()
 	local e={}
 	local domain=http.formvalue("domain")
 	local port=http.formvalue("port")
-	local dp=EXEC("netstat -unl | grep 5336 >/dev/null && echo -n 5336 || echo -n 53")
+	local dp=EXEC("netstat -unl | grep -q :5336 && echo -n 5336 || echo -n 53")
 	local ip=EXEC("echo "..domain.." | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ || \\\
 	nslookup "..domain.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ | sed -n 1p")
 	ip=EXEC("echo -n "..ip)

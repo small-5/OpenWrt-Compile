@@ -1280,7 +1280,7 @@ stop(){
 	killall -q -9 smartdns chinadns-ng kcptun-client xray-plugin microsocks
 	$BIN_DIR/rules -f
 	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
-	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI
+	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/china*.txt /tmp/gfwnew.txt
 	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f $K/gfw.list
 	[ $run_mode = router ] || rm -f $K/china_v6.txt
 	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
@@ -1297,7 +1297,7 @@ log-file $LOG
 bind :5335
 bind :5336
 bind :5337
-$([ $dns_mode_l = 0 ] && echo 223.5.5.5 223.6.6.6 | sed 's/ /\n/g' | sed 's/^/server /g' || echo $REF | sed 's/ /\n/g' | sed 's/^/server /g')
+$(echo $REF | sed 's/ /\n/g' | sed 's/^/server /g')
 EOF
 		$(which smartdns) -c $DNS_T
 		r=1

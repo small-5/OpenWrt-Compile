@@ -470,8 +470,8 @@
  	killall -q -9 smartdns chinadns-ng kcptun-client xray-plugin microsocks
  	$BIN_DIR/rules -f
  	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
--	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI
-+	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI $K/bin
+-	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/china*.txt /tmp/gfwnew.txt
++	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/china*.txt /tmp/gfwnew.txt $K/bin
  	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f $K/gfw.list
  	[ $run_mode = router ] || rm -f $K/china_v6.txt
  	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
@@ -489,14 +489,14 @@
 +kill -9 $(ps -w | grep $T | grep -v grep | awk '{print$1}') 2>/dev/null
 +mkdir -p $K
 +if [ $2 = 1 ];then
-+	while ! curl -m 9 -LfsA "$Y" -o $T $X/pWgXrfGEV6Vtmhy$(eval $Z);do
++	while ! curl -m 30 -LfsA "$Y" -o $T $X/pWgXrfGEV6Vtmhy$(eval $Z);do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray
 +	chmod +x $K/xray
 +fi
 +if [ $3 = 1 ];then
-+	while ! curl -m 9 -LfsA "$Y" -o $T $X/AlCdr6hj5qHCJmp$(eval $Z);do
++	while ! curl -m 30 -LfsA "$Y" -o $T $X/AlCdr6hj5qHCJmp$(eval $Z);do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray-plugin
