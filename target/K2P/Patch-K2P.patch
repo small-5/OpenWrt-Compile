@@ -27,7 +27,7 @@
  					var mode = ss.children[0],
  					    bssid = ss.children[5],
  					    encr;
-@@ -1248,141 +1248,10 @@
+@@ -1253,141 +1253,10 @@
  
  
  				var crypto_modes = [];
@@ -59,7 +59,7 @@
 -					if (has_hostapd || has_supplicant) {
 -						crypto_modes.push(['psk2',      'WPA2-PSK',                    35]);
 -						crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
--						crypto_modes.push(['psk',       'WPA-PSK',                     21]);
+-						crypto_modes.push(['psk',       'WPA-PSK',                     12]);
 -					}
 -					else {
 -						encr.description = _('WPA-Encryption requires wpa_supplicant (for client mode) or hostapd (for AP and ad-hoc mode) to be installed.');
@@ -159,7 +159,7 @@
 -				else if (hwtype == 'broadcom') {
 -					crypto_modes.push(['psk2',     'WPA2-PSK',                    33]);
 -					crypto_modes.push(['psk+psk2', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
--					crypto_modes.push(['psk',      'WPA-PSK',                     21]);
+-					crypto_modes.push(['psk',      'WPA-PSK',                     12]);
 -					crypto_modes.push(['wep-open',   _('WEP Open System'),        11]);
 -					crypto_modes.push(['wep-shared', _('WEP Shared Key'),         10]);
 -				}
@@ -172,7 +172,7 @@
  				crypto_modes.sort(function(a, b) { return b[2] - a[2] });
  
  				for (var i = 0; i < crypto_modes.length; i++) {
-@@ -1501,7 +1370,7 @@
+@@ -1506,7 +1375,7 @@
  				}
  
  
@@ -181,7 +181,7 @@
  					// Probe 802.11r support (and EAP support as a proxy for Openwrt)
  					var has_80211r = L.hasSystemFeature('hostapd', '11r') || L.hasSystemFeature('hostapd', 'eap');
  
-@@ -1678,7 +1547,7 @@
+@@ -1683,7 +1552,7 @@
  					o.password = true;
  
  
@@ -190,7 +190,7 @@
  						// ieee802.11w options
  						o = ss.taboption('encryption', form.ListValue, 'ieee80211w', _('802.11w Management Frame Protection'), _("Note: Some wireless drivers do not fully support 802.11w. E.g. mwlwifi may have problems"));
  						o.value('0', _('Disabled'));
-@@ -1712,21 +1581,6 @@
+@@ -1717,21 +1586,6 @@
  						o.datatype = 'uinteger';
  						o.placeholder = '201';
  						o.rmempty = true;

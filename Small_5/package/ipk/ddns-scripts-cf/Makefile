@@ -17,7 +17,6 @@ define Package/$(PKG_NAME)
 	TITLE:=DDNS extension for Cloudflare
 	PKGARCH:=all
 	DEPENDS:=+ddns-scripts +curl +ddnsjson
-	CONFLICTS:=ddns-scripts-cloudflare
 endef
 
 define Package/$(PKG_NAME)/description

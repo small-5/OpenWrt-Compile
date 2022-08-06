@@ -399,24 +399,6 @@
  # use file to work around " needed for json
  cat > $DATFILE << EOF
 
---- a/feeds/packages/net/ksmbd-tools/Makefile
-+++ b/feeds/packages/net/ksmbd-tools/Makefile
-@@ -1,12 +1,12 @@
- include $(TOPDIR)/rules.mk
- 
- PKG_NAME:=ksmbd-tools
--PKG_VERSION:=3.4.4
-+PKG_VERSION:=3.4.3
- PKG_RELEASE:=$(AUTORELEASE)
- 
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
- PKG_SOURCE_URL:=https://codeload.github.com/cifsd-team/ksmbd-tools/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=cc7cc2fcbeed052176894a8dbbf290919c3735b320401c6492cf17f1ba1a3548
-+PKG_HASH:=ee6ead20ba371bbb29ad2cc2e01bdba6183453ebe4eb089b034637a21d1ec218
- 
- PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
- PKG_LICENSE:=GPL-2.0-or-later
-
 --- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
 +++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
 @@ -62,6 +62,7 @@
@@ -780,8 +762,8 @@
 +PKG_SOURCE_DATE:=2022-04-25
 +PKG_SOURCE_VERSION:=e37443ac4c757dbf14167ec3f754ebe88244ad4b
  
- PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
  PKG_LICENSE:=GPL-3.0-only
+ PKG_LICENSE_FILES:=COPYING
 
 --- a/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
 +++ b/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
@@ -798,7 +780,7 @@
  	[form.Value, 'server_addr', _('Server address'), _('ServerAddr specifies the address of the server to connect to.<br />By default, this value is "0.0.0.0".'), {datatype: 'host'}],
  	[form.Value, 'server_port', _('Server port'), _('ServerPort specifies the port to connect to the server on.<br />By default, this value is 7000.'), {datatype: 'port'}],
  	[form.Value, 'http_proxy', _('HTTP proxy'), _('HttpProxy specifies a proxy address to connect to the server through. If this value is "", the server will be connected to directly.<br />By default, this value is read from the "http_proxy" environment variable.')],
-@@ -30,7 +31,7 @@
+@@ -32,7 +33,7 @@
  	[form.Value, 'assets_dir', _('Assets dir'), _('AssetsDir specifies the local directory that the admin server will load resources from. If this value is "", assets will be loaded from the bundled executable using statik.<br />By default, this value is "".')],
  	[form.Flag, 'tcp_mux', _('TCP mux'), _('TcpMux toggles TCP stream multiplexing. This allows multiple requests from a client to share a single TCP connection. If this value is true, the server must have TCP multiplexing enabled as well.<br />By default, this value is true.'), {datatype: 'bool', default: 'true'}],
  	[form.Value, 'user', _('User'), _('User specifies a prefix for proxy names to distinguish them from other clients. If this value is not "", proxy names will automatically be changed to "{user}.{proxy_name}".<br />By default, this value is "".')],
@@ -810,7 +792,7 @@
 
 --- a/feeds/luci/applications/luci-app-frpc/po/zh_Hans/frpc.po
 +++ b/feeds/luci/applications/luci-app-frpc/po/zh_Hans/frpc.po
-@@ -231,10 +231,10 @@
+@@ -260,10 +260,10 @@
  msgid ""
  "LoginFailExit controls whether or not the client should exit after a failed "
  "login attempt. If false, the client will retry until a login attempt "
@@ -821,7 +803,7 @@
 -"试，直到登录成功。<br />默认情况下，此值为 true。"
 +"试，直到登录成功。<br />默认情况下，此值为 false。"
  
- #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:143
+ #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:155
  msgid "NOT RUNNING"
 
 --- a/feeds/packages/net/frp/files/frpc.config
@@ -906,7 +888,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=bd89eaba2fc465c0c3ba4509c7ce75b2ca49206d
++PKG_SOURCE_VERSION:=1bc899ec12cd9dae74f695e122c7ebebcb7a6dcb
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.42.0
@@ -985,7 +967,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=b63eeb63010701c6f613693bacb51b71d805c5a3
++PKG_SOURCE_VERSION:=c5232c2953012fc0b27edd0eab637fd4be9105d0
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20210922
@@ -1115,7 +1097,7 @@
 -
 -PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
 +PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=1630764b02bbcbf0980d8080ea6ee8fd9b2cabf0
++PKG_SOURCE_VERSION:=d3e73c6ce652168963cb10c8284c89f2cf4df16e
  
 +PKG_NAME:=shadowsocks-libev
 +PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_VERSION)
@@ -1232,17 +1214,17 @@
 @@ -1,18 +1,24 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=f046feb9caca6271591cc4fe55a081fa449ddcc4
++PKG_SOURCE_VERSION:=340234166b2ee994136aa346a25f53b367d28059
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.5.5
-+PKG_VERSION:=1.5.5_git-$(PKG_SOURCE_VERSION)
+-PKG_VERSION:=1.5.9
++PKG_VERSION:=1.5.9_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=3f8d04fef82a922c83bab43cac6c86a76386cf195eb510ccf1cc175982693893
+-PKG_HASH:=ef61f80a32229f583c375ec8da79a1533ba5efae0fcb011e68a0ad0c913f6a87
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1309,22 +1291,22 @@
 -/etc/config/xray
 -endef
 -
--GEOIP_VER:=202204140052
+-GEOIP_VER:=202207140057
 -GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
 -define Download/geoip
 -  URL:=https://github.com/v2fly/geoip/releases/download/$(GEOIP_VER)/
 -  URL_FILE:=geoip.dat
 -  FILE:=$(GEOIP_FILE)
--  HASH:=414ce866e265352970e8306b0611b7237280841d4a21778182864fe66c629ae0
+-  HASH:=1c786d10e3a1f84b6088b6d2692cefa7bd34c1b4508de07708f8ecb81ff3cc7c
 -endef
 -
--GEOSITE_VER:=20220419022654
+-GEOSITE_VER:=20220717025946
 -GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
 -define Download/geosite
 -  URL:=https://github.com/v2fly/domain-list-community/releases/download/$(GEOSITE_VER)/
 -  URL_FILE:=dlc.dat
 -  FILE:=$(GEOSITE_FILE)
--  HASH:=cacc5046f134153d7ad37d734ce72c6863a06a07d32dbd8a0d4a531b7ad1a25e
+-  HASH:=f719c27f6fa0f4995702ec03a5642d6ee31a59e3d9a4fe825b6a77479a707f3e
 -endef
 +define Package/xray-core/config
 +menu "Xray-core Configuration"
@@ -1401,16 +1383,16 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=7e46c8359231b4aa55c5d739462c4e5682d35755
++PKG_SOURCE_VERSION:=651f45fe29155c462f4e56dd74f4a347f6861d0d
  PKG_NAME:=zerotier
--PKG_VERSION:=1.8.9
-+PKG_VERSION:=1.8.10_git-$(PKG_SOURCE_VERSION)
+-PKG_VERSION:=1.10.1
++PKG_VERSION:=1.10.1_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=78fc0dda08d022b4fff9b88449d21a62016452304e930d4ee8393fe2930e65a8
+-PKG_HASH:=1cc6b5da059486aff588fa6e6f43d20a7063569cc108bbe7254969f1cf72c968
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  

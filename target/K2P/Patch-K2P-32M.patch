@@ -3,7 +3,7 @@
 @@ -51,6 +51,7 @@
  		compatible = "jedec,spi-nor";
  		reg = <0>;
- 		spi-max-frequency = <25000000>;
+ 		spi-max-frequency = <50000000>;
 +		broken-flash-reset;
  
  		partitions {
@@ -20,7 +20,7 @@
 
 --- a/target/linux/ramips/image/mt7621.mk
 +++ b/target/linux/ramips/image/mt7621.mk
-@@ -1241,7 +1241,7 @@
+@@ -1235,7 +1235,7 @@
  
  define Device/phicomm_k2p
    $(Device/dsa-migration)
