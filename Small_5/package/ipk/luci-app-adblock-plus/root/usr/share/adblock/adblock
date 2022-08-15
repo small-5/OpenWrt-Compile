@@ -107,12 +107,11 @@ if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
 	echo "`eval $E` [$A]"
 	X=1
 	while ! G=`curl -m 20 -A "$I" -LfSso /tmp/ad.conf $H/dnsmasq.adblock$(eval $J) 2>&1`;do
-		[ $X -ge 20 ] && Y=1 && return || let X++
+		[ $X -ge 20 ] && Y=1 && break || let X++
 		sleep 2
 	done
 	if [ "$Y" = 1 ];then
 		echo "`eval $E` [$A Failed]"
-		echo -e "$G\n"
 	else
 		echo "`eval $E` [$A Successful]"
 		gen
