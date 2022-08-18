@@ -819,7 +819,7 @@
 
 --- a/package/network/utils/iptables/Makefile
 +++ b/package/network/utils/iptables/Makefile
-@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
+@@ -9,12 +9,12 @@
  include $(INCLUDE_DIR)/kernel.mk
  
  PKG_NAME:=iptables
@@ -835,7 +835,7 @@
  
  PKG_FIXUP:=autoreconf
  PKG_FLAGS:=nonshared
-@@ -50,18 +50,18 @@ $(call Package/iptables/Default)
+@@ -50,18 +50,18 @@
    DEPENDS+= +kmod-ipt-core +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 +libxtables
  endef
  
@@ -857,7 +857,7 @@
  IP firewall administration tool.
  
   Matches:
-@@ -104,7 +104,7 @@ endef
+@@ -104,7 +104,7 @@
  define Package/xtables-nft
  $(call Package/iptables/Default)
    TITLE:=IP firewall administration tool nft
@@ -866,7 +866,7 @@
  endef
  
  define Package/arptables-nft
-@@ -483,12 +483,12 @@ define Package/iptables-mod-checksum/description
+@@ -470,12 +470,12 @@
  iptables extension for the CHECKSUM calculation target
  endef
  
@@ -881,7 +881,7 @@
    ALTERNATIVES:=\
      200:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
      200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
-@@ -575,7 +575,7 @@ define Package/libiptext-nft
+@@ -562,7 +562,7 @@
   CATEGORY:=Libraries
   TITLE:=IPv4/IPv6 firewall - shared libiptext nft library
   ABI_VERSION:=0
@@ -890,7 +890,7 @@
  endef
  
  define Package/libxtables
-@@ -594,6 +594,12 @@ define Package/libxtables/config
+@@ -581,6 +581,12 @@
  	default n
  	help
  		This enable connlabel support in iptables.
@@ -903,7 +903,7 @@
  endef
  
  TARGET_CPPFLAGS := \
-@@ -618,6 +624,7 @@ CONFIGURE_ARGS += \
+@@ -605,6 +611,7 @@
  	--with-xtlibdir=/usr/lib/iptables \
  	--with-xt-lock-name=/var/run/xtables.lock \
  	$(if $(CONFIG_IPTABLES_CONNLABEL),,--disable-connlabel) \
@@ -911,7 +911,7 @@
  	$(if $(CONFIG_IPV6),,--disable-ipv6)
  
  MAKE_FLAGS := \
-@@ -650,6 +657,7 @@ define Build/InstallDev
+@@ -637,6 +644,7 @@
  	$(CP) $(PKG_BUILD_DIR)/include/iptables/*.h $(1)/usr/include/iptables/
  	$(CP) $(PKG_BUILD_DIR)/include/iptables.h $(1)/usr/include/
  	$(CP) $(PKG_BUILD_DIR)/include/ip6tables.h $(1)/usr/include/
@@ -919,7 +919,7 @@
  	$(CP) $(PKG_BUILD_DIR)/include/libiptc $(1)/usr/include/
  
  	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
-@@ -669,7 +677,7 @@ define Package/xtables-legacy/install
+@@ -656,7 +664,7 @@
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/xtables-legacy-multi $(1)/usr/sbin/
  endef
  
@@ -928,7 +928,7 @@
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/iptables-legacy{,-restore,-save} $(1)/usr/sbin/
  	$(INSTALL_DIR) $(1)/usr/lib/iptables
-@@ -700,7 +708,7 @@ define Package/iptables-nft/install
+@@ -687,7 +695,7 @@
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/iptables{,-restore}-translate $(1)/usr/sbin/
  endef
  
@@ -937,7 +937,7 @@
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ip6tables-legacy{,-restore,-save} $(1)/usr/sbin/
  endef
-@@ -763,7 +771,7 @@ $(eval $(call BuildPackage,libiptext))
+@@ -750,7 +758,7 @@
  $(eval $(call BuildPackage,libiptext6))
  $(eval $(call BuildPackage,libiptext-nft))
  $(eval $(call BuildPackage,xtables-legacy))
@@ -946,7 +946,7 @@
  $(eval $(call BuildPackage,xtables-nft))
  $(eval $(call BuildPackage,arptables-nft))
  $(eval $(call BuildPackage,ebtables-nft))
-@@ -791,7 +799,7 @@ $(eval $(call BuildPlugin,iptables-mod-nflog,$(IPT_NFLOG-m)))
+@@ -777,7 +785,7 @@
  $(eval $(call BuildPlugin,iptables-mod-trace,$(IPT_DEBUG-m)))
  $(eval $(call BuildPlugin,iptables-mod-nfqueue,$(IPT_NFQUEUE-m)))
  $(eval $(call BuildPlugin,iptables-mod-checksum,$(IPT_CHECKSUM-m)))

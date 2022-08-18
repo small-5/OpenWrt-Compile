@@ -77,7 +77,7 @@
 
 --- a/target/linux/x86/64/config-5.10
 +++ b/target/linux/x86/64/config-5.10
-@@ -373,7 +373,7 @@
+@@ -372,7 +372,7 @@
  CONFIG_SCHED_MC_PRIO=y
  CONFIG_SCHED_SMT=y
  CONFIG_SCSI_VIRTIO=y
