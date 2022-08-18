@@ -64,8 +64,8 @@ o.description=translate("Set maximum number of connections")
 o=s:option(ListValue,"data_ciphers",translate("Data Ciphers"))
 o.description=translate("AES-256-GCM is the default encryption method")
 o:value("aes-128-gcm","AES-128-GCM")
-o:value("aes-192-gcm","AES-192-GCM")
 o:value("aes-256-gcm","AES-256-GCM")
+o:value("chacha20-poly1305","CHACHA20-POLY1305")
 
 o=s:option(ListValue,"remote_cert_tls",translate("Remote-cert-tls"))
 o.description=translate("Check remote certificate to prevent man-in-the-middle attacks<br/>Recommended to enable")
@@ -162,7 +162,7 @@ o=s:option(Button,"delcert",translate("Delete certificate"))
 o.description=translate("<font color=\"red\">Delete the certificate,proceed with caution!</font>")
 o.inputstyle="reload"
 o.write=function()
-	luci.sys.call("rm -f /etc/openvpn/ca.crt /etc/openvpn/client.* /etc/openvpn/server.* /etc/openvpn/dh.pem")
+	luci.sys.call("rm -f /etc/openvpn/ca.crt /etc/openvpn/client.* /etc/openvpn/server.*")
 	luci.http.redirect(luci.dispatcher.build_url("admin","vpn","openvpn-server"))
 end
 

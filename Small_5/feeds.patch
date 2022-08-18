@@ -648,7 +648,7 @@
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -177,28 +138,22 @@
+@@ -177,28 +138,23 @@
  		return 1
  	}
  
@@ -675,13 +675,14 @@
  	append_bools "$s" $OPENVPN_BOOLS
  	append_params "$s" $OPENVPN_PARAMS
  	append_list "$s" $OPENVPN_LIST
++	sed -i "s/server.crt/server.crt\ncipher $(uci get openvpn.myvpn.data_ciphers)/" /var/etc/openvpn-$s.conf
  
 -	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf" "$script_security" "$up" "$down"
 +	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf"
  }
  
  start_service() {
-@@ -215,7 +170,6 @@
+@@ -215,7 +171,6 @@
  		fi
  	}
  
@@ -689,7 +690,7 @@
  	. /usr/share/openvpn/openvpn.options
  	config_load 'openvpn'
  
-@@ -225,7 +179,7 @@
+@@ -225,7 +180,7 @@
  	else
  		config_foreach start_instance 'openvpn'
  
@@ -698,7 +699,7 @@
  		for path in /etc/openvpn/*.conf; do
  			if [ -f "$path" ]; then
  				name="${path##*/}"; name="${name%.conf}"
-@@ -240,14 +194,16 @@
+@@ -240,14 +195,16 @@
  					continue
  				fi
  
