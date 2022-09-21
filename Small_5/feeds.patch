@@ -56,7 +56,7 @@
  	services: {},
  
  	/*
-@@ -150,17 +162,14 @@
+@@ -152,17 +164,14 @@
  	},
  
  	handleReloadDDnsRule: function(m, section_id, ev) {
@@ -78,7 +78,7 @@
  			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
  	},
  
-@@ -174,7 +183,7 @@
+@@ -176,7 +185,7 @@
  
  	handleRestartDDns: function(m, ev) {
  		return this.callInitAction('ddns', 'restart')
@@ -401,7 +401,7 @@
 
 --- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
 +++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
-@@ -62,6 +62,7 @@
+@@ -63,6 +63,7 @@
  	local use_stun stun_host stun_port uuid notify_interval presentation_url
  	local upnp_lease_file clean_ruleset_threshold clean_ruleset_interval
  	local ipv6_disable
@@ -409,7 +409,7 @@
  
  	local enabled
  	config_get_bool enabled config enabled 1
-@@ -89,6 +90,7 @@
+@@ -90,6 +91,7 @@
  	config_get clean_ruleset_threshold config clean_ruleset_threshold
  	config_get clean_ruleset_interval config clean_ruleset_interval
  	config_get ipv6_disable config ipv6_disable 0
@@ -417,7 +417,7 @@
  
  	local conf ifname ifname6
  
-@@ -141,6 +143,7 @@
+@@ -142,6 +144,7 @@
  		upnpd_write_bool igdv1 0 force_igd_desc_v1
  		upnpd_write_bool use_stun 0 ext_perform_stun
  		upnpd_write_bool ipv6_disable $ipv6_disable
@@ -425,14 +425,6 @@
  
  		[ "$use_stun" -eq 0 ] || {
  			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"
-@@ -183,6 +186,7 @@
- 
- 	procd_open_instance
- 	procd_set_param command "$PROG"
-+	procd_set_param file "$conf"
- 	procd_append_param command -f "$conf"
- 	[ "$log_output" = "1" ] && procd_append_param command -d
- 	procd_close_instance
 
 --- a/feeds/packages/net/miniupnpd/files/upnpd.config
 +++ b/feeds/packages/net/miniupnpd/files/upnpd.config
@@ -488,53 +480,9 @@
 +	option comment 'Default deny'
 +
 
---- a/feeds/packages/net/miniupnpd/patches/100-miniupnpd-configure-don-t-hardcode-iptables.patch
-+++ /dev/null
-@@ -1,25 +0,0 @@
--From 51a422407b22f0cb7188ea4bfb3867b2bbfcfe68 Mon Sep 17 00:00:00 2001
--From: Stijn Tintel <stijn@linux-ipv6.be>
--Date: Sun, 7 Nov 2021 20:24:29 +0200
--Subject: [PATCH] miniupnpd/configure: don't hardcode iptables
--
--The OpenWrt Makefile that builds miniupnpd passes the firewall argument
--to the configure script, so this is not needed and it is blocking us
--from using nftables instead, which will be the default backend for
--firewall4 to be used in the next OpenWrt stable release.
--
--Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
-----
-- configure | 1 -
-- 1 file changed, 1 deletion(-)
--
----- a/configure
--+++ b/configure
--@@ -387,7 +387,6 @@ case $OS_NAME in
-- 	OpenWRT)
-- 		OS_URL=http://www.openwrt.org/
-- 		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
---		FW=iptables
-- 		;;
-- 	OpenEmbedded)
-- 		OS_URL=http://www.openembedded.org/
-
 --- a/feeds/packages/net/miniupnpd/Makefile
 +++ b/feeds/packages/net/miniupnpd/Makefile
-@@ -8,12 +8,12 @@
- include $(TOPDIR)/rules.mk
- 
- PKG_NAME:=miniupnpd
--PKG_VERSION:=2.2.3
-+PKG_VERSION:=2.3.0
- PKG_RELEASE:=$(AUTORELEASE)
- 
- PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
--PKG_HASH:=f89c310ce9575183af3fec61af65e548f85114133df8caaaa9e204c13b7a9da5
-+PKG_HASH:=ff9e95e360c7baae757575b5badc21ab1c643d359956f968540b4f8026facf9c
- 
- PKG_MAINTAINER:=
- PKG_LICENSE:=BSD-3-Clause
-@@ -41,6 +41,7 @@
+@@ -47,6 +47,7 @@
  
  define Package/miniupnpd-iptables
    $(call Package/miniupnpd/Default)
@@ -542,7 +490,7 @@
    DEPENDS+= \
  	+IPV6:ip6tables \
  	+IPV6:libip6tc \
-@@ -57,8 +58,6 @@
+@@ -63,8 +64,6 @@
  	+libnftnl
    TITLE+= (nftables)
    VARIANT:=nftables
@@ -787,21 +735,22 @@
 +++ b/feeds/packages/net/smartdns/Makefile
 @@ -1,18 +1,13 @@
 -#
--# Copyright (c) 2018-2020 Nick Peng (pymumu@gmail.com)
+-# Copyright (c) 2018-2022 Nick Peng (pymumu@gmail.com)
 -# This is free software, licensed under the GNU General Public License v3.
 -#
 -
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=smartdns
--PKG_VERSION:=1.2022.36
+-PKG_VERSION:=1.2022.38
 +PKG_VERSION:=1.2022.99
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
- PKG_SOURCE_VERSION:=24661c2419a81e660b11a0e3d35a3bc269cd4bfa
--PKG_MIRROR_HASH:=0835be621f0359bec24fe2ec112f455aef8d403167be33a8366630db9fdbdbaa
+-PKG_SOURCE_VERSION:=1991a0b102e891f149647b162897bf4403f8f66c
+-PKG_MIRROR_HASH:=8017fd769d8128af5b54ce7935f4801cc798c6608dd54fa3e3a7d230ec8f1b64
++PKG_SOURCE_VERSION:=24661c2419a81e660b11a0e3d35a3bc269cd4bfa
 +#不要更新5bd521c36bae56af229dbe96710c13df3c278272之後的版本，此次提交導致chinadns-ng的5337解析IP不正常，當前commit(24661c2419a81e660b11a0e3d35a3bc269cd4bfa)爲體積最佳的版本，之後的版本文件體積都有增大（都是用不上的功能）
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
@@ -978,7 +927,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=3e721d122b2d5b33fdb90be279fcec2568ff14be
++PKG_SOURCE_VERSION:=6ecc97c8571df002dd7cf42522e3f2ce9de9a14d
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.44.0
@@ -1228,19 +1177,17 @@
 
 --- a/feeds/packages/net/sqm-scripts/Makefile
 +++ b/feeds/packages/net/sqm-scripts/Makefile
-@@ -8,13 +8,12 @@
- include $(TOPDIR)/rules.mk
+@@ -9,12 +9,11 @@
  
  PKG_NAME:=sqm-scripts
--PKG_SOURCE_VERSION:=5d7e7977e14e147d5bcfa8a5f01636c7ab230fa4
--PKG_VERSION:=1.5.1
-+PKG_SOURCE_VERSION:=1d489e58903b7c3e5f905f34401cb346db6ab7ab
-+PKG_VERSION:=1.5.1_git-$(PKG_SOURCE_VERSION)
+ PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
+-PKG_VERSION:=1.5.2
++PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
--PKG_MIRROR_HASH:=dad79a899da9e9389d8bdedb0c7b48235dd55f834edf6ed4b4e38c13eff46c19
+-PKG_MIRROR_HASH:=62d9a655cd6a89665a7bc8473a771fd8203933989d2276f3d34ccbf6be21661f
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
@@ -1250,17 +1197,17 @@
 @@ -1,18 +1,24 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=76638d793c4b48aa863e4ecc17c4a3b6b2915a4f
++PKG_SOURCE_VERSION:=6bb735d103b713b7972684e07e84a693d0b4f61b
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.5.9
-+PKG_VERSION:=1.5.9_git-$(PKG_SOURCE_VERSION)
+-PKG_VERSION:=1.6.0
++PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=ef61f80a32229f583c375ec8da79a1533ba5efae0fcb011e68a0ad0c913f6a87
+-PKG_HASH:=b65375090a2d48d358a582837d485bfaa9572e4d1f5a649895b9fd83d0f69e43
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1306,7 +1253,7 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -61,46 +53,33 @@
+@@ -61,42 +53,43 @@
    $(call Package/xray/description)
  endef
  
@@ -1325,25 +1272,6 @@
 -define Package/xray-core/conffiles
 -/etc/xray/
 -/etc/config/xray
--endef
--
--GEOIP_VER:=202207140057
--GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
--define Download/geoip
--  URL:=https://github.com/v2fly/geoip/releases/download/$(GEOIP_VER)/
--  URL_FILE:=geoip.dat
--  FILE:=$(GEOIP_FILE)
--  HASH:=1c786d10e3a1f84b6088b6d2692cefa7bd34c1b4508de07708f8ecb81ff3cc7c
--endef
--
--GEOSITE_VER:=20220717025946
--GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
--define Download/geosite
--  URL:=https://github.com/v2fly/domain-list-community/releases/download/$(GEOSITE_VER)/
--  URL_FILE:=dlc.dat
--  FILE:=$(GEOSITE_FILE)
--  HASH:=f719c27f6fa0f4995702ec03a5642d6ee31a59e3d9a4fe825b6a77479a707f3e
--endef
 +define Package/xray-core/config
 +menu "Xray-core Configuration"
 +	depends on PACKAGE_xray-core
@@ -1366,20 +1294,15 @@
 +	export GO111MODULE=on
 +	export GOPROXY=https://goproxy.io
 +endif
- 
--define Build/Prepare
--	$(call Build/Prepare/Default)
--ifneq ($(CONFIG_PACKAGE_xray-geodata),)
--	$(call Download,geoip)
--	$(call Download,geosite)
++
 +define Build/Compile
 +	$(call GoPackage/Build/Compile)
 +ifneq ($(CONFIG_XRAY_CORE_COMPRESS_UPX),)
 +	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/main
- endif
++endif
  endef
  
-@@ -108,28 +87,9 @@
+ define Package/xray-core/install
  	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
  	$(INSTALL_DIR) $(1)/usr/bin/
  	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/xray
@@ -1397,12 +1320,6 @@
 -	$(INSTALL_DIR) $(1)/etc/xray/
 -	$(INSTALL_DATA) $(CURDIR)/files/vpoint_socks_vmess.json $(1)/etc/xray/
 -	$(INSTALL_DATA) $(CURDIR)/files/vpoint_vmess_freedom.json $(1)/etc/xray/
--endef
--
--define Package/xray-geodata/install
--	$(INSTALL_DIR) $(1)/usr/share/xray/
--	$(INSTALL_DATA) $(DL_DIR)/$(GEOIP_FILE) $(1)/usr/share/xray/geoip.dat
--	$(INSTALL_DATA) $(DL_DIR)/$(GEOSITE_FILE) $(1)/usr/share/xray/geosite.dat
 +ifneq ($(CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE),)
 +	$(LN) xray $(1)/usr/bin/v2ray
 +endif
@@ -1410,7 +1327,6 @@
  
  $(eval $(call BuildPackage,xray-core))
 -$(eval $(call BuildPackage,xray-example))
--$(eval $(call BuildPackage,xray-geodata))
 
 --- a/feeds/packages/net/zerotier/Makefile
 +++ b/feeds/packages/net/zerotier/Makefile
@@ -1743,3 +1659,80 @@
  	.td .ifacebox {
  		width: 100%;
  		margin: 0 !important;
+
+--- a/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
++++ b/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
+@@ -62,58 +62,6 @@
+ 				ipt:close()
+ 			end
+ 
+-			local nft = io.popen("nft --handle list chain inet fw4 upnp_prerouting")
+-			if nft then
+-				local num = 1
+-				local upnpf = lease_file and io.open(lease_file, "r")
+-				while true do
+-					local ln = nft:read("*l")
+-					if not ln then
+-						break
+-					elseif ln:match("iif ") then
+-						local proto, extport, intaddr, intport =
+-							ln:match('^\t\tiif ".-" @nh,72,8 (0x[0-9a-f]+) th dport ([0-9]+) dnat ip to ([0-9%.]+):([0-9]+)')
+-						local descr = ""
+-
+-						if (proto == "0x6" or proto == "0x11") and extport and intaddr and intport then
+-							proto = (proto == "0x6") and "TCP" or "UDP"
+-							extport = tonumber(extport)
+-							intport = tonumber(intport)
+-
+-							if upnpf then
+-								local uln = upnpf:read("*l")
+-								if uln then descr = uln:match(string.format("^%s:%d:%s:%d:%%d*:(.*)$", proto, extport, intaddr, intport)) end
+-								if not descr then descr = "" end
+-							end
+-
+-							local host_hint, _, e
+-
+-							for _,e in pairs(ipv4_hints) do
+-								if e[1] == intaddr then
+-									host_hint = e[2]
+-									break
+-								end
+-							end
+-
+-							rule[#rule+1] = {
+-								num = tostring(num),
+-								proto   = proto,
+-								extport = extport,
+-								intaddr = intaddr,
+-								host_hint = host_hint,
+-								intport = intport,
+-								descr = descr
+-							}
+-
+-							num = num + 1
+-						end
+-					end
+-				end
+-
+-				if upnpf then upnpf:close() end
+-				nft:close()
+-			end
+-
+ 			return { rules = rule }
+ 		end
+ 	},
+@@ -127,10 +75,13 @@
+ 			if idx and idx > 0 then
+ 				local uci = UCI.cursor()
+ 
++				sys.call("iptables -t filter -D MINIUPNPD %d 2>/dev/null" % idx)
++				sys.call("iptables -t nat -D MINIUPNPD %d 2>/dev/null" % idx)
++				sys.call("iptables -t nat -D MINIUPNPD-POSTROUTING %d 2>/dev/null" % idx)
++
+ 				local lease_file = uci:get("upnpd", "config", "upnp_lease_file")
+ 				if lease_file and fs.access(lease_file) then
+ 					sys.call("sed -i -e '%dd' %s" %{ idx, util.shellquote(lease_file) })
+-					sys.call("/etc/init.d/miniupnpd restart")
+ 				end
+ 
+ 				uci.unload()

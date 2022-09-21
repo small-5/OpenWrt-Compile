@@ -27,7 +27,7 @@
  					var mode = ss.children[0],
  					    bssid = ss.children[5],
  					    encr;
-@@ -1253,141 +1253,10 @@
+@@ -1258,141 +1258,10 @@
  
  
  				var crypto_modes = [];
@@ -172,7 +172,7 @@
  				crypto_modes.sort(function(a, b) { return b[2] - a[2] });
  
  				for (var i = 0; i < crypto_modes.length; i++) {
-@@ -1506,7 +1375,7 @@
+@@ -1515,7 +1384,7 @@
  				}
  
  
@@ -181,7 +181,7 @@
  					// Probe 802.11r support (and EAP support as a proxy for Openwrt)
  					var has_80211r = L.hasSystemFeature('hostapd', '11r') || L.hasSystemFeature('hostapd', 'eap');
  
-@@ -1683,7 +1552,7 @@
+@@ -1692,7 +1561,7 @@
  					o.password = true;
  
  
@@ -190,7 +190,7 @@
  						// ieee802.11w options
  						o = ss.taboption('encryption', form.ListValue, 'ieee80211w', _('802.11w Management Frame Protection'), _("Note: Some wireless drivers do not fully support 802.11w. E.g. mwlwifi may have problems"));
  						o.value('0', _('Disabled'));
-@@ -1717,21 +1586,6 @@
+@@ -1726,21 +1595,6 @@
  						o.datatype = 'uinteger';
  						o.placeholder = '201';
  						o.rmempty = true;
@@ -2111,9 +2111,9 @@
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL=$(PROJECT_GIT)/project/iwinfo.git
--PKG_SOURCE_DATE:=2022-08-13
--PKG_SOURCE_VERSION:=705d3b5cc30ed1ac3b2fed131259bcbc61177e41
--PKG_MIRROR_HASH:=091b7f20e95e9f1dfb993d71172d96590041f985e422b7248e15b11798a73644
+-PKG_SOURCE_DATE:=2022-08-19
+-PKG_SOURCE_VERSION:=0dad3e6660594592071ae49a77a907e2b11a98fe
+-PKG_MIRROR_HASH:=2162ee3158328ffe39018e50f34d74b47a6c7a26460e30d7984ca16cbc859d80
 +PKG_SOURCE_DATE:=2021-06-28
 +PKG_SOURCE_VERSION:=c9b1672f5a83c8dcb14fdbaee651f775a7defe52
 +PKG_MIRROR_HASH:=f33779035153da6bd0b2f100f402f62f1554ab87ed6fbbd938d41df6b9947a1f
@@ -2184,3 +2184,22 @@
  $(eval $(call BuildPackage,libiwinfo-lua))
 -$(eval $(call BuildPackage,libiwinfo-data))
  $(eval $(call BuildPackage,iwinfo))
+
+--- a/feeds/luci/libs/rpcd-mod-luci/src/luci.c
++++ b/feeds/luci/libs/rpcd-mod-luci/src/luci.c
+@@ -1083,15 +1083,6 @@
+ 				if (nret & IWINFO_CIPHER_CCMP)
+ 					blobmsg_add_string(buf, NULL, "ccmp");
+ 
+-				if (nret & IWINFO_CIPHER_CCMP256)
+-					blobmsg_add_string(buf, NULL, "ccmp-256");
+-
+-				if (nret & IWINFO_CIPHER_GCMP)
+-					blobmsg_add_string(buf, NULL, "gcmp");
+-
+-				if (nret & IWINFO_CIPHER_GCMP256)
+-					blobmsg_add_string(buf, NULL, "gcmp-256");
+-
+ 				if (nret & IWINFO_CIPHER_WRAP)
+ 					blobmsg_add_string(buf, NULL, "wrap");
+ 

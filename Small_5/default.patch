@@ -1,6 +1,6 @@
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -74,7 +74,7 @@
+@@ -78,7 +78,7 @@
  		default n
  
  	config BUILD_PATENTED
@@ -45,7 +45,7 @@
 
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
-@@ -161,8 +161,8 @@
+@@ -162,8 +162,8 @@
  		static)
  			local ipad
  			case "$1" in
@@ -56,7 +56,7 @@
  			esac
  
  			netm=${netmask:-"255.255.255.0"}
-@@ -176,18 +176,7 @@
+@@ -177,18 +177,7 @@
  		;;
  
  		dhcp)
@@ -75,7 +75,7 @@
  		;;
  
  		pppoe)
-@@ -195,16 +184,8 @@
+@@ -196,16 +185,8 @@
  				set network.$1.proto='pppoe'
  				set network.$1.username='username'
  				set network.$1.password='password'
@@ -93,17 +93,17 @@
  		;;
  	esac
  }
-@@ -302,7 +283,8 @@
+@@ -303,7 +284,8 @@
  		delete system.@system[0]
  		add system system
  		set system.@system[-1].hostname='OpenWrt'
 -		set system.@system[-1].timezone='UTC'
-+		set system.@system[-1].zonename='Asia/Hong Kong'
-+		set system.@system[-1].timezone='HKT-8'
++		set system.@system[-1].zonename='Asia/Taipei'
++		set system.@system[-1].timezone='CST-8'
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='64'
  		set system.@system[-1].urandom_seed='0'
-@@ -310,11 +292,9 @@
+@@ -311,11 +293,9 @@
  		delete system.ntp
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
@@ -139,6 +139,15 @@
  
  board_config_flush
  
+
+--- a/package/base-files/files/etc/shadow
++++ b/package/base-files/files/etc/shadow
+@@ -1,4 +1,4 @@
+-root:::0:99999:7:::
++root:$1$ENdSmvLr$8k2yO5QMDlwbmdaRjEtxn.:19256:0:99999:7:::
+ daemon:*:0:0:99999:7:::
+ ftp:*:0:0:99999:7:::
+ network:*:0:0:99999:7:::
 
 --- a/package/base-files/image-config.in
 +++ b/package/base-files/image-config.in
@@ -762,7 +771,7 @@
 @@ -26,6 +26,7 @@
  tools-y += libressl libtool lzma m4 make-ext4fs meson missing-macros mkimage
  tools-y += mklibs mtd-utils mtools ninja padjffs2 patch-image
- tools-y += patchelf pkgconf quilt squashfskit4 sstrip xxd zip zlib zstd
+ tools-y += patchelf pkgconf quilt squashfskit4 sstrip zip zlib zstd
 +tools-y += ucl upx
  tools-$(BUILD_B43_TOOLS) += b43-tools
  tools-$(BUILD_ISL) += isl
@@ -782,10 +791,10 @@
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL=$(PROJECT_GIT)/project/netifd.git
--PKG_SOURCE_DATE:=2022-06-01
+-PKG_SOURCE_DATE:=2022-08-25
 +PKG_SOURCE_DATE:=2022-12-31
- PKG_SOURCE_VERSION:=39ef9fe1388029c476db62889ef2ef5661613321
- PKG_MIRROR_HASH:=a17353a33ae4ee0aec790169715e91e634660e15eb33900ec4a23c698425de8a
+ PKG_SOURCE_VERSION:=76d2d41b7355e02f95fbfa79affbd232fb090595
+ PKG_MIRROR_HASH:=cd754decce7d9f9c69e0ad8c6801f306fa37dd6c8a7039aea610c1c71d06b8f9
  PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 --- a/include/target.mk
@@ -937,24 +946,29 @@
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ip6tables-legacy{,-restore,-save} $(1)/usr/sbin/
  endef
-@@ -750,7 +758,7 @@
+@@ -750,11 +758,11 @@
  $(eval $(call BuildPackage,libiptext6))
  $(eval $(call BuildPackage,libiptext-nft))
  $(eval $(call BuildPackage,xtables-legacy))
--$(eval $(call BuildPackage,iptables-zz-legacy))
 +$(eval $(call BuildPackage,iptables-legacy))
  $(eval $(call BuildPackage,xtables-nft))
  $(eval $(call BuildPackage,arptables-nft))
  $(eval $(call BuildPackage,ebtables-nft))
-@@ -777,7 +785,7 @@
+ $(eval $(call BuildPackage,iptables-nft))
+-$(eval $(call BuildPackage,iptables-zz-legacy))
+ $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
+ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m)))
+ $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
+@@ -777,8 +785,8 @@
  $(eval $(call BuildPlugin,iptables-mod-trace,$(IPT_DEBUG-m)))
  $(eval $(call BuildPlugin,iptables-mod-nfqueue,$(IPT_NFQUEUE-m)))
  $(eval $(call BuildPlugin,iptables-mod-checksum,$(IPT_CHECKSUM-m)))
--$(eval $(call BuildPackage,ip6tables-zz-legacy))
 +$(eval $(call BuildPackage,ip6tables-legacy))
  $(eval $(call BuildPackage,ip6tables-nft))
+-$(eval $(call BuildPackage,ip6tables-zz-legacy))
  $(eval $(call BuildPlugin,ip6tables-extra,$(IPT_IPV6_EXTRA-m)))
  $(eval $(call BuildPlugin,ip6tables-mod-nat,$(IPT_NAT6-m)))
+ 
 
 --- /dev/null
 +++ b/package/network/utils/iptables/patches/001-xtables-Call-init_extensions6-for-static-builds.patch

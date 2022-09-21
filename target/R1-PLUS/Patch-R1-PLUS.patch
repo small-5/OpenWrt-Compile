@@ -71,22 +71,21 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
-@@ -12,8 +12,8 @@
- friendlyarm,nanopi-r2s|\
+@@ -14,8 +14,8 @@
+ friendlyarm,nanopi-r4s-enterprise|\
  xunlong,orangepi-r1-plus|\
  xunlong,orangepi-r1-plus-lts)
--	ucidef_set_led_netdev "wan" "WAN" "$boardname:green:wan" "eth0"
--	ucidef_set_led_netdev "lan" "LAN" "$boardname:green:lan" "eth1"
-+	ucidef_set_led_netdev "wan" "WAN" "$boardname:green:wan" "eth1"
-+	ucidef_set_led_netdev "lan" "LAN" "$boardname:green:lan" "eth0"
+-	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth0"
+-	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth1"
++	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
++	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0"
  	;;
- friendlyarm,nanopi-r4s)
- 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth0"
+ esac
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-@@ -12,7 +12,7 @@
- 	friendlyarm,nanopi-r4s|\
+@@ -16,7 +16,7 @@
+ 	friendlyarm,nanopi-r4s-enterprise|\
  	xunlong,orangepi-r1-plus|\
  	xunlong,orangepi-r1-plus-lts)
 -		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
