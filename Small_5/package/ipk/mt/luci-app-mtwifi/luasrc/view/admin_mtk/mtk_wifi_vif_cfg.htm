@@ -68,7 +68,7 @@ local WscValue = mtkwifi.token_get(cfgs["WscConfMode"], vifidx, "0") or "0"
   </fieldset>
 <% else %>
   <fieldset class="cbi-section">
-    <legend>无线高级设置 - <%=vifname and devname.."@"..vifname or devname%>
+    <legend>無線進階設定 - <%=vifname and devname.."@"..vifname or devname%>
 <%
 local diff = mtkwifi.diff_profile(dev.profile)
 if next(diff) ~= nil then
@@ -151,7 +151,7 @@ end
           </td>
         </tr>
         <tr>
-          <td>密钥更新时间</td>
+          <td>密鑰更新時間</td>
           <td>
             <input value="<%=vif.__rekeyinterval%>" type="text" name="__rekeyinterval" id="__rekeyinterval" cfg="RekeyInterval" />  (0 ~ 4194303) 秒
           </td>
@@ -159,7 +159,7 @@ end
       </tbody>
       <tbody id="WPA2PSK" style="display:none;">
         <tr>
-          <td>密码</td>
+          <td>密碼</td>
           <td>
             <input value="<%=vif.__wpapsk%>" type="text" name="<%="WPAPSK"..vifidx%>" id="<%="WPAPSK"..vifidx%>" />
           </td>
@@ -331,7 +331,7 @@ end
       </tbody>
       <tbody>
         <tr>
-          <td>隐藏 SSID</td>
+          <td>隱藏 SSID</td>
           <td>
             <input name="__hidessid" cfg="HideSSID" value="1"
             <% if vif.__hidessid == "1" then %>
@@ -340,7 +340,7 @@ end
           </td>
         </tr>
         <tr>
-          <td>隔离客户端</td>
+          <td>隔離客戶端</td>
           <td>
             <input name="__noforwarding" cfg="NoForwarding" value="1"
             <% if vif.__noforwarding == "1" then %>
@@ -358,7 +358,7 @@ end
           </td>
         </tr>
         <tr>
-          <td>强制发射速率 ( 0为自动，建议值 ）</td>
+          <td>強制發射速率 ( 0為自動，建議值 ）</td>
           <td>
             <input value="<%=vif.__txrate or 0%>" name="__txrate" id="__txrate" />
           </td>
@@ -377,9 +377,9 @@ end
   </fieldset>
 
     <div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" value="重新加载" type="button" onclick='wifi_reload("<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>");' />
-      <input class="cbi-button cbi-button-apply" value="保存" type="submit" />
-      <input class="cbi-button cbi-button-apply" name="__apply" value="保存&应用" type="submit" />
+        <input class="cbi-button cbi-button-apply" value="重新加載" type="button" onclick='wifi_reload("<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>");' />
+      <input class="cbi-button cbi-button-apply" value="儲存" type="submit" />
+      <input class="cbi-button cbi-button-apply" name="__apply" value="儲存並套用" type="submit" />
       <input class="cbi-button cbi-button-reset" value="重置" type="reset" />
     </div>
 <% end %> <!-- if not dev -->

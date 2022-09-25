@@ -1,0 +1,41 @@
+msgid "N2N is a layer-two peer-to-peer virtual private network (VPN) which allows users to exploit features typical of P2P applications at network instead of application level."
+msgstr "N2N是一個第二層點對點VPN程式，它可以讓用戶在網路層而不是應用層使用一些點對點服務."
+
+msgid "N2N Supernode"
+msgstr "N2N 超級節點"
+
+msgid "Enable"
+msgstr "啟用"
+
+msgid "N2N Supernode Settings"
+msgstr "N2N 超級節點設定"
+
+msgid "Port"
+msgstr "通訊埠"
+
+msgid "Subnet Range"
+msgstr "子網範圍"
+
+msgid "Subnet range for auto ip address service(optional)<br/>For example: 192.168.0.0-192.168.255.0/24"
+msgstr "設定自動IP的範圍和子網掩碼(可選)<br/>例如: 192.168.0.0-192.168.255.0/24"
+
+msgid "Federation Name"
+msgstr "超級節點群組名稱"
+
+msgid "Name of the supernode's federation<br/>Defaults to *Federation"
+msgstr "用於多個超級節點互聯<br/>默認名稱為 *Federation"
+
+msgid "Supernode Address"
+msgstr "超級節點位址"
+
+msgid "Address of other supernodes for multi supernodes connections<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777"
+msgstr "用於互聯的其他超級節點位址<br/>例如: 192.168.1.1:3333 或 supernode.ntop.org:7777"
+
+msgid "Enable community verification"
+msgstr "啟用網路組驗證"
+
+msgid "Community Name"
+msgstr "網路組名稱"
+
+msgid "Automatic IP segment can be specified after the network group name<br/>For example: MyN2N 192.168.1.0/24"
+msgstr "可以在網路組名稱後面指定自動IP段和子網掩碼<br/>例如: MyN2N 192.168.1.0/24"

@@ -24,7 +24,7 @@ TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 define KernelPackage/mt76x2e
   CATEGORY:=Kernel modules
   TITLE:=MTK MT76x2e wifi AP driver
-  DEPENDS:=@TARGET_ramips
+  DEPENDS:=@TARGET_ramips +@KERNEL_WIRELESS_EXT
   FILES:=$(PKG_BUILD_DIR)/mt76x2_ap/mt76x2_ap.ko
   SUBMENU:=Wireless Drivers
   MENU:=1

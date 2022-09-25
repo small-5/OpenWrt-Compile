@@ -830,4 +830,3 @@ function apcli_disconnect(dev, vif)
 
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
-

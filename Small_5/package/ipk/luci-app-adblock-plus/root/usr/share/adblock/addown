@@ -1,6 +1,6 @@
 #!/bin/sh
 [ "$1" = --down ] || exit 1
-# 防止重复启动
+# 防止重複啟動
 LOCK=/var/lock/adblock.lock
 [ -f $LOCK ] && exit 1
 touch $LOCK

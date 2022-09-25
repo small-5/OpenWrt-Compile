@@ -4,8 +4,6 @@ PKG_NAME:=luci-app-overwall
 PKG_VERSION:=1.1
 PKG_RELEASE:=2
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)/config
@@ -82,6 +80,9 @@ define Build/Prepare
 	find luasrc -type f -exec chmod 644 {} \;
 	find root -type f -exec chmod 644 {} \;
 	chmod 755 root/etc/hotplug.d/iface/* root/etc/init.d/* root/usr/share/overwall/*
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
@@ -96,7 +97,7 @@ define Package/$(PKG_NAME)/install
 	cp -pr luasrc/* $(1)/usr/lib/lua/luci
 	cp -pr root/* $(1)/
 	luac -s -o $(1)/usr/share/overwall/auth  $(1)/usr/share/overwall/auth
-	po2lmo po/zh-cn/overwall.po $(1)/usr/lib/lua/luci/i18n/overwall.zh-cn.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

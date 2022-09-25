@@ -1,5 +1,5 @@
 #!/bin/sh
-# 防止重复启动
+# 防止重複啟動
 LOCK=/var/lock/adblock.lock
 if [ -f $LOCK ];then
 	case $1 in

@@ -4,9 +4,6 @@ PKG_NAME:=luci-app-xlnetacc
 PKG_VERSION:=1
 PKG_RELEASE:=2
 
-PKG_LICENSE:=GPLv2
-PKG_MAINTAINER:=Sense <sensec@gmail.com>
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
@@ -23,11 +20,13 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
-define Build/Configure
+	chmod -R 755 luasrc/* root/*
+	find luasrc -type f -exec chmod 644 {} \;
+	find root -type f -exec chmod 644 {} \;
+	chmod 755 root/etc/init.d/* root/etc/hotplug.d/iface/* root/usr/bin/*
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
@@ -39,25 +38,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/xlnetacc.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
-	$(INSTALL_DATA) ./files/luci/model/cbi/*.lua $(1)/usr/lib/lua/luci/model/cbi/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/xlnetacc
-	$(INSTALL_DATA) ./files/luci/view/xlnetacc/*.htm $(1)/usr/lib/lua/luci/view/xlnetacc/
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/root/etc/config/xlnetacc $(1)/etc/config/xlnetacc
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/xlnetacc $(1)/etc/init.d/xlnetacc
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
-	$(INSTALL_BIN) ./files/root/etc/hotplug.d/iface/95-xlnetacc $(1)/etc/hotplug.d/iface/95-xlnetacc
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/* $(1)/etc/uci-defaults/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) ./files/root/usr/bin/xlnetacc.sh $(1)/usr/bin/xlnetacc.sh
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./files/acl.d/* $(1)/usr/share/rpcd/acl.d/
+	cp -pr luasrc/* $(1)/usr/lib/lua/luci
+	cp -pr root/* $(1)/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

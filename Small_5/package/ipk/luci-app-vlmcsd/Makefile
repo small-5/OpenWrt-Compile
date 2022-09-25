@@ -4,15 +4,6 @@ PKG_NAME:=luci-app-vlmcsd
 PKG_VERSION:=1.1
 PKG_RELEASE:=3
 
-PKG_MAINTAINER:=fuyumi <280604399@qq.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
-
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
-PKG_BUILD_PARALLEL:=1
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/luci-app-vlmcsd
@@ -30,31 +21,23 @@ define Package/luci-app-vlmcsd/description
 endef
 
 define Build/Prepare
+	chmod -R 755 luasrc/* root/*
+	find luasrc -type f -exec chmod 644 {} \;
+	find root -type f -exec chmod 644 {} \;
+	chmod 755 root/etc/init.d/*
+	mkdir $(PKG_BUILD_DIR)/i18n
 	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
 endef
 
-define Package/luci-app-vlmcsd/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./luasrc/controller/* $(1)/usr/lib/lua/luci/controller/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/vlmcsd
-	$(INSTALL_DATA) ./luasrc/model/cbi/vlmcsd/* $(1)/usr/lib/lua/luci/model/cbi/vlmcsd/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/vlmcsd
-	$(INSTALL_DATA) ./luasrc/view/vlmcsd/* $(1)/usr/lib/lua/luci/view/vlmcsd/
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/vlmcsd.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./root/etc/config/* $(1)/etc/config/
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./root/etc/init.d/* $(1)/etc/init.d/
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults/
-	$(INSTALL_DATA) ./root/etc/vlmcsd.ini $(1)/etc/
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./root/acl.d/* $(1)/usr/share/rpcd/acl.d/
+	cp -pr luasrc/* $(1)/usr/lib/lua/luci
+	cp -pr root/* $(1)/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
-$(eval $(call BuildPackage,luci-app-vlmcsd))
+$(eval $(call BuildPackage,$(PKG_NAME)))

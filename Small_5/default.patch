@@ -144,7 +144,7 @@
 +++ b/package/base-files/files/etc/shadow
 @@ -1,4 +1,4 @@
 -root:::0:99999:7:::
-+root:$1$ENdSmvLr$8k2yO5QMDlwbmdaRjEtxn.:19256:0:99999:7:::
++root:$1$HtuJ.yxv$cfj.bwDENMq/yYBqQil2R.:19260:0:99999:7:::
  daemon:*:0:0:99999:7:::
  ftp:*:0:0:99999:7:::
  network:*:0:0:99999:7:::

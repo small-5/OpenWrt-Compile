@@ -1,10 +1,10 @@
 #!/bin/sh -e
 
-generate_china_banned()
+gen_gfw()
 {
 	base64 -d $1 > /tmp/gfwlist.txt;rm -f $1
 	cat /tmp/gfwlist.txt | sort -u | grep '\.' | sed '/apple\.com/d; /sina\.cn/d; /sina\.com\.cn/d; /baidu\.com/d; /byr\.cn/d; /jlike\.com/d; /weibo\.com/d; /zhongsou\.com/d; /youdao\.com/d; /sogou\.com/d; /so\.com/d; /soso\.com/d; /aliyun\.com/d; /taobao\.com/d; /jd\.com/d; /qq\.com/d'
 }
 
-generate_china_banned /tmp/gfw.b64 > /tmp/gfwnew.txt
+gen_gfw /tmp/gfw.b64 > /tmp/gfwnew.txt
 rm -f /tmp/gfwlist.txt

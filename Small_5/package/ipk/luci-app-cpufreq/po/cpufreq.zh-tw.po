@@ -1,0 +1,41 @@
+msgid "CPU Freq"
+msgstr "CPU 性能優化調節"
+
+msgid "CPU Freq Settings"
+msgstr "CPU 性能優化調節設定"
+
+msgid "Set CPU Scaling Governor to Max Performance or Balance Mode"
+msgstr "設定路由器的 CPU 性能模式（高性能/均衡省電）"
+
+msgid "CPU Scaling Governor"
+msgstr "CPU 工作模式"
+
+msgid "ondemand"
+msgstr "Ondemand 自動平衡模式"
+
+msgid "performance"
+msgstr "Performance 高性能模式（降低遊戲轉發延遲）"
+
+msgid "powersave"
+msgstr "Powersave 省電模式"
+
+msgid "schedutil"
+msgstr "Schedutil 自動平衡模式（基於利用率）"
+
+msgid "Min Idle CPU Freq"
+msgstr "待機 CPU 最小頻率"
+
+msgid "Max Turbo Boost CPU Freq"
+msgstr "最大 Turbo Boost CPU 頻率"
+
+msgid "CPU Switching Threshold"
+msgstr "CPU 切換頻率觸發閾值"
+
+msgid "Kernel make a decision on whether it should increase the frequency (%)"
+msgstr "當 CPU 占用率超過 (%) 的情況下觸發內核切換頻率"
+
+msgid "CPU Switching Sampling rate"
+msgstr "CPU 切換周期"
+
+msgid "The sampling rate determines how frequently the governor checks to tune the CPU (ms)"
+msgstr "CPU 檢查切換的周期 (ms) 。注意：過於頻繁的切換頻率會引起網路延遲抖動"

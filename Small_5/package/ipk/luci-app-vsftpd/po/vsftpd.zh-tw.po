@@ -1,0 +1,221 @@
+msgid "NAS"
+msgstr "網路儲存"
+
+msgid ". and .. are excluded."
+msgstr ". 和 .. 將被忽略。"
+
+msgid "0 means no limitation"
+msgstr "0 表明不限制"
+
+msgid "A message will be displayed when entering a directory."
+msgstr "在進入一個新目錄時將顯示的消息"
+
+msgid "ASCII mode"
+msgstr "ASCII 模式"
+
+msgid "Allow directory recursely list"
+msgstr "允許遞歸列目錄"
+
+msgid "An actual local user to handle anonymous user"
+msgstr "承載匿名用戶的本地用戶"
+
+msgid "An actual local user to handle virtual users"
+msgstr "承載虛擬用戶的本地用戶"
+
+msgid "Anonymous Settings"
+msgstr "匿名用戶設定"
+
+msgid "Anonymous User"
+msgstr "匿名用戶"
+
+msgid "Both download and upload"
+msgstr "下載和上傳"
+
+msgid "Can not be zero, default is 3"
+msgstr "不能為 0，默認為 3"
+
+msgid "Connection Settings"
+msgstr "連接設定"
+
+msgid "Connection timeout"
+msgstr "連接超時"
+
+msgid "Data Port"
+msgstr "數據通訊埠"
+
+msgid "Data connection timeout"
+msgstr "數據連接超時"
+
+msgid "Directory message filename"
+msgstr "目錄消息文件名"
+
+msgid "Download only"
+msgstr "僅下載"
+
+msgid "Enable IPv4"
+msgstr "啟用 IPv4"
+
+msgid "Enable IPv6"
+msgstr "啟用 IPv6"
+
+msgid "Enable PASV mode"
+msgstr "啟用 PASV 模式"
+
+msgid "Enable PORT mode"
+msgstr "啟用 PORT 模式"
+
+msgid "Enable directory list"
+msgstr "允許列目錄"
+
+msgid "Enable directory message"
+msgstr "啟用目錄消息"
+
+msgid "Enable download"
+msgstr "允許下載"
+
+msgid "Enable file log"
+msgstr "啟用文件日誌"
+
+msgid "Enable local user"
+msgstr "啟用本地用戶"
+
+msgid "Enable other rights"
+msgstr "允許其它權限"
+
+msgid "Enable syslog"
+msgstr "啟用系統日誌"
+
+msgid "Enable upload"
+msgstr "允許上傳"
+
+msgid "Enable write"
+msgstr "允許寫"
+
+msgid "Enable write/mkdir"
+msgstr "允許寫/創建目錄"
+
+msgid "FTP Banner"
+msgstr "FTP 歡迎提示"
+
+msgid "FTP Server"
+msgstr "FTP 伺服器"
+
+msgid "FTP Server - Anonymous Settings"
+msgstr "FTP 伺服器 - 匿名用戶設定"
+
+msgid "FTP Server - General Settings"
+msgstr "FTP 伺服器 - 常規設定"
+
+msgid "FTP Server - Log Settings"
+msgstr "FTP 伺服器 - 日誌設定"
+
+msgid "FTP Server - Virtual User %q"
+msgstr "FTP 伺服器 - 虛擬用戶 %q"
+
+msgid "FTP Server - Virtual User &lt;new&gt;"
+msgstr "FTP 伺服器 - 虛擬用戶 &lt;新用戶&gt;"
+
+msgid "FTP Server - Virtual User Settings"
+msgstr "FTP 伺服器 - 虛擬用戶設定"
+
+msgid "File mode umask"
+msgstr "文件權限掩碼"
+
+msgid "General Settings"
+msgstr "常規設定"
+
+msgid "Global Settings"
+msgstr "全局設定"
+
+msgid "Home directory"
+msgstr "主目錄"
+
+msgid "IPv4 Address"
+msgstr "IPv4 位址"
+
+msgid "IPv6 Address"
+msgstr "IPv6 位址"
+
+msgid "Idle session timeout"
+msgstr "空閒回話超時"
+
+msgid "Include rename, deletion ..."
+msgstr "包括重命名、刪除 ..."
+
+msgid "Leave empty will use user's home directory"
+msgstr "留空將使用用戶主目錄"
+
+msgid "Listen Port"
+msgstr "監聽通訊埠"
+
+msgid "Listening Settings"
+msgstr "監聽設定"
+
+msgid "Local Users"
+msgstr "本地用戶"
+
+msgid "Log Settings"
+msgstr "日誌設定"
+
+msgid "Log file"
+msgstr "日誌文件"
+
+msgid "Max clients"
+msgstr "最大連接數"
+
+msgid "Max clients per IP"
+msgstr "同一 IP 的最大連接數"
+
+msgid "Max login fail count"
+msgstr "最大登錄嘗試數"
+
+msgid "Max transmit rate"
+msgstr "最大傳輸速率"
+
+msgid "Root directory"
+msgstr "根目錄"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Show dot files"
+msgstr "顯示以點開頭的文件 (隱藏文件)"
+
+msgid "Upload only"
+msgstr "僅上傳"
+
+msgid "Uploaded file mode will be 666 - &lt;umask&gt;; directory mode will be 777 - &lt;umask&gt;."
+msgstr "上傳的文件權限將被設定為 666 - &lt;掩碼&gt;；目錄權限將被設定為 777 - &lt;掩碼&gt;。"
+
+msgid "User Settings"
+msgstr "用戶設定"
+
+msgid "User lists"
+msgstr "用戶列表"
+
+msgid "Username cannot be empty"
+msgstr "用戶名不能為空"
+
+msgid "When disabled, all download request will give permission denied."
+msgstr "如果禁止，所有的下載請求都將被拒絕。"
+
+msgid "When disabled, all write request will give permission denied."
+msgstr "如果禁止，所有的寫類型請求都將被拒絕。"
+
+msgid "When disabled, list commands will give permission denied."
+msgstr "如果禁止，列目錄命令將被拒絕。"
+
+msgid "Virtual Users"
+msgstr "虛擬用戶"
+
+msgid "in seconds"
+msgstr "單位為秒"
+
+msgid "in KB/s, 0 means no limitation"
+msgstr "單位為 KB/s，0 表明不限制"
+
+msgid "Pasv Min Port"
+msgstr "Pasv 模式最小通訊埠"
+
+msgid "Pasv Max Port"
+msgstr "Pasv 模式最大通訊埠"

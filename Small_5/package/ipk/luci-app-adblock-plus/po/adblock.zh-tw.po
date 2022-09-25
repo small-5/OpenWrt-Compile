@@ -1,0 +1,98 @@
+msgid "Base Setting"
+msgstr "基本設定"
+
+msgid "Support AdGuardHome/Host/DNSMASQ Rules"
+msgstr "支持 AdGuardHome/Host/DNSMASQ 規則"
+
+msgid "RUNNING"
+msgstr "執行中"
+
+msgid "NOT RUNNING"
+msgstr "未執行"
+
+msgid "Enable"
+msgstr "啟用"
+
+msgid "Block Apple iOS OTA update"
+msgstr "攔截 Apple iOS 的OTA更新"
+
+msgid "Block CNshort APP and Website"
+msgstr "攔截 短視頻 APP 和網站"
+
+msgid "Enable automatic update rules"
+msgstr "啟用規則自動更新"
+
+msgid "Update time"
+msgstr "更新時間"
+
+msgid "Adblock Plus Data"
+msgstr "Adblock Plus 規則數據庫"
+
+msgid "Records"
+msgstr "條記錄"
+
+msgid "Refresh..."
+msgstr "正在更新.."
+
+msgid "No new data!"
+msgstr "已經是最新數據，無需更新！"
+
+msgid "Refresh Error!"
+msgstr "更新失敗！"
+
+msgid "Refresh OK!"
+msgstr "更新成功！"
+
+msgid "Total Records:"
+msgstr "新的總紀錄數："
+
+msgid "Refresh Data"
+msgstr "更新數據庫"
+
+msgid "Last Update Checked"
+msgstr "上一次檢查規則更新"
+
+msgid "Subscribe 3rd Rules Data"
+msgstr "訂閱第三方去廣告規則"
+
+msgid "AdGuardHome / Host / DNSMASQ rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)"
+msgstr "AdGuardHome / Host / DNSMASQ 規則自動識別<br/>自動去除重覆的規則(包括Adblock Plus規則)"
+
+msgid "Save 3rd rules to flash"
+msgstr "儲存第三方規則到閃存"
+
+msgid "Should be enabled when 3rd rules addresses are slow to download"
+msgstr "第三方規則網址下載速度慢時應該打開"
+
+msgid "Delete All Subscribe Rules"
+msgstr "清空所有訂閱的規則庫"
+
+msgid "Delete 3rd rules files and delete the subscription link<br/>There is no need to click for modify the subscription link,The script will automatically replace the old rule file"
+msgstr "清空第三方規則文件，並且刪除所有的訂閱鏈接<br/>如果只是修改訂閱鏈接不需要清空，腳本會自動覆蓋舊的規則文件"
+
+msgid "Delete Subscribe Rules On The Flash"
+msgstr "清空閃存上的訂閱規則庫"
+
+msgid "Anti-AD Rules Subscribe"
+msgstr "廣告過濾規則訂閱URL"
+
+msgid "White Domain List"
+msgstr "域名白名單"
+
+msgid "Will Never filter these Domain"
+msgstr "永不過濾白名單內的域名"
+
+msgid "Block Domain List"
+msgstr "域名黑名單"
+
+msgid "Will Always block these Domain"
+msgstr "攔截黑名單內的域名"
+
+msgid "Block IP List"
+msgstr "IP黑名單"
+
+msgid "Will Always block these IP"
+msgstr "攔截黑名單內的IP位址"
+
+msgid "Update Log"
+msgstr "更新日誌"

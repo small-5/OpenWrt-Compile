@@ -1,0 +1,2 @@
+msgid "CPU Info"
+msgstr "CPU資訊"

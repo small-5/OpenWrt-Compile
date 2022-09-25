@@ -343,7 +343,7 @@ local uci=luci.model.uci.cursor()
 		</div>
 		<%end%>
 
-		<%if nixio.fs.access("/tmp/overwall/china.txt") then%>
+		<%if nixio.fs.access("/tmp/overwall/ipv4.txt") then%>
 		<div class="pure-u-1-5 check" onclick="refresh(1)">
 			<div class="block pure-g">
 				<div class="pure-u-8-24">
@@ -352,13 +352,13 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_refresh1"><%:China IPv4 Data%><br/><span id="refresh1_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/china.txt | wc -l")%><%:Records%></span></h4>
+					<h4 id="status_refresh1"><%:IPv4 Data%><br/><span id="refresh1_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/ipv4.txt | wc -l")%><%:Records%></span></h4>
 				</div>
 			</div>
 		</div>
 		<%end%>
 
-		<%if nixio.fs.access("/tmp/overwall/china_v6.txt") then%>
+		<%if nixio.fs.access("/tmp/overwall/ipv6.txt") then%>
 		<div class="pure-u-1-5 check" onclick="refresh(2)">
 			<div class="block pure-g">
 				<div class="pure-u-8-24">
@@ -367,7 +367,7 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_refresh2"><%:China IPv6 Data%><br/><span id="refresh2_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/china_v6.txt | wc -l")%><%:Records%></span></h4>
+					<h4 id="status_refresh2"><%:IPv6 Data%><br/><span id="refresh2_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/ipv6.txt | wc -l")%><%:Records%></span></h4>
 				</div>
 			</div>
 		</div>

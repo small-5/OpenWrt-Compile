@@ -88,14 +88,14 @@
  
  	poll_status: function(map, data) {
 
---- a/feeds/luci/applications/luci-app-ddns/po/zh_Hans/ddns.po
-+++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hans/ddns.po
-@@ -603,7 +603,7 @@
+--- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
++++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
+@@ -604,7 +604,7 @@
  
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:736
  msgid "Replaces [DOMAIN] in Update-URL (URL-encoded)"
--msgstr "替换 Update-URL 中的 [DOMAIN] (URL-encoded)"
-+msgstr "替换更新 URL（已编码 URL）中的 [DOMAIN]"
+-msgstr "取代 Update-URL 中的 [DOMAIN] (URL-encoded)"
++msgstr "替換更新 URL（已編碼 URL）中的 [DOMAIN]"
  
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:748
  msgid "Replaces [PASSWORD] in Update-URL (URL-encoded)"
@@ -220,28 +220,72 @@
  			_('Puts extra debugging information into the system log'))
  
 
---- a/feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
-+++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
-@@ -231,6 +231,12 @@
+--- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
++++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
+@@ -229,6 +229,12 @@
  msgid "Value in KByte/s, informational only"
- msgstr "单位为 KByte/s，仅供参考"
+ msgstr "值 (KByte/s) 僅供參考"
  
 +msgid "Force forwarding"
-+msgstr "强制转发"
++msgstr "強制轉發"
 +
 +msgid "Force forwarding for private/reserved IP address"
-+msgstr "为私有/保留IP地址开启强制转发"
++msgstr "爲私有/保留IP位址開啟強制轉發"
 +
  #~ msgid "Collecting data..."
- #~ msgstr "正在收集数据…"
+ #~ msgstr "收集資料中..."
  
+
+--- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
++++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
+@@ -3629,17 +3629,6 @@
+ msgid "IPsec XFRM"
+ msgstr "IPsec XFRM協定"
+ 
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:90
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:113
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:86
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:87
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:88
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:89
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:90
+-#: protocols/luci-proto-ncm/htdocs/luci-static/resources/protocol/ncm.js:87
+-msgid "IPv4"
+-msgstr "IPv4 地址"
+-
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
+ msgid "IPv4 Firewall"
+ msgstr "IPv4防火牆"
+@@ -3723,22 +3712,6 @@
+ msgid "IPv4/IPv6 traffic table \"%h\""
+ msgstr "IPv4/IPv6 流量表 \"%h\""
+ 
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:91
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:114
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:91
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:92
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:93
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:94
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:95
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:96
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:97
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:98
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:99
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:100
+-#: protocols/luci-proto-ncm/htdocs/luci-static/resources/protocol/ncm.js:89
+-msgid "IPv6"
+-msgstr "IPv6"
+-
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
+ msgid "IPv6 Firewall"
+ msgstr "IPv6防火牆"
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
 +++ b/feeds/luci/modules/luci-base/root/etc/config/luci
 @@ -1,5 +1,5 @@
  config core main
 -	option lang auto
-+	option lang zh_cn
++	option lang zh_tw
  	option mediaurlbase /luci-static/bootstrap
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
@@ -829,8 +873,8 @@
  	[form.Flag, 'tls_enable', _('TLS'), _('TLSEnable specifies whether or not TLS should be used when communicating with the server.'), {datatype: 'bool'}],
  	[form.Value, 'heartbeat_interval', _('Heartbeat interval'), _('HeartBeatInterval specifies at what interval heartbeats are sent to the server, in seconds. It is not recommended to change this value.<br />By default, this value is 30.'), {datatype: 'uinteger'}],
 
---- a/feeds/luci/applications/luci-app-frpc/po/zh_Hans/frpc.po
-+++ b/feeds/luci/applications/luci-app-frpc/po/zh_Hans/frpc.po
+--- a/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
++++ b/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
 @@ -260,10 +260,10 @@
  msgid ""
  "LoginFailExit controls whether or not the client should exit after a failed "
@@ -838,9 +882,9 @@
 -"succeeds.<br />By default, this value is true."
 +"succeeds.<br />By default, this value is false."
  msgstr ""
- "LoginFailExit 控制客户端在尝试登录失败后是否应退出。如果为 false，客户端将重"
--"试，直到登录成功。<br />默认情况下，此值为 true。"
-+"试，直到登录成功。<br />默认情况下，此值为 false。"
+ "LoginFailExit控制在嘗試登錄失敗後客戶端是否應退出。如果為false，則客戶端將重"
+-"試，直到成功登錄為止。<br />預設情況下，此值為true。"
++"試，直到成功登錄為止。<br />預設情況下，此值為false。"
  
  #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:155
  msgid "NOT RUNNING"

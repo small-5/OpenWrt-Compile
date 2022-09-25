@@ -1,0 +1,44 @@
+msgid "NAS"
+msgstr "網路儲存"
+
+msgid "File Assistant"
+msgstr "文件助手"
+
+msgid "File List"
+msgstr "文件列表"
+
+msgid "Upload"
+msgstr "上傳"
+
+msgid "Confirm delete"
+msgstr "確定刪除"
+
+msgid "This is a directory,please select the ipk file to install!"
+msgstr "這是一個目錄，請選擇ipk文件進行安裝！"
+
+msgid "Only ipk files are allowed to be installed!"
+msgstr "只允許安裝ipk格式的文件！"
+
+msgid "Confirm install"
+msgstr "確定安裝"
+
+msgid "Install successful!"
+msgstr "安裝成功！"
+
+msgid "Install failed,please check the file format!"
+msgstr "安裝失敗，請檢查文件格式！"
+
+msgid "Please enter a new file name:"
+msgstr "請輸入新的文件名："
+
+msgid "Install"
+msgstr "安裝"
+
+msgid "Rename"
+msgstr "重命名"
+
+msgid "Delete"
+msgstr "刪除"
+
+msgid "Upload failed,please try again later..."
+msgstr "上傳失敗，請稍後再試..."

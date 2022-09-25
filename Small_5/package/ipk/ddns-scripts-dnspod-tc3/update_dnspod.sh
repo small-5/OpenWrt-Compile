@@ -1,36 +1,36 @@
 #!/bin/sh
 
-# 检查传入参数
+# 檢查傳入參數
 [ -z "$username" ] && write_log 14 "Configuration error! [User name] cannot be empty"
 [ -z "$password" ] && write_log 14 "Configuration error! [Password] cannot be empty"
 
-# 检查外部调用工具
+# 檢查外部調用工具
 [ -n "$CURL_SSL" ] || write_log 13 "Dnspod communication require cURL with SSL support. Please install"
 [ -n "$CURL_PROXY" ] || write_log 13 "cURL: libcurl compiled without Proxy support"
 command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is required to use Dnspod API, please install first"
 
-# 变量声明
+# 變量聲明
 local __TMP __I __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __POST2 __POST3 __RECIP __RECID __TTL __CNT __A
 __APIHOST=dnspod.tencentcloudapi.com
 
-# 设置记录类型
+# 設定記錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
 
-# 构造基本通信命令
+# 構造基本通訊命令
 build_command(){
 	__CMDBASE="$CURL -Ss"
-	# 绑定用于通信的主机/IP
+	# 綁定用於通訊的主機/IP
 	if [ -n "$bind_network" ];then
 		local __DEVICE
 		network_get_device __DEVICE $bind_network || write_log 13 "Can not detect local device using 'network_get_device $bind_network' - Error: '$?'"
 		write_log 7 "Force communication via device '$__DEVICE'"
 		__CMDBASE="$__CMDBASE --interface $__DEVICE"
 	fi
-	# 强制设定IP版本
+	# 強制設定IP版本
 	if [ $force_ipversion = 1 ];then
 		[ $use_ipv6 = 0 ] && __CMDBASE="$__CMDBASE -4" || __CMDBASE="$__CMDBASE -6"
 	fi
-	# 设置CA证书参数
+	# 設定CA證書參數
 	if [ $use_https = 1 ];then
 		if [ "$cacert" = IGNORE ];then
 			__CMDBASE="$__CMDBASE --insecure"
@@ -42,17 +42,17 @@ build_command(){
 			write_log 14 "No valid certificate(s) found at '$cacert' for HTTPS communication"
 		fi
 	fi
-	# 如果没有设置，禁用代理 (这可能是 .wgetrc 或环境设置错误)
+	# 如果沒有設定，禁用代理 (這可能是 .wgetrc 或環境設定錯誤)
 	[ -z "$proxy" ] && __CMDBASE="$__CMDBASE --noproxy '*'"
 	__CMDBASE="$__CMDBASE -d"
 }
 
-# 用于生成签名
+# 生成簽名
 HMAC(){
 	echo -en $1 | openssl dgst -sha256 -mac HMAC -macopt hexkey:$2 | awk '{print $2}'
 }
 
-# 生成链接
+# 生成URL
 URL(){
 	local A B C D E F G
 	A=$(date -u +%Y-%m-%d)
@@ -65,12 +65,12 @@ URL(){
 	__A="$__CMDBASE '$1' $G -H 'X-TC-Action: $2' https://$__APIHOST"
 }
 
-# 处理JSON
+# 處理JSON
 JSON(){
 	echo $(ddnsjson -k "$__TMP" -x "$1")
 }
 
-# 用于Dnspod API的通信函数
+# Dnspod API的通訊函数
 dnspod_transfer(){
 	__CNT=0
 	case $1 in
@@ -99,38 +99,38 @@ dnspod_transfer(){
 	[ $__ERR ] || return 0
 	case $__ERR in
 		ResourceNotFound.NoDataOfRecord)return 0;;
-		AuthFailure.SignatureExpire)printf "%s\n" " $(date +%H%M%S)       : 时间戳错误,2秒后重试" >> $LOGFILE && return 1;;
-		AuthFailure.SignatureFailure)__TMP="SecretKey错误,签名验证失败";;
+		AuthFailure.SignatureExpire)printf "%s\n" " $(date +%H%M%S)       : 時戳錯誤,2秒後重試" >> $LOGFILE && return 1;;
+		AuthFailure.SignatureFailure)__TMP="SecretKey錯誤,簽名驗證失敗";;
 		*)__TMP=`JSON @.Response.Error.Message`;;
 	esac
-	local A="$(date +%H%M%S) ERROR : [$__TMP] - 终止进程"
+	local A="$(date +%H%M%S) ERROR : [$__TMP] - 終止進程"
 	logger -p user.err -t ddns-scripts[$$] $SECTION_ID: ${A:15}
 	printf "%s\n" " $A" >> $LOGFILE
 	exit 1
 }
 
-# 添加解析记录
+# 添加解析記錄
 add_domain(){
 	while ! dnspod_transfer 2;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 添加解析记录成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP]" >> $LOGFILE
 	return 0
 }
 
-# 修改解析记录
+# 修改解析記錄
 update_domain(){
 	while ! dnspod_transfer 3;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 修改解析记录成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 	return 0
 }
 
-# 获取域名解析记录
+# 獲取域名解析記錄
 describe_domain(){
 	while ! dnspod_transfer 0;do sleep 2;done
 	for __I in $(JSON @.Response.DomainList[@].Punycode);do
 		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;break;fi
 	done
 	if [ ! $__DOMAIN ];then
-		local A="$(date +%H%M%S) ERROR : [无效域名] - 终止进程"
+		local A="$(date +%H%M%S) ERROR : [無效域名] - 終止進程"
 		logger -p user.err -t ddns-scripts[$$] $SECTION_ID: ${A:15}
 		printf "%s\n" " $A" >> $LOGFILE
 		exit 1
@@ -144,14 +144,14 @@ describe_domain(){
 	while ! dnspod_transfer 1;do sleep 2;done
 	__TMP=`JSON "@.Response.RecordList[@.Type='$__TYPE' && @.Line='默认']"`
 	if [ -z "$__TMP" ];then
-		printf "%s\n" " $(date +%H%M%S)       : 解析记录不存在: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN]" >> $LOGFILE
+		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN]" >> $LOGFILE
 		ret=1
 	else
 		__RECIP=`JSON @.Value`
 		if [ "$__RECIP" != "$__IP" ];then
 			__RECID=`JSON @.RecordId`
 			__TTL=`JSON @.TTL`
-			printf "%s\n" " $(date +%H%M%S)       : 解析记录需要更新: [解析记录IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=2
 		fi
 	fi
@@ -166,7 +166,7 @@ elif [ $ret = 2 ];then
 	sleep 3
 	update_domain
 else
-	printf "%s\n" " $(date +%H%M%S)       : 解析记录不需要更新: [解析记录IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 解析記錄不需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 fi
 
 return 0

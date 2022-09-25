@@ -1,0 +1,83 @@
+msgid "Supernode address"
+msgstr "超級節點位址"
+
+msgid "The format is [Address]:[Port]<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777"
+msgstr "格式為: [位址]:[通訊埠]<br/>例如: 192.168.1.1:3333 或 supernode.ntop.org:7777"
+
+msgid "Community Name"
+msgstr "網路組名稱"
+
+msgid "Cipher suite"
+msgstr "加密方式"
+
+msgid "AES-CBC(deprecated)"
+msgstr "AES-CBC(不建議使用)"
+
+msgid "Key"
+msgstr "密碼"
+
+msgid "Interface mode"
+msgstr "接口模式"
+
+msgid "Static"
+msgstr "靜態IP"
+
+msgid "Auto IP"
+msgstr "自動IP"
+
+msgid "IPv6 mode"
+msgstr "IPv6模式"
+
+msgid "Registration interval"
+msgstr "注冊間隔"
+
+msgid "For NAT hole punching (default 20 seconds)"
+msgstr "設定NAT打孔間隔(默認20秒)"
+
+msgid "For registration packet when UDP NAT hole punching through supernode (default 0 for not set)"
+msgstr "設定NAT通過超級節點打孔的數據包的TTL值(默認為0，不設定)"
+
+msgid "Bind UDP port and IP"
+msgstr "綁定UDP通訊埠和IP"
+
+msgid "Bind local UDP port and local IP address only (IP address is optional,the default is any)<br/>For example: 192.168.1.1:3333 or 3333"
+msgstr "綁定本地UDP通訊埠和本地IP位址 (IP位址可選，只填通訊埠則綁定所有位址)<br/>例如: 192.168.1.1:3333 或 3333"
+
+msgid "Management UDP Port"
+msgstr "UDP管理通訊埠"
+
+msgid "For multiple edges on a machine"
+msgstr "用於同一個設備上使用多個邊緣節點"
+
+msgid "Enable packet forwarding through n2n community"
+msgstr "啟用數據包轉發"
+
+msgid "Enable full header encryption"
+msgstr "啟用完整頭加密"
+
+msgid "Requires supernode with fixed community"
+msgstr "需要在超級節點將網路組加入驗證列表"
+
+msgid "Enable compression"
+msgstr "啟用壓縮"
+
+msgid "Enable LZO(1x) compression for outgoing data packets"
+msgstr "對發出的數據包啟用LZO(1x)壓縮"
+
+msgid "Enable Verbose logging"
+msgstr "啟用詳細記錄"
+
+msgid "Enable PMTU discovery"
+msgstr "啟用PMTU檢測"
+
+msgid "PMTU discovery can reduce fragmentation but causes connections stall when not properly supported"
+msgstr "PMTU檢測可以減少IP分片，但如果不能正確支持，則會導致連接停止"
+
+msgid "Disable P2P connect"
+msgstr "禁用P2P連接"
+
+msgid "Do not connect P2P. Always use the supernode"
+msgstr "不使用邊緣節點之間的P2P連接.只通過超級節點轉發"
+
+msgid "Enable multicast MAC addresses"
+msgstr "啟用多播MAC位址"

@@ -20,8 +20,13 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/po/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+	chmod -R 755 htdocs/* root/*
+	find htdocs -type f -exec chmod 644 {} \;
+	find root -type f -exec chmod 644 {} \;
+	chmod 755 root/lib/netifd/proto/*
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
@@ -35,13 +40,12 @@ define JsMin
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/lib/netifd/proto
-	$(INSTALL_BIN) ./files/n2n.sh $(1)/lib/netifd/proto/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/n2n.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/www/luci-static/resources/protocol
-	$(INSTALL_DATA) ./files/n2n.js $(1)/www/luci-static/resources/protocol/
+	$(INSTALL_DIR) $(1)/www
+	cp -pr htdocs/* $(1)/www
 	$(if $(CONFIG_LUCI_JSMIN),$(call JsMin,$(1)/www/luci-static/resources/protocol/),true)
+	cp -pr root/* $(1)/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

@@ -7,7 +7,7 @@ s=m:section(TypedSection,"base",translate("HTTPS DNS Proxy Settings"))
 s.anonymous=true
 o=s:option(Flag,"enabled",translate("Enable"))
 o.default=0
-o=s:option(Value,"url",translate("Resolver Url"),
+o=s:option(Value,"url",translate("Resolver URL"),
 translate("For example https://dns.google/dns-query"))
 o.default="https://dns.alidns.com/dns-query"
 o:value("https://dns.alidns.com/dns-query","https://dns.alidns.com/dns-query ("..translate("Ali").." DoH)")

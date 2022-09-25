@@ -20,24 +20,22 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/usr/lib/lua/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+	chmod -R 755 luasrc/* root/*
+	find luasrc -type f -exec chmod 644 {} \;
+	find root -type f -exec chmod 644 {} \;
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/etc/uci-defaults/* $(1)/etc/uci-defaults/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/vsftpd.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/vsftpd
-	$(INSTALL_DATA) ./files/usr/lib/lua/luci/model/cbi/vsftpd/*.lua $(1)/usr/lib/lua/luci/model/cbi/vsftpd
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/usr/lib/lua/luci/controller/vsftpd.lua $(1)/usr/lib/lua/luci/controller/vsftpd.lua
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./files/acl.d/* $(1)/usr/share/rpcd/acl.d/
+	cp -pr luasrc/* $(1)/usr/lib/lua/luci
+	cp -pr root/* $(1)/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

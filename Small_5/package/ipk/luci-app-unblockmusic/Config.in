@@ -1,9 +1,0 @@
-
-config UnblockNeteaseMusic_Go
-	bool "UnblockNeteaseMusic Golang Version"
-	default n
-
-config UnblockNeteaseMusic_NodeJS
-	bool "UnblockNeteaseMusic NodeJS Version"
-	depends on HAS_FPU || KERNEL_MIPS_FPU_EMULATOR || SOFT_FLOAT
-	default y

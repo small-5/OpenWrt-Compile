@@ -1,0 +1,104 @@
+msgid "XLNetAcc"
+msgstr "迅雷快鳥"
+
+msgid "XLNetAcc is a Thunder joint broadband operators launched a commitment to help users solve the low broadband, slow Internet access, poor Internet experience of professional-grade broadband upgrade software."
+msgstr "迅雷快鳥是迅雷聯合寬帶運營商推出的一款致力於幫助用戶解決寬帶低、網速慢、上網體驗差的專業級寬帶加速軟件。"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Log"
+msgstr "日誌"
+
+msgid "Running Status"
+msgstr "執行狀態"
+
+msgid "XLNetAcc Running Status"
+msgstr "快鳥執行狀態"
+
+msgid "DownLink Upgrade Status"
+msgstr "下行提速狀態"
+
+msgid "UpLink Upgrade Status"
+msgstr "上行提速狀態"
+
+msgid "RUNNING"
+msgstr "執行中"
+
+msgid "NOT RUNNING"
+msgstr "未執行"
+
+msgid "No upgrade information"
+msgstr "暫無提速資訊"
+
+msgid "General Settings"
+msgstr "一般設定"
+
+msgid "Enabled"
+msgstr "啟用"
+
+msgid "Enable DownLink Upgrade"
+msgstr "開啟下行提速"
+
+msgid "Enable UpLink Upgrade"
+msgstr "開啟上行提速"
+
+msgid "Enable Logging"
+msgstr "啟用日誌記錄"
+
+msgid "Enable verbose logging"
+msgstr "啟用詳細日誌"
+
+msgid "Upgrade interface"
+msgstr "指定提速接口"
+
+msgid "Keepalive interval"
+msgstr "保持連接周期"
+
+msgid "Account relogin"
+msgstr "帳號重新登錄"
+
+msgid "Not enabled"
+msgstr "未啟用"
+
+msgid "minutes"
+msgstr "分鐘"
+
+msgid "hours"
+msgstr "小時"
+
+msgid "XLNetAcc account"
+msgstr "迅雷快鳥帳號"
+
+msgid "XLNetAcc password"
+msgstr "迅雷快鳥密碼"
+
+msgid "Does not store the plaintext password, automatically emptied after start."
+msgstr "不存儲明文密碼，啟動後自動清空。"
+
+msgid "Encrypted password"
+msgstr "加密後的密碼"
+
+msgid "Auto-generate in accordance with the plaintext password, do not modify it!"
+msgstr "根據明文密碼自動生成，請勿修改！"
+
+msgid "Log Data"
+msgstr "日誌數據"
+
+msgid "Loading..."
+msgstr "正在加載..."
+
+msgid "Refresh every 5 seconds."
+msgstr "每 5 秒刷新。"
+
+msgid "syslog:"
+msgstr "系統日誌："
+
+msgid "log file:"
+msgstr "日誌文件："
+
+msgid "No log data."
+msgstr "無日誌數據。"
+
+msgid "Error get log data."
+msgstr "獲取日誌數據失敗。"

@@ -103,14 +103,14 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/gfwnew.txt")
 	elseif set=="1" then
-		sret=CALL("curl -Lfso /tmp/china.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
+		sret=CALL("curl -Lfso /tmp/ipv4.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
 		if sret==0 then
-			EXEC("cat /tmp/china.tmp | base64 -d > /tmp/china.txt")
-			icount=EXEC("cat /tmp/china.txt | wc -l")
+			EXEC("cat /tmp/ipv4.tmp | base64 -d > /tmp/ipv4.txt")
+			icount=EXEC("cat /tmp/ipv4.txt | wc -l")
 			if tonumber(icount)>1000 then
-				oldcount=EXEC("cat /tmp/overwall/china.txt | wc -l")
+				oldcount=EXEC("cat /tmp/overwall/ipv4.txt | wc -l")
 				if tonumber(icount)~=tonumber(oldcount) then
-					EXEC("cp -f /tmp/china.txt /tmp/overwall/china.txt && ipset list china_v4 >/dev/null 2>&1 && /usr/share/overwall/chinaipset")
+					EXEC("cp -f /tmp/ipv4.txt /tmp/overwall/ipv4.txt && ipset list over_v4 >/dev/null 2>&1 && /usr/share/overwall/ipset")
 					r=tostring(tonumber(icount))
 				else
 					r="0"
@@ -121,16 +121,16 @@ function refresh()
 		else
 			r="-1"
 		end
-		EXEC("rm -f /tmp/china.txt /tmp/china.tmp")
+		EXEC("rm -f /tmp/ipv4.txt /tmp/ipv4.tmp")
 	elseif set=="2" then
-		sret=CALL("curl -Lfso /tmp/china_v6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
+		sret=CALL("curl -Lfso /tmp/ipv6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
 		if sret==0 then
-			EXEC("cat /tmp/china_v6.tmp | base64 -d > /tmp/china_v6.txt")
-			icount=EXEC("cat /tmp/china_v6.txt | wc -l")
+			EXEC("cat /tmp/ipv6.tmp | base64 -d > /tmp/ipv6.txt")
+			icount=EXEC("cat /tmp/ipv6.txt | wc -l")
 			if tonumber(icount)>1000 then
-				oldcount=EXEC("cat /tmp/overwall/china_v6.txt | wc -l")
+				oldcount=EXEC("cat /tmp/overwall/ipv6.txt | wc -l")
 				if tonumber(icount)~=tonumber(oldcount) then
-					EXEC("cp -f /tmp/china_v6.txt /tmp/overwall/china_v6.txt && ipset list china_v6 >/dev/null 2>&1 && /usr/share/overwall/chinaipset v6")
+					EXEC("cp -f /tmp/ipv6.txt /tmp/overwall/ipv6.txt && ipset list over_v6 >/dev/null 2>&1 && /usr/share/overwall/ipset v6")
 					r=tostring(tonumber(icount))
 				else
 					r="0"
@@ -141,7 +141,7 @@ function refresh()
 		else
 			r="-1"
 		end
-		EXEC("rm -f /tmp/china_v6.txt /tmp/china_v6.tmp")
+		EXEC("rm -f /tmp/ipv6.txt /tmp/ipv6.tmp")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ret=r})

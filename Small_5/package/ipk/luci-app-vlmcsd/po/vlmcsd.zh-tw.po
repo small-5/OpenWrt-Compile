@@ -1,0 +1,68 @@
+msgid "KMS RUNNING"
+msgstr "KMS 執行中"
+
+msgid "KMS NOT RUNNING"
+msgstr "KMS 未執行"
+
+msgid "KMS Server"
+msgstr "KMS 伺服器"
+
+msgid "Base Setting"
+msgstr "基本設定"
+
+msgid "KMS Server Settings"
+msgstr "KMS 伺服器設定"
+
+msgid "A KMS Serever Emulator to active your Windows or Office<br/>Current Version"
+msgstr "用於激活Windows或Office的KMS模擬伺服器<br/>當前版本"
+
+msgid "Enable"
+msgstr "啟用"
+
+msgid "Auto activate"
+msgstr "自動激活局域網用戶端"
+
+msgid "Use Config File"
+msgstr "使用配置文件"
+
+msgid "Empty Log File"
+msgstr "清空日誌文件"
+
+msgid "Every"
+msgstr "每"
+
+msgid "Sun"
+msgstr "周日"
+
+msgid "Mon"
+msgstr "周一"
+
+msgid "Tue"
+msgstr "周二"
+
+msgid "Wed"
+msgstr "周三"
+
+msgid "Thu"
+msgstr "周四"
+
+msgid "Fri"
+msgstr "周五"
+
+msgid "Sat"
+msgstr "周六"
+
+msgid "disable"
+msgstr "禁用"
+
+msgid "Local Port"
+msgstr "本地端口"
+
+msgid "Config File"
+msgstr "配置文件"
+
+msgid "This file is /etc/vlmcsd.ini"
+msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"
+
+msgid "Log"
+msgstr "日誌"

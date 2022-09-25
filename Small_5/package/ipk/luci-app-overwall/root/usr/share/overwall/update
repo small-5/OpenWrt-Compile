@@ -1,6 +1,6 @@
 #!/bin/sh
 [ "$1" = --First ] && A=Y || A=N
-# 防止重复启动
+# 防止重複啟動
 [ -f /var/lock/overwall.lock -a $A = N ] && exit 1
 LOCK=/var/lock/overwall-update.lock
 [ -f $LOCK ] && exit 1
@@ -24,16 +24,16 @@ else
 	B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z))
 fi
 if [ "$B" ];then
-	echo "$B" | base64 -d > /tmp/china.txt
-	if cmp -s /tmp/china.txt $TMP/china.txt;then
-		log "Over Update  : China IPv4 List is up to date"
+	echo "$B" | base64 -d > /tmp/ipv4.txt
+	if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
+		log "Over Update  : IPv4 List is up to date"
 	else
-		log "Over Update  : Update China IP List"
-		cp -f /tmp/china.txt $TMP/china.txt
-		[ $A = N ] && ipset list china_v4 >/dev/null 2>&1 && $DIR/chinaipset
+		log "Over Update  : Update IPv4 List"
+		cp -f /tmp/ipv4.txt $TMP/ipv4.txt
+		[ $A = N ] && ipset list over_v4 >/dev/null 2>&1 && $DIR/ipset
 	fi
 else
-	log "Over Update  : Download China IP List failed"
+	log "Over Update  : Download IPv4 List failed"
 fi
 
 C=$(uci -q get overwall.@global[0].run_mode)
@@ -47,16 +47,16 @@ if [ "$C" = router ];then
 		D=$(curl -Lfsm 20 -A "$Y" $X/t8eOh94EJIHTXR6$(eval $Z))
 	fi
 	if [ "$D" ];then
-		echo "$D" | base64 -d > /tmp/china_v6.txt
-		if cmp -s /tmp/china_v6.txt $TMP/china_v6.txt;then
-			log "Over Update  : China IPv6 List is up to date"
+		echo "$D" | base64 -d > /tmp/ipv6.txt
+		if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
+			log "Over Update  : IPv6 List is up to date"
 		else
-			log "Over Update  : Update China IPv6 List"
-			cp -f /tmp/china_v6.txt $TMP/china_v6.txt
-			[ $A = N ] && ipset list china_v6 >/dev/null 2>&1 && $DIR/chinaipset v6
+			log "Over Update  : Update IPv6 List"
+			cp -f /tmp/ipv6.txt $TMP/ipv6.txt
+			[ $A = N ] && ipset list over_v6 >/dev/null 2>&1 && $DIR/ipset v6
 		fi
 	else
-		log "Over Update  : Download China IPv6 List failed"
+		log "Over Update  : Download IPv6 List failed"
 	fi
 fi
 
@@ -81,5 +81,5 @@ if [ "$C" = gfw -o "$(uci -q get overwall.@global[0].gfw_mode)" = 1 ];then
 		log "Over Update  : Download GFW List failed"
 	fi
 fi
-rm -f $LOCK /tmp/china*.txt /tmp/gfwnew.txt
+rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt
 [ $A = Y ] && /etc/init.d/overwall start &

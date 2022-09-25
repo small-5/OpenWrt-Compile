@@ -1,34 +1,34 @@
 #!/bin/sh
 
-# 检查传入参数
+# 檢查傳入參數
 [ -z "$username" ] && write_log 14 "Configuration error! [User name] cannot be empty"
 [ -z "$password" ] && write_log 14 "Configuration error! [Password] cannot be empty"
 
-# 检查外部调用工具
+# 檢查外部調用工具
 [ -n "$CURL_SSL" ] || write_log 13 "Cloudflare communication require cURL with SSL support. Please install"
 [ -n "$CURL_PROXY" ] || write_log 13 "cURL: libcurl compiled without Proxy support"
 
-# 变量声明
+# 變量聲明
 local __TMP __I __DOMAIN __TYPE __CMDBASE __ZONEID __POST __POST2 __RECIP __RECID __TTL __CNT __A
 
-# 设置记录类型
+# 設定記錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
 
-# 构造基本通信命令
+# 構造基本通訊命令
 build_command(){
 	__CMDBASE="$CURL -Ss"
-	# 绑定用于通信的主机/IP
+	# 綁定用於通訊的主機/IP
 	if [ -n "$bind_network" ];then
 		local __DEVICE
 		network_get_device __DEVICE $bind_network || write_log 13 "Can not detect local device using 'network_get_device $bind_network' - Error: '$?'"
 		write_log 7 "Force communication via device '$__DEVICE'"
 		__CMDBASE="$__CMDBASE --interface $__DEVICE"
 	fi
-	# 强制设定IP版本
+	# 強制設定IP版本
 	if [ $force_ipversion = 1 ];then
 		[ $use_ipv6 = 0 ] && __CMDBASE="$__CMDBASE -4" || __CMDBASE="$__CMDBASE -6"
 	fi
-	# 设置CA证书参数
+	# 設定CA證書參數
 	if [ $use_https = 1 ];then
 		if [ "$cacert" = IGNORE ];then
 			__CMDBASE="$__CMDBASE --insecure"
@@ -40,11 +40,11 @@ build_command(){
 			write_log 14 "No valid certificate(s) found at '$cacert' for HTTPS communication"
 		fi
 	fi
-	# 如果没有设置，禁用代理 (这可能是 .wgetrc 或环境设置错误)
+	# 如果沒有設定，禁用代理 (這可能是 .wgetrc 或環境設定錯誤)
 	[ -z "$proxy" ] && __CMDBASE="$__CMDBASE --noproxy '*'"
 }
 
-# 生成链接
+# 生成URL
 URL(){
 	local A="$2 -H 'Content-Type: application/json'"
 	if [ "$username" = Bearer ];then
@@ -55,12 +55,12 @@ URL(){
 	__A="$__CMDBASE $A 'https://api.cloudflare.com/client/v4/zones$1'"
 }
 
-# 处理JSON
+# 處理JSON
 JSON(){
 	echo $(ddnsjson -k "$__TMP" -x "$1")
 }
 
-# 用于Cloudflare API的通信函数
+# Cloudflare API的通訊函数
 cloudflare_transfer(){
 	__CNT=0
 	case $1 in
@@ -87,34 +87,34 @@ cloudflare_transfer(){
 	done
 	__ERR=`JSON @.success`
 	[ $__ERR = true ] && return 0
-	local A="$(date +%H%M%S) ERROR : [$(JSON @.errors[*].message)] - 终止进程"
+	local A="$(date +%H%M%S) ERROR : [$(JSON @.errors[*].message)] - 終止進程"
 	logger -p user.err -t ddns-scripts[$$] $SECTION_ID: ${A:15}
 	printf "%s\n" " $A" >> $LOGFILE
 	exit 1
 }
 
-# 添加解析记录
+# 添加解析記錄
 add_domain(){
 	while ! cloudflare_transfer 3;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 添加解析记录成功: [$domain],[IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
 	return 0
 }
 
-# 修改解析记录
+# 修改解析記錄
 update_domain(){
 	while ! cloudflare_transfer 4;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 修改解析记录成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 	return 0
 }
 
-# 获取域名解析记录
+# 獲取域名解析記錄
 describe_domain(){
 	while ! cloudflare_transfer 0;do sleep 2;done
 	for __I in $(JSON @.result[@].name);do
 		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;break;fi
 	done
 	if [ ! $__DOMAIN ];then
-		local A="$(date +%H%M%S) ERROR : [无效域名] - 终止进程"
+		local A="$(date +%H%M%S) ERROR : [無效域名] - 終止進程"
 		logger -p user.err -t ddns-scripts[$$] $SECTION_ID: ${A:15}
 		printf "%s\n" " $A" >> $LOGFILE
 		exit 1
@@ -129,13 +129,13 @@ describe_domain(){
 	__TMP=`JSON @.result[@]`
 	__RECIP=`JSON @.content 2>/dev/null`
 	if [ -z "$__RECIP" ];then
-		printf "%s\n" " $(date +%H%M%S)       : 解析记录不存在: [$domain]" >> $LOGFILE
+		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$domain]" >> $LOGFILE
 		ret=1
 	else
 		if [ "$__RECIP" != "$__IP" ];then
 			__RECID=`JSON @.id`
 			__TTL=`JSON @.ttl`
-			printf "%s\n" " $(date +%H%M%S)       : 解析记录需要更新: [解析记录IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=2
 		fi
 	fi
@@ -150,7 +150,7 @@ elif [ $ret = 2 ];then
 	sleep 3
 	update_domain
 else
-	printf "%s\n" " $(date +%H%M%S)       : 解析记录不需要更新: [解析记录IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 解析記錄不需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 fi
 
 return 0

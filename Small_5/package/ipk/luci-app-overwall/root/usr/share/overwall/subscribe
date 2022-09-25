@@ -1,7 +1,4 @@
 #!/usr/bin/lua
-------------------------------------------------
--- @author William Chan <root@williamchan.me>
-------------------------------------------------
 require "luci.model.uci"
 require "nixio"
 require "luci.util"
@@ -30,13 +27,13 @@ end
 
 local function split(full,sep)
 	if full then
-		full=full:gsub("%z","") -- 这里不是很清楚 有时候结尾带个\0
+		full=full:gsub("%z","") -- 這里不是很清楚 有時候結尾帶個\0
 		local off,result=1,{}
 		while true do
 			local nStart,nEnd=full:find(sep,off)
 			if not nEnd then
 				local res=ssub(full,off,slen(full))
-				if #res > 0 then -- 过滤掉 \0
+				if #res > 0 then -- 過濾掉 \0
 					tinsert(result,res)
 				end
 				break
@@ -303,7 +300,7 @@ local function processData(szType,content)
 			if content:find("@") then
 				parseNodeUrl(szType,content)
 			else
-				log('不支持非JSON+Base64类型的VMESS节点订阅，跳过此节点。')
+				log('不支持非JSON+Base64類型的VMESS節點訂閱，跳過此節點。')
 				return nil
 			end
 		else
@@ -354,11 +351,11 @@ local function processData(szType,content)
 		if content:find("@") then
 			parseNodeUrl(szType,content)
 		else
-			log('不支持Base64类型的VLESS节点订阅，跳过此节点。')
+			log('不支持Base64類型的VLESS節點訂閱，跳過此節點。')
 			return nil
 		end
 	else
-		log('暂时不支持'..szType.."类型的节点订阅，跳过此节点。")
+		log('暫時不支持'..szType..'類型的節點訂閱，跳過此節點。')
 		return nil
 	end
 	if not result.alias then
@@ -393,7 +390,7 @@ end
 local function parse_link()
 	local i=0
 	if proxy=='0' then
-		log('服务正在暂停')
+		log('服務正在暫停')
 		SYS.init.stop(name)
 	end
 	for k,url in ipairs(subscribe_url) do
@@ -401,7 +398,7 @@ local function parse_link()
 		local raw=curl(url)
 		if #raw > 0 then
 			log('----------------------------------------------------------------------------------------------------------')
-			log('解析第'..i..'个链接:')
+			log('解析第'..i..'個鏈接:')
 			local nodes,szType
 			local num=0
 			local groupHash=md5(url)
@@ -438,12 +435,12 @@ local function parse_link()
 							end
 						end
 					else
-						log('跳过未知类型: '..szType)
+						log('跳過未知類型: '..szType)
 					end
 					if result then
 						if not result.server or not result.server_port or result.alias=="NULL" or check_filer(result) or result.server:match("[^0-9a-zA-Z%-%.%s]") then
 							num=num+1
-							log('丢弃无效节点: '..result.type..' 节点: '..result.alias)
+							log('丟棄無效節點: '..result.type..' 節點: '..result.alias)
 						else
 							result.grouphashkey=groupHash
 							tinsert(nodeResult[index],result)
@@ -454,9 +451,9 @@ local function parse_link()
 					end
 				end
 			end
-			log('第'..i..'个链接成功解析节点数量: '..#nodes-num)
+			log('第'..i..'個鏈接成功解析節點數量: '..#nodes-num)
 		else
-			log('第'..i..'个链接获取内容为空')
+			log('第'..i..'個鏈接獲取內容為空')
 		end
 	end
 end
@@ -465,16 +462,16 @@ local execute=function()
 	parse_link()
 	log('----------------------------------------------------------------------------------------------------------')
 	if next(nodeResult)==nil then
-		log("更新失败，没有可用的节点信息")
+		log('更新失敗，沒有可用的節點')
 		if proxy=='0' then
 			SYS.init.start(name)
-			log('订阅失败，恢复服务')
+			log('訂閱失敗，恢覆服務')
 		end
 		return
 	end
 	local add,del=0,0
 	ucic:foreach(name,uciType,function(old)
-		if old.grouphashkey or old.hashkey then -- 没有 hash 的不参与删除
+		if old.grouphashkey or old.hashkey then -- 沒有 hash 的不參與刪除
 			if not nodeResult[old.grouphashkey] or not nodeResult[old.grouphashkey][old.hashkey] then
 				ucic:delete(name,old['.name'])
 				del=del+1
@@ -487,12 +484,12 @@ local execute=function()
 			if not old.alias then
 				if old.server or old.server_port then
 					old.alias=old.server..':'..old.server_port
-					log('忽略手动添加的节点: '..old.alias)
+					log('忽略手動添加的節點: '..old.alias)
 				else
 					ucic:delete(name,old['.name'])
 				end
 			else
-				log('忽略手动添加的节点: '..old.alias)
+				log('忽略手動添加的節點: '..old.alias)
 			end
 		end
 	end)
@@ -514,9 +511,9 @@ local execute=function()
 				ucic:commit(name)
 				ucic:set(name,ucic:get_first(name,'global'),'global_server',ucic:get_first(name,uciType))
 				C='1'
-				log('当前主服务器节点已被删除，正在自动更换为第一个节点。')
+				log('當前主伺服器節點已被刪除，正在自動更換為第一個節點。')
 			else
-				log('维持当前主服务器节点。')
+				log('維持當前主伺服器節點。')
 			end
 		else
 			ucic:delete(name,ucic:get_first(name,'global'),'global_server')
@@ -525,7 +522,7 @@ local execute=function()
 			ucic:delete(name,ucic:get_first(name,'global'),'nf_server')
 			ucic:delete(name,ucic:get_first(name,'global'),'cu_server')
 			ucic:delete(name,ucic:get_first(name,'global'),'tg_server')
-			log('没有服务器节点了，停止服务')
+			log('沒有伺服器節點了，停止服務')
 			SYS.call("/etc/init.d/overwall stop > /dev/null 2>&1 &")
 		end
 	end
@@ -534,25 +531,25 @@ local execute=function()
 	if proxy=='0' or C then
 		SYS.call("/etc/init.d/overwall restart > /dev/null 2>&1 &")
 	end
-	log('新增节点数量: '..add,'删除节点数量: '..del)
-	log('订阅更新成功')
+	log('新增節點數量: '..add,'刪除節點數量: '..del)
+	log('訂閱更新成功')
 end
 
 if subscribe_url and #subscribe_url > 0 then
 	if SYS.call('curl -so /dev/null -m 5 www.baidu.com')~=0 then
-		log("网络不通，停止更新订阅")
+		log("網路不通，停止更新訂閱")
 		return
 	end
 	xpcall(execute,function(e)
 		log(e)
 		log(debug.traceback())
-		log('发生错误,正在恢复服务')
+		log('發生錯誤,正在恢覆服務')
 		if ucic:get_first(name,uciType) then
 			SYS.call("/etc/init.d/overwall restart > /dev/null 2>&1 &")
-			log('重启服务成功')
+			log('重啟服務成功')
 		else
 			SYS.call("/etc/init.d/overwall stop > /dev/null 2>&1 &")
-			log('停止服务成功')
+			log('停止服務成功')
 		end
 	end)
 end

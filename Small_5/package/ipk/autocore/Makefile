@@ -26,6 +26,12 @@ define Package/autocore-arm/description
 	ARM auto core loadbalance script.
 endef
 
+define Build/Prepare
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+endef
+
 define Build/Compile
 endef
 
@@ -45,7 +51,7 @@ define Package/autocore/install
 	$(INSTALL_DATA) ./files/*.js $(1)/www/luci-static/resources/view/status/include/
 	$(if $(CONFIG_LUCI_JSMIN),$(call JsMin,$(1)/www/luci-static/resources/view/status/include/),true)
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo po/autocore.zh-cn.po $(1)/usr/lib/lua/luci/i18n/autocore.zh-cn.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 ifeq ($(BOARD),rockchip)
@@ -58,12 +64,12 @@ define Package/autocore-arm/install
 	$(INSTALL_DATA) ./files/*.js $(1)/www/luci-static/resources/view/status/include/
 	$(if $(CONFIG_LUCI_JSMIN),$(call JsMin,$(1)/www/luci-static/resources/view/status/include/),true)
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo po/autocore.zh-cn.po $(1)/usr/lib/lua/luci/i18n/autocore.zh-cn.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 else
 define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo po/autocore.zh-cn.po $(1)/usr/lib/lua/luci/i18n/autocore.zh-cn.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 endif
 $(eval $(call BuildPackage,autocore))

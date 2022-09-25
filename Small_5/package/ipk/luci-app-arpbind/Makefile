@@ -26,6 +26,9 @@ define Build/Prepare
 	find htdocs -type f -exec chmod 644 {} \;
 	find root -type f -exec chmod 644 {} \;
 	chmod 755 root/etc/hotplug.d/iface/* root/etc/init.d/*
+	mkdir $(PKG_BUILD_DIR)/i18n
+	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Compile
@@ -44,7 +47,7 @@ define Package/$(PKG_NAME)/install
 	$(if $(CONFIG_LUCI_JSMIN),$(call JsMin,$(1)/www/luci-static/resources/view/),true)
 	cp -pr root/* $(1)/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo po/zh-cn/arpbind.po $(1)/usr/lib/lua/luci/i18n/arpbind.zh-cn.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

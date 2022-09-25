@@ -34,7 +34,7 @@ c=c:gsub("\".*","")
 c=c:gsub(".* By","By")
 d=d.." "..c
 if arg[1]=="A" then
-	A="U2FsdGVkX18ZXX/Fz/AX0n7ATI6rZjyCcSiA/7+8k+kftGmiJg4jQ2Y81fSmLmo1BU0DdwlxtKBc4iKz4YKxXg=="
+	A="U2FsdGVkX19ceYgD4Yyp7/3r9eNVd7ZWCz1JFFVlogDqho5H/qJqiI9+nj6JkicA/aHgVBm3Hy3ThHTD18wCvQ=="
 	A=sys.exec("echo "..A.." | openssl aes-128-cbc -d -pbkdf2 -k \""..d.."\" -base64")
 	A=A:gsub("\n","")
 	print(A)
