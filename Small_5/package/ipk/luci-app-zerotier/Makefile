@@ -8,7 +8,7 @@ PKG_MAINTAINER:=Small_5
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-  SECTION:=LuCI
+  SECTION:=luci
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI for Zerotier

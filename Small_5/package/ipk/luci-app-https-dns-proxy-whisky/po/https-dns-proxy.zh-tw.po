@@ -17,7 +17,7 @@ msgid "DNS Server"
 msgstr "DNS伺服器"
 
 msgid "DNS Server for resolving DoH domain names,The format is addr:port.Use commas to separate<br/>When specifying a port for IPv6,enclose the address in []<br/>For example 8.8.8.8,8.8.4.4:53,2001:4860:4860::8888,[2001:4860:4860::8844]:53"
-msgstr "解析DoH域名的DNS伺服器,格式為 addr:port.使用英文逗號分割<br/>使用IPv6指定端口時,需要將IP放入[]內<br/>例如8.8.8.8,8.8.4.4:53,2001:4860:4860::8888,[2001:4860:4860::8844]:53"
+msgstr "解析DoH域名的DNS伺服器,格式為 addr:port.使用英文逗號分割<br/>使用IPv6指定通訊埠時,需要將IP放入[]內<br/>例如8.8.8.8,8.8.4.4:53,2001:4860:4860::8888,[2001:4860:4860::8844]:53"
 
 msgid "Ali"
 msgstr "阿里"
@@ -29,7 +29,7 @@ msgid "Local IPv4/v6 address to bind to (Default 127.0.0.1)"
 msgstr "本地IPv4/v6監聽位址(默認127.0.0.1)"
 
 msgid "Local port to bind to (Default 5053)"
-msgstr "本地監聽端口(默認5053)"
+msgstr "本地通訊埠(默認5053)"
 
 msgid "Redirect"
 msgstr "重定向"

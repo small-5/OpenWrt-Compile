@@ -279,6 +279,15 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
+@@ -3749,7 +3722,7 @@
+ 
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:262
+ msgid "IPv6 Neighbours"
+-msgstr "IPv6網路芳鄰"
++msgstr "IPv6鄰居"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:635
+ msgid "IPv6 RA Settings"
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
 +++ b/feeds/luci/modules/luci-base/root/etc/config/luci
@@ -389,6 +398,18 @@
  		];
  
  		var table = E('table', { 'class': 'table' });
+
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
++++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
+@@ -87,7 +87,7 @@
+ 		    res = [];
+ 
+ 		for (var i = 0; i < lines.length; i++) {
+-			var m = lines[i].match(/^([0-9a-f:.]+) (.+) (\S+)$/),
++			var m = lines[i].match(/^([0-9a-f:.]+) (.+) (\S+)/),
+ 			    addr = m ? m[1] : null,
+ 			    flags = m ? m[2].trim().split(/\s+/) : [],
+ 			    state = (m ? m[3] : null) || 'FAILED';
 
 --- a/feeds/packages/net/aria2/files/aria2.conf
 +++ b/feeds/packages/net/aria2/files/aria2.conf
