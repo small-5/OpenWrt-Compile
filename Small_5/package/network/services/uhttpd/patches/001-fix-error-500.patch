@@ -1,0 +1,146 @@
+--- a/file.c
++++ b/file.c
+@@ -49,7 +49,6 @@
+ 	struct dispatch_handler *d;
+ 	struct client *cl;
+ 	struct path_info pi;
+-	char *url;
+ 	bool called, path;
+ };
+ 
+@@ -632,7 +631,7 @@
+ 	file_write_cb(cl);
+ }
+ 
+-static bool __handle_file_request(struct client *cl, char *url, bool is_error_handler);
++static bool __handle_file_request(struct client *cl, char *url);
+ 
+ static void uh_file_request(struct client *cl, const char *url,
+ 			    struct path_info *pi, struct blob_attr **tb)
+@@ -685,7 +684,7 @@
+ 		req->redirect_status = 403;
+ 		error_handler = alloca(strlen(conf.error_handler) + 1);
+ 		strcpy(error_handler, conf.error_handler);
+-		if (__handle_file_request(cl, error_handler, true))
++		if (__handle_file_request(cl, error_handler))
+ 			return;
+ 	}
+ 
+@@ -729,8 +728,10 @@
+ }
+ 
+ static void
+-uh_invoke_script(struct client *cl, struct dispatch_handler *d, char *url, struct path_info *pi)
++uh_invoke_script(struct client *cl, struct dispatch_handler *d, struct path_info *pi)
+ {
++	char *url = blobmsg_data(blob_data(cl->hdr.head));
++
+ 	n_requests++;
+ 	d->handle_request(cl, url, pi);
+ }
+@@ -751,7 +752,7 @@
+ 		cl = dr->cl;
+ 		dr->called = true;
+ 		cl->dispatch.data_blocked = false;
+-		uh_invoke_script(cl, dr->d, dr->url, dr->path ? &dr->pi : NULL);
++		uh_invoke_script(cl, dr->d, dr->path ? &dr->pi : NULL);
+ 		client_poll_post_data(cl);
+ 		ustream_poll(cl->us);
+ 	}
+@@ -786,10 +787,10 @@
+ 	_field(query)
+ 
+ static void
+-uh_defer_script(struct client *cl, struct dispatch_handler *d, char *url, struct path_info *pi)
++uh_defer_script(struct client *cl, struct dispatch_handler *d, struct path_info *pi)
+ {
+ 	struct deferred_request *dr;
+-	char *_url, *_root, *_phys, *_name, *_info, *_query;
++	char *_root, *_phys, *_name, *_info, *_query;
+ 
+ 	cl->dispatch.req_free = uh_free_pending_request;
+ 
+@@ -797,7 +798,7 @@
+ 		/* allocate enough memory to duplicate all path_info strings in one block */
+ #undef _field
+ #define _field(_name) &_##_name, field_len(pi->_name),
+-		dr = calloc_a(sizeof(*dr), &_url, strlen(url), path_info_fields NULL);
++		dr = calloc_a(sizeof(*dr), path_info_fields NULL);
+ 
+ 		memcpy(&dr->pi, pi, sizeof(*pi));
+ 		dr->path = true;
+@@ -807,12 +808,11 @@
+ #define _field(_name) if (pi->_name) dr->pi._name = strcpy(_##_name, pi->_name);
+ 		path_info_fields
+ 	} else {
+-		dr = calloc_a(sizeof(*dr), &_url, strlen(url), NULL);
++		dr = calloc(1, sizeof(*dr));
+ 	}
+ 
+ 	cl->dispatch.req_data = dr;
+ 	cl->dispatch.data_blocked = true;
+-	dr->url = strcpy(_url, url);
+ 	dr->cl = cl;
+ 	dr->d = d;
+ 	list_add(&dr->list, &pending_requests);
+@@ -825,13 +825,13 @@
+ 		return d->handle_request(cl, url, pi);
+ 
+ 	if (n_requests >= conf.max_script_requests)
+-		return uh_defer_script(cl, d, url, pi);
++		return uh_defer_script(cl, d, pi);
+ 
+ 	cl->dispatch.req_free = uh_complete_request;
+-	uh_invoke_script(cl, d, url, pi);
++	uh_invoke_script(cl, d, pi);
+ }
+ 
+-static bool __handle_file_request(struct client *cl, char *url, bool is_error_handler)
++static bool __handle_file_request(struct client *cl, char *url)
+ {
+ 	static const struct blobmsg_policy hdr_policy[__HDR_MAX] = {
+ 		[HDR_AUTHORIZATION] = { "authorization", BLOBMSG_TYPE_STRING },
+@@ -846,16 +846,6 @@
+ 	struct path_info *pi;
+ 	char *user, *pass, *auth;
+ 
+-	if (is_error_handler) {
+-		d = dispatch_find(url, NULL);
+-
+-		if (d) {
+-			uh_invoke_handler(cl, d, url, NULL);
+-
+-			return true;
+-		}
+-	}
+-
+ 	pi = uh_path_lookup(cl, url);
+ 	if (!pi)
+ 		return false;
+@@ -941,7 +931,7 @@
+ 	if (d)
+ 		return uh_invoke_handler(cl, d, url, NULL);
+ 
+-	if (__handle_file_request(cl, url, false))
++	if (__handle_file_request(cl, url))
+ 		return;
+ 
+ 	if (uh_handler_run(cl, &url, true)) {
+@@ -949,7 +939,7 @@
+ 			return;
+ 
+ 		uh_handler_run(cl, &url, false);
+-		if (__handle_file_request(cl, url, false))
++		if (__handle_file_request(cl, url))
+ 			return;
+ 	}
+ 
+@@ -957,7 +947,7 @@
+ 	if (conf.error_handler) {
+ 		error_handler = alloca(strlen(conf.error_handler) + 1);
+ 		strcpy(error_handler, conf.error_handler);
+-		if (__handle_file_request(cl, error_handler, true))
++		if (__handle_file_request(cl, error_handler))
+ 			return;
+ 	}
+ 

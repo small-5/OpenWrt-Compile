@@ -1262,7 +1262,7 @@
 @@ -1,18 +1,24 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=6bb735d103b713b7972684e07e84a693d0b4f61b
++PKG_SOURCE_VERSION:=79fdc5f6f7e5b6046f14e1a005d501815805b7e9
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.6.0

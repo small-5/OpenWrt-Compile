@@ -766,6 +766,18 @@
 -#	option username user
 -#	option password 'plaintext_or_md5_or_$p$user_for_system_user'
 
+--- a/package/network/services/uhttpd/Makefile
++++ b/package/network/services/uhttpd/Makefile
+@@ -12,7 +12,7 @@
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL=$(PROJECT_GIT)/project/uhttpd.git
+-PKG_SOURCE_DATE:=2022-08-12
++PKG_SOURCE_DATE:=2022-12-31
+ PKG_SOURCE_VERSION:=e3395cd90bed9b7b9fc319e79528fedcc0d947fe
+ PKG_MIRROR_HASH:=14e9df9f85c406b8abbb14427e5f678383782500c549d842c0481cd954fc4ea3
+ PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
+
 --- a/tools/Makefile
 +++ b/tools/Makefile
 @@ -26,6 +26,7 @@

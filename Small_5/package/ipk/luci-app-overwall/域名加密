@@ -1,9 +1,9 @@
 KEY="$(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}')"
 
 加密:
-echo https://warj5rhuh6gtwmk9.sg001.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
+echo https://7paewmgj45che3if.sg001.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
 解密:
-echo U2FsdGVkX19ceYgD4Yyp7/3r9eNVd7ZWCz1JFFVlogDqho5H/qJqiI9+nj6JkicA/aHgVBm3Hy3ThHTD18wCvQ== | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
+echo U2FsdGVkX18ZtoXJT9P2TOMOTddV3s71zUA6z1poQIo/59fU0BZ25E8S8I1MbH3OY4zSSBO1/jfcQFVEAgjpoA== | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
 
 OP生成QS(查詢字符串)
 qs=$(echo -n $(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}') | openssl aes-128-cbc -pbkdf2 -nosalt -k $(TZ=UTC-1 date '+%A%b%Y-%m-%d%H') -base64 | sed 's/[^A-Za-z0-9]//g')
