@@ -785,11 +785,11 @@
  tools-y += mklibs mtd-utils mtools ninja padjffs2 patch-image
  tools-y += patchelf pkgconf quilt squashfskit4 sstrip zip zlib zstd
 +tools-y += ucl upx
- tools-$(BUILD_B43_TOOLS) += b43-tools
- tools-$(BUILD_ISL) += isl
- tools-$(BUILD_TOOLCHAIN) += expat gmp mpc mpfr
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_B43_TOOLS),y) += b43-tools
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_ISL),y) += isl
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_TOOLCHAIN),y) += gmp mpc mpfr
 @@ -39,6 +40,7 @@
- tools-$(CONFIG_USE_LLVM_BUILD) += llvm-bpf
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_LLVM_BUILD),y) += llvm-bpf
  
  # builddir dependencies
 +$(curdir)/upx/compile := $(curdir)/ucl/compile

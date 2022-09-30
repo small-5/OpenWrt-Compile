@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="V3.3.9"
+VERSION="V3.3.10"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
@@ -46,7 +46,7 @@ elif [ $A = 3 ];then
 fi
 
 cp -r Small_5/. openwrt
-rm -rf Openwrt_Custom Small_5 target README.md
+rm -rf Openwrt_Custom Small_5 target SHA README.md
 cd openwrt
 
 cat > version.patch  <<EOF

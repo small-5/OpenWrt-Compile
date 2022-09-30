@@ -61,6 +61,91 @@
  
  		var table = E('table', { 'class': 'table' });
 
+--- a/package/firmware/intel-microcode/Makefile
++++ b/package/firmware/intel-microcode/Makefile
+@@ -38,14 +38,13 @@
+ 
+ define Build/Compile
+ 	IUCODE_TOOL=$(STAGING_DIR)/../host/bin/iucode_tool $(MAKE) -C $(PKG_BUILD_DIR)
+-	mkdir $(PKG_BUILD_DIR)/intel-ucode-ipkg
+-	$(STAGING_DIR)/../host/bin/iucode_tool -q \
+-		--write-firmware=$(PKG_BUILD_DIR)/intel-ucode-ipkg $(PKG_BUILD_DIR)/$(MICROCODE).bin
++	$(STAGING_DIR)/../host/bin/iucode_tool -q --mini-earlyfw \
++		--write-earlyfw=$(PKG_BUILD_DIR)/intel-ucode.cpio $(PKG_BUILD_DIR)/$(MICROCODE).bin
+ endef
+ 
+ define Package/intel-microcode/install
+-	$(INSTALL_DIR) $(1)/lib/firmware/intel-ucode
+-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/intel-ucode-ipkg/* $(1)/lib/firmware/intel-ucode
++	$(INSTALL_DIR) $(1)/boot
++	$(INSTALL_DATA) $(PKG_BUILD_DIR)/intel-ucode.cpio $(1)/boot/intel-ucode.img
+ endef
+ 
+ $(eval $(call BuildPackage,intel-microcode))
+
+--- a/package/firmware/linux-firmware/amd.mk
++++ b/package/firmware/linux-firmware/amd.mk
+@@ -1,9 +1,11 @@
+ Package/amd64-microcode = $(call Package/firmware-default,AMD64 CPU microcode,@TARGET_x86)
+ define Package/amd64-microcode/install
+-	$(INSTALL_DIR) $(1)/lib/firmware/amd-ucode
+-	$(CP) \
+-		$(PKG_BUILD_DIR)/amd-ucode/*.bin \
+-		$(1)/lib/firmware/amd-ucode
++	mkdir -p $(PKG_BUILD_DIR)/amd-ucode/kernel/x86/microcode
++	cat $(PKG_BUILD_DIR)/amd-ucode/*.bin > $(PKG_BUILD_DIR)/amd-ucode/kernel/x86/microcode/AuthenticAMD.bin
++	(cd $(PKG_BUILD_DIR)/amd-ucode;\
++		echo kernel/x86/microcode/AuthenticAMD.bin | cpio -o -H newc --reproducible > amd-ucode.cpio)
++	$(INSTALL_DIR) $(1)/boot
++	$(INSTALL_DATA) $(PKG_BUILD_DIR)/amd-ucode/amd-ucode.cpio $(1)/boot/amd-ucode.img
+ endef
+ 
+ $(eval $(call BuildPackage,amd64-microcode))
+
+--- a/target/linux/x86/base-files/lib/preinit/02_load_x86_ucode
++++ /dev/null
+@@ -1,9 +0,0 @@
+-# Copyright (C) 2018 OpenWrt.org
+-
+-do_load_x86_ucode() {
+-	if [ -e "/sys/devices/system/cpu/microcode/reload" ]; then
+-		echo 1 > /sys/devices/system/cpu/microcode/reload
+-	fi
+-}
+-
+-boot_hook_add preinit_main do_load_x86_ucode
+
+--- a/target/linux/x86/image/grub-efi.cfg
++++ b/target/linux/x86/image/grub-efi.cfg
+@@ -7,6 +7,7 @@
+ 
+ menuentry "@TITLE@" {
+ 	linux /boot/vmlinuz @GPT_ROOTPART@ @CMDLINE@ noinitrd
++	initrd /boot/intel-ucode.img /boot/amd-ucode.img
+ }
+ menuentry "@TITLE@ (failsafe)" {
+ 	linux /boot/vmlinuz failsafe=true @GPT_ROOTPART@ @CMDLINE@ noinitrd
+
+--- a/target/linux/x86/image/grub-iso.cfg
++++ b/target/linux/x86/image/grub-iso.cfg
+@@ -12,4 +12,5 @@
+ 
+ menuentry "@TITLE@" {
+ 	linux /boot/vmlinuz root=/dev/sr0 rootfstype=iso9660 rootwait @CMDLINE@ noinitrd
++	initrd /boot/intel-ucode.img /boot/amd-ucode.img
+ }
+
+--- a/target/linux/x86/image/grub-pc.cfg
++++ b/target/linux/x86/image/grub-pc.cfg
+@@ -7,6 +7,7 @@
+ 
+ menuentry "@TITLE@" {
+ 	linux /boot/vmlinuz @ROOTPART@ @CMDLINE@ noinitrd
++	initrd /boot/intel-ucode.img /boot/amd-ucode.img
+ }
+ menuentry "@TITLE@ (failsafe)" {
+ 	linux /boot/vmlinuz failsafe=true @ROOTPART@ @CMDLINE@ noinitrd
+
 --- a/target/linux/x86/Makefile
 +++ b/target/linux/x86/Makefile
 @@ -10,8 +10,8 @@

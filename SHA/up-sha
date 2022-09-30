@@ -1,0 +1,26 @@
+#!/bin/sh
+GET(){
+	echo $3 $(curl -LfsH "Authorization: Bearer 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" https://api.github.com/repos/$1/git/refs/heads/$2 | grep '"sha"' | awk '{print $2}' | sed -e 's/"//g' -e 's/,//g') >> SHA
+}
+
+A="zfl9/chinadns-ng|master|chinadns-ng
+llccd/netfilter-full-cone-nat|dev|fullconenat
+zfl9/ipt2socks|master|ipt2socks
+rofl0r/microsocks|master|microsocks
+ntop/n2n|dev|n2n
+code4craft/pdnsd|master|pdnsd
+semigodking/redsocks|master|redsocks2
+aircrack-ng/rtl8812au|v5.6.4.2|rtl8812au-ac
+shadowsocksrr/shadowsocksr-libev|Akkariiin/master|shadowsocksr-libev
+shadowsocks/simple-obfs|master|simple-obfs
+peter-tank/trojan-plus|master|trojan-plus
+Wind4/vlmcsd|master|vlmcsd
+teddysun/xray-plugin|main|xray-plugin"
+rm -f SHA
+for i in $A;do
+	i=$(echo $i | sed 's/|/ /g')
+	GET $i
+done
+sed -i 's/c1413335f0b5f15241d7072204902778d122a578/384dab4bae5ed9402e07ec1950e502c05812bc26/' SHA #ipt2socks
+sed -i 's/655c53d27df0bd69e0ecfa8309ce2940797f3362/8f6cb0911b9b4bcb00dfe1cd368c1cec1137e9e5/' SHA #microsocks
+sed -i 's/1951b49b774b0aab702348d0370e26bae1c3a7df/7797a938a3945f0316640067da693b148f412f0b/' SHA #redsocks2
