@@ -238,6 +238,15 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
+@@ -2331,7 +2331,7 @@
+ 
+ #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
+ msgid "Down"
+-msgstr "下"
++msgstr "下移"
+ 
+ #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
+ msgid "Down Delay"
 @@ -3629,17 +3629,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
@@ -288,6 +297,15 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:635
  msgid "IPv6 RA Settings"
+@@ -9024,7 +8997,7 @@
+ 
+ #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
+ msgid "Up"
+-msgstr "上線"
++msgstr "上移"
+ 
+ #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
+ msgid "Up Delay"
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
 +++ b/feeds/luci/modules/luci-base/root/etc/config/luci
