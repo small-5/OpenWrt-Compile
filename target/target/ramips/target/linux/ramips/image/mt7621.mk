@@ -765,8 +765,8 @@ define Device/hatlab_gateboard-one
 	kmod-sfp kmod-thermal kmod-usb3 kmod-usb-ledtrig-usbport rdloader
   KERNEL := kernel-bin | gzip | hatlab-gateboard-kernel
   IMAGE/kernel.itb := append-kernel
-  IMAGE/rootfs.img := append-rootfs | pad-to $(ROOTFS_PARTSIZE)
-  IMAGE/rootfs.img.gz := append-rootfs | pad-to $(ROOTFS_PARTSIZE) | gzip
+  IMAGE/rootfs.img := append-rootfs | pad-rootfs
+  IMAGE/rootfs.img.gz := append-rootfs | pad-rootfs | gzip
   IMAGE/combined.img := hatlab-gateboard-combined | append-metadata
   IMAGE/combined.img.gz := hatlab-gateboard-combined | gzip | append-metadata
   IMAGES := kernel.itb
