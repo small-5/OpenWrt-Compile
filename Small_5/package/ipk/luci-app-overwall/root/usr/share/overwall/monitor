@@ -86,7 +86,7 @@ while :;do
 #chinadns-ng
 	if [ $chinadns = 1 ] && [ $(ps -w | grep chinadns-ng | grep -v grep | wc -l) = 0 ];then
 		log "Over Montior  : ChinaDNS-NG Error. Restart!"
-		$(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f -n $([ $gfw_mode = 1 ] && echo -g /tmp/overwall/gfw.list) >/dev/null 2>&1 &
+		$(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 1 ] && echo -g /tmp/overwall/gfw.list) >/dev/null 2>&1 &
 	fi
 #localsocks
 	if [ $socks5 = 1 ] && [ $(ps -w | grep overwall-socks5 | grep -v grep | wc -l) = 0 ];then

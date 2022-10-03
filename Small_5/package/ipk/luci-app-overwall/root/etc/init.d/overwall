@@ -180,7 +180,7 @@ start_dns(){
 		1)dns_l=$(echo $dns_l | sed 's/ /,/g');log "SmartDNS      : Use $dns_l to start on UDP mode (Domestic DNS)";;
 	esac
 	if [ $run_mode = router ];then
-		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f -n $([ $gfw_mode = 1 ] && echo -g $K/gfw.list)
+		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 1 ] && echo -g $K/gfw.list)
 		log "ChinaDNS      : Start ChinaDNS-NG successful!"
 	fi
 }
