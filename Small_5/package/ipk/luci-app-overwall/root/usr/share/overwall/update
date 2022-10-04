@@ -15,9 +15,17 @@ log(){
 	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
 }
 
+clean(){
+	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Rules     : Download failed" >> /tmp/overwall.log
+	rm -f $LOCK
+	exit 1
+}
+
 if [ $A = Y ];then
 	mkdir -p $TMP
+	r=1
 	while ! B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z));do
+		[ $r -ge 20 ] && clean || let r++
 		sleep 2
 	done
 else

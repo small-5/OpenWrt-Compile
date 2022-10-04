@@ -69,7 +69,7 @@ function ip()
 	if http.formvalue("set")=="0" then
 		r=EXEC("cat /tmp/etc/overwall.include | grep -Eo '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | sed -n 1p")
 	else
-		r=EXEC("curl -Lsm 5 https://jsonp-ip.appspot.com | grep -Eo '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}'")
+		r=EXEC("curl -Lsm 5 https://ip.sg001.top/cdn-cgi/trace | grep ip= | cut -d = -f2")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ret=r})

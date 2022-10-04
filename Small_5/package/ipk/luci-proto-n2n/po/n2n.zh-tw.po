@@ -81,3 +81,6 @@ msgstr "不使用邊緣節點之間的P2P連接.只通過超級節點轉發"
 
 msgid "Enable multicast MAC addresses"
 msgstr "啟用多播MAC位址"
+
+msgid "IPv6 requires this be enabled"
+msgstr "IPv6需要啓用"

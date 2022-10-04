@@ -296,15 +296,8 @@ local function processData(szType,content)
 			result.server_port=port
 		end
 	elseif szType=='vmess' then
-		if content:find("@") or content:find("?") then
-			if content:find("@") then
-				parseNodeUrl(szType,content)
-			else
-				log('不支持非JSON+Base64類型的VMESS節點訂閱，跳過此節點。')
-				return nil
-			end
-		else
-			local info=jsonParse(content)
+		local info=jsonParse(content)
+		if info then
 			result.server=info.add
 			result.server_port=info.port
 			result.transport=info.net
@@ -345,6 +338,13 @@ local function processData(szType,content)
 				result.tls="1"
 				result.tls_host=info.sni
 				result.insecure=1
+			end
+		else
+			if content:find("@")==37 then
+				parseNodeUrl(szType,content)
+			else
+				log('不支持非JSON+Base64類型的VMESS節點訂閱，跳過此節點。')
+				return nil
 			end
 		end
 	elseif szType=="vless" then

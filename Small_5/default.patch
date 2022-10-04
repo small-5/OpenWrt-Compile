@@ -229,7 +229,7 @@
 
 --- a/package/network/config/firewall/files/firewall.config
 +++ b/package/network/config/firewall/files/firewall.config
-@@ -1,206 +1,48 @@
+@@ -1,206 +1,51 @@
 +
  config defaults
 -	option syn_flood	1
@@ -313,11 +313,14 @@
 +	option target 'ACCEPT'
 +
 +config rule
-+	option name 'Allow-MLD'
++	option name 'Allow-NDP'
 +	option family 'ipv6'
 +	list proto 'icmp'
 +	option src 'wan'
-+	list src_ip 'fe80::/10'
++	list icmp_type 'neighbour-advertisement'
++	list icmp_type 'neighbour-solicitation'
++	list icmp_type 'redirect'
++	list icmp_type 'router-advertisement'
 +	option target 'ACCEPT'
  
 -# Allow DHCPv6 replies

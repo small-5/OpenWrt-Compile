@@ -13,7 +13,7 @@ add_param(){
 proto_n2n_setup() {
 	local cfg="$1"
 	local device="n2n-$cfg"
-	local SERVER community cipher_suite key mode4 ipaddr netmask gateway hostname broadcast defaultroute peerdns metric clientid vendorid mode6 ip6addr ip6prefixlen ip6gw reqaddress reqprefix defaultroute6 IP6PREFIX peerdns6 DNS6 clientid6 metric6 mac mtu_n2n reg_interval reg_ttl bind_addr mgmtport forwarding header comp verbose pmtu nop2p multi
+	local SERVER community cipher_suite key mode4 ipaddr netmask gateway hostname broadcast defaultroute peerdns metric clientid vendorid mode6 ip6addr ip6prefixlen ip6gw reqaddress reqprefix defaultroute6 peerdns6 DNS6 clientid6 metric6 mac mtu_n2n reg_interval reg_ttl bind_addr mgmtport forwarding header comp verbose pmtu nop2p multi
 	json_get_vars community cipher_suite key mode4 ipaddr netmask gateway hostname broadcast defaultroute peerdns metric clientid vendorid mode6 ip6addr ip6prefixlen ip6gw reqaddress reqprefix defaultroute6 peerdns6 clientid6 metric6 mac mtu_n2n reg_interval reg_ttl bind_addr mgmtport forwarding header comp verbose pmtu nop2p multi
 	if [ -n "$ipaddr" ];then
 		[ -z "$netmask" ] && netmask="255.255.255.0"
@@ -22,7 +22,6 @@ proto_n2n_setup() {
 	fi
 	json_for_each_item add_param server SERVER
 	json_for_each_item add_param dns6 DNS6
-	json_for_each_item add_param ip6prefix IP6PREFIX
 	proto_run_command "$cfg" /usr/bin/edge -f \
 		-d "$device" \
 		$SERVER \
@@ -41,7 +40,7 @@ proto_n2n_setup() {
 		$([ "$verbose" = 1 ] && echo -v) \
 		$([ "$pmtu" = 1 ] && echo -D) \
 		$([ "$nop2p" = 1 ] && echo -S) \
-		$([ "$multi" = 1 ] && echo -E)
+		$([ "$multi" = 0 ] || echo -e "\x2d\x45")
 
 	proto_init_update "$device" 1 1
 	proto_set_keep 1
@@ -63,6 +62,7 @@ proto_n2n_setup() {
 		proto_add_ipv4_address "$a" "$(ifconfig "$device" | grep inet | grep -v inet6 | awk '{print $4}' | sed 's/Mask://g')"
 	fi
 	if [ "$mode6" = static ];then
+		[ "$ip6prefixlen" ] || ip6prefixlen=64
 		ifconfig "$device" "${ip6addr}/${ip6prefixlen}"
 		proto_add_ipv6_address "$ip6addr" "$ip6prefixlen"
 		[ -n "$ip6gw" ] && proto_add_ipv6_route "::" 0 "$ip6gw" "$metric6"
@@ -70,7 +70,7 @@ proto_n2n_setup() {
 	fi
 	if [ "$mode4" = dhcp ];then
 		[ $A = 0 ] && proto_send_update "$cfg" && A=1
-		ZONE=$(fw3 -q network $cfg 2>/dev/null) && local A=1
+		ZONE=$(fw3 -q network $cfg 2>/dev/null)
 		json_init
 		json_add_string name "${cfg}_DHCP"
 		json_add_string ifname "@$cfg"
@@ -88,6 +88,7 @@ proto_n2n_setup() {
 	fi
 	if [ "$mode6" = dhcp ];then
 		[ $A = 0 ] && proto_send_update "$cfg" && A=1
+		ZONE=$(fw3 -q network $cfg 2>/dev/null)
 		json_init
 		json_add_string name "${cfg}_DHCPv6"
 		json_add_string ifname "@$cfg"
@@ -95,7 +96,6 @@ proto_n2n_setup() {
 		[ -n "$reqaddress" ] && json_add_string reqaddress "$reqaddress"
 		[ -n "$reqprefix" ] && json_add_string reqprefix "$reqprefix"
 		[ "$defaultroute6" = 1 ] || json_add_boolean defaultroute 0
-		[ -n "$IP6PREFIX" ] && proto_add_ipv6_prefix "$IP6PREFIX"
 		[ "$peerdns6" = 1 ] || json_add_boolean peerdns 0
 		[ -n "$DNS6" ] && proto_add_dns_server "$DNS6"
 		[ -n "$clientid6" ] && json_add_string clientid "$clientid6"
@@ -140,7 +140,6 @@ proto_n2n_init_config() {
 	proto_config_add_string reqaddress
 	proto_config_add_string reqprefix
 	proto_config_add_boolean defaultroute6
-	proto_config_add_array 'ip6prefix:list(ip6addr)'
 	proto_config_add_boolean peerdns6
 	proto_config_add_array 'dns6:list(ip6addr)'
 	proto_config_add_string clientid6

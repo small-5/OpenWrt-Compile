@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="V3.3.11"
+VERSION="V3.3.12"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in

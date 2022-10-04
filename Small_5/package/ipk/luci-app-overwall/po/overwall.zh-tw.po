@@ -34,8 +34,8 @@ msgstr "本機服務端"
 msgid "Google Delay"
 msgstr "谷歌延遲"
 
-msgid "Baidu Delay"
-msgstr "百度延遲"
+msgid "Taobao Delay"
+msgstr "淘寶延遲"
 
 msgid "Ingress IP"
 msgstr "入口IP"
@@ -269,7 +269,10 @@ msgid "Update time (every day)"
 msgstr "更新時間 (每天)"
 
 msgid "Subscribe URL"
-msgstr "SS/SSR/VMESS/VLESS/TROJAN訂閱URL"
+msgstr "訂閱URL"
+
+msgid "Support SS/SSR/VMESS/VLESS/TROJAN"
+msgstr "支持SS/SSR/VMESS/VLESS/TROJAN"
 
 msgid "Subscribe Filter Words"
 msgstr "訂閱節點關鍵字過濾"

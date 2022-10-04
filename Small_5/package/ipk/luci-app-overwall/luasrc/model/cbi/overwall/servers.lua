@@ -27,6 +27,7 @@ o.rmempty=false
 
 o=s:option(DynamicList,"subscribe_url",translate("Subscribe URL"))
 o.rmempty=true
+o.description=translate("Support SS/SSR/VMESS/VLESS/TROJAN")
 
 o=s:option(ListValue,"filter_mode",translate("Filter Words Mode"))
 o:value("",translate("Discard Mode"))

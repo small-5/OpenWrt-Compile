@@ -238,7 +238,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2331,7 +2331,7 @@
+@@ -2340,7 +2340,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -247,7 +247,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3629,17 +3629,6 @@
+@@ -3646,17 +3646,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -265,7 +265,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3723,22 +3712,6 @@
+@@ -3740,22 +3729,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -288,7 +288,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -3749,7 +3722,7 @@
+@@ -3766,7 +3739,7 @@
  
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:262
  msgid "IPv6 Neighbours"
@@ -297,7 +297,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:635
  msgid "IPv6 RA Settings"
-@@ -9024,7 +8997,7 @@
+@@ -9084,7 +9057,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -333,6 +333,16 @@
  	setLocaltime = {
  		args = { localtime = 0 },
  		call = function(args)
+
+--- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
++++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
+@@ -1,6 +1,5 @@
+ 		<% if self.description and #self.description > 0 then -%>
+ 			<% if not luci.util.instanceof(self, luci.cbi.DynamicList) and (not luci.util.instanceof(self, luci.cbi.Flag) or self.orientation == "horizontal") then -%>
+-				<br />
+ 			<%- end %>
+ 			<div class="cbi-value-description">
+ 				<%=self.description%>
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
@@ -1049,7 +1059,7 @@
  
  PKG_NAME:=https-dns-proxy
 -PKG_VERSION:=2021-11-22
--PKG_RELEASE:=5
+-PKG_RELEASE:=7
 +PKG_VERSION:=2022-08-13
 +PKG_RELEASE:=1
  

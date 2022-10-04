@@ -124,8 +124,8 @@ return network.registerProtocol('n2n', {
 		o = s.taboption('general', form.Value, 'vendorid', _('Vendor Class to send when requesting DHCP'));
 		o.depends("mode4","dhcp");
 
-		/*o = s.taboption('general', form.ListValue, 'mode6', _('IPv6 mode'));
-		o.value('none', _('None'));
+		o = s.taboption('general', form.ListValue, 'mode6', _('IPv6 mode'));
+		o.value('', _('None'));
 		o.value('static', _('Static'));
 		o.value('dhcp', _('DHCPv6'));
 
@@ -163,10 +163,6 @@ return network.registerProtocol('n2n', {
 		o = s.taboption('general', form.Flag, 'defaultroute6', _('Use default gateway'), _('If unchecked, no default route is configured'));
 		o.depends("mode6","dhcp");
 
-		o = s.taboption('general', form.DynamicList, 'ip6prefix', _('Custom delegated IPv6-prefix'));
-		o.datatype = 'cidr6';
-		o.depends("mode6","dhcp");
-
 		o = s.taboption('general', form.Flag, 'peerdns6', _('Use DNS servers advertised by peer'), _('If unchecked, the advertised DNS server addresses are ignored'));
 		o.depends("mode6","dhcp");
 
@@ -183,7 +179,7 @@ return network.registerProtocol('n2n', {
 		o = s.taboption('general', form.Value, 'metric6', _('Metric'));
 		o.placeholder = "0";
 		o.datatype = 'uinteger';
-		o.depends("mode6","static");*/
+		o.depends("mode6","static");
 
 		o = s.taboption('advanced', form.Value, 'mac', _('MAC Address'));
 		o.datatype = 'macaddr';
@@ -213,6 +209,9 @@ return network.registerProtocol('n2n', {
 		o = s.taboption('advanced', form.Flag, 'header', _('Enable full header encryption'), _('Requires supernode with fixed community'));
 		o.default = '1';
 
+		o = s.taboption('advanced', form.Flag, 'multi', _('Enable multicast MAC addresses'), _('IPv6 requires this be enabled'));
+		o.default = '1';
+
 		o = s.taboption('advanced', form.Flag, 'comp', _('Enable compression'), _("Enable LZO(1x) compression for outgoing data packets"));
 
 		o = s.taboption('advanced', form.Flag, 'verbose', _('Enable Verbose logging'));
@@ -220,7 +219,5 @@ return network.registerProtocol('n2n', {
 		o = s.taboption('advanced', form.Flag, 'pmtu', _('Enable PMTU discovery'), _("PMTU discovery can reduce fragmentation but causes connections stall when not properly supported"));
 
 		o = s.taboption('advanced', form.Flag, 'nop2p', _('Disable P2P connect'), _("Do not connect P2P. Always use the supernode"));
-
-		o = s.taboption('advanced', form.Flag, 'multi', _('Enable multicast MAC addresses'));
 	}
 });

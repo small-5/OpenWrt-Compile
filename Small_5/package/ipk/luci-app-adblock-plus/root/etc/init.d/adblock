@@ -155,7 +155,7 @@ start(){
 	add_rule
 	add_cron
 	if [ $STATUS = Y ];then
-		echo "`eval $E` [Dnsmasq Change]"
+		echo "`eval $E` [Dnsmasq change]"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
 }
