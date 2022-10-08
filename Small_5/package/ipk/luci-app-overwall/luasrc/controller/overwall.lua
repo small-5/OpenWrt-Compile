@@ -51,10 +51,13 @@ end
 function check()
 	local r=0
 	local u=http.formvalue("url")
-	local p
-	if CALL("nslookup www."..u..".com >/dev/null 2>&1")==0 then
-		if u=="google" then p="/generate_204" else p="" end
-		r=EXEC("curl -m 5 -o /dev/null -sw %{time_starttransfer} http://www."..u..".com"..p.." | awk '{printf ($1*1000/2)}'")
+	if u=="1" then
+		u="www.jd.com"
+	else
+		u="www.google.com/generate_204"
+	end
+	if CALL("curl -m 5 -so /dev/null https://"..u)==0 then
+		r=EXEC("curl -m 5 -o /dev/null -sw %{time_starttransfer} http://"..u.." | awk '{printf ($1*1000/2)}'")
 		if r~="0" then
 			r=EXEC("echo -n "..r.." | sed 's/\\..*//'")
 			if r=="0" then r="1" end

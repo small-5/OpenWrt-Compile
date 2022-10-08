@@ -276,7 +276,7 @@ local uci=luci.model.uci.cursor()
 		</div>
 		<%end%>
 
-		<div class="pure-u-1-5 check" onclick="check_connect('taobao')">
+		<div class="pure-u-1-5 check" onclick="check_connect('1')">
 			<div class="block pure-g">
 				<div class="pure-u-8-24">
 					<div class="img-con">
@@ -284,12 +284,12 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_taobao"><%:Taobao Delay%><br/><span id="taobao_status" class="yellow"><%:Touch Check%></span></h4>
+					<h4 id="status_c1"><%:JD Delay%><br/><span id="c1_status" class="yellow"><%:Touch Check%></span></h4>
 				</div>
 			</div>
 		</div>
 
-		<div class="pure-u-1-5 check" onclick="check_connect('google')">
+		<div class="pure-u-1-5 check" onclick="check_connect('2')">
 			<div class="block pure-g">
 				<div class="pure-u-8-24">
 					<div class="img-con">
@@ -297,7 +297,7 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_google"><%:Google Delay%><br/><span id="google_status" class="yellow"><%:Touch Check%></span></h4>
+					<h4 id="status_c2"><%:Google Delay%><br/><span id="c2_status" class="yellow"><%:Touch Check%></span></h4>
 				</div>
 			</div>
 		</div>
@@ -493,7 +493,7 @@ local uci=luci.model.uci.cursor()
 		});
 
 		function check_connect(url){
-			var s=document.getElementById(url+'_status');
+			var s=document.getElementById('c'+url+'_status');
 			if (s){
 				var div=s.parentNode.parentNode.parentNode.parentNode;
 				div.removeAttribute('onclick');
@@ -603,8 +603,8 @@ local uci=luci.model.uci.cursor()
 		}
 
 		setTimeout(function(){
-			check_connect('taobao')
-			check_connect('google')
+			check_connect('1')
+			check_connect('2')
 		},500);
 //]]>
 </script>
