@@ -1,0 +1,58 @@
+#!/bin/sh
+A=/etc/adblock/ip.list
+B=ADBLOCK_RULE
+C=$(uci -q get firewall.adblock.path)
+
+gen(){
+	echo '#!/bin/sh' > $C
+}
+
+add_rule(){
+	ipset -N blockip hash:net 2>/dev/null
+	ipset -N blockip_v6 hash:net family inet6 2>/dev/null
+	for i in $(cat $A);do
+		ipset add blockip $i 2>/dev/null
+		ipset add blockip_v6 $i 2>/dev/null
+	done
+	iptables -I FORWARD -m set --match-set blockip dst -m comment --comment $B -j DROP
+	iptables -I OUTPUT -m set --match-set blockip dst -m comment --comment $B -j DROP
+	ip6tables -I FORWARD -m set --match-set blockip_v6 dst -m comment --comment $B -j DROP
+	ip6tables -I OUTPUT -m set --match-set blockip_v6 dst -m comment --comment $B -j DROP
+	gen
+	extract_rules(){
+		echo "*$2"
+		$1-save -t $2 | grep $B | sed -e "s/^-A \(OUTPUT\|FORWARD\)/-I \1 1/"
+		echo 'COMMIT'
+	}
+	cat <<-EOF >> $C
+	iptables-save -c | grep -v $B | iptables-restore -c
+	iptables-restore -n <<-EOT
+	$(extract_rules iptables filter)
+	EOT
+	ip6tables-save -c | grep -v $B | ip6tables-restore -c
+	ip6tables-restore -n <<-EOT
+	$(extract_rules ip6tables filter)
+	EOT
+EOF
+}
+
+del_rule(){
+	while iptables -D FORWARD -m set --match-set blockip dst -m comment --comment $B -j DROP 2>/dev/null;do :;done
+	while iptables -D OUTPUT -m set --match-set blockip dst -m comment --comment $B -j DROP 2>/dev/null;do :;done
+	while ip6tables -D FORWARD -m set --match-set blockip_v6 dst -m comment --comment $B -j DROP 2>/dev/null;do :;done
+	while ip6tables -D OUTPUT -m set --match-set blockip_v6 dst -m comment --comment $B -j DROP 2>/dev/null;do :;done
+	ipset -X blockip 2>/dev/null
+	ipset -X blockip_v6 2>/dev/null
+	gen
+}
+
+ADD(){
+	[ -s $A ] && add_rule
+}
+
+case $1 in
+	0)gen;;
+	1)ADD;;
+	2)del_rule;;
+	3)del_rule;[ -s /tmp/dnsmasq.adblock/adblock.conf ] && ADD
+esac

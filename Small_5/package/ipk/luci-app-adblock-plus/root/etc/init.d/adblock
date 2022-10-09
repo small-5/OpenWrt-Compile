@@ -10,8 +10,6 @@ L=/etc/adblock
 P=/usr/share/adblock
 T=/tmp/adblock
 STATUS=Y
-TAG="_ADBLOCK_RULE_"
-FWI=$(uci -q get firewall.adblock.path)
 enable=$(uci -q get adblock.@adblock[0].enable)
 flash=$(uci -q get adblock.@adblock[0].flash)
 url=$(uci -q get adblock.@adblock[0].url)
@@ -80,29 +78,6 @@ EOF
 	fi
 }
 
-gen(){
-	echo '#!/bin/sh' > $FWI
-}
-
-add_rule(){
-	ipset -N blockip hash:net 2>/dev/null
-	for i in $(cat $L/ip.list);do ipset -! add blockip $i;done
-	iptables -I FORWARD -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP
-	iptables -I OUTPUT -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP
-	gen
-	extract_rules(){
-		echo "*$1"
-		iptables-save -t $1 | grep ADBLOCK | sed -e "s/^-A \(OUTPUT\|FORWARD\)/-I \1 1/"
-		echo 'COMMIT'
-	}
-	cat <<-EOF >> $FWI
-	iptables-save -c | grep -v ADBLOCK | iptables-restore -c
-	iptables-restore -n <<-EOT
-	$(extract_rules filter)
-	EOT
-EOF
-}
-
 add_cron(){
 	if [ $cron_mode = 1 ];then
 		if ! grep -wq "$time_update \* \* \* .*adblock" $CRON_FILE;then
@@ -120,13 +95,6 @@ del_cron(){
 		sed -i '/adblock/d' $CRON_FILE
 		/etc/init.d/cron restart
 	fi
-}
-
-del_rule(){
-	iptables -D FORWARD -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP 2>/dev/null
-	iptables -D OUTPUT -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP 2>/dev/null
-	ipset -X blockip 2>/dev/null
-	gen
 }
 
 start(){
@@ -152,7 +120,7 @@ start(){
 	fi
 	echo "`eval $E` [Load Adblock Plus Rules]"
 	add_dns
-	add_rule
+	$P/rules 1
 	add_cron
 	if [ $STATUS = Y ];then
 		echo "`eval $E` [Dnsmasq change]"
@@ -161,7 +129,7 @@ start(){
 }
 
 stop(){
-	del_rule
+	$P/rules 2
 	kill -9 $(ps -w | grep $P/addown | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep $P/adblock | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ad_new.conf | grep -v grep | awk '{print$1}') 2>/dev/null
@@ -198,5 +166,5 @@ restart(){
 }
 
 boot(){
-	gen;start
+	$P/rules 0;start
 }

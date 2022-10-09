@@ -17,7 +17,7 @@ function f.handle(self,state,data)
 		else
 			luci.sys.call("> /etc/adblock/ip.list")
 		end
-		luci.sys.exec("ipset -F blockip 2>/dev/null && for i in $(cat /etc/adblock/ip.list);do ipset add blockip $i 2>/dev/null;done")
+		luci.sys.exec("/usr/share/adblock/rules 3 &")
 	end
 	return true
 end
