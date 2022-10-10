@@ -20,7 +20,7 @@ if b:find("By Small_5")==nil then
 	end
 	os.exit(1)
 end
-c=b:gsub("V.*By","By")
+c=b:gsub("Wrt.*By","Wrt By")
 c=c:gsub("Small_5 r.*","Small_5")
 d=a:find("DISTRIB_RELEASE")
 d=a:sub(d+17,-1)
@@ -34,7 +34,7 @@ c=c:gsub("\".*","")
 c=c:gsub(".* By","By")
 d=d.." "..c
 if arg[1]=="A" then
-	A="U2FsdGVkX1/kCy0OZT8HRCWexZRTkRHQ9PIoWlww3J35whBAckup8iFZRcbuCtf3vuLdC0FYaA7jfGoMEDVgtw=="
+	A="U2FsdGVkX18AIEmLFL02u7IQVbwL5H5YnvfdQIkZr4oXiJfB+Z6htdMa/vO8zkB2pILAvKieWEtVIlbviSF48Q=="
 	A=sys.exec("echo "..A.." | openssl aes-128-cbc -d -pbkdf2 -k \""..d.."\" -base64")
 	A=A:gsub("\n","")
 	print(A)
