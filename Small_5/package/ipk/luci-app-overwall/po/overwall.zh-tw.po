@@ -148,11 +148,11 @@ msgstr "全局模式"
 msgid "Oversea Mode"
 msgstr "海外用戶回牆模式"
 
-msgid "Load GFW List"
-msgstr "加載GFW列表"
+msgid "Disable GFW List"
+msgstr "禁用GFW列表"
 
-msgid "If the domestic DNS does not hijack foreign domain name to domestic IP, No need to be enabled"
-msgstr "如果牆內DNS未劫持牆外域名返回牆內的IP，不需要啟用"
+msgid "Load GFW list by default"
+msgstr "默認加載GFW列表"
 
 msgid "Load Netflix IP Range"
 msgstr "加載Netflix IP段"

@@ -11,11 +11,11 @@ while ! curl -so /dev/null -m 3 www.baidu.com;do
 	sleep 2
 done
 log "Check network status successful!"
-if [ -z "$(uci -q get $NAME.@global[0].global_server)" ];then
-	/etc/init.d/$NAME start &
-elif [ ! -s /tmp/$NAME/ipv4.txt ] || ([ "$(uci -q get $NAME.@global[0].run_mode)" = gfw -o "$(uci -q get $NAME.@global[0].gfw_mode)" = 1 ] && [ ! -s /tmp/$NAME/gfw.list ]);then
-	log "Download IP/GFW files..."
-	/usr/share/$NAME/update --First &
-else
-	/etc/init.d/$NAME start &
+if [ $(uci -q get $NAME.@global[0].global_server) ];then
+	if [ ! -s /tmp/$NAME/ipv4.txt ] || ([ "$(uci -q get $NAME.@global[0].run_mode)" = gfw -o ! $(uci -q get $NAME.@global[0].gfw_mode) ] && [ ! -s /tmp/$NAME/gfw.list ]);then
+		log "Download IP/GFW files..."
+		/usr/share/$NAME/update --First &
+		exit
+	fi
 fi
+/etc/init.d/$NAME start &

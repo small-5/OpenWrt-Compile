@@ -68,7 +68,7 @@ if [ "$C" = router ];then
 	fi
 fi
 
-if [ "$C" = gfw -o "$(uci -q get overwall.@global[0].gfw_mode)" = 1 ];then
+if [ "$C" = gfw -o ! $(uci -q get overwall.@global[0].gfw_mode) ];then
 	if [ $A = Y ];then
 		while ! curl -Lfsm 20 -A "$Y" -o /tmp/gfw.b64 $X/avtPeqDKt645Arm$(eval $Z);do
 			sleep 2

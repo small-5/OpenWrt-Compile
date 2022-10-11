@@ -49,8 +49,8 @@ o:value("gfw",translate("GFW List Mode"))
 o:value("all",translate("Global Mode"))
 o:value("oversea",translate("Oversea Mode"))
 
-o=s:option(Flag,"gfw_mode",translate("Load GFW List"),
-translate("If the domestic DNS does not hijack foreign domain name to domestic IP, No need to be enabled"))
+o=s:option(Flag,"gfw_mode",translate("Disable GFW List"),
+translate("Load GFW list by default"))
 o:depends("run_mode","router")
 
 o=s:option(ListValue,"nf_ip",translate("Load Netflix IP Range"),

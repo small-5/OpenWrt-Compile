@@ -27,8 +27,10 @@ BIN_DIR=/usr/share/overwall
 DNS_FILE=/tmp/dnsmasq.d/dnsmasq-overwall.conf
 DNS_DIR=/tmp/dnsmasq.overwall
 O=$DNS_DIR/tmp
+Ali="223.5.5.5 223.6.6.6 2400:3200::1 2400:3200:baba::1"
 ref=/tmp/resolv.conf.d/resolv.conf.auto;[ -s $ref ] || ref=/tmp/resolv.conf.auto
 REF=$(cat $ref 2>/dev/null | grep nameserver | awk '{print$2}')
+[ "$REF" ] || REF=$Ali
 redir_tcp=0
 kcp_enable=0
 redir_udp=0
@@ -180,7 +182,7 @@ start_dns(){
 		1)dns_l=$(echo $dns_l | sed 's/ /,/g');log "SmartDNS      : Use $dns_l to start on UDP mode (Domestic DNS)";;
 	esac
 	if [ $run_mode = router ];then
-		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 1 ] && echo -g $K/gfw.list)
+		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 0 ] && echo -g $K/gfw.list)
 		log "ChinaDNS      : Start ChinaDNS-NG successful!"
 	fi
 }
@@ -250,7 +252,7 @@ rules(){
 	check_net
 	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules     : Check network status successful!";log "Over Rules     : Check IP/GFW files...")
 	mkdir -p /var/run /var/etc
-	if [ ! -s $K/ipv4.txt ] || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw -o $gfw_mode = 1 ] && [ ! -s $K/gfw.list ]);then
+	if [ ! -s $K/ipv4.txt ] || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw -o $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
 		log "Over Rules     : Download IP/GFW files..."
 		firstdown 2;exit
 	fi
@@ -861,9 +863,9 @@ gen_dns(){
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
-			0)doh_l="https://223.5.5.5/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://223.6.6.6/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200:baba::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com";dns_l="223.5.5.5 223.6.6.6 2400:3200::1 2400:3200:baba::1";;
+			0)doh_l="https://223.5.5.5/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://223.6.6.6/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200:baba::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com";dns_l=$Ali;;
 			1)doh_l="https://162.14.21.56/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub,https://162.14.21.178/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub";dns_l="162.14.21.56 162.14.21.178";;
-			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l="223.5.5.5 223.6.6.6 2400:3200::1 2400:3200:baba::1" && dns_d=1;;
+			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali && dns_d=1;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
 	else
@@ -1281,7 +1283,7 @@ stop(){
 	$BIN_DIR/rules -f
 	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
 	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt
-	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f $K/gfw.list
+	[ $run_mode = gfw -o $gfw_mode = 0 ] || rm -f $K/gfw.list
 	[ $run_mode = router ] || rm -f $K/ipv6.txt
 	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
 	if [ ! "$R" -o ! $GLOBAL_SERVER ];then
