@@ -1,18 +1,20 @@
 #!/bin/sh
 [ "$1" = check ] || exit 1
 NAME=overwall
+run_mode=$(uci -q get $NAME.@global[0].run_mode)
+K=/tmp/$NAME
 
 log(){
 	 echo "$(date +'%Y-%m-%d %H:%M:%S') Over Rules     : $*" >> /tmp/$NAME.log
 }
 
 sleep 2
-while ! curl -so /dev/null -m 3 www.baidu.com;do
+while ! curl -so /dev/null -m 3 www.163.com;do
 	sleep 2
 done
 log "Check network status successful!"
 if [ $(uci -q get $NAME.@global[0].global_server) ];then
-	if [ ! -s /tmp/$NAME/ipv4.txt ] || ([ "$(uci -q get $NAME.@global[0].run_mode)" = gfw -o ! $(uci -q get $NAME.@global[0].gfw_mode) ] && [ ! -s /tmp/$NAME/gfw.list ]);then
+	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$(uci -q get $NAME.@access_control[0].lan_gm_ips)" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a ! $(uci -q get $NAME.@global[0].gfw_mode) ] && [ ! -s $K/gfw.list ]);then
 		log "Download IP/GFW files..."
 		/usr/share/$NAME/update --First &
 		exit

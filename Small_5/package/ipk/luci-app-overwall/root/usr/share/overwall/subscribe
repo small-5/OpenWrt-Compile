@@ -536,7 +536,7 @@ local execute=function()
 end
 
 if subscribe_url and #subscribe_url > 0 then
-	if SYS.call('curl -so /dev/null -m 5 www.baidu.com')~=0 then
+	if SYS.call('curl -so /dev/null -m 5 www.163.com')~=0 then
 		log("網路不通，停止更新訂閱")
 		return
 	end

@@ -177,7 +177,7 @@ test_proxy(){
 check_proxy(){
 	for i in $(seq 1 $(uci_get_by_type global switch_try_count 3));do
 		curl -so /dev/null --connect-timeout $time_b https://www.google.com && return 0
-		curl -so /dev/null --connect-timeout $time_b https://www.baidu.com && a=1 || a=2
+		curl -so /dev/null --connect-timeout $time_b https://www.163.com && a=1 || a=2
 		sleep 1
 	done
 	return $a

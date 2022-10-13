@@ -308,7 +308,7 @@
 
 --- a/package/ipk/luci-app-overwall/root/etc/init.d/overwall
 +++ b/package/ipk/luci-app-overwall/root/etc/init.d/overwall
-@@ -87,7 +87,7 @@
+@@ -88,7 +88,7 @@
  		ssr)ret=$(which ssr-redir);;
  		ssr-local)ret=$(which ssr-local);;
  		ssr-server)ret=$(which ssr-server);;
@@ -317,7 +317,7 @@
  		trojan)ret=$(which trojan-plus);;
  		naiveproxy)ret=$(which naive);;
  		socks5|tun)ret=$(which redsocks2);;
-@@ -126,8 +126,10 @@
+@@ -127,8 +127,10 @@
  }
  EOF
  			plugin=$(uci_get_by_name $1 plugin)
@@ -330,7 +330,7 @@
  			fi;;
  		ssr)
  			cat > $config_file <<EOF
-@@ -248,9 +250,9 @@
+@@ -249,9 +251,9 @@
  	if ps -w | grep overwall-tcp | grep -qv grep;then
  		echo "Overwall has Started.";return 1
  	fi
@@ -340,9 +340,9 @@
 -	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules     : Check network status successful!";log "Over Rules     : Check IP/GFW files...")
 +	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...\|Check IP/GFW files successful!' || (log "Over Rules     : Check network status successful!";log "Over Rules     : Check IP/GFW files...")
  	mkdir -p /var/run /var/etc
- 	if [ ! -s $K/ipv4.txt ] || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw -o $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
+ 	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
  		log "Over Rules     : Download IP/GFW files..."
-@@ -284,6 +286,28 @@
+@@ -285,6 +287,28 @@
  		[ "$NF_SERVER" -a "$TG_SERVER" = "$NF_SERVER" ] && TG_NF=1 && TG_SERVER=
  		[ "$CU_SERVER" -a "$TG_SERVER" = "$CU_SERVER" ] && TG_CU=1 && TG_SERVER=
  	fi
@@ -371,7 +371,7 @@
  	if ! echo $server | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
  		if [ -f $LOCK ];then
  			r=1
-@@ -324,8 +348,6 @@
+@@ -325,8 +349,6 @@
  		UDP=1
  	fi
  
@@ -380,7 +380,7 @@
  	if [ $UDP ];then
  		[ $ttype = trojan -o $utype = trojan ] && [ $udp_local_port = $local_port ] && let udp_local_port=local_port+1;UDP="-S $udp_server -L $udp_local_port"
  	fi
-@@ -351,7 +373,6 @@
+@@ -352,7 +374,6 @@
  			fi
  			yb_ip=$(echo "$A" | sed -n 1p)
  		fi
@@ -388,7 +388,7 @@
  		yb_local_port=$(uci_get_by_name $YB_SERVER local_port 1234)
  		[ $yb_local_port = $local_port ] && let yb_local_port=local_port+1
  		[ "$utype" = trojan -o $ytype = trojan ] && [ $yb_local_port = "$udp_local_port" ] && let yb_local_port=yb_local_port+1
-@@ -374,7 +395,6 @@
+@@ -375,7 +396,6 @@
  			fi
  			nf_ip=$(echo "$A" | sed -n 1p)
  		fi
@@ -396,7 +396,7 @@
  		nf_local_port=$(uci_get_by_name $NF_SERVER local_port 1234)
  		[ $nf_local_port = $local_port ] && let nf_local_port=local_port+1
  		[ "$utype" = trojan -o $ntype = trojan ] && [ $nf_local_port = "$udp_local_port" ] && let nf_local_port=nf_local_port+1
-@@ -398,7 +418,6 @@
+@@ -399,7 +419,6 @@
  			fi
  			cu_ip=$(echo "$A" | sed -n 1p)
  		fi
@@ -404,7 +404,7 @@
  		cu_local_port=$(uci_get_by_name $CU_SERVER local_port 1234)
  		[ $cu_local_port = $local_port ] && let cu_local_port=local_port+1
  		[ "$utype" = trojan -o $ctype = trojan ] && [ $cu_local_port = "$udp_local_port" ] && let cu_local_port=cu_local_port+1
-@@ -423,7 +442,6 @@
+@@ -424,7 +443,6 @@
  			fi
  			tg_ip=$(echo "$A" | sed -n 1p)
  		fi
@@ -412,7 +412,7 @@
  		tg_local_port=$(uci_get_by_name $TG_SERVER local_port 1234)
  		[ $tg_local_port = $local_port ] && let tg_local_port=local_port+1
  		[ "$utype" = trojan -o $gtype = trojan ] && [ $tg_local_port = "$udp_local_port" ] && let tg_local_port=tg_local_port+1
-@@ -475,6 +493,7 @@
+@@ -476,6 +494,7 @@
  		service_start $cmd -r $kcp_server:$kcp_port -l :$server_port $password $kcp_param
  	fi
  	threads=$(uci_get_by_type global threads 0)
@@ -420,7 +420,7 @@
  	[ $threads = 0 ] && threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
  	cmd=$(f_bin $ttype)
  	[ ! $cmd ] && log "Main Node      : Can't find $(echo $ttype | tr a-z A-Z) program, start failed!" && return 1
-@@ -1121,16 +1140,15 @@
+@@ -1122,16 +1141,15 @@
  }
  
  start_local(){
@@ -441,7 +441,7 @@
  			log "Socks5 Node : $name Started!";;
  		vmess|vless)
  			$BIN_DIR/genxrayconfig $SO_SERVER tcp 0 $socks5_port $socks5_ip > $CONFIG_SOCK5_FILE
-@@ -1163,8 +1181,13 @@
+@@ -1164,8 +1182,13 @@
  }
  EOF
  		plugin=$(uci_get_by_name $1 plugin)
@@ -457,7 +457,7 @@
  		fi
  	else
  		cat >$3 <<EOF
-@@ -1271,6 +1294,8 @@
+@@ -1272,6 +1295,8 @@
  }
  
  stop(){
@@ -466,15 +466,15 @@
  	kill -9 $(ps -w | grep $BIN_DIR/rules | grep -v grep | awk '{print$1}') 2>/dev/null
  	kill -9 $(ps -w | grep gfw.b64 | grep -v grep | awk '{print$1}') 2>/dev/null
  	kill -9 $(ps -w | grep $BIN_DIR/checknetwork | grep -v grep | awk '{print$1}') 2>/dev/null
-@@ -1282,7 +1307,7 @@
+@@ -1283,7 +1308,7 @@
  	killall -q -9 smartdns chinadns-ng kcptun-client xray-plugin microsocks
  	$BIN_DIR/rules -f
  	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
 -	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt
 +	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt $K/bin
- 	[ $run_mode = gfw -o $gfw_mode = 0 ] || rm -f $K/gfw.list
+ 	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
+ 	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
  	[ $run_mode = router ] || rm -f $K/ipv6.txt
- 	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
 
 --- /dev/null
 +++ b/package/ipk/luci-app-overwall/root/usr/share/overwall/downbin

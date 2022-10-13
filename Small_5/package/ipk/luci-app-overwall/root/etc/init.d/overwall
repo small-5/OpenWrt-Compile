@@ -62,6 +62,7 @@ SO_SERVER=$(uci_get_by_type socks5_proxy server)
 [ "$SO_SERVER" = same ] && SO_SERVER=$GLOBAL_SERVER
 [ $(uci_get_by_name $SO_SERVER server) ] || SO_SERVER=
 dns_mode_l=$(uci_get_by_type global dns_mode_l 0)
+lan_gm_ip=$(uci_get_by_type access_control lan_gm_ips)
 
 gen_log()(
 	[ -s $LOG ] && echo '------------------------------------------------------------------------------------------------------------------------------------------------------------' >> $LOG
@@ -188,7 +189,7 @@ start_dns(){
 }
 
 check_net(){
-	if ! curl -so /dev/null -m 3 www.baidu.com;then
+	if ! curl -so /dev/null -m 3 www.163.com;then
 		log "Over Rules     : Wait for network to connect..."
 		firstdown 1;exit 1
 	fi
@@ -252,7 +253,7 @@ rules(){
 	check_net
 	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules     : Check network status successful!";log "Over Rules     : Check IP/GFW files...")
 	mkdir -p /var/run /var/etc
-	if [ ! -s $K/ipv4.txt ] || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw -o $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
+	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
 		log "Over Rules     : Download IP/GFW files..."
 		firstdown 2;exit
 	fi
@@ -454,7 +455,7 @@ rules(){
 
 	r=1
 	while ! $BIN_DIR/rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
-		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$(uci_get_by_type access_control lan_gm_ips)" -D "$proxyport" $mode $UDP $YB $NF $CU $TG $P $D;do
+		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$lan_gm_ip" -D "$proxyport" $mode $UDP $YB $NF $CU $TG $P $D;do
 		[ $r -ge 20 ] && log "Over Rules     : Start iptables rules failed!" && return 1
 		let r++;sleep 1
 	done
@@ -1283,7 +1284,8 @@ stop(){
 	$BIN_DIR/rules -f
 	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
 	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt
-	[ $run_mode = gfw -o $gfw_mode = 0 ] || rm -f $K/gfw.list
+	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
+	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
 	[ $run_mode = router ] || rm -f $K/ipv6.txt
 	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
 	if [ ! "$R" -o ! $GLOBAL_SERVER ];then

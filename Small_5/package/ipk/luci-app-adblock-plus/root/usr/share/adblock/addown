@@ -22,7 +22,7 @@ clean(){
 if [ "$2" = 1 ];then
 	mkdir -p $A
 	echo "`eval $C` [Check network status]" > $B
-	while ! curl -so /dev/null -m 3 www.baidu.com;do
+	while ! curl -so /dev/null -m 3 www.163.com;do
 		cat $B | grep -q Wait || echo "`eval $C` [Wait for network to connect]" >> $B
 		sleep 2
 	done
