@@ -475,6 +475,9 @@ msgstr "混淆密碼（可選）"
 msgid "Congestion"
 msgstr "擁塞控制"
 
+msgid "TLS Fingerprint"
+msgstr "TLS指紋"
+
 msgid "allowInsecure"
 msgstr "允許不安全連接"
 

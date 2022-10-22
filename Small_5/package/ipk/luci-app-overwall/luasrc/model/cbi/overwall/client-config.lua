@@ -337,21 +337,24 @@ o:depends({type="vless",transport="kcp"})
 o=s:option(Flag,"congestion",translate("Congestion"))
 o:depends("transport","kcp")
 
-o=s:option(Flag,"insecure",translate("allowInsecure"))
-o.description=translate("Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host")
-o:depends("type","vmess")
-o:depends("type","vless")
-o:depends("type","trojan")
-
 o=s:option(Flag,"tls",translate("TLS"))
 o:depends("type","vmess")
-o:depends("type","vless")
-o:depends("type","trojan")
+o:depends({type="vless",xtls=0})
 
 o=s:option(Flag,"xtls",translate("XTLS"))
-o:depends("type","vless")
+o:depends({type="vless",tls=0})
 
 o=s:option(Value,"tls_host",translate("TLS Host"))
+o:depends("type","trojan")
+o:depends("tls",1)
+o:depends("xtls",1)
+
+o=s:option(ListValue,"fingerprint",translate("TLS Fingerprint"))
+o:value("",translate("None"))
+o:value("chrome","Chrome")
+o:value("firefox","Firefox")
+o:value("safari","Safari")
+o:value("randomized","Randomized")
 o:depends("tls",1)
 o:depends("xtls",1)
 
@@ -360,20 +363,17 @@ for _,v in ipairs(flows) do o:value(v,v) end
 o.default="xtls-rprx-splice"
 o:depends("xtls",1)
 
-o=s:option(Flag,"mux",translate("Mux"))
-o:depends("type","vmess")
-o:depends({type="vless",xtls=0})
-
-o=s:option(Value,"concurrency",translate("Concurrency"))
-o.datatype="uinteger"
-o.default=8
-o:depends("mux",1)
+o=s:option(Flag,"insecure",translate("allowInsecure"))
+o.description=translate("Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host")
+o:depends("type","trojan")
+o:depends("tls",1)
+o:depends("xtls",1)
 
 o=s:option(Flag,"certificate",translate("Self-signed Certificate"))
 o.description=translate("If you have a self-signed certificate,please check the box")
 o:depends({type="trojan",insecure=0})
-o:depends({type="vmess",insecure=0})
-o:depends({type="vless",insecure=0})
+o:depends({tls=1,insecure=0})
+o:depends({xtls=1,insecure=0})
 
 o=s:option(DummyValue,"upload",translate("upload"))
 o.template="overwall/certupload"
@@ -415,6 +415,15 @@ o.default=cert_dir
 o.description=translate("Please confirm the current certificate path")
 o:value(cert_dir)
 o:depends("certificate",1)
+
+o=s:option(Flag,"mux",translate("Mux"))
+o:depends("type","vmess")
+o:depends({type="vless",xtls=0})
+
+o=s:option(Value,"concurrency",translate("Concurrency"))
+o.datatype="uinteger"
+o.default=8
+o:depends("mux",1)
 
 o=s:option(Flag,"fast_open",translate("TCP Fast Open"))
 o:depends("type","ssr")

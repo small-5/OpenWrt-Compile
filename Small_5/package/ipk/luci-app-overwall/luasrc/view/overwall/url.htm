@@ -232,8 +232,8 @@ function buildUrl(btn,urlname,sid){
 		}
 		params+="&type="+v_transport;
 		params+=opt.query("encryption","vless_encryption");
-		if (opt.get("tls").checked || opt.get("xtls").checked){
-			if (opt.get("xtls").checked){
+		if (opt.get("tls")?.checked || opt.get("xtls")?.checked){
+			if (opt.get("xtls")?.checked){
 				v_security="xtls";
 				var v_flow=opt.get("vless_flow").value;
 				params+="&flow="+v_flow;
@@ -257,9 +257,10 @@ function buildUrl(btn,urlname,sid){
 			"@"+v_server.value+
 			":"+v_port.value+"/?";
 		var params='';
-		if (opt.get("tls").checked){
+		if (opt.get("tls_host").value!=''){
 			params+=opt.query("sni","tls_host");
-			params+="&tls=1"
+		}
+		if (opt.get("insecure").checked){
 			params+=opt.query("allowinsecure","insecure");
 		}
 		params+="#"+encodeURI(v_alias);
@@ -459,11 +460,8 @@ function fromUrl(btn,urlname,sid){
 		opt.set('server_port',m.port);
 		opt.set('password',decodeURIComponent(password));
 		if (queryParam.peer || queryParam.sni){
-			opt.set('tls',1);
 			opt.set('tls_host',queryParam.peer || queryParam.sni);
 			opt.set('insecure',queryParam.allowinsecure=='1');
-		}else{
-			opt.set('tls',0);
 		}
 		if (m.hash){
 			opt.set('alias',decodeURI(m.hash.substr(1)));

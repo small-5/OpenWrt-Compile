@@ -59,10 +59,12 @@ outbound={
 		security=(server.xtls=='1') and "xtls" or (server.tls=='1') and "tls" or "none",
 		tlsSettings=(server.tls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
+			fingerprint=server.fingerprint or nil,
 			serverName=tls_host
 		} or nil,
 		xtlsSettings=(server.xtls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
+			fingerprint=server.fingerprint or nil,
 			serverName=tls_host
 		} or nil,
 		tcpSettings=(server.transport=="tcp" and server.tcp_guise=="http") and {
