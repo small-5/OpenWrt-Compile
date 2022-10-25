@@ -1,6 +1,8 @@
+require "luci.model.uci"
 require 'nixio'
 fs=require 'nixio.fs'
 sys=require 'luci.sys'
+ucic=luci.model.uci.cursor()
 nixio.signal(2,"dfl")
 if arg[1]==nil then
 	os.exit(1)
@@ -17,8 +19,47 @@ if b:find("By Small_5")==nil then
 		print(b)
 	elseif arg[1]=="C" then
 		print(A)
+	elseif arg[1]=="D" then
+		sys.call("echo Hardware Code: Unauthorized system >> /tmp/overwall.log")
+	elseif arg[1]=="E" then
+		print("Unauthorized")
 	end
 	os.exit(1)
+end
+local function parse(a,b)
+	local A=sys.exec('echo "'..a..'"|grep "'..b..'"')
+	return sys.exec('echo "'..A..'"|sed -n 1p|sed "s/.*: //"')
+end
+local function get_mac()
+	local A="/sys/class/net/eth2"
+	A=A.."/address"
+	A=A:gsub("2","1")
+	if not nixio.fs.access(A) then
+		A=A:gsub("1","0")
+	end
+	return A
+end
+local function get_board()
+	if nixio.fs.access("/proc/device-tree/model") then
+		return "/proc/device-tree/model"
+	else
+		return "/tmp/sysinfo/board_name"
+	end
+end
+local function hard_code()
+	local A=sys.exec("cat /proc/cpuinfo")
+	local B=parse(A,"model")
+	local C=parse(A,"flags")
+	local D=parse(A,"Features")
+	local E=fs.readfile(get_mac())
+	local F=fs.readfile(get_board()) or "0"
+	A=D..C..B..F:gsub(".$","\n")..E
+	if sys.call("opkg print-architecture | grep -q x86")==0 then
+		local G=sys.exec('dmidecode -s system-uuid')
+		A=A..G
+	end
+	A=sys.exec('echo -n "'..A:gsub("\n"," ")..'"|sha256sum|cut -d " " -f1')
+	return A:gsub("\n","")
 end
 c=b:gsub("Wrt.*By","Wrt By")
 c=c:gsub("Small_5 r.*","Small_5")
@@ -34,15 +75,22 @@ c=c:gsub("\".*","")
 c=c:gsub(".* By","By")
 d=d.." "..c
 if arg[1]=="A" then
-	A="U2FsdGVkX18AIEmLFL02u7IQVbwL5H5YnvfdQIkZr4oXiJfB+Z6htdMa/vO8zkB2pILAvKieWEtVIlbviSF48Q=="
-	A=sys.exec("echo "..A.." | openssl aes-128-cbc -d -pbkdf2 -k \""..d.."\" -base64")
+	A=ucic:get_first('overwall','global','auth_1','0')
+	A=sys.exec("echo "..A.." | openssl aes-128-cbc -d -pbkdf2 -k \""..d.."\" -base64 2>/dev/null")
 	A=A:gsub("\n","")
 	print(A)
 elseif arg[1]=="B" then
 	print(b)
 elseif arg[1]=="C" then
+	A=ucic:get_first('overwall','global','auth_2','0')
 	t=os.date("!%A%b%Y-%m-%d%H",os.time()+1*60*60)
-	d=sys.exec("echo -n "..d.." | openssl aes-128-cbc -pbkdf2 -nosalt -k "..t.." -base64 | sed 's/[^A-Za-z0-9]//g'")
+	d=sys.exec("echo -n "..d..hard_code().." | openssl aes-128-cbc -pbkdf2 -nosalt -k "..t..A.." -base64 | sed 's/[^A-Za-z0-9]//g'")
 	d=d:gsub("\n","")
+	d=d:sub(20,29)
 	print("?"..d)
+elseif arg[1]=="D" then
+	sys.call("sed -i '/Hardware Code/d' /tmp/overwall.log;echo Hardware Code: "..hard_code().." >> /tmp/overwall.log")
+elseif arg[1]=="E" then
+	A=hard_code()
+	print(A)
 end

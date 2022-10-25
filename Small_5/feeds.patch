@@ -90,15 +90,15 @@
 
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
-@@ -604,7 +604,7 @@
- 
+@@ -759,7 +759,7 @@
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:740
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:736
  msgid "Replaces [DOMAIN] in Update-URL (URL-encoded)"
 -msgstr "取代 Update-URL 中的 [DOMAIN] (URL-encoded)"
 +msgstr "替換更新 URL（已編碼 URL）中的 [DOMAIN]"
  
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:752
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:748
- msgid "Replaces [PASSWORD] in Update-URL (URL-encoded)"
 
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
 +++ b/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
@@ -149,7 +149,7 @@
  				-- no process running and NOT enabled
  				elseif pid == 0 and s['enabled'] == '0' then
  					next_update  = "Disabled"
-@@ -276,6 +283,18 @@
+@@ -281,6 +288,18 @@
  
  			return res
  		end
@@ -238,7 +238,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2340,7 +2340,7 @@
+@@ -2380,7 +2380,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -247,7 +247,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3646,17 +3646,6 @@
+@@ -3687,17 +3687,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -265,7 +265,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3740,22 +3729,6 @@
+@@ -3781,22 +3770,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -288,16 +288,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -3766,7 +3739,7 @@
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js:262
- msgid "IPv6 Neighbours"
--msgstr "IPv6網路芳鄰"
-+msgstr "IPv6鄰居"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:635
- msgid "IPv6 RA Settings"
-@@ -9084,7 +9057,7 @@
+@@ -9178,7 +9151,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -882,21 +873,6 @@
  
  $(eval $(call BuildPackage,smartdns))
 
---- a/feeds/packages/net/wsdd2/Makefile
-+++ b/feeds/packages/net/wsdd2/Makefile
-@@ -5,9 +5,8 @@
- 
- PKG_SOURCE_PROTO:=git
- PKG_SOURCE_URL:=https://github.com/Netgear/wsdd2.git
--PKG_SOURCE_DATE:=2021-10-22
--PKG_SOURCE_VERSION:=9831daf2e14e0e112b5ad95224e9167072d52aa3
--PKG_MIRROR_HASH:=403d7d20bf2ae67e898db4543c61cc07f337cedf038a11c84a2af5504cfb82e9
-+PKG_SOURCE_DATE:=2022-04-25
-+PKG_SOURCE_VERSION:=e37443ac4c757dbf14167ec3f754ebe88244ad4b
- 
- PKG_LICENSE:=GPL-3.0-only
- PKG_LICENSE_FILES:=COPYING
-
 --- a/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
 +++ b/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
 @@ -13,10 +13,11 @@
@@ -924,7 +900,7 @@
 
 --- a/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
 +++ b/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
-@@ -260,10 +260,10 @@
+@@ -264,10 +264,10 @@
  msgid ""
  "LoginFailExit controls whether or not the client should exit after a failed "
  "login attempt. If false, the client will retry until a login attempt "
@@ -935,8 +911,19 @@
 -"試，直到成功登錄為止。<br />預設情況下，此值為true。"
 +"試，直到成功登錄為止。<br />預設情況下，此值為false。"
  
- #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:155
+ #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:165
  msgid "NOT RUNNING"
+@@ -401,10 +401,6 @@
+ msgstr "TCP多路複用器"
+ 
+ #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:37
+-msgid "TLS"
+-msgstr "傳輸層安全性協定"
+-
+-#: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:37
+ msgid ""
+ "TLSEnable specifies whether or not TLS should be used when communicating "
+ "with the server."
 
 --- a/feeds/packages/net/frp/files/frpc.config
 +++ b/feeds/packages/net/frp/files/frpc.config
@@ -1020,7 +1007,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=6a71d71e587357521b2f8002f7c78f79c1c8e609
++PKG_SOURCE_VERSION:=cf66ca10b4f318eacaf59733909902172a2ba4f0
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.44.0
@@ -1054,21 +1041,6 @@
 
 --- a/feeds/packages/net/https-dns-proxy/Makefile
 +++ b/feeds/packages/net/https-dns-proxy/Makefile
-@@ -1,12 +1,12 @@
- include $(TOPDIR)/rules.mk
- 
- PKG_NAME:=https-dns-proxy
--PKG_VERSION:=2022-08-12
-+PKG_VERSION:=2022-08-13
- PKG_RELEASE:=1
- 
- PKG_SOURCE_PROTO:=git
- PKG_SOURCE_URL:=https://github.com/aarond10/https_dns_proxy/
--PKG_SOURCE_DATE:=2022-08-12
-+PKG_SOURCE_DATE:=2022-08-13
- PKG_SOURCE_VERSION:=a344d192e22e0c133aecfd766fefa7474cf2594f
- PKG_MIRROR_HASH:=d3de80df13157e1f5066689880a7132532895d24b36f16c9f0b2acf764cf773f
- PKG_MAINTAINER:=Stan Grishin <stangri@melmac.ca>
 @@ -33,19 +33,9 @@
  Please see https://docs.openwrt.melmac.net/https-dns-proxy/ for more information.
  endef
@@ -1084,7 +1056,7 @@
 -	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/https_dns_proxy $(1)/usr/sbin/https-dns-proxy
 -	$(INSTALL_BIN) ./files/https-dns-proxy.init $(1)/etc/init.d/https-dns-proxy
--	$(SED) "s|^\(PKG_VERSION\).*|\1='$(PKG_VERSION)-$(PKG_RELEASE)'|" $(1)/etc/init.d/https-dns-proxy
+-	$(SED) "s|^\(readonly PKG_VERSION\).*|\1='$(PKG_VERSION)-$(PKG_RELEASE)'|" $(1)/etc/init.d/https-dns-proxy
 -	$(INSTALL_CONF) ./files/https-dns-proxy.config $(1)/etc/config/https-dns-proxy
  endef
  
@@ -1096,7 +1068,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=2e5215a35d9145edf72e9e088801699c423bf7e7
++PKG_SOURCE_VERSION:=208deccd09b3e9f90fc5c39c16271a53c1128ef2
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20210922
@@ -1287,11 +1259,11 @@
 @@ -1,18 +1,24 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=ed9b99cfc82b3a211f51e321ae330aa62ba9119d
++PKG_SOURCE_VERSION:=341d317d0c691227d277abcd338c107d1207fc0e
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.6.0
-+PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_VERSION)
++PKG_VERSION:=1.6.1_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1826,3 +1798,18 @@
  				end
  
  				uci.unload()
+
+--- a/feeds/luci/luci.mk
++++ b/feeds/luci/luci.mk
+@@ -113,9 +113,8 @@
+ PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
+ 	variant="LuCI"; \
+ 	if git log -1 >/dev/null 2>/dev/null; then \
+-		branch=$$(git branch --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
+-		branch=$${branch:-$$(git branch --no-abbrev --contains 2>/dev/null)}; \
+-		branch=$${branch#? }; branch=$${branch#*/}; \
++		branch=$$(git branch --format='%(refname:strip=3)' --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
++		branch=$${branch:-$$(git branch --format='%(refname:strip=2)' --no-abbrev --contains 2>/dev/null | tail -n1)}; \
+ 		if [ "$$branch" != "master" ]; then \
+ 			variant="LuCI $${branch:-unknown} branch"; \
+ 		else \

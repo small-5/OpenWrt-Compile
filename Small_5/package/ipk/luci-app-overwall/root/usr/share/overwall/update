@@ -12,28 +12,42 @@ Y=$(lua /usr/share/overwall/auth B)
 Z="lua /usr/share/overwall/auth C"
 N=overwall
 C=$(uci -q get $N.@global[0].run_mode)
+D=$(uci -q get $N.@global[0].auth_3)
+E=$(lua /usr/share/overwall/auth E)
 
 log(){
 	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
 }
 
 clean(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Rules     : Download failed" >> /tmp/overwall.log
-	rm -f $LOCK
+	echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
+	rm -f $LOCK /var/lock/overwall.lock
 	exit 1
 }
 
+if ! [ "$D" ];then
+	uci set $N.@global[0].auth_3=$E
+	uci commit
+	D=$(uci -q get $N.@global[0].auth_3)
+fi
+
+if ! [ "$(uci -q get $N.@global[0].auth_1)" -a "$(uci -q get $N.@global[0].auth_2)" ];then
+	clean "Over Rules     : No encrypted code or authorization code"
+elif [ "$D" != "$E" ];then
+	uci -q del $N.@global[0].auth_2
+	uci set $N.@global[0].auth_3=$E
+	uci commit
+	clean "Over Rules     : Hardware code change,need new authorization code"
+fi
+
+[ $A = Y ] && mkdir -p $TMP
+
 if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_ips)" ] || [ $C = oversea ];then
-	if [ $A = Y ];then
-		mkdir -p $TMP
-		r=1
-		while ! B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z));do
-			[ $r -ge 20 ] && clean || let r++
-			sleep 2
-		done
-	else
-		B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z))
-	fi
+	r=1
+	while ! B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z));do
+		[ $r -ge 20 ] && clean "Over Rules     : Download failed" || let r++
+		sleep 2
+	done
 	if [ "$B" ];then
 		echo "$B" | base64 -d > /tmp/ipv4.txt
 		if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
@@ -49,16 +63,11 @@ if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_i
 fi
 
 if [ $C = router ];then
-	if [ $A = Y ];then
-		mkdir -p $TMP
-		while ! D=$(curl -Lfsm 20 -A "$Y" $X/t8eOh94EJIHTXR6$(eval $Z));do
-			sleep 2
-		done
-	else
-		D=$(curl -Lfsm 20 -A "$Y" $X/t8eOh94EJIHTXR6$(eval $Z))
-	fi
-	if [ "$D" ];then
-		echo "$D" | base64 -d > /tmp/ipv6.txt
+	while ! F=$(curl -Lfsm 20 -A "$Y" $X/t8eOh94EJIHTXR6$(eval $Z));do
+		sleep 2
+	done
+	if [ "$F" ];then
+		echo "$F" | base64 -d > /tmp/ipv6.txt
 		if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
 			log "Over Update  : IPv6 List is up to date"
 		else
@@ -72,13 +81,9 @@ if [ $C = router ];then
 fi
 
 if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];then
-	if [ $A = Y ];then
-		while ! curl -Lfsm 20 -A "$Y" -o /tmp/gfw.b64 $X/avtPeqDKt645Arm$(eval $Z);do
-			sleep 2
-		done
-	else
-		curl -Lfsm 20 -A "$Y" -o /tmp/gfw.b64 $X/avtPeqDKt645Arm$(eval $Z)
-	fi
+	while ! curl -Lfsm 20 -A "$Y" -o /tmp/gfw.b64 $X/avtPeqDKt645Arm$(eval $Z);do
+		sleep 2
+	done
 	if [ -s /tmp/gfw.b64 ];then
 		$DIR/gfw
 		if cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then

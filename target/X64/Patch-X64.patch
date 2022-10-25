@@ -145,29 +145,3 @@
  }
  menuentry "@TITLE@ (failsafe)" {
  	linux /boot/vmlinuz failsafe=true @ROOTPART@ @CMDLINE@ noinitrd
-
---- a/target/linux/x86/Makefile
-+++ b/target/linux/x86/Makefile
-@@ -10,8 +10,8 @@
- FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
- SUBTARGETS:=generic legacy geode 64
- 
--KERNEL_PATCHVER:=5.10
--KERNEL_TESTING_PATCHVER:=5.15
-+KERNEL_PATCHVER:=5.15
-+KERNEL_TESTING_PATCHVER:=5.10
- 
- KERNELNAME:=bzImage
- 
-
---- a/target/linux/x86/64/config-5.10
-+++ b/target/linux/x86/64/config-5.10
-@@ -388,7 +388,7 @@
- CONFIG_SCHED_MC_PRIO=y
- CONFIG_SCHED_SMT=y
- CONFIG_SCSI_VIRTIO=y
--# CONFIG_SENSORS_AMD_ENERGY is not set
-+CONFIG_SENSORS_AMD_ENERGY=y
- CONFIG_SENSORS_CORETEMP=y
- CONFIG_SENSORS_FAM15H_POWER=y
- CONFIG_SENSORS_I5500=y

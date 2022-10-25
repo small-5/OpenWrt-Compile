@@ -738,3 +738,12 @@ msgstr "清空日誌"
 
 msgid "Download Log"
 msgstr "下載日誌"
+
+msgid "Authorization Code"
+msgstr "授權碼"
+
+msgid "Encrypted Code"
+msgstr "加密代碼"
+
+msgid "Hardware Code"
+msgstr "硬件碼"

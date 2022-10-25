@@ -91,9 +91,9 @@
 -				EOF
 -			}
  		;;
- 	esac
- }
-@@ -303,7 +284,8 @@
+ 
+ 		qmi|\
+@@ -311,7 +292,8 @@
  		delete system.@system[0]
  		add system system
  		set system.@system[-1].hostname='OpenWrt'
@@ -103,7 +103,7 @@
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='64'
  		set system.@system[-1].urandom_seed='0'
-@@ -311,11 +293,9 @@
+@@ -319,11 +301,9 @@
  		delete system.ntp
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
@@ -797,7 +797,7 @@
  # builddir dependencies
 +$(curdir)/upx/compile := $(curdir)/ucl/compile
  $(curdir)/autoconf/compile := $(curdir)/m4/compile
- $(curdir)/automake/compile := $(curdir)/m4/compile $(curdir)/autoconf/compile $(curdir)/pkgconf/compile $(curdir)/xz/compile
+ $(curdir)/automake/compile := $(curdir)/autoconf/compile $(curdir)/pkgconf/compile $(curdir)/xz/compile
  $(curdir)/b43-tools/compile := $(curdir)/bison/compile
 
 --- a/package/network/config/netifd/Makefile

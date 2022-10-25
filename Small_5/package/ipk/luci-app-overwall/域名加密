@@ -1,9 +1,9 @@
 KEY="$(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}')"
 
 加密:
-echo https://ztuhge36wm6gpb395f13.sg001.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
+echo https://9vmwdsms8vph6xty886.rocforever.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
 解密:
-echo U2FsdGVkX18AIEmLFL02u7IQVbwL5H5YnvfdQIkZr4oXiJfB+Z6htdMa/vO8zkB2pILAvKieWEtVIlbviSF48Q== | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
+echo U2FsdGVkX1/CmMpuM8S6gZd9/QQXiTkItsIRaSBNB4fpc7FX+oqTyeB8mMJiFQEO0UoJ0QyfR4CFni8toHBveg== | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
 
 OP生成QS(查詢字符串)
 qs=$(echo -n $(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}') | openssl aes-128-cbc -pbkdf2 -nosalt -k $(TZ=UTC-1 date '+%A%b%Y-%m-%d%H') -base64 | sed 's/[^A-Za-z0-9]//g')

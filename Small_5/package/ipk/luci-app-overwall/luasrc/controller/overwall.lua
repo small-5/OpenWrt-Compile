@@ -19,7 +19,8 @@ function index()
 	if luci.sys.call("which ssr-server >/dev/null")==0 or luci.sys.call("which ss-server >/dev/null")==0 or luci.sys.call("which microsocks >/dev/null")==0 then
 		entry({"admin","services","overwall","server"},arcombine(cbi("overwall/server"),cbi("overwall/server-config")),_("Overwall Server"),7).leaf=true
 	end
-	entry({"admin","services","overwall","log"},form("overwall/log"),_("Log"),8).leaf=true
+	entry({"admin","services","overwall","auth"},cbi("overwall/auth"),_("Authorization Code"),8).leaf=true
+	entry({"admin","services","overwall","log"},form("overwall/log"),_("Log"),9).leaf=true
 	entry({"admin","services","overwall","status"},call("status"))
 	entry({"admin","services","overwall","check"},call("check"))
 	entry({"admin","services","overwall","ip"},call("ip"))
@@ -29,6 +30,7 @@ function index()
 	entry({"admin","services","overwall","ping"},call("ping"))
 	entry({"admin","services","overwall","getlog"},call("getlog"))
 	entry({"admin","services","overwall","dellog"},call("dellog"))
+	entry({"admin","services","overwall","hard_code"},call("hard_code"))
 end
 
 function status()
@@ -72,7 +74,7 @@ function ip()
 	if http.formvalue("set")=="0" then
 		r=EXEC("cat /tmp/etc/overwall.include | grep -Eo '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | sed -n 1p")
 	else
-		r=EXEC("curl -Lsm 5 https://ip.sg001.top/cdn-cgi/trace | grep ip= | cut -d = -f2")
+		r=EXEC("curl -Lsm 5 https://ip.rocforever.top/cdn-cgi/trace | grep ip= | cut -d = -f2")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ret=r})
@@ -86,7 +88,7 @@ function refresh()
 	local b=EXEC("echo -n $(lua /usr/share/overwall/auth B)")
 	local c=EXEC("echo -n $(lua /usr/share/overwall/auth C)")
 	if set=="0" then
-		sret=CALL("curl -Lfso /tmp/gfw.b64 -A \""..b.."\" "..a.."/avtPeqDKt645Arm"..c)
+		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/gfw.b64 -A \""..b.."\" "..a.."/avtPeqDKt645Arm"..c)
 		if sret==0 then
 			EXEC("/usr/share/overwall/gfw")
 			icount=EXEC("cat /tmp/gfwnew.txt | wc -l")
@@ -106,7 +108,7 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/gfwnew.txt")
 	elseif set=="1" then
-		sret=CALL("curl -Lfso /tmp/ipv4.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
+		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/ipv4.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
 		if sret==0 then
 			EXEC("cat /tmp/ipv4.tmp | base64 -d > /tmp/ipv4.txt")
 			icount=EXEC("cat /tmp/ipv4.txt | wc -l")
@@ -126,7 +128,7 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/ipv4.txt /tmp/ipv4.tmp")
 	elseif set=="2" then
-		sret=CALL("curl -Lfso /tmp/ipv6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
+		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/ipv6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
 		if sret==0 then
 			EXEC("cat /tmp/ipv6.tmp | base64 -d > /tmp/ipv6.txt")
 			icount=EXEC("cat /tmp/ipv6.txt | wc -l")
@@ -209,19 +211,23 @@ end
 function getlog()
 	logfile="/tmp/overwall.log"
 	if not fs.access(logfile) then
-		http.write("")
+		http.write('')
 		return
 	end
 	local f=io.open(logfile,"r")
 	local a=f:read("*a") or ""
 	f:close()
 	a=string.gsub(a,"\n$","")
-	http.prepare_content("text/plain; charset=utf-8")
+	http.prepare_content("text/plain;charset=utf-8")
 	http.write(a)
 end
 
 function dellog()
 	fs.writefile("/tmp/overwall.log","")
-	http.prepare_content("application/json")
 	http.write('')
+end
+
+function hard_code()
+	CALL("lua /usr/share/overwall/auth D")
+	getlog()
 end
