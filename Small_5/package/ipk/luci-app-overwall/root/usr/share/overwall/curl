@@ -1,0 +1,74 @@
+#!/bin/sh
+[ $1 ] || exit
+
+judge(){
+	echo $* | grep -wqE 'OpenWrt 民國[^ ]* By Small_5' || return 1
+}
+
+parse(){
+	echo $* | sed 's/ 民國.* /-民國 By /'
+}
+
+A=`cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}'`
+B=`cat /usr/lib/os-release`
+C=`echo "$B" | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}'`
+B=`echo "$B" | grep OPENWRT_RELEASE | awk -F "[\"\"]" '{print $2}'`
+for i in "$A" "$B" "$C";do
+	if ! judge $i;then
+		echo Unauthorized
+		exit
+	fi
+done
+B="中華民國千秋萬世直到永遠 $(parse $A)-$(parse $B)/$(parse $C)"
+
+get_mac(){
+	local a=/sys/class/net/eth1/address
+	local b
+	[ -s $a ] || a=`echo $a | sed 's/1/0/'`
+	if which ethtool >/dev/null;then
+		b=`ethtool -P $(echo $a | grep -o eth.) | awk '{print$3}'`
+	fi
+	[ $b ] && echo $b || cat $a
+}
+
+get_board(){
+	if [ -s /proc/device-tree/model ];then
+		cat /proc/device-tree/model
+	elif [ -s /tmp/sysinfo/board_name ];then
+		cat /tmp/sysinfo/board_name
+	fi
+}
+
+hard_code(){
+	local a=`cat /proc/cpuinfo | grep -E "model name|cpu model" | sed -n 1p | sed 's/.*: //'`
+	local b=`get_mac`
+	local c=`get_board`
+	local d=`dmidecode -s system-uuid 2>/dev/null`
+	echo $B $a $b $c $d | sha256sum | awk '{print$1}'
+}
+
+if [ $1 = 2 ];then
+	hard_code
+	exit
+elif [ $1 = 3 ];then
+	sed -i '/Hardware Code/d' /tmp/overwall.log 2>/dev/null
+	echo Hardware Code: $(hard_code) >> /tmp/overwall.log
+	exit
+fi
+
+qs(){
+	export PASS="$B$(TZ=UTC-1 date '+%A%b%Y-%m-%d%H')$(uci -q get overwall.@global[0].auth_2)";echo $(hard_code) | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -pass env:PASS | sed 's/[^A-Za-z0-9]//g' | cut -c 20-29
+}
+
+C=`uci -q get overwall.@global[0].auth_1`
+C=`export PASS="$B";echo ${C:0:9}${C:16:10}${C:29:5}${C:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:PASS`
+
+if [ $1 = 0 ];then
+	[ "$2" -a "$3" -a "$4" ] || exit 1
+	echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $4 $3 -K -
+	exit $?
+elif [ $1 = 1 ];then
+	[ "$2" -a "$3" ] || exit 1
+	echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -
+	exit $?
+fi

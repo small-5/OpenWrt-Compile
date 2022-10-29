@@ -2,7 +2,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-overwall
 PKG_VERSION:=1.1
-PKG_RELEASE:=5
+PKG_RELEASE:=6
+PKG_MAINTAINER:=Small_5
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -83,9 +84,11 @@ define Build/Prepare
 	mkdir $(PKG_BUILD_DIR)/i18n
 	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
-define Build/Compile
+	cp src/* $(PKG_BUILD_DIR)
+	cp root/usr/share/overwall/curl $(PKG_BUILD_DIR)
+	shc -rBf $(PKG_BUILD_DIR)/curl
+	mv $(PKG_BUILD_DIR)/curl.x.c $(PKG_BUILD_DIR)/curl.c
+	rm $(PKG_BUILD_DIR)/{curl,curl.x}
 endef
 
 define Package/$(PKG_NAME)/conffiles
@@ -96,8 +99,9 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	cp -pr luasrc/* $(1)/usr/lib/lua/luci
 	cp -pr root/* $(1)/
-	luac -s -o $(1)/usr/share/overwall/auth  $(1)/usr/share/overwall/auth
+	#luac -s -o $(1)/usr/share/overwall/auth  $(1)/usr/share/overwall/auth
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/curl $(1)/usr/share/overwall/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

@@ -26,51 +26,45 @@ end
 
 function refresh_data()
 local set=luci.http.formvalue("set")
-local icount=0
+local i=0
 
 if set=="0" then
-	a=EXEC("echo -n $(lua /usr/share/adblock/auth A)/ad-rules")
-	b=EXEC("echo -n $(lua /usr/share/adblock/auth B)")
-	c=EXEC("echo -n $(lua /usr/share/adblock/auth C)")
-	sret=CALL("curl -m 20 -Lfso /tmp/ad.conf -A \""..b.."\" "..a.."/dnsmasq.adblock"..c)
-	if sret==0 then
+	if CALL("/usr/share/overwall/curl 0 ad-rules/dnsmasq.adblock /tmp/ad.conf '-Lfsm 20 -o'")==0 then
 		CALL("/usr/share/adblock/adblock gen")
-		icount=EXEC("cat /tmp/ad.conf | wc -l")
-		if tonumber(icount)>0 then
-			oldcount=EXEC("cat /tmp/adblock/adblock.conf | wc -l")
-			if tonumber(icount) ~= tonumber(oldcount) then
+		i=EXEC("cat /tmp/ad.conf | wc -l")
+		if tonumber(i)>0 then
+			if CALL("cmp -s /tmp/ad.conf /tmp/adblock/adblock.conf")==0 then
+				r=0
+			else
 				EXEC("mv -f /tmp/ad.conf /tmp/adblock/adblock.conf")
 				EXEC("/etc/init.d/dnsmasq restart &")
-				retstring=tostring(math.ceil(tonumber(icount)))
-			else
-				retstring=0
+				r=tostring(math.ceil(tonumber(i)))
 			end
 			CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 		else
-			retstring="-1"
+			r="-1"
 		end
 		EXEC("rm -f /tmp/ad.conf")
 	else
-		retstring="-1"
+		r="-1"
 	end
 else
 	EXEC("/usr/share/adblock/adblock down")
-	icount=EXEC("find /tmp/ad_tmp/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
-	if tonumber(icount)>0 then
-		oldcount=EXEC("find /tmp/adblock/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
-		if tonumber(icount) ~= tonumber(oldcount) then
+	i=EXEC("find /tmp/ad_tmp/3rd -name 3* -exec cat {} \\; 2>/dev/null | wc -l")
+	if tonumber(i)>0 then
+		if CALL("cmp -s /tmp/ad_tmp/3rd/3rd.conf /tmp/adblock/3rd/3rd.conf")==0 then
+			r=0
+		else
 			EXEC("[ -h /tmp/adblock/3rd/url ] && (rm -f /etc/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /etc/adblock) || (rm -f /tmp/adblock/3rd/*;cp -a /tmp/ad_tmp/3rd /tmp/adblock)")
 			EXEC("/etc/init.d/adblock restart &")
-			retstring=tostring(math.ceil(tonumber(icount)))
-		else
-			retstring=0
+			r=tostring(math.ceil(tonumber(i)))
 		end
 		CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 	else
-		retstring="-1"
+		r="-1"
 	end
 	EXEC("rm -rf /tmp/ad_tmp")
 end
 	luci.http.prepare_content("application/json")
-	luci.http.write_json({ret=retstring,retcount=icount})
+	luci.http.write_json({ret=r,retcount=i})
 end

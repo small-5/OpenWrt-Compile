@@ -1,9 +1,10 @@
-KEY="$(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}')"
+export KEY="中華民國千秋萬世直到永遠 OpenWrt-民國 By Small_5-OpenWrt-民國 By Small_5/OpenWrt-民國 By Small_5"
+URL=https://3vzqfdrhhlhotzpk25h4.rocforever.top
+PASS='$1FsdGVkXROC191118Vuino87JFortk6kteverzQpC8bLTIycZAsyuQPUjCOzq9NDxjWa2kgmZvXX7wp9uj3VyuyE9mv19xLqaOw=='
 
 加密:
-echo https://9vmwdsms8vph6xty886.rocforever.top | openssl aes-128-cbc -pbkdf2 -k "$KEY" -base64
-解密:
-echo U2FsdGVkX1/CmMpuM8S6gZd9/QQXiTkItsIRaSBNB4fpc7FX+oqTyeB8mMJiFQEO0UoJ0QyfR4CFni8toHBveg== | openssl aes-128-cbc -d -pbkdf2 -k "$KEY" -base64
+A=$(echo $URL | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -pass env:KEY | sed -e 's/^U2/$1/')
+echo ${A:0:9}ROC1911${A:9:10}For${A:19:5}ever${A:24}
 
-OP生成QS(查詢字符串)
-qs=$(echo -n $(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}' | awk '{print $1,$3,$4}')$(cat /etc/openwrt_release | grep DISTRIB_RELEASE | awk -F "['']" '{print $2}' | awk '{print $2,$3}') $(cat /usr/lib/os-release | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}' | awk '{print $3,$4}') | openssl aes-128-cbc -pbkdf2 -nosalt -k $(TZ=UTC-1 date '+%A%b%Y-%m-%d%H') -base64 | sed 's/[^A-Za-z0-9]//g')
+解密:
+echo ${PASS:0:9}${PASS:16:10}${PASS:29:5}${PASS:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:KEY

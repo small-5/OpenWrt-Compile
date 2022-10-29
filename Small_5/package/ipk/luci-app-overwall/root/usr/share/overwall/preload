@@ -5,15 +5,13 @@ D=$3
 E=0
 T=1
 shift 3
-N=$(uci -q get overwall.@global[0].nf_ip)
-X=$(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP
-Y=$(lua /usr/share/overwall/auth B)
-Z="lua /usr/share/overwall/auth C"
+X=/usr/share/overwall/curl
+Y=Overwall/rules
 
 nf(){
-	[ $E = 0 ] && return
+	[ $(uci -q get overwall.@global[0].nf_ip) ] || return
 	B=1
-	while ! A=$(curl -Lfsm 5 -A "$Y" $X/$E$(eval $Z));do
+	while ! A=$($X 1 $Y/Netflix "-Lfsm 5");do
 		[ $B -ge 20 ] && break || let B++
 		sleep 2
 	done
@@ -23,7 +21,7 @@ nf(){
 
 tg(){
 	B=1
-	while ! A=$(curl -Lfsm 5 -A "$Y" $X/ufk8kHo4ZpsOekg$(eval $Z));do
+	while ! A=$($X 1 $Y/Telegram "-Lfsm 5");do
 		[ $B -ge 20 ] && break || let B++
 		sleep 2
 	done
@@ -34,12 +32,6 @@ tg(){
 for i in $*;do
 	while ! nslookup $i >/dev/null 2>&1;do :;done
 done
-
-if [ "$N" = 1 ];then
-	E=MnwTZoJKZA7F3xf
-elif [ "$N" = 2 ];then
-	E=S1WMOUf0VmdLPT9
-fi
 
 case $C in
 	1)nf netflix;;
@@ -81,13 +73,6 @@ if [ $M ];then
 			B=1
 			while ! nslookup $i >/dev/null 2>&1;do
 				[ $B -ge 20 ] && break || let B++
-				sleep 2
-			done
-		done
-		for i in $A;do
-			B=1
-			while ! curl --retry 3 -m 10 -o /dev/null -LsA "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36" $i;do
-				[ $B -ge 5 ] && break || let B++
 				sleep 2
 			done
 		done

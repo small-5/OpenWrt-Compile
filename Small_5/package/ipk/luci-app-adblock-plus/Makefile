@@ -2,8 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-adblock-plus
 PKG_VERSION:=1.1
-PKG_RELEASE:=5
-PKG_LICENSE:=GPLv2
+PKG_RELEASE:=6
 PKG_MAINTAINER:=Small_5
 
 include $(INCLUDE_DIR)/package.mk
@@ -42,7 +41,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	cp -pr luasrc/* $(1)/usr/lib/lua/luci
 	cp -pr root/* $(1)/
-	luac -s -o $(1)/usr/share/adblock/auth  $(1)/usr/share/adblock/auth
+	#luac -s -o $(1)/usr/share/adblock/auth  $(1)/usr/share/adblock/auth
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/* $(1)/usr/lib/lua/luci/i18n/
 endef
 

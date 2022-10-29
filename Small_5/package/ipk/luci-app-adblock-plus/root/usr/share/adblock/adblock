@@ -17,9 +17,7 @@ E="date +'%Y-%m-%d %H:%M:%S'"
 U=`uci -q get adblock.@adblock[0].url`
 P=/tmp/adblock
 W=`cat /etc/adblock/white.list`
-H=$(lua /usr/share/adblock/auth A)/ad-rules
-I=$(lua /usr/share/adblock/auth B)
-J="lua /usr/share/adblock/auth C"
+H=ad-rules
 
 gen(){
 	for i in $W;do sed -i -e "/\/$i\//d" -e "/\.$i\//d" /tmp/ad.conf;done
@@ -33,15 +31,12 @@ down(){
 	for i in $U;do
 		X=1
 		case $i in
-			adguard|anti-ad|ad-wars)K="curl -m 20 -A '$I' -Lfso $F $H/$i$(eval $J)";;
+			adguard|anti-ad|ad-wars)K="/usr/share/overwall/curl 0 $H/$i $F '-Lfsm 20 -o'";;
 			*)K="curl -m 20 -Lfso $F $i";;
 		esac
 		while ! eval $K;do
 			[ $X -ge 20 ] && echo "`eval $E` [Download $i failed]" && continue 2 || let X++
 			sleep 2
-			case $i in
-				adguard|anti-ad|ad-wars)K="curl -m 20 -A '$I' -Lfso $F $H/$i$(eval $J)";;
-			esac
 		done
 		X=`md5sum $G/3rd.conf 2>/dev/null | awk '{print$1}'`
 		Y=`md5sum $G/host 2>/dev/null | awk '{print$1}'`
@@ -106,7 +101,7 @@ esac
 if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
 	echo "`eval $E` [$A]"
 	X=1
-	while ! G=`curl -m 20 -A "$I" -LfSso /tmp/ad.conf $H/dnsmasq.adblock$(eval $J) 2>&1`;do
+	while ! /usr/share/overwall/curl 0 $H/dnsmasq.adblock /tmp/ad.conf "-Lfsm 20 -o";do
 		[ $X -ge 20 ] && Y=1 && break || let X++
 		sleep 2
 	done

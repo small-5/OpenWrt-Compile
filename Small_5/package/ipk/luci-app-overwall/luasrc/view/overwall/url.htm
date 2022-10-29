@@ -239,6 +239,10 @@ function buildUrl(btn,urlname,sid){
 				params+="&flow="+v_flow;
 			}else{
 				var v_security="tls";
+				if (opt.get("vless_flow_tls").value){
+					var v_flow=opt.get("vless_flow_tls").value;
+					params+="&flow="+v_flow;
+				}
 			}
 			params+="&security="+v_security;
 			params+=opt.query("sni","tls_host");
@@ -584,6 +588,7 @@ function fromUrl(btn,urlname,sid){
 				opt.set('vless_flow',queryParam.flow || "xtls-rprx-splice");
 			}else{
 				opt.set('tls',1);
+				opt.set('vless_flow_tls',queryParam.flow || '');
 			}
 			opt.set('tls_host',queryParam.sni || '');
 			opt.set('insecure',queryParam.allowinsecure=='1' ? 1:0);

@@ -48,7 +48,7 @@ outbound={
 						alterId=(server.type=="vmess") and tonumber(server.alter_id or 0) or nil,
 						security=(server.type=="vmess") and server.security or nil,
 						encryption=(server.type=="vless") and server.vless_encryption or nil,
-						flow=(server.xtls=='1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or nil
+						flow=(server.xtls=='1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or server.vless_flow_tls or nil
 					}
 				}
 			}

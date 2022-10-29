@@ -126,9 +126,12 @@ o:value("redirect-gateway def1 bypass-dhcp",translate("IPv4 Global Routing"))
 o:value("route-ipv6 ::/0",translate("IPv6 Global Routing"))
 
 function Download()
-	local t,e
+	local t,e,z
 	t=nixio.open("/tmp/my.ovpn","r")
-	luci.http.header('Content-Disposition','attachment; filename="my.ovpn"')
+	nixio.fs.remove("/tmp/my.ovpn")
+	z=luci.sys.exec("echo -n $(uci -q get system.@system[0].hostname)")
+	if z=="" then z="my" end
+	luci.http.header('Content-Disposition','attachment;filename="'..z..'.ovpn"')
 	luci.http.prepare_content("application/octet-stream")
 	while true do
 		e=t:read(nixio.const.buffersize)

@@ -1,7 +1,6 @@
 CC=gcc
 
-LDFLAGS=
-CFLAGS=-g -Wall -Wextra -Werror -pedantic
+CFLAGS+=$(FLAGS) -Wall -Wextra
 
 VERSION=0.3
 
@@ -10,7 +9,7 @@ OBJS=main.o tcp.o
 all: tcping
 
 tcping: $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -o tcping
+	$(CC) $(OBJS) $(CFLAGS) -o tcping
 
 install: tcping
 	cp tcping $(DESTDIR)/usr/bin

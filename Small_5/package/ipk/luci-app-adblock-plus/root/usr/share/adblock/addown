@@ -9,9 +9,6 @@ A=/tmp/adblock
 B=/tmp/adupdate.log
 C="date +'%Y-%m-%d %H:%M:%S'"
 D="Download Adblock Plus Rules"
-H=$(lua /usr/share/adblock/auth A)/ad-rules
-I=$(lua /usr/share/adblock/auth B)
-J="lua /usr/share/adblock/auth C"
 
 clean(){
 	echo "`eval $C` [$D failed]" >> $B
@@ -29,7 +26,7 @@ if [ "$2" = 1 ];then
 	echo "`eval $C` [Check network status successful]" >> $B
 	echo "`eval $C` [$D]" >> $B
 	X=1
-	while ! curl --connect-timeout 5 -m 20 -A "$I" -Lfso $A/adblock.conf $H/dnsmasq.adblock$(eval $J);do
+	while ! /usr/share/overwall/curl 0 ad-rules/dnsmasq.adblock $A/adblock.conf "-Lfsm 20 -o";do
 		[ $X -ge 20 ] && clean || let X++
 		sleep 2
 	done

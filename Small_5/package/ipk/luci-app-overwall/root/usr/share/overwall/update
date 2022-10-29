@@ -7,13 +7,11 @@ LOCK=/var/lock/overwall-update.lock
 touch $LOCK
 DIR=/usr/share/overwall
 TMP=/tmp/overwall
-X=$(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP
-Y=$(lua /usr/share/overwall/auth B)
-Z="lua /usr/share/overwall/auth C"
 N=overwall
 C=$(uci -q get $N.@global[0].run_mode)
 D=$(uci -q get $N.@global[0].auth_3)
-E=$(lua /usr/share/overwall/auth E)
+E=$($DIR/curl 2)
+X=Overwall/rules
 
 log(){
 	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
@@ -44,7 +42,7 @@ fi
 
 if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_ips)" ] || [ $C = oversea ];then
 	r=1
-	while ! B=$(curl -Lfsm 20 -A "$Y" $X/eFw58nNRXXfTwU4$(eval $Z));do
+	while ! B=$($DIR/curl 1 $X/IPv4 "-Lfsm 20");do
 		[ $r -ge 20 ] && clean "Over Rules     : Download failed" || let r++
 		sleep 2
 	done
@@ -63,7 +61,7 @@ if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_i
 fi
 
 if [ $C = router ];then
-	while ! F=$(curl -Lfsm 20 -A "$Y" $X/t8eOh94EJIHTXR6$(eval $Z));do
+	while ! F=$($DIR/curl 1 $X/IPv6 "-Lfsm 20");do
 		sleep 2
 	done
 	if [ "$F" ];then
@@ -81,7 +79,7 @@ if [ $C = router ];then
 fi
 
 if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];then
-	while ! curl -Lfsm 20 -A "$Y" -o /tmp/gfw.b64 $X/avtPeqDKt645Arm$(eval $Z);do
+	while ! $DIR/curl 0 $X/gfw /tmp/gfw.b64 "-Lfsm 20 -o";do
 		sleep 2
 	done
 	if [ -s /tmp/gfw.b64 ];then

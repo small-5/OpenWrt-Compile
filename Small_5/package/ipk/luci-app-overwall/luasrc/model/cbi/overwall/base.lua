@@ -53,11 +53,8 @@ o=s:option(Flag,"gfw_mode",translate("Disable GFW List"),
 translate("Load GFW list by default"))
 o:depends("run_mode","router")
 
-o=s:option(ListValue,"nf_ip",translate("Load Netflix IP Range"),
+o=s:option(Flag,"nf_ip",translate("Load Netflix IP Range"),
 translate("If Netflix does not show that the proxy is in use,it does not need to be loaded"))
-o:value("",translate("None"))
-o:value("1",translate("Netflix IP Range Only"))
-o:value("2",translate("Netflix+AWS IP Range"))
 if uci:get_first("overwall","global","nf_server") then
 	o:depends("run_mode","router")
 	o:depends("run_mode","gfw")

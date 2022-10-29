@@ -361,7 +361,12 @@ o:depends("xtls",1)
 o=s:option(ListValue,"vless_flow",translate("Flow"))
 for _,v in ipairs(flows) do o:value(v,v) end
 o.default="xtls-rprx-splice"
-o:depends("xtls",1)
+o:depends({type="vless",xtls=1})
+
+o=s:option(ListValue,"vless_flow_tls",translate("Flow"))
+o:value("",translate("None"))
+o:value("xtls-rprx-vision","xtls-rprx-vision")
+o:depends({type="vless",tls=1})
 
 o=s:option(Flag,"insecure",translate("allowInsecure"))
 o.description=translate("Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host")

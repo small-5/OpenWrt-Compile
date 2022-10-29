@@ -3,6 +3,7 @@ local fs=require"nixio.fs"
 local http=require"luci.http"
 CALL=luci.sys.call
 EXEC=luci.sys.exec
+A="/usr/share/overwall/curl"
 function index()
 	if not nixio.fs.access("/etc/config/overwall") then
 		return
@@ -74,7 +75,7 @@ function ip()
 	if http.formvalue("set")=="0" then
 		r=EXEC("cat /tmp/etc/overwall.include | grep -Eo '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | sed -n 1p")
 	else
-		r=EXEC("curl -Lsm 5 https://ip.rocforever.top/cdn-cgi/trace | grep ip= | cut -d = -f2")
+		r=EXEC("curl -Lsm 5 https://www.cloudflare.com/cdn-cgi/trace | grep ip= | cut -d = -f2")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ret=r})
@@ -82,23 +83,18 @@ end
 
 function refresh()
 	local set=http.formvalue("set")
-	local icount=0
+	local i=0
 	local r
-	local a=EXEC("echo -n $(lua /usr/share/overwall/auth A)/2axgmlws/KkFCtZkeAP")
-	local b=EXEC("echo -n $(lua /usr/share/overwall/auth B)")
-	local c=EXEC("echo -n $(lua /usr/share/overwall/auth C)")
 	if set=="0" then
-		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/gfw.b64 -A \""..b.."\" "..a.."/avtPeqDKt645Arm"..c)
-		if sret==0 then
+		if CALL(A..' 0 Overwall/rules/gfw /tmp/gfw.b64 "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("/usr/share/overwall/gfw")
-			icount=EXEC("cat /tmp/gfwnew.txt | wc -l")
-			if tonumber(icount)>1000 then
-				oldcount=EXEC("cat /tmp/overwall/gfw.list | wc -l")
-				if tonumber(icount)~=tonumber(oldcount) then
-					EXEC("cp -f /tmp/gfwnew.txt /tmp/overwall/gfw.list && /etc/init.d/overwall restart >/dev/null 2>&1")
-					r=tostring(tonumber(icount))
-				else
+			i=EXEC("cat /tmp/gfwnew.txt | wc -l")
+			if tonumber(i)>1000 then
+				if CALL("cmp -s /tmp/gfwnew.txt /tmp/overwall/gfw.list")==0 then
 					r="0"
+				else
+					EXEC("cp -f /tmp/gfwnew.txt /tmp/overwall/gfw.list && /etc/init.d/overwall restart >/dev/null 2>&1")
+					r=tostring(tonumber(i))
 				end
 			else
 				r="-1"
@@ -108,17 +104,15 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/gfwnew.txt")
 	elseif set=="1" then
-		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/ipv4.tmp -A \""..b.."\" "..a.."/eFw58nNRXXfTwU4"..c)
-		if sret==0 then
+		if CALL(A..' 0 Overwall/rules/IPv4 /tmp/ipv4.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("cat /tmp/ipv4.tmp | base64 -d > /tmp/ipv4.txt")
-			icount=EXEC("cat /tmp/ipv4.txt | wc -l")
-			if tonumber(icount)>1000 then
-				oldcount=EXEC("cat /tmp/overwall/ipv4.txt | wc -l")
-				if tonumber(icount)~=tonumber(oldcount) then
-					EXEC("cp -f /tmp/ipv4.txt /tmp/overwall/ipv4.txt && ipset list over_v4 >/dev/null 2>&1 && /usr/share/overwall/ipset")
-					r=tostring(tonumber(icount))
-				else
+			i=EXEC("cat /tmp/ipv4.txt | wc -l")
+			if tonumber(i)>1000 then
+				if CALL("cmp -s /tmp/ipv4.txt /tmp/overwall/ipv4.txt")==0 then
 					r="0"
+				else
+					EXEC("cp -f /tmp/ipv4.txt /tmp/overwall/ipv4.txt && ipset list over_v4 >/dev/null 2>&1 && /usr/share/overwall/ipset")
+					r=tostring(tonumber(i))
 				end
 			else
 				r="-1"
@@ -128,17 +122,15 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/ipv4.txt /tmp/ipv4.tmp")
 	elseif set=="2" then
-		sret=CALL("curl --retry 3 --retry-all-errors -Lfso /tmp/ipv6.tmp -A \""..b.."\" "..a.."/t8eOh94EJIHTXR6"..c)
-		if sret==0 then
+		if CALL(A..' 0 Overwall/rules/IPv6 /tmp/ipv6.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("cat /tmp/ipv6.tmp | base64 -d > /tmp/ipv6.txt")
-			icount=EXEC("cat /tmp/ipv6.txt | wc -l")
-			if tonumber(icount)>1000 then
-				oldcount=EXEC("cat /tmp/overwall/ipv6.txt | wc -l")
-				if tonumber(icount)~=tonumber(oldcount) then
-					EXEC("cp -f /tmp/ipv6.txt /tmp/overwall/ipv6.txt && ipset list over_v6 >/dev/null 2>&1 && /usr/share/overwall/ipset v6")
-					r=tostring(tonumber(icount))
-				else
+			i=EXEC("cat /tmp/ipv6.txt | wc -l")
+			if tonumber(i)>1000 then
+				if CALL("cmp -s /tmp/ipv6.txt /tmp/overwall/ipv6.txt")==0 then
 					r="0"
+				else
+					EXEC("cp -f /tmp/ipv6.txt /tmp/overwall/ipv6.txt && ipset list over_v6 >/dev/null 2>&1 && /usr/share/overwall/ipset v6")
+					r=tostring(tonumber(i))
 				end
 			else
 				r="-1"
@@ -228,6 +220,6 @@ function dellog()
 end
 
 function hard_code()
-	CALL("lua /usr/share/overwall/auth D")
+	CALL(A.." 3")
 	getlog()
 end

@@ -160,12 +160,6 @@ msgstr "加載Netflix IP段"
 msgid "If Netflix does not show that the proxy is in use,it does not need to be loaded"
 msgstr "如果Netflix未提示正在使用代理的情況下，不需要加載"
 
-msgid "Netflix IP Range Only"
-msgstr "僅Netflix IP段"
-
-msgid "Netflix+AWS IP Range"
-msgstr "Netflix+AWS IP段"
-
 msgid "Preload IP"
 msgstr "預加載IP"
 

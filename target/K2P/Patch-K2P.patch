@@ -330,7 +330,7 @@
  			fi;;
  		ssr)
  			cat > $config_file <<EOF
-@@ -249,9 +251,9 @@
+@@ -249,15 +251,15 @@
  	if ps -w | grep overwall-tcp | grep -qv grep;then
  		echo "Overwall has Started.";return 1
  	fi
@@ -342,6 +342,13 @@
  	mkdir -p /var/run /var/etc
  	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
  		log "Over Rules     : Download IP/GFW files..."
+ 		firstdown 2;exit
+ 	fi
+-	log "Over Rules     : Check IP/GFW files successful!"
++	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check IP/GFW files successful!' || log "Over Rules     : Check IP/GFW files successful!"
+ 	kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable 0)
+ 	[ $kcp_enable = 1 ] && kcp_server=$server
+ 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 @@ -285,6 +287,28 @@
  		[ "$NF_SERVER" -a "$TG_SERVER" = "$NF_SERVER" ] && TG_NF=1 && TG_SERVER=
  		[ "$CU_SERVER" -a "$TG_SERVER" = "$CU_SERVER" ] && TG_CU=1 && TG_SERVER=
@@ -483,20 +490,20 @@
 +[ "$1" = --down ] || exit 1
 +K=/tmp/overwall/bin
 +T=$K/tmp
-+X=$(lua /usr/share/overwall/auth A)/2axgmlws/ONywPfH3Rh
-+Y=$(lua /usr/share/overwall/auth B)
-+Z="lua /usr/share/overwall/auth C"
++X=/usr/share/overwall/curl
++Y=Overwall/k2p/musl
++
 +kill -9 $(ps -w | grep $T | grep -v grep | awk '{print$1}') 2>/dev/null
 +mkdir -p $K
 +if [ $2 = 1 ];then
-+	while ! curl -m 30 -LfsA "$Y" -o $T $X/pWgXrfGEV6Vtmhy$(eval $Z);do
++	while ! $X 0 $Y/xray $T "-Lfsm 30 -o";do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray
 +	chmod +x $K/xray
 +fi
 +if [ $3 = 1 ];then
-+	while ! curl -m 30 -LfsA "$Y" -o $T $X/AlCdr6hj5qHCJmp$(eval $Z);do
++	while ! $X 0 $Y/xray-plugin $T "-Lfsm 30 -o";do
 +		sleep 2
 +	done
 +	base64 -d $T > $K/xray-plugin
