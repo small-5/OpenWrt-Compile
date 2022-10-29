@@ -15,7 +15,14 @@ shadowsocksrr/shadowsocksr-libev|Akkariiin/master|shadowsocksr-libev
 shadowsocks/simple-obfs|master|simple-obfs
 peter-tank/trojan-plus|master|trojan-plus
 Wind4/vlmcsd|master|vlmcsd
-teddysun/xray-plugin|main|xray-plugin"
+teddysun/xray-plugin|main|xray-plugin
+fatedier/frp|dev|frp
+aarond10/https_dns_proxy|master|https_dns_proxy
+xtaci/kcptun|master|kcptun
+shadowsocks/shadowsocks-libev|master|shadowsocks-libev
+tohojo/sqm-scripts|master|sqm-scripts
+XTLS/Xray-core|main|xray
+zerotier/ZeroTierOne|master|zerotier"
 rm -f SHA
 for i in $A;do
 	i=$(echo $i | sed 's/|/ /g')

@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="民國111年雙十紀念版"
+VERSION="民國111年雙十紀念版 By Small_5"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
@@ -57,7 +57,7 @@ cat > version.patch  <<EOF
            |__| W I R E L E S S   F R E E D O M
   -----------------------------------------------------
 - %D %V, %C
-+ %D $VERSION By Small_5, %C
++ %D $VERSION
   -----------------------------------------------------
 
 --- a/package/base-files/files/etc/openwrt_release
@@ -65,12 +65,12 @@ cat > version.patch  <<EOF
 @@ -1,7 +1,7 @@
  DISTRIB_ID='%D'
 -DISTRIB_RELEASE='%V'
-+DISTRIB_RELEASE='$VERSION By Small_5'
++DISTRIB_RELEASE='$VERSION'
  DISTRIB_REVISION='%R'
  DISTRIB_TARGET='%S'
  DISTRIB_ARCH='%A'
 -DISTRIB_DESCRIPTION='%D %V %C'
-+DISTRIB_DESCRIPTION='%D $VERSION By Small_5 %C'
++DISTRIB_DESCRIPTION='%D $VERSION'
  DISTRIB_TAINTS='%t'
 
 --- a/package/base-files/files/usr/lib/os-release
@@ -78,11 +78,11 @@ cat > version.patch  <<EOF
 @@ -1,8 +1,8 @@
  NAME="%D"
 -VERSION="%V"
-+VERSION="$VERSION By Small_5"
++VERSION="$VERSION"
  ID="%d"
  ID_LIKE="lede openwrt"
 -PRETTY_NAME="%D %V"
-+PRETTY_NAME="%D $VERSION By Small_5"
++PRETTY_NAME="%D $VERSION"
  VERSION_ID="%v"
  HOME_URL="%u"
  BUG_URL="%b"
@@ -91,7 +91,7 @@ cat > version.patch  <<EOF
  OPENWRT_DEVICE_PRODUCT="%P"
  OPENWRT_DEVICE_REVISION="%h"
 -OPENWRT_RELEASE="%D %V %C"
-+OPENWRT_RELEASE="%D $VERSION By Small_5 %C"
++OPENWRT_RELEASE="%D $VERSION"
 EOF
 
 patch -p1 -E < default.patch && patch -p1 -E < feeds.patch && patch -p1 -E < version.patch && rm -f default.patch feeds.patch version.patch
