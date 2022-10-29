@@ -1,21 +1,22 @@
---- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-+++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -67,7 +67,16 @@
- 
- 	getCPUInfo: {
- 		call: function() {
--			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
-+			let rv = {};
-+			rv.cpufreq = popen('echo $(grep MHz /proc/cpuinfo | cut -c11- | sed -n 1p) MHz $( (sensors | grep "Core 0" || sensors | grep temp1) | cut -c12-)').read('all');
-+			rv.cpufree = popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all');
-+			return rv;
-+		}
+--- a/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
++++ b/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
+@@ -46,7 +46,17 @@
+ 	getCPUInfo = {
+ 		call = function()
+ 			local sys = require "luci.sys"
+-			return { result = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\",100-$8)}'") }
++			local rv = {}
++			rv.cpufreq = sys.exec("echo $(grep MHz /proc/cpuinfo | cut -c11- | sed -n 1p) MHz $( (sensors | grep 'Core 0' || sensors | grep 'temp1') | cut -c12-)")
++			rv.cpufree = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\",100-$8)}'")
++			return rv
++		end
 +	},
 +
-+	getETHInfo: {
-+		call: function() {
-+			return { result: popen('ethinfo').read('all') };
- 		}
++	getETHInfo = {
++		call = function()
++			local sys = require "luci.sys"
++			return { result = sys.exec("ethinfo") }
+ 		end
  	},
  
 

@@ -90,15 +90,15 @@
 
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
-@@ -599,7 +599,7 @@
- 
+@@ -759,7 +759,7 @@
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:740
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:736
  msgid "Replaces [DOMAIN] in Update-URL (URL-encoded)"
 -msgstr "取代 Update-URL 中的 [DOMAIN] (URL-encoded)"
 +msgstr "替換更新 URL（已編碼 URL）中的 [DOMAIN]"
  
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:752
- msgid "Replaces [PASSWORD] in Update-URL (URL-encoded)"
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:748
 
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
 +++ b/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
@@ -238,7 +238,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2370,7 +2370,7 @@
+@@ -2380,7 +2380,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -247,7 +247,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3677,17 +3677,6 @@
+@@ -3687,17 +3687,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -265,7 +265,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3771,22 +3760,6 @@
+@@ -3781,22 +3770,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -288,7 +288,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -9157,7 +9130,7 @@
+@@ -9178,7 +9151,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -308,21 +308,22 @@
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
 
---- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-+++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -65,6 +65,12 @@
- 		}
+--- a/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
++++ b/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
+@@ -43,6 +43,13 @@
+ 		end
  	},
  
-+	getCPUInfo: {
-+		call: function() {
-+			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
-+		}
++	getCPUInfo = {
++		call = function()
++			local sys = require "luci.sys"
++			return { result = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\",100-$8)}'") }
++		end
 +	},
 +
- 	setLocaltime: {
- 		args: { localtime: 0 },
- 		call: function(request) {
+ 	setLocaltime = {
+ 		args = { localtime = 0 },
+ 		call = function(args)
 
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
@@ -1006,7 +1007,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=cf66ca10b4f318eacaf59733909902172a2ba4f0
++PKG_SOURCE_VERSION:=e5af37bc8cef6033defeb47d27b42a75b32842f3
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.44.0
@@ -1067,7 +1068,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=208deccd09b3e9f90fc5c39c16271a53c1128ef2
++PKG_SOURCE_VERSION:=baca7d7e6cd8c062f8d6f97c340b9e254dd85a22
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20210922
@@ -1143,7 +1144,7 @@
 -
 -PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
 +PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=d3e73c6ce652168963cb10c8284c89f2cf4df16e
++PKG_SOURCE_VERSION:=7f7f68afe40b227195f5d9a6bb03c7bce41d45d8
  
 +PKG_NAME:=shadowsocks-libev
 +PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_VERSION)
@@ -1708,14 +1709,145 @@
  		width: 100%;
  		margin: 0 !important;
 
---- a/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
-+++ b/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
-@@ -46,7 +46,7 @@
+--- a/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
++++ b/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
+@@ -62,58 +62,6 @@
+ 				ipt:close()
+ 			end
  
- 			if (ipt) {
- 				for (let line = ipt.read('line'); length(line); line = ipt.read('line')) {
--					let m = match(line, /^([0-9]+)\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
-+					let m = match(line, /^([0-9]+).+\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
+-			local nft = io.popen("nft --handle list chain inet fw4 upnp_prerouting")
+-			if nft then
+-				local num = 1
+-				local upnpf = lease_file and io.open(lease_file, "r")
+-				while true do
+-					local ln = nft:read("*l")
+-					if not ln then
+-						break
+-					elseif ln:match("iif ") then
+-						local proto, extport, intaddr, intport =
+-							ln:match('^\t\tiif ".-" @nh,72,8 (0x[0-9a-f]+) th dport ([0-9]+) dnat ip to ([0-9%.]+):([0-9]+)')
+-						local descr = ""
+-
+-						if (proto == "0x6" or proto == "0x11") and extport and intaddr and intport then
+-							proto = (proto == "0x6") and "TCP" or "UDP"
+-							extport = tonumber(extport)
+-							intport = tonumber(intport)
+-
+-							if upnpf then
+-								local uln = upnpf:read("*l")
+-								if uln then descr = uln:match(string.format("^%s:%d:%s:%d:%%d*:(.*)$", proto, extport, intaddr, intport)) end
+-								if not descr then descr = "" end
+-							end
+-
+-							local host_hint, _, e
+-
+-							for _,e in pairs(ipv4_hints) do
+-								if e[1] == intaddr then
+-									host_hint = e[2]
+-									break
+-								end
+-							end
+-
+-							rule[#rule+1] = {
+-								num = tostring(num),
+-								proto   = proto,
+-								extport = extport,
+-								intaddr = intaddr,
+-								host_hint = host_hint,
+-								intport = intport,
+-								descr = descr
+-							}
+-
+-							num = num + 1
+-						end
+-					end
+-				end
+-
+-				if upnpf then upnpf:close() end
+-				nft:close()
+-			end
+-
+ 			return { rules = rule }
+ 		end
+ 	},
+@@ -127,10 +75,13 @@
+ 			if idx and idx > 0 then
+ 				local uci = UCI.cursor()
  
- 					if (m) {
- 						push(rules, {
++				sys.call("iptables -t filter -D MINIUPNPD %d 2>/dev/null" % idx)
++				sys.call("iptables -t nat -D MINIUPNPD %d 2>/dev/null" % idx)
++				sys.call("iptables -t nat -D MINIUPNPD-POSTROUTING %d 2>/dev/null" % idx)
++
+ 				local lease_file = uci:get("upnpd", "config", "upnp_lease_file")
+ 				if lease_file and fs.access(lease_file) then
+ 					sys.call("sed -i -e '%dd' %s" %{ idx, util.shellquote(lease_file) })
+-					sys.call("/etc/init.d/miniupnpd restart")
+ 				end
+ 
+ 				uci.unload()
+
+--- a/feeds/luci/luci.mk
++++ b/feeds/luci/luci.mk
+@@ -113,9 +113,8 @@
+ PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
+ 	variant="LuCI"; \
+ 	if git log -1 >/dev/null 2>/dev/null; then \
+-		branch=$$(git branch --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
+-		branch=$${branch:-$$(git branch --no-abbrev --contains 2>/dev/null)}; \
+-		branch=$${branch#? }; branch=$${branch#*/}; \
++		branch=$$(git branch --format='%(refname:strip=3)' --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
++		branch=$${branch:-$$(git branch --format='%(refname:strip=2)' --no-abbrev --contains 2>/dev/null | tail -n1)}; \
+ 		if [ "$$branch" != "master" ]; then \
+ 			variant="LuCI $${branch:-unknown} branch"; \
+ 		else \
+
+--- a/feeds/luci/modules/luci-base/Makefile
++++ b/feeds/luci/modules/luci-base/Makefile
+@@ -14,6 +14,8 @@ LUCI_BASENAME:=base
+ LUCI_TITLE:=LuCI core libraries
+ LUCI_DEPENDS:=+lua +luci-lib-nixio +luci-lib-ip +rpcd +libubus-lua +luci-lib-jsonc +liblucihttp-lua +luci-lib-base +rpcd-mod-file +rpcd-mod-luci +cgi-io
+ 
++PKG_VERSION:=git-22.999
++
+ PKG_LICENSE:=MIT
+ 
+ HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)
+
+--- a/feeds/luci/modules/luci-compat/Makefile
++++ b/feeds/luci/modules/luci-compat/Makefile
+@@ -12,7 +12,9 @@ LUCI_TYPE:=mod
+ LUCI_BASENAME:=compat
+ 
+ LUCI_TITLE:=LuCI compatibility libraries
+-LUCI_DEPENDS:=+luci-base
++LUCI_DEPENDS:=+luci-lua-runtime
++
++PKG_VERSION:=git-22.999
+ 
+ include ../../luci.mk
+ 
+
+--- /dev/null
++++ b/package/ipk/luci-lua-runtime/Makefile
+@@ -0,0 +1,21 @@
++#
++# Copyright (C) 2022 Jo-Philipp Wich <jo@mein.io>
++#
++# This is free software, licensed under the Apache License, Version 2.0 .
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=luci-lua-runtime
++
++LUCI_TYPE:=mod
++LUCI_BASENAME:=lua-runtime
++
++LUCI_TITLE:=LuCI Lua runtime libraries
++LUCI_DEPENDS:=+luci-base
++
++PKG_VERSION:=git-22.999
++
++include $(TOPDIR)/feeds/luci/luci.mk
++
++# call BuildPackage - OpenWrt buildroot signature
