@@ -1,0 +1,167 @@
+<%+cbi/valueheader%>
+<input type="checkbox" name="NAME" value="reverse" onclick="reverselog()" style="vertical-align:middle;height:auto;"><%:Reverse%></input>
+<textarea id="cbid.logview.2.conf" class="cbi-input-textarea" style="width: 100%;display:inline" data-update="change" rows="32" cols="60" readonly="readonly" > </textarea>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Clear Log%>" onclick="del_log()"/>
+<input type="button" class="cbi-button cbi-button-apply" value="<%:Download Log%>" style="display:inline;" onclick="download_log()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Decrypt Code%>" onclick="decrypt()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Encrypt Code%>" onclick="encrypt()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Hardware Code List%>" onclick="hc_list()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Add Hardware Code%>" onclick="add_code()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Del Hardware Code%>" onclick="del_code()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Query Auth Code%>" onclick="get_code()"/>
+<script type="text/javascript">//<![CDATA[
+var islogreverse=false;
+document.getElementById('cbid.logview.2.conf').style.fontFamily="NSimSun";
+document.getElementById("cbid.logview.2.conf").style.fontSize="small";
+
+function createAndDownloadFile(fileName,content){
+	var aTag=document.createElement('a');
+	var blob=new Blob([content]);
+	aTag.download=fileName;
+	aTag.href=URL.createObjectURL(blob);
+	aTag.click();
+	URL.revokeObjectURL(blob);
+}
+
+function download_log(){
+	var lv=document.getElementById('cbid.logview.2.conf');
+	var dt=new Date();
+	var timestamp=(dt.getMonth()+1)+"-"+dt.getDate()+"-"+dt.getHours()+"_"+dt.getMinutes();
+	createAndDownloadFile("overwall-"+timestamp+".log",lv.innerHTML)
+	return
+}
+
+function del_log(){
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[dellog_auth]])%>',null,function(x,data){
+	var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML="";
+	});
+	return
+}
+
+function decrypt(){
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[decrypt]])%>',null,function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function encrypt(){
+	var code=prompt('<%:Enter Code%>','');
+	if (code==null) return false;
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[encrypt]])%>',{code},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function hc_list(){
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[hc_list]])%>',null,function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function add_code(){
+	var code=prompt('<%:Enter Code%>','');
+	if (code==null || code=='') return false;
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[add_code]])%>',{code},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function del_code(){
+	var code=prompt('<%:Enter Code%>','');
+	if (code==null || code=='') return false;
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[del_code]])%>',{code},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function get_code(){
+	var code=prompt('<%:Enter Code%>','');
+	if (code==null || code=='') return false;
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[get_code]])%>',{code},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function reverselog(){
+	var lv=document.getElementById('cbid.logview.2.conf');
+	lv.innerHTML=lv.innerHTML.split('\n').reverse().join('\n')
+	if (islogreverse){
+		islogreverse=false;
+	}else{
+		islogreverse=true;
+	}
+	return
+}
+
+XHR.poll(3,'<%=url([[admin]],[[services]],[[overwall]],[[getlog_auth]])%>',null,
+	function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	}
+)
+
+//]]>
+</script>
+<%+cbi/valuefooter%>

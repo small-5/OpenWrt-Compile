@@ -32,7 +32,7 @@ gfw_mode=$(uci_get_by_type global gfw_mode 0)
 [ "$password" != "" ] && password="--key "${password}
 
 log(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
+	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Montior: $*" >> /tmp/$NAME.log
 }
 
 res(){
@@ -43,59 +43,59 @@ while :;do
 	sleep 30
 #redir tcp
 	if [ $redir_tcp -gt 0 ] && [ $(ps -w | grep overwall-tcp | grep -v grep | wc -l) -lt $redir_tcp ];then
-		log "Over Montior  : Redir TCP Error. Restart!"
+		log "Redir TCP Error. Restart!"
 		res
 	fi
 #kcptun
 	if [ $kcp = 1 ] && [ $(ps -w | grep kcptun-client | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : KCPTUN Error. Restart!"
+		log "KCPTUN Error. Restart!"
 		killall -q -9 kcptun-client
 		$(which kcptun-client) -r $server:$kcp_port -l :$server_port $password $kcp_param &
 	fi
 #redir udp
 	if [ $redir_udp = 1 ] && [ $(ps -w | grep overwall-udp | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Redir UDP Error. Restart!"
+		log "Redir UDP Error. Restart!"
 		res
 	fi
 #redir youtube
 	if [ $redir_yb = 1 ] && [ $(ps -w | grep overwall-yb | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Redir Youtube Error. Restart!"
+		log "Redir Youtube Error. Restart!"
 		res
 	fi
 #redir netflix
 	if [ $redir_nf = 1 ] && [ $(ps -w | grep overwall-nf | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Redir Netflix Error. Restart!"
+		log "Redir Netflix Error. Restart!"
 		res
 	fi
 #redir custom
 	if [ $redir_cu = 1 ] && [ $(ps -w | grep overwall-cu | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Redir Custom Error. Restart!"
+		log "Redir Custom Error. Restart!"
 		res
 	fi
 #redir telegram
 	if [ $redir_tg = 1 ] && [ $(ps -w | grep overwall-tg | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Redir Telegram Error. Restart!"
+		log "Redir Telegram Error. Restart!"
 		res
 	fi
 #smartdns
 	if [ $smartdns = 1 ] && [ $(ps -w | grep smartdns | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : SmartDNS Error. Restart!"
+		log "SmartDNS Error. Restart!"
 		killall -q -9 smartdns
 		$(which smartdns) -c /var/etc/smartdns/smartdns.conf
 	fi
 #chinadns-ng
 	if [ $chinadns = 1 ] && [ $(ps -w | grep chinadns-ng | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : ChinaDNS-NG Error. Restart!"
+		log "ChinaDNS-NG Error. Restart!"
 		$(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 0 ] && echo -g /tmp/overwall/gfw.list) >/dev/null 2>&1 &
 	fi
 #localsocks
 	if [ $socks5 = 1 ] && [ $(ps -w | grep overwall-socks5 | grep -v grep | wc -l) = 0 ];then
-		log "Over Montior  : Global Socks Server Error. Restart!"
+		log "Global Socks Server Error. Restart!"
 		res
 	fi
 #server
 	if [ $server_count -gt 0 ] && [ $(ps -w | grep overwall-server | grep -v grep | wc -l) -lt $server_count ];then
-		log "Over Montior  : Overwall Server Error. Restart!"
+		log "Overwall Server Error. Restart!"
 		res
 	fi
 done

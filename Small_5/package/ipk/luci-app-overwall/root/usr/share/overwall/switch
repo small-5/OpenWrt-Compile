@@ -13,7 +13,7 @@ uci_get_by_type(){
 }
 
 log(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Switch   : $*" >> /tmp/$NAME.log
+	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Switch : $*" >> /tmp/$NAME.log
 }
 
 get_ip(){

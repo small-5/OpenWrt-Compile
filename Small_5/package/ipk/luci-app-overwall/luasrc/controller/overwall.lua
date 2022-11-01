@@ -22,6 +22,9 @@ function index()
 	end
 	entry({"admin","services","overwall","auth"},cbi("overwall/auth"),_("Authorization Code"),8).leaf=true
 	entry({"admin","services","overwall","log"},form("overwall/log"),_("Log"),9).leaf=true
+	if luci.sys.call("/usr/share/overwall/curl A")==0 then
+		entry({"admin","services","overwall","auth_page"},form("overwall/auth_page"),_("Auth Page"),10).leaf=true
+	end
 	entry({"admin","services","overwall","status"},call("status"))
 	entry({"admin","services","overwall","check"},call("check"))
 	entry({"admin","services","overwall","ip"},call("ip"))
@@ -32,6 +35,14 @@ function index()
 	entry({"admin","services","overwall","getlog"},call("getlog"))
 	entry({"admin","services","overwall","dellog"},call("dellog"))
 	entry({"admin","services","overwall","hard_code"},call("hard_code"))
+	entry({"admin","services","overwall","getlog_auth"},call("getlog_auth"))
+	entry({"admin","services","overwall","dellog_auth"},call("dellog_auth"))
+	entry({"admin","services","overwall","decrypt"},call("decrypt"))
+	entry({"admin","services","overwall","encrypt"},call("encrypt"))
+	entry({"admin","services","overwall","hc_list"},call("hc_list"))
+	entry({"admin","services","overwall","add_code"},call("add_code"))
+	entry({"admin","services","overwall","del_code"},call("del_code"))
+	entry({"admin","services","overwall","get_code"},call("get_code"))
 end
 
 function status()
@@ -222,4 +233,53 @@ end
 function hard_code()
 	CALL(A.." 3")
 	getlog()
+end
+
+function getlog_auth()
+	logfile="/tmp/overauth.log"
+	if not fs.access(logfile) then
+		http.write('')
+		return
+	end
+	local f=io.open(logfile,"r")
+	local a=f:read("*a") or ""
+	f:close()
+	a=string.gsub(a,"\n$","")
+	http.prepare_content("text/plain;charset=utf-8")
+	http.write(a)
+end
+
+function dellog_auth()
+	fs.writefile("/tmp/overauth.log","")
+	http.write('')
+end
+
+function decrypt()
+	CALL(A.." 4")
+	getlog_auth()
+end
+
+function encrypt()
+	CALL(A.." 5 '"..http.formvalue("code").."'")
+	getlog_auth()
+end
+
+function hc_list()
+	CALL(A.." 6")
+	getlog_auth()
+end
+
+function add_code()
+	CALL(A.." 7 '"..http.formvalue("code").."'")
+	getlog_auth()
+end
+
+function del_code()
+	CALL(A.." 8 '"..http.formvalue("code").."'")
+	getlog_auth()
+end
+
+function get_code()
+	CALL(A.." 9 '"..http.formvalue("code").."'")
+	getlog_auth()
 end

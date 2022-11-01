@@ -21,7 +21,7 @@ local filter_mode=ucic:get_first(name,'server_subscribe','filter_mode','0')
 local log=function(...)
 	local file=io.open("/tmp/overwall.log","a")
 	io.output(file)
-	io.write(os.date("%Y-%m-%d %H:%M:%S ").."Subscribe       : "..table.concat({...}," ").."\n")
+	io.write(os.date("%Y-%m-%d %H:%M:%S ").."Subscribe   : "..table.concat({...}," ").."\n")
 	io.close(file)
 end
 
@@ -397,7 +397,7 @@ local function parse_link()
 		i=i+1
 		local raw=curl(url)
 		if #raw > 0 then
-			log('----------------------------------------------------------------------------------------------------------')
+			log('-----------------------------------------------------------------------')
 			log('解析第'..i..'個鏈接:')
 			local nodes,szType
 			local num=0
@@ -460,7 +460,7 @@ end
 
 local execute=function()
 	parse_link()
-	log('----------------------------------------------------------------------------------------------------------')
+	log('-----------------------------------------------------------------------')
 	if next(nodeResult)==nil then
 		log('更新失敗，沒有可用的節點')
 		if proxy=='0' then

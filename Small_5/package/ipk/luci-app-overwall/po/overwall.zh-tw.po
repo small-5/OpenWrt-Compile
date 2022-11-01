@@ -741,3 +741,27 @@ msgstr "加密代碼"
 
 msgid "Hardware Code"
 msgstr "硬件碼"
+
+msgid "Auth Page"
+msgstr "授權頁面"
+
+msgid "Decrypt Code"
+msgstr "解密代碼"
+
+msgid "Encrypt Code"
+msgstr "加密代碼"
+
+msgid "Enter Code"
+msgstr "輸入代碼"
+
+msgid "Hardware Code List"
+msgstr "硬件碼列表"
+
+msgid "Add Hardware Code"
+msgstr "添加硬件碼"
+
+msgid "Del Hardware Code"
+msgstr "刪除硬件碼"
+
+msgid "Query Auth Code"
+msgstr "查詢授權碼"

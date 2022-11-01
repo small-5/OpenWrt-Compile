@@ -49,14 +49,14 @@ if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_i
 	if [ "$B" ];then
 		echo "$B" | base64 -d > /tmp/ipv4.txt
 		if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
-			log "Over Update  : IPv4 List is up to date"
+			log "Over Update : IPv4 List is up to date"
 		else
-			log "Over Update  : Update IPv4 List"
+			log "Over Update : Update IPv4 List"
 			cp -f /tmp/ipv4.txt $TMP/ipv4.txt
 			[ $A = N ] && ipset list over_v4 >/dev/null 2>&1 && $DIR/ipset
 		fi
 	else
-		log "Over Update  : Download IPv4 List failed"
+		log "Over Update : Download IPv4 List failed"
 	fi
 fi
 
@@ -67,32 +67,34 @@ if [ $C = router ];then
 	if [ "$F" ];then
 		echo "$F" | base64 -d > /tmp/ipv6.txt
 		if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
-			log "Over Update  : IPv6 List is up to date"
+			log "Over Update : IPv6 List is up to date"
 		else
-			log "Over Update  : Update IPv6 List"
+			log "Over Update : Update IPv6 List"
 			cp -f /tmp/ipv6.txt $TMP/ipv6.txt
 			[ $A = N ] && ipset list over_v6 >/dev/null 2>&1 && $DIR/ipset v6
 		fi
 	else
-		log "Over Update  : Download IPv6 List failed"
+		log "Over Update : Download IPv6 List failed"
 	fi
 fi
 
 if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];then
+	r=1
 	while ! $DIR/curl 0 $X/gfw /tmp/gfw.b64 "-Lfsm 20 -o";do
+		[ $r -ge 20 ] && clean "Over Rules     : Download failed" || let r++
 		sleep 2
 	done
 	if [ -s /tmp/gfw.b64 ];then
 		$DIR/gfw
 		if cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then
-			log "Over Update  : GFW List is up to date"
+			log "Over Update : GFW List is up to date"
 		else
-			log "Over Update  : Update GFW List"
+			log "Over Update : Update GFW List"
 			cp -f /tmp/gfwnew.txt $TMP/gfw.list
 			[ $A = N ] && /etc/init.d/overwall restart
 		fi
 	else
-		log "Over Update  : Download GFW List failed"
+		log "Over Update : Download GFW List failed"
 	fi
 fi
 rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt

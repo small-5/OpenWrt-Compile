@@ -601,10 +601,11 @@
 
 --- a/feeds/packages/net/openvpn/files/openvpn.init
 +++ b/feeds/packages/net/openvpn/files/openvpn.init
-@@ -42,8 +42,8 @@
+@@ -42,9 +42,8 @@
  		config_get v "$s" "$p"
  		IFS="$LIST_SEP"
  		for v in $v; do
+-			[ "$v" = "frames_only" ] && [ "$p" = "compress" ] && unset v && append_param "$s" "$p" && echo >> "/var/etc/openvpn-$s.conf"
 -			[ -n "$v" ] && [ "$p" != "push" ] && append_param "$s" "$p" && echo " $v" >> "/var/etc/openvpn-$s.conf"
 -			[ -n "$v" ] && [ "$p" = "push" ] && append_param "$s" "$p" && echo " \"$v\"" >> "/var/etc/openvpn-$s.conf"
 +			[ -n "$v" ] && [ "$p" != push ] && append_param "$s" "$p" && echo " $v" >> "/var/etc/openvpn-$s.conf"
@@ -612,7 +613,7 @@
  		done
  		unset IFS
  	done
-@@ -69,14 +69,6 @@
+@@ -70,14 +69,6 @@
  	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
  }
  
@@ -627,7 +628,7 @@
  openvpn_get_dev() {
  	local dev dev_type
  	local name="$1"
-@@ -111,38 +103,10 @@
+@@ -112,38 +103,10 @@
  	echo "--dev-type $dev_type --dev $dev"
  }
  
@@ -666,7 +667,7 @@
  
  	procd_open_instance "$name"
  	procd_set_param command "$PROG"	\
-@@ -152,11 +116,8 @@
+@@ -153,11 +116,8 @@
  		--config "$conf" \
  		--up "/usr/libexec/openvpn-hotplug up $name" \
  		--down "/usr/libexec/openvpn-hotplug down $name" \
@@ -680,7 +681,7 @@
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -177,28 +138,23 @@
+@@ -178,28 +138,23 @@
  		return 1
  	}
  
@@ -714,7 +715,7 @@
  }
  
  start_service() {
-@@ -215,7 +171,6 @@
+@@ -216,7 +171,6 @@
  		fi
  	}
  
@@ -722,7 +723,7 @@
  	. /usr/share/openvpn/openvpn.options
  	config_load 'openvpn'
  
-@@ -225,7 +180,7 @@
+@@ -226,7 +180,7 @@
  	else
  		config_foreach start_instance 'openvpn'
  
@@ -731,7 +732,7 @@
  		for path in /etc/openvpn/*.conf; do
  			if [ -f "$path" ]; then
  				name="${path##*/}"; name="${name%.conf}"
-@@ -240,14 +195,16 @@
+@@ -241,14 +195,16 @@
  					continue
  				fi
  
@@ -1068,7 +1069,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=baca7d7e6cd8c062f8d6f97c340b9e254dd85a22
++PKG_SOURCE_VERSION:=b4684d7d908f6246988b3cda3dc84615ad84c991
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20210922
@@ -1384,10 +1385,10 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=651f45fe29155c462f4e56dd74f4a347f6861d0d
++PKG_SOURCE_VERSION:=e0acccc3c918b59678033e585b31eb000c68fdf2
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.1
-+PKG_VERSION:=1.10.1_git-$(PKG_SOURCE_VERSION)
++PKG_VERSION:=1.10.2_git-$(PKG_SOURCE_VERSION)
  PKG_RELEASE:=$(AUTORELEASE)
 -
 +PKG_SOURCE_PROTO:=git

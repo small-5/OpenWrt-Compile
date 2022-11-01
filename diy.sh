@@ -62,11 +62,11 @@ cat > version.patch  <<EOF
 
 --- a/package/base-files/files/etc/openwrt_release
 +++ b/package/base-files/files/etc/openwrt_release
-@@ -1,7 +1,7 @@
+@@ -1,7 +1,6 @@
  DISTRIB_ID='%D'
 -DISTRIB_RELEASE='%V'
+-DISTRIB_REVISION='%R'
 +DISTRIB_RELEASE='$VERSION'
- DISTRIB_REVISION='%R'
  DISTRIB_TARGET='%S'
  DISTRIB_ARCH='%A'
 -DISTRIB_DESCRIPTION='%D %V %C'

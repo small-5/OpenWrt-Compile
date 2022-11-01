@@ -5,7 +5,7 @@ run_mode=$(uci -q get $NAME.@global[0].run_mode)
 K=/tmp/$NAME
 
 log(){
-	 echo "$(date +'%Y-%m-%d %H:%M:%S') Over Rules     : $*" >> /tmp/$NAME.log
+	 echo "$(date +'%Y-%m-%d %H:%M:%S') Over Rules  : $*" >> /tmp/$NAME.log
 }
 
 sleep 2

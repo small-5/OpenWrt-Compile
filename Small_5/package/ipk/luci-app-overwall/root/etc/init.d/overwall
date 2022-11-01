@@ -65,8 +65,8 @@ dns_mode_l=$(uci_get_by_type global dns_mode_l 0)
 lan_gm_ip=$(uci_get_by_type access_control lan_gm_ips)
 
 gen_log()(
-	[ -s $LOG ] && echo '------------------------------------------------------------------------------------------------------------------------------------------------------------' >> $LOG
-	log "Over Rules     : Check network status..."
+	[ -s $LOG ] && echo '---------------------------------------------------------------------------------------------------------' >> $LOG
+	log "Over Rules  : Check network status..."
 )
 
 log(){
@@ -163,34 +163,40 @@ EOF
 start_dns(){
 	$(which smartdns) -c $DNS_T
 	case $dns_mode in
-		0)doh=$(echo $doh | sed 's/,/\n/g' | sed -e 's/162.159.36.1/1.1.1.1/' -e 's/162.159.46.1/1.0.0.1/' -e 's/ .*//');log "SmartDNS      : Use $(echo $doh | sed 's/ /,/g') to start on DoH mode (Foreign DNS)";;
-		1)dns=$(echo $dns | sed 's/ /,/g');log "SmartDNS      : Use $dns to start on TCP mode (Foreign DNS)";;
+		0)log "SmartDNS    : Main DNS start on DoH mode";;
+		1)log "SmartDNS    : Main DNS start on TCP mode";;
 	esac
 	if [ "$YB" ];then
 		case $dns_mode_y in
-			0)doh_yb=$(echo $doh_yb | sed 's/,/\n/g' | sed 's/ .*//');log "SmartDNS      : Use $(echo $doh_yb | sed 's/ /,/g') to start on DoH mode (Youtube DNS)";;
-			1)dns_yb=$(echo $dns_yb | sed 's/ /,/g');log "SmartDNS      : Use $dns_yb to start on TCP mode (Youtube DNS)";;
+			0)log "SmartDNS    : Youtube DNS start on DoH mode";;
+			1)log "SmartDNS    : Youtube DNS start on TCP mode";;
 		esac
 	fi
 	if [ "$NF" ];then
 		case $dns_mode_n in
-			0)doh_nf=$(echo $doh_nf | sed 's/,/\n/g' | sed 's/ .*//');log "SmartDNS      : Use $(echo $doh_nf | sed 's/ /,/g') to start on DoH mode (Netflix DNS)";;
-			1)dns_nf=$(echo $dns_nf | sed 's/ /,/g');log "SmartDNS      : Use $dns_nf to start on TCP mode (Netflix DNS)";;
+			0)log "SmartDNS    : Netflix DNS start on DoH mode";;
+			1)log "SmartDNS    : Netflix DNS start on TCP mode";;
+		esac
+	fi
+	if [ "$CU" ];then
+		case $dns_mode_c in
+			0)log "SmartDNS    : Custom DNS start on DoH mode";;
+			1)log "SmartDNS    : Custom DNS start on TCP mode";;
 		esac
 	fi
 	case $dns_mode_l in
-		0)doh_l=$(echo $doh_l | sed 's/,/\n/g' | grep -v '\[' | sed 's/ .*//');log "SmartDNS      : Use $(echo $doh_l | sed 's/ /,/g') to start on DoH mode (Domestic DNS)";;
-		1)dns_l=$(echo $dns_l | sed 's/ /,/g');log "SmartDNS      : Use $dns_l to start on UDP mode (Domestic DNS)";;
+		0)log "SmartDNS    : Local DNS start on DoH mode";;
+		1)log "SmartDNS    : Local DNS start on UDP mode";;
 	esac
 	if [ $run_mode = router ];then
 		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 0 ] && echo -g $K/gfw.list)
-		log "ChinaDNS      : Start ChinaDNS-NG successful!"
+		log "ChinaDNS    : Start ChinaDNS-NG successful!"
 	fi
 }
 
 check_net(){
 	if ! curl -so /dev/null -m 3 www.163.com;then
-		log "Over Rules     : Wait for network to connect..."
+		log "Over Rules  : Wait for network to connect..."
 		firstdown 1;exit 1
 	fi
 }
@@ -200,7 +206,7 @@ get_soip(){
 		if [ "$1" = 1 ];then
 			cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status...' || gen_log
 			check_net
-			cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status successful!' || log "Over Rules     : Check network status successful!"
+			cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status successful!' || log "Over Rules  : Check network status successful!"
 		fi
 		socks5_ip=$(uci_get_by_name $SO_SERVER server)
 		if ! echo $socks5_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
@@ -251,20 +257,20 @@ rules(){
 	fi
 	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status...\|Download IP/GFW files...' || gen_log
 	check_net
-	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules     : Check network status successful!";log "Over Rules     : Check IP/GFW files...")
+	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules  : Check network status successful!";log "Over Rules  : Check IP/GFW files...")
 	mkdir -p /var/run /var/etc
 	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
-		log "Over Rules     : Download IP/GFW files..."
+		log "Over Rules  : Download IP/GFW files..."
 		firstdown 2;exit
 	fi
-	log "Over Rules     : Check IP/GFW files successful!"
+	log "Over Rules  : Check IP/GFW files successful!"
 	kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable 0)
 	[ $kcp_enable = 1 ] && kcp_server=$server
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 	[ "$UDP_RELAY_SERVER" = same ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
 	[ $(uci_get_by_name $UDP_RELAY_SERVER server) ] || UDP_RELAY_SERVER=
 	if [ "$(uci_get_by_name $UDP_RELAY_SERVER kcp_enable)" = 1 ];then
-		log "UDP Node      : Can't use KCPTUN to start as UDP Relay Server!"
+		log "UDP Node    : Can't use KCPTUN to start as UDP Relay Server!"
 		UDP_RELAY_SERVER=
 	fi
 	if [ $run_mode != oversea ];then
@@ -294,7 +300,7 @@ rules(){
 			done
 		fi
 		if ! A=$(nslookup $server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-			log "Main Node      : Unable to get server address.Check domain name!";return 1
+			log "Main Node   : Unable to get server address.Check domain name!";return 1
 		fi
 		server=$(echo "$A" | sed -n 1p)
 	fi
@@ -317,7 +323,7 @@ rules(){
 				done
 			fi
 			if ! A=$(nslookup $udp_server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				log "UDP Node      : Unable to get server address.Check domain name!";return 1
+				log "UDP Node    : Unable to get server address.Check domain name!";return 1
 			fi
 			udp_server=$(echo "$A" | sed -n 1p)
 		fi
@@ -348,7 +354,7 @@ rules(){
 				done
 			fi
 			if ! A=$(nslookup $yb_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				log "Y2B Node       : Unable to get server address.Check domain name!";return 1
+				log "Y2B Node    : Unable to get server address.Check domain name!";return 1
 			fi
 			yb_ip=$(echo "$A" | sed -n 1p)
 		fi
@@ -371,7 +377,7 @@ rules(){
 				done
 			fi
 			if ! A=$(nslookup $nf_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				log "NF Node         : Unable to get server address.Check domain name!";return 1
+				log "NF Node     : Unable to get server address.Check domain name!";return 1
 			fi
 			nf_ip=$(echo "$A" | sed -n 1p)
 		fi
@@ -420,7 +426,7 @@ rules(){
 				done
 			fi
 			if ! A=$(nslookup $tg_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				log "TG Node        : Unable to get server address.Check domain name!";return 1
+				log "TG Node     : Unable to get server address.Check domain name!";return 1
 			fi
 			tg_ip=$(echo "$A" | sed -n 1p)
 		fi
@@ -436,7 +442,7 @@ rules(){
 	[ $TG ] && TG="-J $tg_ip -K $tg_local_port"
 
 	get_soip
-	log "Over Rules     : Get all server address successful!"
+	log "Over Rules  : Get all server address successful!"
 	if [ "$lan_ac_ips" ];then
 		case $lan_ac_mode in
 			w|W|b|B)local ac_ips="$lan_ac_mode$lan_ac_ips";;
@@ -456,17 +462,17 @@ rules(){
 	r=1
 	while ! $BIN_DIR/rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
 		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$lan_gm_ip" -D "$proxyport" $mode $UDP $YB $NF $CU $TG $P $D;do
-		[ $r -ge 20 ] && log "Over Rules     : Start iptables rules failed!" && return 1
+		[ $r -ge 20 ] && log "Over Rules  : Start iptables rules failed!" && return 1
 		let r++;sleep 1
 	done
 	shunt_rules
-	log "Over Rules     : Start iptables rules successful!"
+	log "Over Rules  : Start iptables rules successful!"
 }
 
 start_tcp(){
 	if [ $kcp_enable = 1 ];then
 		cmd=$(which kcptun-client) || cmd=0
-		[ ! $cmd ] && log "Main Node      : Can't find KCPTUN program, start failed!" && return 1
+		[ ! $cmd ] && log "Main Node   : Can't find KCPTUN program, start failed!" && return 1
 		[ $($cmd -v 2>/dev/null | grep kcptun | wc -l) = 0 ] && return 1
 		kcp_port=$(uci_get_by_name $GLOBAL_SERVER kcp_port)
 		server_port=$(uci_get_by_name $GLOBAL_SERVER server_port)
@@ -478,7 +484,7 @@ start_tcp(){
 	threads=$(uci_get_by_type global threads 0)
 	[ $threads = 0 ] && threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
 	cmd=$(f_bin $ttype)
-	[ ! $cmd ] && log "Main Node      : Can't find $(echo $ttype | tr a-z A-Z) program, start failed!" && return 1
+	[ ! $cmd ] && log "Main Node   : Can't find $(echo $ttype | tr a-z A-Z) program, start failed!" && return 1
 	[ $YB_GL ] && CONFIG_FILE=$CONFIG_FILE-yb
 	[ $NF_GL ] && CONFIG_FILE=$CONFIG_FILE-nf
 	[ $CU_GL ] && CONFIG_FILE=$CONFIG_FILE-cu
@@ -493,7 +499,7 @@ start_tcp(){
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1 &
 			done
 			[ $ttype = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "Main Node      : $name $threads Threads Started!";;
+			log "Main Node   : $name $threads Threads Started!";;
 		vmess|vless)
 			if [ "$SO_SERVER" = $GLOBAL_SERVER ];then
 				port=$(uci_get_by_type socks5_proxy local_port 1080);socks5_start=1;V2=${CONFIG_FILE%.*}-socks5.json
@@ -503,7 +509,7 @@ start_tcp(){
 			$BIN_DIR/genxrayconfig $GLOBAL_SERVER tcp $local_port $port $server > $V2
 			sed -i 's/\\//g' $V2
 			$cmd -c $V2 >/dev/null 2>&1 &
-			log "Main Node      : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
+			log "Main Node   : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
 			if [ "$socks5_start" = 1 ];then
 				log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
 			fi;;
@@ -514,10 +520,10 @@ start_tcp(){
 			for i in $(seq 1 $threads);do
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1 &
 			done
-			log "Main Node      : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) $threads Threads Started!";;
+			log "Main Node   : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) $threads Threads Started!";;
 		naiveproxy)
 			$cmd $CONFIG_FILE >/dev/null 2>&1 &
-			log "Main Node      : $($cmd --version | head -1) Threads Started!";;
+			log "Main Node   : $($cmd --version | head -1) Threads Started!";;
 		socks5)
 			redir_tcp=$threads
 			$BIN_DIR/genred2config $CONFIG_FILE socks5 tcp $local_port $server $(uci_get_by_name $GLOBAL_SERVER server_port) \
@@ -525,37 +531,37 @@ start_tcp(){
 			for i in $(seq 1 $threads);do
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1
 			done
-			log "Main Node      : Socks5 $threads Threads Started!";;
+			log "Main Node   : Socks5 $threads Threads Started!";;
 		tun)
 			redir_tcp=$threads
 			$BIN_DIR/genred2config $CONFIG_FILE vpn $(uci_get_by_name $GLOBAL_SERVER iface br-lan) $local_port
 			for i in $(seq 1 $threads);do
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1
 			done
-			log "Main Node      : Network Tunnel $threads Threads Started!";;
+			log "Main Node   : Network Tunnel $threads Threads Started!";;
 	esac
 }
 
 start_udp(){
 	cmd=$(f_bin $utype)
-	[ ! $cmd ] && log "UDP Node      : Can't find $(echo $utype | tr a-z A-Z) program, start failed!" && return 1
+	[ ! $cmd ] && log "UDP Node    : Can't find $(echo $utype | tr a-z A-Z) program, start failed!" && return 1
 	redir_udp=1
 	case $utype in
 		ss|ssr)
 			gen_config_file $UDP_RELAY_SERVER 1
 			$cmd -c $CONFIG_UDP_FILE -U >/dev/null 2>&1 &
 			[ $utype = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "UDP Node      : $name Started!";;
+			log "UDP Node    : $name Started!";;
 		vmess|vless)
 			$BIN_DIR/genxrayconfig $UDP_RELAY_SERVER udp $udp_local_port 0 $udp_server > $CONFIG_UDP_FILE
 			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
-			log "UDP Node      : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
+			log "UDP Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER nat $udp_local_port $udp_server > $CONFIG_UDP_FILE
 			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
-			log "UDP Node      : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
+			log "UDP Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
 			redir_udp=0
 			log "$($cmd --version | head -1) UDP Relay not supported!";;
@@ -563,7 +569,7 @@ start_udp(){
 			$BIN_DIR/genred2config $CONFIG_UDP_FILE socks5 udp $udp_local_port $udp_server \
 			$(uci_get_by_name $UDP_RELAY_SERVER server_port) $(uci_get_by_name $UDP_RELAY_SERVER auth_enable 0) $(uci_get_by_name $UDP_RELAY_SERVER username) $(uci_get_by_name $UDP_RELAY_SERVER password)
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1
-			log "UDP Node      : Socks5 Started!";;
+			log "UDP Node    : Socks5 Started!";;
 		tun)
 			redir_udp=0
 			log "Network Tunnel UDP Relay not supported!";;
@@ -572,7 +578,7 @@ start_udp(){
 
 start_yb(){
 	cmd=$(f_bin $ytype)
-	[ ! $cmd ] && log "Y2B Node       : Can't find $(echo $ytype | tr a-z A-Z) program, start failed!" && return 1
+	[ ! $cmd ] && log "Y2B Node    : Can't find $(echo $ytype | tr a-z A-Z) program, start failed!" && return 1
 	[ $NF_YB ] && CONFIG_YB_FILE=$CONFIG_YB_FILE-nf
 	[ $CU_YB ] && CONFIG_YB_FILE=$CONFIG_YB_FILE-cu
 	[ $TG_YB ] && CONFIG_YB_FILE=$CONFIG_YB_FILE-tg
@@ -583,35 +589,35 @@ start_yb(){
 		ss|ssr)
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			[ $ytype = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "Y2B Node       : $name Started!";;
+			log "Y2B Node    : $name Started!";;
 		vmess|vless)
 			$BIN_DIR/genxrayconfig $YB_SERVER tcp $yb_local_port 0 $yb_ip > $CONFIG_YB_FILE
 			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
-			log "Y2B Node       : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
+			log "Y2B Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $YB_SERVER nat $yb_local_port $yb_ip > $CONFIG_YB_FILE
 			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
-			log "Y2B Node       : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
+			log "Y2B Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
 			$cmd $CONFIG_YB_FILE >/dev/null 2>&1 &
-			log "Y2B Node       : $($cmd --version | head -1) Started!";;
+			log "Y2B Node    : $($cmd --version | head -1) Started!";;
 		socks5)
 			$BIN_DIR/genred2config $CONFIG_YB_FILE socks5 tcp $yb_local_port $yb_ip $(uci_get_by_name $YB_SERVER server_port) \
 			$(uci_get_by_name $YB_SERVER auth_enable 0) $(uci_get_by_name $YB_SERVER username) $(uci_get_by_name $YB_SERVER password)
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1
-			log "Y2B Node       : Socks5 Started!";;
+			log "Y2B Node    : Socks5 Started!";;
 		tun)
 			$BIN_DIR/genred2config $CONFIG_YB_FILE vpn $(uci_get_by_name $YB_SERVER iface "br-lan") $yb_local_port
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1
-			log "Y2B Node       : Network Tunnel REDIRECT Started!";;
+			log "Y2B Node    : Network Tunnel REDIRECT Started!";;
 	esac
 }
 
 start_nf(){
 	cmd=$(f_bin $ntype)
-	[ ! $cmd ] && log "NF Node         : Can't find $(echo $ntype | tr a-z A-Z) program, start failed!" && return 1
+	[ ! $cmd ] && log "NF Node     : Can't find $(echo $ntype | tr a-z A-Z) program, start failed!" && return 1
 	[ $CU_NF ] && CONFIG_NF_FILE=$CONFIG_NF_FILE-cu
 	[ $TG_NF ] && CONFIG_NF_FILE=$CONFIG_NF_FILE-tg
 	CONFIG_NF_FILE=$CONFIG_NF_FILE.json
@@ -621,29 +627,29 @@ start_nf(){
 		ss|ssr)
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			[ $ntype = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "NF Node         : $name Started!";;
+			log "NF Node     : $name Started!";;
 		vmess|vless)
 			$BIN_DIR/genxrayconfig $NF_SERVER tcp $nf_local_port 0 $nf_ip > $CONFIG_NF_FILE
 			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
-			log "NF Node         : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
+			log "NF Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $NF_SERVER nat $nf_local_port $nf_ip > $CONFIG_NF_FILE
 			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
-			log "NF Node         : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
+			log "NF Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
 			$cmd $CONFIG_NF_FILE >/dev/null 2>&1 &
-			log "NF Node         : $($cmd --version | head -1) Started!";;
+			log "NF Node     : $($cmd --version | head -1) Started!";;
 		socks5)
 			$BIN_DIR/genred2config $CONFIG_NF_FILE socks5 tcp $nf_local_port $nf_ip $(uci_get_by_name $NF_SERVER server_port) \
 			$(uci_get_by_name $NF_SERVER auth_enable 0) $(uci_get_by_name $NF_SERVER username) $(uci_get_by_name $NF_SERVER password)
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1
-			log "NF Node         : Socks5 Started!";;
+			log "NF Node     : Socks5 Started!";;
 		tun)
 			$BIN_DIR/genred2config $CONFIG_NF_FILE vpn $(uci_get_by_name $NF_SERVER iface "br-lan") $nf_local_port
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1
-			log "NF Node         : Network Tunnel REDIRECT Started!";;
+			log "NF Node     : Network Tunnel REDIRECT Started!";;
 	esac
 }
 
@@ -686,36 +692,36 @@ start_cu(){
 
 start_tg(){
 	cmd=$(f_bin $gtype)
-	[ ! $cmd ] && log "TG Node        : Can't find $(echo $gtype | tr a-z A-Z) program, start failed!" && return 1
+	[ ! $cmd ] && log "TG Node     : Can't find $(echo $gtype | tr a-z A-Z) program, start failed!" && return 1
 	gen_config_file $TG_SERVER 5
 	redir_tg=1
 	case $gtype in
 		ss|ssr)
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			[ $gtype = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "TG Node        : $name Started!";;
+			log "TG Node     : $name Started!";;
 		vmess|vless)
 			$BIN_DIR/genxrayconfig $TG_SERVER tcp $tg_local_port 0 $tg_ip > $CONFIG_TG_FILE
 			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
-			log "TG Node        : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
+			log "TG Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $TG_SERVER nat $tg_local_port $tg_ip > $CONFIG_TG_FILE
 			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
-			log "TG Node        : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
+			log "TG Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
 			$cmd $CONFIG_TG_FILE >/dev/null 2>&1 &
-			log "TG Node        : $($cmd --version | head -1) Started!";;
+			log "TG Node     : $($cmd --version | head -1) Started!";;
 		socks5)
 			$BIN_DIR/genred2config $CONFIG_TG_FILE socks5 tcp $tg_local_port $tg_ip $(uci_get_by_name $TG_SERVER server_port) \
 			$(uci_get_by_name $TG_SERVER auth_enable 0) $(uci_get_by_name $TG_SERVER username) $(uci_get_by_name $TG_SERVER password)
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1
-			log "TG Node        : Socks5 Started!";;
+			log "TG Node     : Socks5 Started!";;
 		tun)
 			$BIN_DIR/genred2config $CONFIG_TG_FILE vpn $(uci_get_by_name $TG_SERVER iface "br-lan") $tg_local_port
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1
-			log "TG Node        : Network Tunnel REDIRECT Started!";;
+			log "TG Node     : Network Tunnel REDIRECT Started!";;
 	esac
 }
 
@@ -772,7 +778,7 @@ gen_dns(){
 		esac
 		dns=$(echo $dns | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 		if ! dns_tmp=$(echo $dns | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1);then
-			log "SmartDNS      : Get Foreign DNS failed!"
+			log "SmartDNS    : Get Main DNS failed!"
 			return 1
 		fi
 		for i in $dns_tmp;do
@@ -803,7 +809,7 @@ gen_dns(){
 		esac
 		dns_yb=$(echo $dns_yb | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 		if ! dns_tmp=$(echo $dns_yb | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1);then
-			log "SmartDNS      : Get Youtube DNS failed!"
+			log "SmartDNS    : Get Youtube DNS failed!"
 			return 1
 		fi
 		for i in $dns_tmp;do ipset add youtube $i 2>/dev/null;done
@@ -829,7 +835,7 @@ gen_dns(){
 		esac
 		dns_nf=$(echo $dns_nf | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 		if ! dns_tmp=$(echo $dns_nf | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1);then
-			log "SmartDNS      : Get Netflix DNS failed!"
+			log "SmartDNS    : Get Netflix DNS failed!"
 			return 1
 		fi
 		for i in $dns_tmp;do ipset add netflix $i 2>/dev/null;done
@@ -855,7 +861,7 @@ gen_dns(){
 		esac
 		dns_cu=$(echo $dns_cu | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 		if ! dns_tmp=$(echo $dns_cu | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1);then
-			log "SmartDNS      : Get Custom DNS failed!"
+			log "SmartDNS    : Get Custom DNS failed!"
 			return 1
 		fi
 		for i in $dns_tmp;do ipset add custom $i 2>/dev/null;done
@@ -871,11 +877,11 @@ gen_dns(){
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
 	else
 		dns_l=$(uci_get_by_type global udp_dns isp)
-		[ ! "$dns_l" ] && log "SmartDNS      : Get Domestic DNS failed!" && return 1
+		[ ! "$dns_l" ] && log "SmartDNS    : Get Local DNS failed!" && return 1
 	fi
 	if [ "$dns_l" = isp ];then
 		dns_l=$REF
-		[ ! "$dns_l" ] && log "SmartDNS      : Get Domestic DNS failed!" && return 1
+		[ ! "$dns_l" ] && log "SmartDNS    : Get Local DNS failed!" && return 1
 	fi
 	dns_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 	dns_tmp=$(echo $dns_l | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1)
@@ -1191,7 +1197,7 @@ run_server(){
 	[ $server_count = 1 ] && iptables-save -t filter | grep -q OVERWALL-S-RULE || iptables -N OVERWALL-S-RULE && iptables -I INPUT -j OVERWALL-S-RULE
 	type=$(uci_get_by_name $1 type ssr)
 	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-server) || cmd=$(which microsocks)
-	[ ! $cmd ] && log "Over server    : Can't find $cmd program, start failed!" && return 1
+	[ ! $cmd ] && log "Over server : Can't find $cmd program, start failed!" && return 1
 	port=$(uci_get_by_name $1 server_port)
 	pass=$(uci_get_by_name $1 password)
 	name=overwall-server_$server_count
@@ -1199,19 +1205,19 @@ run_server(){
 		ss|ssr)timeout=$(uci_get_by_name $1 timeout 60);gen_service_file $1 $type /var/etc/$name.json
 			$cmd -c /var/etc/$name.json -u >/dev/null 2>&1 &
 			[ $type = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "Over server    : $name Server$server_count Started!";;
+			log "Over server : $name Server$server_count Started!";;
 		*)
 		if [ $(uci_get_by_name $1 auth_enable 0) = 1 ];then
 			username=$(uci_get_by_name $1 username)
 			if [ "$username" ];then
 				param="$([ $(uci_get_by_name $1 auth_once 0) = 1 ] && echo -1) -u $username -P $pass"
 			else
-				log "Over server    : Socks5 User and pass must be used together!"
+				log "Over server : Socks5 User and pass must be used together!"
 				return 1
 			fi
 		fi
 		$cmd -p $port $param $name >/dev/null 2>&1 &
-		log "Over server    : Socks5 Server$server_count Started!";;
+		log "Over server : Socks5 Server$server_count Started!";;
 	esac
 	iptables -A OVERWALL-S-RULE -p tcp --dport $port -j ACCEPT
 	iptables -A OVERWALL-S-RULE -p udp --dport $port -j ACCEPT
