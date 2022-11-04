@@ -7,8 +7,10 @@
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Encrypt Code%>" onclick="encrypt()"/>
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Hardware Code List%>" onclick="hc_list()"/>
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Add Hardware Code%>" onclick="add_code()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Replace Hardware Code%>" onclick="rp_code()"/>
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Del Hardware Code%>" onclick="del_code()"/>
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Query Auth Code%>" onclick="get_code()"/>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Refresh Rules%>" onclick="ref()"/>
 <script type="text/javascript">//<![CDATA[
 var islogreverse=false;
 document.getElementById('cbid.logview.2.conf').style.fontFamily="NSimSun";
@@ -103,6 +105,24 @@ function add_code(){
 	return
 }
 
+function rp_code(){
+	var a=prompt('<%:Enter Old Code%>','');
+	var b=prompt('<%:Enter New Code%>','');
+	if (a==null || a=='' || b==null || b=='') return false;
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[rp_code]])%>',{a,b},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
 function del_code(){
 	var code=prompt('<%:Enter Code%>','');
 	if (code==null || code=='') return false;
@@ -124,6 +144,21 @@ function get_code(){
 	var code=prompt('<%:Enter Code%>','');
 	if (code==null || code=='') return false;
 	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[get_code]])%>',{code},function(x,data){
+		var lv=document.getElementById('cbid.logview.2.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	});
+	return
+}
+
+function ref(){
+	XHR.get('<%=url([[admin]],[[services]],[[overwall]],[[ref]])%>',null,function(x,data){
 		var lv=document.getElementById('cbid.logview.2.conf');
 		lv.innerHTML=""
 		if (x.responseText && lv){

@@ -90,15 +90,15 @@
 
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
-@@ -759,7 +759,7 @@
+@@ -599,7 +599,7 @@
+ 
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:740
- #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:736
  msgid "Replaces [DOMAIN] in Update-URL (URL-encoded)"
 -msgstr "取代 Update-URL 中的 [DOMAIN] (URL-encoded)"
 +msgstr "替換更新 URL（已編碼 URL）中的 [DOMAIN]"
  
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:752
- #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:748
+ msgid "Replaces [PASSWORD] in Update-URL (URL-encoded)"
 
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
 +++ b/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
@@ -195,6 +195,18 @@
  		o.modalonly = true;
  
 
+--- a/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
++++ b/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
+@@ -52,7 +52,7 @@
+ msgid ""
+ "<var data-tooltip=\"ACCEPT\">Accept</var> %{src?%{dest?forward:input}:output}"
+ msgstr ""
+-"<var data-tooltip=\"ACCEPT\">套用</var> %{src?%{dest?forward:input}:output}"
++"<var data-tooltip=\"ACCEPT\">接受</var> %{src?%{dest?forward:input}:output}"
+ 
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/snats.js:87
+ msgid "<var data-tooltip=\"ACCEPT\">Prevent source rewrite</var>"
+
 --- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
 +++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
 @@ -1,6 +1,7 @@
@@ -236,9 +248,20 @@
  #~ msgstr "收集資料中..."
  
 
+--- a/feeds/luci/collections/luci/Makefile
++++ b/feeds/luci/collections/luci/Makefile
+@@ -13,7 +13,6 @@
+ LUCI_DESCRIPTION:=Standard OpenWrt set including full admin with ppp support and the default Bootstrap theme
+ LUCI_DEPENDS:= \
+ 	+IPV6:luci-proto-ipv6 \
+-	+luci-app-attendedsysupgrade \
+ 	+luci-app-firewall \
+ 	+luci-app-opkg \
+ 	+luci-mod-admin-full \
+
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2380,7 +2380,7 @@
+@@ -2374,7 +2374,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -247,7 +270,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3687,17 +3687,6 @@
+@@ -3689,17 +3689,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -265,7 +288,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3781,22 +3770,6 @@
+@@ -3783,22 +3772,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -288,7 +311,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -9178,7 +9151,7 @@
+@@ -9195,7 +9168,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -308,22 +331,21 @@
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
 
---- a/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
-+++ b/feeds/luci/modules/luci-base/root/usr/libexec/rpcd/luci
-@@ -43,6 +43,13 @@
- 		end
+--- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
++++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
+@@ -65,6 +65,12 @@
+ 		}
  	},
  
-+	getCPUInfo = {
-+		call = function()
-+			local sys = require "luci.sys"
-+			return { result = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\",100-$8)}'") }
-+		end
++	getCPUInfo: {
++		call: function() {
++			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
++		}
 +	},
 +
- 	setLocaltime = {
- 		args = { localtime = 0 },
- 		call = function(args)
+ 	setLocaltime: {
+ 		args: { localtime: 0 },
+ 		call: function(request) {
 
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
@@ -1004,7 +1026,7 @@
 
 --- a/feeds/packages/net/frp/Makefile
 +++ b/feeds/packages/net/frp/Makefile
-@@ -1,16 +1,19 @@
+@@ -1,16 +1,20 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
@@ -1013,7 +1035,8 @@
  PKG_NAME:=frp
 -PKG_VERSION:=0.44.0
 -PKG_RELEASE:=$(AUTORELEASE)
-+PKG_VERSION:=0.44.0_git-$(PKG_SOURCE_VERSION)
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=0.44.0_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=1
 +PKG_LICENSE:=Apache-2.0
 +PKG_LICENSE_FILES:=LICENSE
@@ -1030,7 +1053,7 @@
  
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
-@@ -27,8 +30,6 @@
+@@ -27,8 +31,6 @@
  
  	$(INSTALL_DIR) $(1)/usr/bin/
  	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $(1)/usr/bin/
@@ -1065,7 +1088,7 @@
 
 --- a/feeds/packages/net/kcptun/Makefile
 +++ b/feeds/packages/net/kcptun/Makefile
-@@ -1,13 +1,15 @@
+@@ -1,13 +1,16 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
@@ -1073,7 +1096,8 @@
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20210922
-+PKG_VERSION:=git-$(PKG_SOURCE_VERSION)
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1085,7 +1109,7 @@
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
  PKG_LICENSE:=MIT
-@@ -24,26 +26,6 @@
+@@ -24,26 +27,6 @@
  include $(INCLUDE_DIR)/package.mk
  include ../../lang/golang/golang-package.mk
  
@@ -1112,7 +1136,7 @@
  define Package/kcptun/Default
    define Package/kcptun-$(1)
      SECTION:=net
-@@ -51,7 +33,6 @@
+@@ -51,7 +34,6 @@
      SUBMENU:=Web Servers/Proxies
      TITLE:=KCP-based Secure Tunnel $(1)
      URL:=https://github.com/xtaci/kcptun
@@ -1120,7 +1144,7 @@
    endef
  
    define Package/kcptun-$(1)/description
-@@ -67,7 +48,6 @@
+@@ -67,7 +49,6 @@
    endef
  endef
  
@@ -1131,7 +1155,7 @@
 
 --- a/feeds/packages/net/shadowsocks-libev/Makefile
 +++ b/feeds/packages/net/shadowsocks-libev/Makefile
-@@ -12,19 +12,21 @@
+@@ -12,19 +12,22 @@
  # - update cipher list by checking src/crypto.c:crypto_init()
  # - check if default mode has changed from being tcp_only
  #
@@ -1148,7 +1172,8 @@
 +PKG_SOURCE_VERSION:=7f7f68afe40b227195f5d9a6bb03c7bce41d45d8
  
 +PKG_NAME:=shadowsocks-libev
-+PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_VERSION)
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=9
  PKG_LICENSE:=GPL-3.0-or-later
  PKG_LICENSE_FILES:=LICENSE
@@ -1162,7 +1187,7 @@
  PKG_FIXUP:=autoreconf
  PKG_INSTALL:=1
  PKG_USE_MIPS16:=0
-@@ -33,27 +35,6 @@
+@@ -33,27 +36,6 @@
  
  include $(INCLUDE_DIR)/package.mk
  
@@ -1190,7 +1215,7 @@
  define Package/shadowsocks-libev/Default
    define Package/shadowsocks-libev-$(1)
      SECTION:=net
-@@ -61,7 +42,7 @@
+@@ -61,7 +43,7 @@
      SUBMENU:=Web Servers/Proxies
      TITLE:=shadowsocks-libev $(1)
      URL:=https://github.com/shadowsocks/shadowsocks-libev
@@ -1199,7 +1224,7 @@
    endef
  
    define Package/shadowsocks-libev-$(1)/install
-@@ -82,28 +63,6 @@
+@@ -82,28 +64,6 @@
  endef
  $(eval $(call shadowsocks-libev/templates))
  
@@ -1228,7 +1253,7 @@
  define Build/Prepare
  	$(call Build/Prepare/Default)
  	$(FIND) $(PKG_BUILD_DIR) \
-@@ -123,8 +82,6 @@
+@@ -123,8 +83,6 @@
  TARGET_CFLAGS += -flto
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
@@ -1240,12 +1265,13 @@
 
 --- a/feeds/packages/net/sqm-scripts/Makefile
 +++ b/feeds/packages/net/sqm-scripts/Makefile
-@@ -9,12 +9,11 @@
+@@ -9,12 +9,12 @@
  
  PKG_NAME:=sqm-scripts
  PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
 -PKG_VERSION:=1.5.2
-+PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_VERSION)
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
  
  PKG_SOURCE_PROTO:=git
@@ -1257,20 +1283,21 @@
 
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
-@@ -1,18 +1,24 @@
+@@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
 +PKG_SOURCE_VERSION:=9b293013e6633d46af09f8a0870e9a0b6384d8d0
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.6.1
-+PKG_VERSION:=1.6.2_git-$(PKG_SOURCE_VERSION)
+-PKG_VERSION:=1.6.2
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=1.6.2_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=8b4cc89d83b0ded75630119d9e2456764530490c7fb5e8a27de0cdf9c57fef15
+-PKG_HASH:=bdfeea9dc321007ae4e207c4d6e3a86a6787754a0ac8cf26313b19ce5567c4e9
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1286,7 +1313,7 @@
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
  PKG_USE_MIPS16:=0
-@@ -30,7 +36,7 @@
+@@ -30,7 +37,7 @@
    TITLE:=A platform for building proxies to bypass network restrictions
    SECTION:=net
    CATEGORY:=Network
@@ -1295,7 +1322,7 @@
  endef
  
  define Package/xray-core
-@@ -38,13 +44,6 @@
+@@ -38,13 +45,6 @@
    DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
  endef
  
@@ -1309,19 +1336,12 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -54,36 +53,43 @@
+@@ -54,36 +54,43 @@
    $(call Package/xray/description)
  endef
  
 -define Package/xray-example/description
 -  $(call Package/xray/description)
--
--  This includes example configuration files for xray-core.
--endef
--
--define Package/xray-core/conffiles
--/etc/xray/
--/etc/config/xray
 +define Package/xray-core/config
 +menu "Xray-core Configuration"
 +	depends on PACKAGE_xray-core
@@ -1329,7 +1349,8 @@
 +config XRAY_CORE_PROVIDE_V2RAY_CORE
 +	bool "Provide V2Ray binary using XRay"
 +	default n
-+
+ 
+-  This includes example configuration files for xray-core.
 +config XRAY_CORE_COMPRESS_GOPROXY
 +	bool "Compiling with GOPROXY proxy"
 +	default n
@@ -1338,8 +1359,11 @@
 +	bool "Compress executable files with UPX"
 +	default y
 +endmenu
-+endef
-+
+ endef
+ 
+-define Package/xray-core/conffiles
+-/etc/xray/
+-/etc/config/xray
 +ifneq ($(CONFIG_XRAY_CORE_COMPRESS_GOPROXY),)
 +	export GO111MODULE=on
 +	export GOPROXY=https://goproxy.io
@@ -1380,27 +1404,28 @@
 
 --- a/feeds/packages/net/zerotier/Makefile
 +++ b/feeds/packages/net/zerotier/Makefile
-@@ -5,14 +5,14 @@
+@@ -5,14 +5,15 @@
  
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
 +PKG_SOURCE_VERSION:=e0acccc3c918b59678033e585b31eb000c68fdf2
  PKG_NAME:=zerotier
--PKG_VERSION:=1.10.1
-+PKG_VERSION:=1.10.2_git-$(PKG_SOURCE_VERSION)
+-PKG_VERSION:=1.10.2
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=1.10.2_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=1cc6b5da059486aff588fa6e6f43d20a7063569cc108bbe7254969f1cf72c968
+-PKG_HASH:=9f98b1670785f42294b9858068d42c6b8c2fdee6402e871a36562b47559e74e7
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  
  PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
  PKG_LICENSE:=BSL 1.1
-@@ -61,10 +61,6 @@
+@@ -61,10 +62,6 @@
  TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
@@ -1411,7 +1436,7 @@
  define Package/zerotier/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
-@@ -74,8 +70,6 @@
+@@ -74,8 +71,6 @@
  ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
  endif
@@ -1710,223 +1735,38 @@
  		width: 100%;
  		margin: 0 !important;
 
---- a/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
-+++ b/feeds/luci/applications/luci-app-upnp/root/usr/libexec/rpcd/luci.upnp
-@@ -62,58 +62,6 @@
- 				ipt:close()
- 			end
- 
--			local nft = io.popen("nft --handle list chain inet fw4 upnp_prerouting")
--			if nft then
--				local num = 1
--				local upnpf = lease_file and io.open(lease_file, "r")
--				while true do
--					local ln = nft:read("*l")
--					if not ln then
--						break
--					elseif ln:match("iif ") then
--						local proto, extport, intaddr, intport =
--							ln:match('^\t\tiif ".-" @nh,72,8 (0x[0-9a-f]+) th dport ([0-9]+) dnat ip to ([0-9%.]+):([0-9]+)')
--						local descr = ""
--
--						if (proto == "0x6" or proto == "0x11") and extport and intaddr and intport then
--							proto = (proto == "0x6") and "TCP" or "UDP"
--							extport = tonumber(extport)
--							intport = tonumber(intport)
--
--							if upnpf then
--								local uln = upnpf:read("*l")
--								if uln then descr = uln:match(string.format("^%s:%d:%s:%d:%%d*:(.*)$", proto, extport, intaddr, intport)) end
--								if not descr then descr = "" end
--							end
--
--							local host_hint, _, e
--
--							for _,e in pairs(ipv4_hints) do
--								if e[1] == intaddr then
--									host_hint = e[2]
--									break
--								end
--							end
--
--							rule[#rule+1] = {
--								num = tostring(num),
--								proto   = proto,
--								extport = extport,
--								intaddr = intaddr,
--								host_hint = host_hint,
--								intport = intport,
--								descr = descr
--							}
--
--							num = num + 1
--						end
--					end
--				end
--
--				if upnpf then upnpf:close() end
--				nft:close()
--			end
--
- 			return { rules = rule }
- 		end
- 	},
-@@ -127,10 +75,13 @@
- 			if idx and idx > 0 then
- 				local uci = UCI.cursor()
- 
-+				sys.call("iptables -t filter -D MINIUPNPD %d 2>/dev/null" % idx)
-+				sys.call("iptables -t nat -D MINIUPNPD %d 2>/dev/null" % idx)
-+				sys.call("iptables -t nat -D MINIUPNPD-POSTROUTING %d 2>/dev/null" % idx)
-+
- 				local lease_file = uci:get("upnpd", "config", "upnp_lease_file")
- 				if lease_file and fs.access(lease_file) then
- 					sys.call("sed -i -e '%dd' %s" %{ idx, util.shellquote(lease_file) })
--					sys.call("/etc/init.d/miniupnpd restart")
- 				end
- 
- 				uci.unload()
+--- a/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
++++ b/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
+@@ -7,7 +7,7 @@
+ 					{{ version.luciname }} ({{ version.luciversion }})</a>
+ 				/
+ 				<a href="{{ entityencode(version.disturl ?? '#', true) }}">
+-					{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</a>
++					{{ version.distname }} {{ version.distversion }}</a>
+ 				{% if (lua_active): %}
+ 					/ {{ _('Lua compatibility mode active') }}
+ 				{% endif %}
 
---- a/feeds/luci/luci.mk
-+++ b/feeds/luci/luci.mk
-@@ -113,9 +113,8 @@
- PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
- 	variant="LuCI"; \
- 	if git log -1 >/dev/null 2>/dev/null; then \
--		branch=$$(git branch --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
--		branch=$${branch:-$$(git branch --no-abbrev --contains 2>/dev/null)}; \
--		branch=$${branch#? }; branch=$${branch#*/}; \
-+		branch=$$(git branch --format='%(refname:strip=3)' --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
-+		branch=$${branch:-$$(git branch --format='%(refname:strip=2)' --no-abbrev --contains 2>/dev/null | tail -n1)}; \
- 		if [ "$$branch" != "master" ]; then \
- 			variant="LuCI $${branch:-unknown} branch"; \
- 		else \
+--- a/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
++++ b/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
+@@ -46,7 +46,7 @@
+ 
+ 			if (ipt) {
+ 				for (let line = ipt.read('line'); length(line); line = ipt.read('line')) {
+-					let m = match(line, /^([0-9]+)\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
++					let m = match(line, /^([0-9]+).+\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
+ 
+ 					if (m) {
+ 						push(rules, {
 
---- a/feeds/luci/modules/luci-base/luasrc/sys/zoneinfo/tzdata.lua
-+++ b/feeds/luci/modules/luci-base/luasrc/sys/zoneinfo/tzdata.lua
-@@ -76,7 +76,7 @@
- 	{ 'America/Asuncion', '<-04>4<-03>,M10.1.0/0,M3.4.0/0' },
- 	{ 'America/Atikokan', 'EST5' },
- 	{ 'America/Bahia', '<-03>3' },
--	{ 'America/Bahia Banderas', 'CST6CDT,M4.1.0,M10.5.0' },
-+	{ 'America/Bahia Banderas', 'CST6' },
- 	{ 'America/Barbados', 'AST4' },
- 	{ 'America/Belem', '<-03>3' },
- 	{ 'America/Belize', 'CST6' },
-@@ -91,7 +91,7 @@
- 	{ 'America/Cayenne', '<-03>3' },
- 	{ 'America/Cayman', 'EST5' },
- 	{ 'America/Chicago', 'CST6CDT,M3.2.0,M11.1.0' },
--	{ 'America/Chihuahua', 'MST7MDT,M4.1.0,M10.5.0' },
-+	{ 'America/Chihuahua', 'CST6' },
- 	{ 'America/Costa Rica', 'CST6' },
- 	{ 'America/Creston', 'MST7' },
- 	{ 'America/Cuiaba', '<-04>4' },
-@@ -143,26 +143,25 @@
- 	{ 'America/Marigot', 'AST4' },
- 	{ 'America/Martinique', 'AST4' },
- 	{ 'America/Matamoros', 'CST6CDT,M3.2.0,M11.1.0' },
--	{ 'America/Mazatlan', 'MST7MDT,M4.1.0,M10.5.0' },
-+	{ 'America/Mazatlan', 'MST7' },
- 	{ 'America/Menominee', 'CST6CDT,M3.2.0,M11.1.0' },
--	{ 'America/Merida', 'CST6CDT,M4.1.0,M10.5.0' },
-+	{ 'America/Merida', 'CST6' },
- 	{ 'America/Metlakatla', 'AKST9AKDT,M3.2.0,M11.1.0' },
--	{ 'America/Mexico City', 'CST6CDT,M4.1.0,M10.5.0' },
-+	{ 'America/Mexico City', 'CST6' },
- 	{ 'America/Miquelon', '<-03>3<-02>,M3.2.0,M11.1.0' },
- 	{ 'America/Moncton', 'AST4ADT,M3.2.0,M11.1.0' },
--	{ 'America/Monterrey', 'CST6CDT,M4.1.0,M10.5.0' },
-+	{ 'America/Monterrey', 'CST6' },
- 	{ 'America/Montevideo', '<-03>3' },
- 	{ 'America/Montserrat', 'AST4' },
- 	{ 'America/Nassau', 'EST5EDT,M3.2.0,M11.1.0' },
- 	{ 'America/New York', 'EST5EDT,M3.2.0,M11.1.0' },
--	{ 'America/Nipigon', 'EST5EDT,M3.2.0,M11.1.0' },
- 	{ 'America/Nome', 'AKST9AKDT,M3.2.0,M11.1.0' },
- 	{ 'America/Noronha', '<-02>2' },
- 	{ 'America/North Dakota/Beulah', 'CST6CDT,M3.2.0,M11.1.0' },
- 	{ 'America/North Dakota/Center', 'CST6CDT,M3.2.0,M11.1.0' },
- 	{ 'America/North Dakota/New Salem', 'CST6CDT,M3.2.0,M11.1.0' },
- 	{ 'America/Nuuk', '<-03>3<-02>,M3.5.0/-2,M10.5.0/-1' },
--	{ 'America/Ojinaga', 'MST7MDT,M3.2.0,M11.1.0' },
-+	{ 'America/Ojinaga', 'CST6' },
- 	{ 'America/Panama', 'EST5' },
- 	{ 'America/Pangnirtung', 'EST5EDT,M3.2.0,M11.1.0' },
- 	{ 'America/Paramaribo', '<-03>3' },
-@@ -172,7 +171,6 @@
- 	{ 'America/Porto Velho', '<-04>4' },
- 	{ 'America/Puerto Rico', 'AST4' },
- 	{ 'America/Punta Arenas', '<-03>3' },
--	{ 'America/Rainy River', 'CST6CDT,M3.2.0,M11.1.0' },
- 	{ 'America/Rankin Inlet', 'CST6CDT,M3.2.0,M11.1.0' },
- 	{ 'America/Recife', '<-03>3' },
- 	{ 'America/Regina', 'CST6' },
-@@ -193,7 +191,6 @@
- 	{ 'America/Swift Current', 'CST6' },
- 	{ 'America/Tegucigalpa', 'CST6' },
- 	{ 'America/Thule', 'AST4ADT,M3.2.0,M11.1.0' },
--	{ 'America/Thunder Bay', 'EST5EDT,M3.2.0,M11.1.0' },
- 	{ 'America/Tijuana', 'PST8PDT,M3.2.0,M11.1.0' },
- 	{ 'America/Toronto', 'EST5EDT,M3.2.0,M11.1.0' },
- 	{ 'America/Tortola', 'AST4' },
-@@ -422,7 +419,7 @@
- 	{ 'Pacific/Easter', '<-06>6<-05>,M9.1.6/22,M4.1.6/22' },
- 	{ 'Pacific/Efate', '<+11>-11' },
- 	{ 'Pacific/Fakaofo', '<+13>-13' },
--	{ 'Pacific/Fiji', '<+12>-12<+13>,M11.2.0,M1.2.3/99' },
-+	{ 'Pacific/Fiji', '<+12>-12' },
- 	{ 'Pacific/Funafuti', '<+12>-12' },
- 	{ 'Pacific/Galapagos', '<-06>6' },
- 	{ 'Pacific/Gambier', '<-09>9' },
-
---- a/feeds/luci/modules/luci-base/Makefile
-+++ b/feeds/luci/modules/luci-base/Makefile
-@@ -14,6 +14,8 @@ LUCI_BASENAME:=base
- LUCI_TITLE:=LuCI core libraries
- LUCI_DEPENDS:=+lua +luci-lib-nixio +luci-lib-ip +rpcd +libubus-lua +luci-lib-jsonc +liblucihttp-lua +luci-lib-base +rpcd-mod-file +rpcd-mod-luci +cgi-io
+--- a/feeds/luci/modules/luci-base/htdocs/luci-static/resources/ui.js
++++ b/feeds/luci/modules/luci-base/htdocs/luci-static/resources/ui.js
+@@ -1053,7 +1053,7 @@
+ 			'disabled': this.options.disabled ? '' : null
+ 		}, E('ul'));
  
-+PKG_VERSION:=git-22.999
-+
- PKG_LICENSE:=MIT
+-		var keys = Object.keys(this.choices);
++		var keys = Object.keys(this.choices || {});
  
- HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)
-
---- a/feeds/luci/modules/luci-compat/Makefile
-+++ b/feeds/luci/modules/luci-compat/Makefile
-@@ -12,7 +12,9 @@ LUCI_TYPE:=mod
- LUCI_BASENAME:=compat
- 
- LUCI_TITLE:=LuCI compatibility libraries
--LUCI_DEPENDS:=+luci-base
-+LUCI_DEPENDS:=+luci-lua-runtime
-+
-+PKG_VERSION:=git-22.999
- 
- include ../../luci.mk
- 
-
---- /dev/null
-+++ b/package/ipk/luci-lua-runtime/Makefile
-@@ -0,0 +1,21 @@
-+#
-+# Copyright (C) 2022 Jo-Philipp Wich <jo@mein.io>
-+#
-+# This is free software, licensed under the Apache License, Version 2.0 .
-+#
-+
-+include $(TOPDIR)/rules.mk
-+
-+PKG_NAME:=luci-lua-runtime
-+
-+LUCI_TYPE:=mod
-+LUCI_BASENAME:=lua-runtime
-+
-+LUCI_TITLE:=LuCI Lua runtime libraries
-+LUCI_DEPENDS:=+luci-base
-+
-+PKG_VERSION:=git-22.999
-+
-+include $(TOPDIR)/feeds/luci/luci.mk
-+
-+# call BuildPackage - OpenWrt buildroot signature
+ 		if (this.options.sort === true)
+ 			keys.sort(L.naturalCompare);

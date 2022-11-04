@@ -1,8 +1,9 @@
 #!/bin/sh
 [ $1 ] || exit
+N=overwall.@global[0]
 
 if [ $1 = A ];then
-	uci -q get overwall.@global[0].auth_9 >/dev/null && exit || exit 1
+	uci -q get $N.auth_9 >/dev/null && exit || exit 1
 fi
 
 judge(){
@@ -61,10 +62,10 @@ elif [ $1 = 3 ];then
 fi
 
 qs(){
-	export PASS="$B$(TZ=UTC-1 date '+%A%b%Y-%m-%d%H')$(uci -q get overwall.@global[0].auth_2)";echo $(hard_code) | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -pass env:PASS | sed 's/[^A-Za-z0-9]//g' | cut -c 20-29
+	export PASS="$B$(TZ=UTC-1 date '+%A%b%Y-%m-%d%H')$(uci -q get $N.auth_2)";echo $(hard_code) | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -pass env:PASS | sed 's/[^A-Za-z0-9]//g' | cut -c 20-29
 }
 
-C=`uci -q get overwall.@global[0].auth_1`
+C=`uci -q get $N.auth_1`
 C=`export PASS="$B";echo ${C:0:9}${C:16:10}${C:29:5}${C:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:PASS`
 
 if [ $1 = 0 ];then
@@ -76,24 +77,31 @@ elif [ $1 = 1 ];then
 	echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -
 	exit $?
 else
-	D=`uci -q get overwall.@global[0].auth_9`
+	D=`uci -q get $N.auth_9`
 	D=`export PASS="$B";echo ${D:0:9}${D:16:10}${D:29:5}${D:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:PASS 2>/dev/null`
-	sed -i '/非授權者不得使用此功能/d' /tmp/overauth.log 2>/dev/null
+	E=/tmp/overauth.log
+	F=/tmp/lock/overauth.lock
 	if [ "$D" = "中華民國千秋萬世直到永遠 ROC Forver" ];then
+		[ -f $F ] && echo $(date +'%Y-%m-%d %H:%M:%S') 上一個任務未結束 >> $E && exit
+		touch $F
 		case $1 in
-			4)echo $(date +'%Y-%m-%d %H:%M:%S') 當前鏈結: ${C:-空} >> /tmp/overauth.log;;
+			4)echo $(date +'%Y-%m-%d %H:%M:%S') 當前鏈結: ${C:-空} >> $E;;
 			5)A=`export PASS="$B";echo $2 | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -pass env:PASS | sed -e 's/^U2/$1/'`
-			echo $(date +'%Y-%m-%d %H:%M:%S') 加密代碼: ${A:0:9}ROC1911${A:9:10}For${A:19:5}ever${A:24} >> /tmp/overauth.log;;
-			6)sed -i '/列表起始位/,/列表結束位/d' /tmp/overauth.log
-			echo --------------------------------------------列表起始位-------------------------------------------- >> /tmp/overauth.log
-			echo $(date +'%Y-%m-%d %H:%M:%S') >> /tmp/overauth.log
-			eval $(uci -q get overwall.@global[0].auth_a) >> /tmp/overauth.log
-			echo --------------------------------------------列表結束位-------------------------------------------- >> /tmp/overauth.log;;
-			7)eval $(uci -q get overwall.@global[0].auth_b) >> /tmp/overauth.log;;
-			8)eval $(uci -q get overwall.@global[0].auth_c) >> /tmp/overauth.log;;
-			9)eval $(uci -q get overwall.@global[0].auth_d) >> /tmp/overauth.log;;
+			echo $(date +'%Y-%m-%d %H:%M:%S') 加密代碼: ${A:0:9}ROC1911${A:9:10}For${A:19:5}ever${A:24} >> $E;;
+			6)sed -i '/列表起始位/,/列表結束位/d' $E
+			echo --------------------------------------------列表起始位-------------------------------------------- >> $E
+			echo $(date +'%Y-%m-%d %H:%M:%S') >> $E
+			eval $(uci -q get $N.auth_a) >> $E
+			echo --------------------------------------------列表結束位-------------------------------------------- >> $E;;
+			7)eval $(uci -q get $N.auth_b) >> $E;;
+			8)eval $(uci -q get $N.auth_c) >> $E;;
+			9)eval $(uci -q get $N.auth_d) >> $E;;
+			a)eval $(uci -q get $N.auth_e) >> $E;;
+			b)eval $(uci -q get $N.auth_f) >> $E;;
 		esac
+		rm $F
 	else
-		echo $(date +'%Y-%m-%d %H:%M:%S') 非授權者不得使用此功能 >> /tmp/overauth.log
+		sed -i '/非授權者不得使用此功能/d' $E 2>/dev/null
+		echo $(date +'%Y-%m-%d %H:%M:%S') 非授權者不得使用此功能 >> $E
 	fi
 fi

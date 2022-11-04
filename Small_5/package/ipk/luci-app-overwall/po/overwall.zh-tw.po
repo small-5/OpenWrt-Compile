@@ -760,8 +760,20 @@ msgstr "硬件碼列表"
 msgid "Add Hardware Code"
 msgstr "添加硬件碼"
 
+msgid "Replace Hardware Code"
+msgstr "替換硬件碼"
+
+msgid "Enter Old Code"
+msgstr "輸入舊代碼"
+
+msgid "Enter New Code"
+msgstr "輸入新代碼"
+
 msgid "Del Hardware Code"
 msgstr "刪除硬件碼"
 
 msgid "Query Auth Code"
 msgstr "查詢授權碼"
+
+msgid "Refresh Rules"
+msgstr "刷新規則"

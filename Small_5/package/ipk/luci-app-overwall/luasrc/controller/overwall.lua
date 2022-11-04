@@ -41,8 +41,10 @@ function index()
 	entry({"admin","services","overwall","encrypt"},call("encrypt"))
 	entry({"admin","services","overwall","hc_list"},call("hc_list"))
 	entry({"admin","services","overwall","add_code"},call("add_code"))
+	entry({"admin","services","overwall","rp_code"},call("rp_code"))
 	entry({"admin","services","overwall","del_code"},call("del_code"))
 	entry({"admin","services","overwall","get_code"},call("get_code"))
+	entry({"admin","services","overwall","ref"},call("ref"))
 end
 
 function status()
@@ -274,12 +276,22 @@ function add_code()
 	getlog_auth()
 end
 
+function rp_code()
+	CALL(A.." 8 '"..http.formvalue("a").." "..http.formvalue("b").."'")
+	getlog_auth()
+end
+
 function del_code()
-	CALL(A.." 8 '"..http.formvalue("code").."'")
+	CALL(A.." 9 '"..http.formvalue("code").."'")
 	getlog_auth()
 end
 
 function get_code()
-	CALL(A.." 9 '"..http.formvalue("code").."'")
+	CALL(A.." a '"..http.formvalue("code").."'")
+	getlog_auth()
+end
+
+function ref()
+	CALL(A.." b")
 	getlog_auth()
 end
