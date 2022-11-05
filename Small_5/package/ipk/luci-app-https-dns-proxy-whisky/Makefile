@@ -11,7 +11,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI Support for Https-Dns-Proxy.
-  DEPENDS:=+https-dns-proxy +luci-compat
+  DEPENDS:=+https-dns-proxy_alt +luci-compat
   PKGARCH:=all
 endef
 

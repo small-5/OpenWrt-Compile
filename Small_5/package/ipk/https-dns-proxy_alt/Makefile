@@ -1,0 +1,40 @@
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=https-dns-proxy_alt
+PKG_VERSION:=2022-10-15
+PKG_RELEASE:=7
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/aarond10/https_dns_proxy/
+PKG_SOURCE_VERSION:=f52a85f3edabecfbab41d9244c63a1c6b8aaf49b
+PKG_MIRROR_HASH:=dd8a55255e8859a462fcfd736577fec40731b39a4783325640518745009b0dee
+PKG_MAINTAINER:=Stan Grishin <stangri@melmac.ca>
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+
+include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
+
+CMAKE_OPTIONS += -DCLANG_TIDY_EXE= -DGIT_VERSION=$(PKG_VERSION)-$(PKG_RELEASE)
+
+define Package/$(PKG_NAME)
+	SECTION:=net
+	CATEGORY:=Network
+	TITLE:=DNS Over HTTPS Proxy
+	URL:=https://docs.openwrt.melmac.net/https-dns-proxy/
+	DEPENDS:=+libcares +libcurl +libev +ca-bundle
+	CONFLICTS:=https_dns_proxy
+endef
+
+define Package/$(PKG_NAME)/description
+https-dns-proxy is a light-weight DNS<-->HTTPS, non-caching translation proxy for the RFC 8484 DoH standard.
+It receives regular (UDP) DNS requests and issues them via DoH.
+Please see https://docs.openwrt.melmac.net/https-dns-proxy/ for more information.
+endef
+
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/https_dns_proxy $(1)/usr/sbin/https-dns-proxy
+endef
+
+$(eval $(call BuildPackage,$(PKG_NAME)))

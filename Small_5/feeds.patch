@@ -1063,29 +1063,6 @@
  	$(INSTALL_CONF) ./files/$(2).config $(1)/etc/config/$(2)
  	$(INSTALL_DIR) $(1)/etc/init.d/
 
---- a/feeds/packages/net/https-dns-proxy/Makefile
-+++ b/feeds/packages/net/https-dns-proxy/Makefile
-@@ -33,19 +33,9 @@
- Please see https://docs.openwrt.melmac.net/https-dns-proxy/ for more information.
- endef
- 
--define Package/https-dns-proxy/conffiles
--/etc/config/https-dns-proxy
--endef
--
- define Package/https-dns-proxy/install
- 	$(INSTALL_DIR) $(1)/usr/sbin
--	$(INSTALL_DIR) $(1)/etc/init.d
--	$(INSTALL_DIR) ${1}/etc/config
--	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
- 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/https_dns_proxy $(1)/usr/sbin/https-dns-proxy
--	$(INSTALL_BIN) ./files/https-dns-proxy.init $(1)/etc/init.d/https-dns-proxy
--	$(SED) "s|^\(readonly PKG_VERSION\).*|\1='$(PKG_VERSION)-$(PKG_RELEASE)'|" $(1)/etc/init.d/https-dns-proxy
--	$(INSTALL_CONF) ./files/https-dns-proxy.config $(1)/etc/config/https-dns-proxy
- endef
- 
- $(eval $(call BuildPackage,https-dns-proxy))
-
 --- a/feeds/packages/net/kcptun/Makefile
 +++ b/feeds/packages/net/kcptun/Makefile
 @@ -1,13 +1,16 @@
