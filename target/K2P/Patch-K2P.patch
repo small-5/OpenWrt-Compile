@@ -331,7 +331,7 @@
  		ssr)
  			cat > $config_file <<EOF
 @@ -255,15 +257,15 @@
- 	if ps -w | grep overwall-tcp | grep -qv grep;then
+ 	if ps -ww | grep overwall-tcp | grep -qv grep;then
  		echo "Overwall has Started.";return 1
  	fi
 -	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status...\|Download IP/GFW files...' || gen_log
@@ -464,21 +464,17 @@
  		fi
  	else
  		cat >$3 <<EOF
-@@ -1278,6 +1301,8 @@
- }
+@@ -1279,11 +1302,11 @@
  
  stop(){
-+	kill -9 $(ps -w | grep $K/bin/tmp | grep -v grep | awk '{print$1}') 2>/dev/null
-+	kill -9 $(ps -w | grep $BIN_DIR/downbin | grep -v grep | awk '{print$1}') 2>/dev/null
- 	kill -9 $(ps -w | grep $BIN_DIR/rules | grep -v grep | awk '{print$1}') 2>/dev/null
- 	kill -9 $(ps -w | grep gfw.b64 | grep -v grep | awk '{print$1}') 2>/dev/null
- 	kill -9 $(ps -w | grep $BIN_DIR/checknetwork | grep -v grep | awk '{print$1}') 2>/dev/null
-@@ -1289,7 +1314,7 @@
+ 	[ $switch_server ] || kill -9 $(ps -ww | grep $BIN_DIR/switch | grep -v grep | awk '{print$1}') 2>/dev/null
+-	kill -9 $(ps -ww | grep -E "$BIN_DIR/[^switch]|gfw.b64|$VAR" | grep -v grep | awk '{print$1}') 2>/dev/null
++	kill -9 $(ps -ww | grep -E "$K/bin/tmp|$BIN_DIR/[^switch]|gfw.b64|$VAR" | grep -v grep | awk '{print$1}') 2>/dev/null
  	killall -q -9 smartdns chinadns-ng kcptun-client xray-plugin microsocks
  	$BIN_DIR/rules -f
  	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
--	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt
-+	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt $K/bin
+-	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/gfw.b64
++	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/gfw.b64 $K/bin
  	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
  	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
  	[ $run_mode = router ] || rm -f $K/ipv6.txt
@@ -493,7 +489,7 @@
 +X=/usr/share/overwall/curl
 +Y=Overwall/k2p/musl
 +
-+kill -9 $(ps -w | grep $T | grep -v grep | awk '{print$1}') 2>/dev/null
++kill -9 $(ps -ww | grep $T | grep -v grep | awk '{print$1}') 2>/dev/null
 +mkdir -p $K
 +if [ $2 = 1 ];then
 +	while ! $X 0 $Y/xray $T "-Lfsm 30 -o";do

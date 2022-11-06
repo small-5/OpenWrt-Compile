@@ -49,16 +49,16 @@ end
 
 function status()
 	local e={}
-	e.tcp=CALL("ps -w | grep overwall-tcp | grep -qv grep")==0
-	e.udp=CALL("ps -w | grep overwall-udp | grep -qv grep")==0
-	e.yb=CALL("ps -w | grep overwall.*yb | grep -qv grep")==0
-	e.nf=CALL("ps -w | grep overwall.*nf | grep -qv grep")==0
-	e.cu=CALL("ps -w | grep overwall.*cu | grep -qv grep")==0
-	e.tg=CALL("ps -w | grep overwall.*tg | grep -qv grep")==0
+	e.tcp=CALL("ps -ww | grep overwall-tcp | grep -qv grep")==0
+	e.udp=CALL("ps -ww | grep overwall-udp | grep -qv grep")==0
+	e.yb=CALL("ps -ww | grep overwall.*yb | grep -qv grep")==0
+	e.nf=CALL("ps -ww | grep overwall.*nf | grep -qv grep")==0
+	e.cu=CALL("ps -ww | grep overwall.*cu | grep -qv grep")==0
+	e.tg=CALL("ps -ww | grep overwall.*tg | grep -qv grep")==0
 	e.dns=CALL("pidof smartdns >/dev/null")==0
 	e.ng=CALL("pidof chinadns-ng >/dev/null")==0
-	e.socks5=CALL("ps -w | grep overwall.*socks5 | grep -qv grep")==0
-	e.srv=CALL("ps -w | grep overwall-server | grep -qv grep")==0
+	e.socks5=CALL("ps -ww | grep overwall.*socks5 | grep -qv grep")==0
+	e.srv=CALL("ps -ww | grep overwall-server | grep -qv grep")==0
 	e.kcp=CALL("pidof kcptun-client >/dev/null")==0
 	http.prepare_content("application/json")
 	http.write_json(e)
@@ -96,21 +96,15 @@ end
 
 function refresh()
 	local set=http.formvalue("set")
-	local i=0
 	local r
 	if set=="0" then
 		if CALL(A..' 0 Overwall/rules/gfw /tmp/gfw.b64 "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("/usr/share/overwall/gfw")
-			i=EXEC("cat /tmp/gfwnew.txt | wc -l")
-			if tonumber(i)>1000 then
-				if CALL("cmp -s /tmp/gfwnew.txt /tmp/overwall/gfw.list")==0 then
-					r="0"
-				else
-					EXEC("cp -f /tmp/gfwnew.txt /tmp/overwall/gfw.list && /etc/init.d/overwall restart >/dev/null 2>&1")
-					r=tostring(tonumber(i))
-				end
+			if CALL("cmp -s /tmp/gfwnew.txt /tmp/overwall/gfw.list")==0 then
+				r="0"
 			else
-				r="-1"
+				r=EXEC("cat /tmp/gfwnew.txt | wc -l")
+				EXEC("cp -f /tmp/gfwnew.txt /tmp/overwall/gfw.list && /etc/init.d/overwall restart >/dev/null 2>&1")
 			end
 		else
 			r="-1"
@@ -119,16 +113,11 @@ function refresh()
 	elseif set=="1" then
 		if CALL(A..' 0 Overwall/rules/IPv4 /tmp/ipv4.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("cat /tmp/ipv4.tmp | base64 -d > /tmp/ipv4.txt")
-			i=EXEC("cat /tmp/ipv4.txt | wc -l")
-			if tonumber(i)>1000 then
-				if CALL("cmp -s /tmp/ipv4.txt /tmp/overwall/ipv4.txt")==0 then
-					r="0"
-				else
-					EXEC("cp -f /tmp/ipv4.txt /tmp/overwall/ipv4.txt && ipset list over_v4 >/dev/null 2>&1 && /usr/share/overwall/ipset")
-					r=tostring(tonumber(i))
-				end
+			if CALL("cmp -s /tmp/ipv4.txt /tmp/overwall/ipv4.txt")==0 then
+				r="0"
 			else
-				r="-1"
+				r=EXEC("cat /tmp/ipv4.txt | wc -l")
+				EXEC("cp -f /tmp/ipv4.txt /tmp/overwall/ipv4.txt && ipset list over_v4 >/dev/null 2>&1 && /usr/share/overwall/ipset")
 			end
 		else
 			r="-1"
@@ -137,16 +126,11 @@ function refresh()
 	elseif set=="2" then
 		if CALL(A..' 0 Overwall/rules/IPv6 /tmp/ipv6.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
 			EXEC("cat /tmp/ipv6.tmp | base64 -d > /tmp/ipv6.txt")
-			i=EXEC("cat /tmp/ipv6.txt | wc -l")
-			if tonumber(i)>1000 then
-				if CALL("cmp -s /tmp/ipv6.txt /tmp/overwall/ipv6.txt")==0 then
-					r="0"
-				else
-					EXEC("cp -f /tmp/ipv6.txt /tmp/overwall/ipv6.txt && ipset list over_v6 >/dev/null 2>&1 && /usr/share/overwall/ipset v6")
-					r=tostring(tonumber(i))
-				end
+			if CALL("cmp -s /tmp/ipv6.txt /tmp/overwall/ipv6.txt")==0 then
+				r="0"
 			else
-				r="-1"
+				r=EXEC("cat /tmp/ipv6.txt | wc -l")
+				EXEC("cp -f /tmp/ipv6.txt /tmp/overwall/ipv6.txt && ipset list over_v6 >/dev/null 2>&1 && /usr/share/overwall/ipset v6")
 			end
 		else
 			r="-1"

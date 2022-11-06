@@ -8,7 +8,7 @@ NAME=xlnetacc
 
 start() {
 	local retry=1
-	while ps -w | grep ${NAME}.sh | grep -v grep >/dev/null 2>&1; do
+	while ps -ww | grep ${NAME}.sh | grep -v grep >/dev/null 2>&1; do
 		[ $retry -ge 10 ] && return 1 || let retry++
 		sleep 1
 	done
@@ -28,9 +28,9 @@ start() {
 }
 
 stop() {
-	ps -w | grep ${NAME}.sh | grep -v grep >/dev/null 2>&1 || return 1
+	ps -ww | grep ${NAME}.sh | grep -v grep >/dev/null 2>&1 || return 1
 	local pid spid
-	for pid in $(ps -w | grep ${NAME}.sh | grep -v grep | awk '{print $1}'); do
+	for pid in $(ps -ww | grep ${NAME}.sh | grep -v grep | awk '{print $1}'); do
 		echo "Stop XLNetAcc process PID: $pid"
 		kill $pid >/dev/null 2>&1
 		for spid in $(pgrep -P $pid "sleep"); do

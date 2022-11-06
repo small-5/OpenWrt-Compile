@@ -111,7 +111,7 @@ proto_n2n_teardown() {
 	local device="n2n-$cfg"
 	proto_init_update "$device" 0
 	proto_kill_command "$1"
-	kill -9 `ps -w|grep edge|grep ${device}|awk '{print $1}'` >/dev/null 2>&1
+	kill -9 `ps -ww|grep edge|grep ${device}|grep -v grep|awk '{print $1}'` >/dev/null 2>&1
 	proto_send_update "$cfg"
 }
 

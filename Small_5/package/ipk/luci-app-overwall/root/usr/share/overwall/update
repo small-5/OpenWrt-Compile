@@ -14,11 +14,13 @@ E=$($DIR/curl 2)
 X=Overwall/rules
 
 log(){
-	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
+	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') Over Update : $*" >> /tmp/overwall.log
 }
 
 clean(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> /tmp/overwall.log
+	local a
+	[ $1 = 0 ] && a="Rules  :" || a="Update :"
+	echo "$(date +'%Y-%m-%d %H:%M:%S') Over $a $2" >> /tmp/overwall.log
 	rm -f $LOCK /var/lock/overwall.lock
 	exit 1
 }
@@ -30,71 +32,49 @@ if ! [ "$D" ];then
 fi
 
 if ! [ "$(uci -q get $N.@global[0].auth_1)" -a "$(uci -q get $N.@global[0].auth_2)" ];then
-	clean "Over Rules     : No encrypted code or authorization code"
+	clean 0 "No encrypted code or authorization code"
 elif [ "$D" != "$E" ];then
 	uci -q del $N.@global[0].auth_2
 	uci set $N.@global[0].auth_3=$E
 	uci commit
-	clean "Over Rules     : Hardware code change,need new authorization code"
+	clean 0 "Hardware code change,need new authorization code"
 fi
 
 [ $A = Y ] && mkdir -p $TMP
 
 if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_ips)" ] || [ $C = oversea ];then
-	r=1
-	while ! B=$($DIR/curl 1 $X/IPv4 "-Lfsm 20");do
-		[ $r -ge 20 ] && clean "Over Rules     : Download failed" || let r++
-		sleep 2
-	done
-	if [ "$B" ];then
-		echo "$B" | base64 -d > /tmp/ipv4.txt
-		if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
-			log "Over Update : IPv4 List is up to date"
-		else
-			log "Over Update : Update IPv4 List"
-			cp -f /tmp/ipv4.txt $TMP/ipv4.txt
-			[ $A = N ] && ipset list over_v4 >/dev/null 2>&1 && $DIR/ipset
-		fi
+	B=$($DIR/curl 1 $X/IPv4 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20") || clean 1 "Download IPv4 List failed!"
+	echo "$B" | base64 -d > /tmp/ipv4.txt
+	if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
+		log "IPv4 List is up to date"
 	else
-		log "Over Update : Download IPv4 List failed"
+		log "Update IPv4 List"
+		cp -f /tmp/ipv4.txt $TMP/ipv4.txt
+		[ $A = N ] && ipset list over_v4 >/dev/null 2>&1 && $DIR/ipset
 	fi
 fi
 
 if [ $C = router ];then
-	while ! F=$($DIR/curl 1 $X/IPv6 "-Lfsm 20");do
-		sleep 2
-	done
-	if [ "$F" ];then
-		echo "$F" | base64 -d > /tmp/ipv6.txt
-		if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
-			log "Over Update : IPv6 List is up to date"
-		else
-			log "Over Update : Update IPv6 List"
-			cp -f /tmp/ipv6.txt $TMP/ipv6.txt
-			[ $A = N ] && ipset list over_v6 >/dev/null 2>&1 && $DIR/ipset v6
-		fi
+	F=$($DIR/curl 1 $X/IPv6 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20") || clean 1 "Download IPv6 List failed!"
+	echo "$F" | base64 -d > /tmp/ipv6.txt
+	if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
+		log "IPv6 List is up to date"
 	else
-		log "Over Update : Download IPv6 List failed"
+		log "Update IPv6 List"
+		cp -f /tmp/ipv6.txt $TMP/ipv6.txt
+		[ $A = N ] && ipset list over_v6 >/dev/null 2>&1 && $DIR/ipset v6
 	fi
 fi
 
 if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];then
-	r=1
-	while ! $DIR/curl 0 $X/gfw /tmp/gfw.b64 "-Lfsm 20 -o";do
-		[ $r -ge 20 ] && clean "Over Rules     : Download failed" || let r++
-		sleep 2
-	done
-	if [ -s /tmp/gfw.b64 ];then
-		$DIR/gfw
-		if cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then
-			log "Over Update : GFW List is up to date"
-		else
-			log "Over Update : Update GFW List"
-			cp -f /tmp/gfwnew.txt $TMP/gfw.list
-			[ $A = N ] && /etc/init.d/overwall restart
-		fi
+	$DIR/curl 0 $X/gfw /tmp/gfw.b64 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20 -o" || clean 1 "Download GFW List failed!"
+	$DIR/gfw
+	if cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then
+		log "GFW List is up to date"
 	else
-		log "Over Update : Download GFW List failed"
+		log "Update GFW List"
+		cp -f /tmp/gfwnew.txt $TMP/gfw.list
+		[ $A = N ] && /etc/init.d/overwall restart
 	fi
 fi
 rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt

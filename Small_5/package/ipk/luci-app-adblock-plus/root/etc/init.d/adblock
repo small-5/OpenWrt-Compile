@@ -130,9 +130,7 @@ start(){
 
 stop(){
 	$P/rules 2
-	kill -9 $(ps -w | grep $P/addown | grep -v grep | awk '{print$1}') 2>/dev/null
-	kill -9 $(ps -w | grep $P/adblock | grep -v grep | awk '{print$1}') 2>/dev/null
-	kill -9 $(ps -w | grep ad_new.conf | grep -v grep | awk '{print$1}') 2>/dev/null
+	kill -9 $(ps -ww | grep -E "$P|adblock.conf|ad.conf|ad_new.conf" | grep -v grep | awk '{print$1}') 2>/dev/null
 	if [ ! -s $D/adblock.conf ];then
 		echo "`eval $E` [Adblock Plus+ is not running]"
 	else

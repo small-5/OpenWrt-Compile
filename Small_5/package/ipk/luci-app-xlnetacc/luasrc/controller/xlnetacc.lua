@@ -16,7 +16,7 @@ end
 function action_status()
 	luci.http.prepare_content("application/json")
 	luci.http.write_json({
-		run_state=luci.sys.call("ps -w | grep xlnetacc.sh | grep -v grep >/dev/null")==0,
+		run_state=luci.sys.call("ps -ww | grep xlnetacc.sh | grep -v grep >/dev/null")==0,
 		down_state=nixio.fs.readfile("/var/state/xlnetacc_down_state") or "",
 		up_state=nixio.fs.readfile("/var/state/xlnetacc_up_state") or ""
 	})

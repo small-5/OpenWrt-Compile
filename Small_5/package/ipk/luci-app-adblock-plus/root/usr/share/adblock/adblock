@@ -15,12 +15,14 @@ C=0
 D=0
 E="date +'%Y-%m-%d %H:%M:%S'"
 U=`uci -q get adblock.@adblock[0].url`
+O=/tmp/ad.conf
 P=/tmp/adblock
 W=`cat /etc/adblock/white.list`
 H=ad-rules
+I="--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20 -o"
 
 gen(){
-	for i in $W;do sed -i -e "/\/$i\//d" -e "/\.$i\//d" /tmp/ad.conf;done
+	for i in $W;do sed -i -e "/\/$i\//d" -e "/\.$i\//d" $O;done
 }
 
 down(){
@@ -29,15 +31,13 @@ down(){
 	rm -rf ${G%/*}
 	mkdir -p $G
 	for i in $U;do
-		X=1
 		case $i in
-			adguard|anti-ad|ad-wars)K="/usr/share/overwall/curl 0 $H/$i $F '-Lfsm 20 -o'";;
-			*)K="curl -m 20 -Lfso $F $i";;
+			adguard|anti-ad|ad-wars)K="/usr/share/overwall/curl 0 $H/$i $F '$I'";;
+			*)K="curl $I $F $i";;
 		esac
-		while ! eval $K;do
-			[ $X -ge 20 ] && echo "`eval $E` [Download $i failed]" && continue 2 || let X++
-			sleep 2
-		done
+		if ! eval $K;then
+			echo "`eval $E` [Download $i failed]";continue
+		fi
 		X=`md5sum $G/3rd.conf 2>/dev/null | awk '{print$1}'`
 		Y=`md5sum $G/host 2>/dev/null | awk '{print$1}'`
 		case $i in
@@ -100,25 +100,20 @@ esac
 
 if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
 	echo "`eval $E` [$A]"
-	X=1
-	while ! /usr/share/overwall/curl 0 $H/dnsmasq.adblock /tmp/ad.conf "-Lfsm 20 -o";do
-		[ $X -ge 20 ] && Y=1 && break || let X++
-		sleep 2
-	done
-	if [ "$Y" = 1 ];then
-		echo "`eval $E` [$A failed]"
-	else
+	if /usr/share/overwall/curl 0 $H/dnsmasq.adblock $O "$I";then
 		echo "`eval $E` [$A successful]"
 		gen
-		if ! cmp -s /tmp/ad.conf $P/adblock.conf;then
+		if ! cmp -s $O $P/adblock.conf;then
 			echo "`eval $E` [Adblock Plus Rules need update]"
-			mv -f /tmp/ad.conf $P/adblock.conf
+			mv -f $O $P/adblock.conf
 			C=1
 		else
 			echo "`eval $E` [Adblock Plus Rules no change]"
 		fi
+	else
+		echo "`eval $E` [$A failed]"
 	fi
-	rm -f /tmp/ad.conf
+	rm -f $O
 	[ "$U" ] && echo "`eval $E` [$B]" && down
 	echo `eval $E` > $P/adblock.updated
 fi
