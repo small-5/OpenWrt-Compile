@@ -261,7 +261,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2374,7 +2374,7 @@
+@@ -2375,7 +2375,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -270,12 +270,12 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3689,17 +3689,6 @@
+@@ -3696,17 +3696,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
--#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:90
--#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:113
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:87
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:110
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:86
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:87
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:88
@@ -288,12 +288,12 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3783,22 +3772,6 @@
+@@ -3790,22 +3779,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
--#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:91
--#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:114
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:88
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/diagnostics.js:111
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:91
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:92
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:93
@@ -311,7 +311,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -9195,7 +9168,7 @@
+@@ -9198,7 +9171,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -1242,11 +1242,13 @@
 
 --- a/feeds/packages/net/sqm-scripts/Makefile
 +++ b/feeds/packages/net/sqm-scripts/Makefile
-@@ -9,12 +9,12 @@
+@@ -8,13 +8,14 @@
+ include $(TOPDIR)/rules.mk
  
  PKG_NAME:=sqm-scripts
- PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
+-PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
 -PKG_VERSION:=1.5.2
++PKG_SOURCE_VERSION:=54131540c8602b88bba1d071ec34eb965ce01704
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
@@ -1254,6 +1256,7 @@
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
 -PKG_MIRROR_HASH:=62d9a655cd6a89665a7bc8473a771fd8203933989d2276f3d34ccbf6be21661f
++PKG_MIRROR_HASH:=6934d580e1e516a4494255b36ae09cfc8de87f61700e08163d5e3ce2133caa6c
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
@@ -1263,7 +1266,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=9b293013e6633d46af09f8a0870e9a0b6384d8d0
++PKG_SOURCE_VERSION:=ff2cdcdaaa5864c18cfc9aec1a4294be5c1a6675
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.6.2
@@ -1747,3 +1750,97 @@
  
  		if (this.options.sort === true)
  			keys.sort(L.naturalCompare);
+
+--- a/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
++++ b/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
+@@ -46,14 +46,14 @@ return view.extend({
+ 
+ 		o = s.taboption('template', form.TextValue, '_tmpl',
+ 			null,
+-			_("This is the content of the file '/etc/ksmbd/smb.conf.template' from which your ksmbd configuration will be generated. \
++			_("This is the content of the file '/etc/ksmbd/ksmbd.conf.template' from which your ksmbd configuration will be generated. \
+ 			Values enclosed by pipe symbols ('|') should not be changed. They get their values from the 'General Settings' tab."));
+ 		o.rows = 20;
+ 		o.cfgvalue = function(section_id) {
+-			return fs.trimmed('/etc/ksmbd/smb.conf.template');
++			return fs.trimmed('/etc/ksmbd/ksmbd.conf.template');
+ 		};
+ 		o.write = function(section_id, formvalue) {
+-			return fs.write('/etc/ksmbd/smb.conf.template', formvalue.trim().replace(/\r\n/g, '\n') + '\n');
++			return fs.write('/etc/ksmbd/ksmbd.conf.template', formvalue.trim().replace(/\r\n/g, '\n') + '\n');
+ 		};
+ 
+ 
+@@ -76,7 +76,7 @@ return view.extend({
+ 		o = s.option(form.Flag, 'read_only', _('Read-only'));
+ 		o.enabled = 'yes';
+ 		o.disabled = 'no';
+-		o.default = 'no'; // smb.conf default is 'yes'
++		o.default = 'no'; // ksmbd.conf default is 'yes'
+ 		o.rmempty = false;
+ 
+ 		s.option(form.Flag, 'force_root', _('Force Root'));
+@@ -87,7 +87,7 @@ return view.extend({
+ 		o = s.option(form.Flag, 'guest_ok', _('Allow guests'));
+ 		o.enabled = 'yes';
+ 		o.disabled = 'no';
+-		o.default = 'yes'; // smb.conf default is 'no'
++		o.default = 'yes'; // ksmbd.conf default is 'no'
+ 		o.rmempty = false;
+ 
+ 		o = s.option(form.Flag, 'inherit_owner', _('Inherit owner'));
+@@ -102,13 +102,13 @@ return view.extend({
+ 
+ 		o = s.option(form.Value, 'create_mask', _('Create mask'));
+ 		o.maxlength = 4;
+-		o.default = '0666'; // smb.conf default is '0744'
++		o.default = '0666'; // ksmbd.conf default is '0744'
+ 		o.placeholder = '0666';
+ 		o.rmempty = false;
+ 
+ 		o = s.option(form.Value, 'dir_mask', _('Directory mask'));
+ 		o.maxlength = 4;
+-		o.default = '0777'; // smb.conf default is '0755'
++		o.default = '0777'; // ksmbd.conf default is '0755'
+ 		o.placeholder = '0777';
+ 		o.rmempty = false;
+ 
+
+--- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/rpcd/acl.d/luci-app-ksmbd.json
++++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/rpcd/acl.d/luci-app-ksmbd.json
+@@ -3,7 +3,7 @@
+ 		"description": "Grant access to LuCI app ksmbd",
+ 		"read": {
+ 			"file": {
+-				"/etc/ksmbd/smb.conf.template": [ "read" ],
++				"/etc/ksmbd/ksmbd.conf.template": [ "read" ],
+ 				"/usr/sbin/ksmbd.mountd": [ "exec" ],
+ 				"/sbin/modinfo": [ "exec" ]
+ 			},
+@@ -11,7 +11,7 @@
+ 		},
+ 		"write": {
+ 			"file": {
+-				"/etc/ksmbd/smb.conf.template": [ "write" ]
++				"/etc/ksmbd/ksmbd.conf.template": [ "write" ]
+ 			},
+ 			"uci": [ "ksmbd" ]
+ 		}
+
+--- a/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
++++ b/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
+@@ -109,12 +109,12 @@
+ 
+ #: applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js:49
+ msgid ""
+-"This is the content of the file '/etc/ksmbd/smb.conf.template' from which "
++"This is the content of the file '/etc/ksmbd/ksmbd.conf.template' from which "
+ "your ksmbd configuration will be generated. Values enclosed by pipe symbols "
+ "('|') should not be changed. They get their values from the 'General "
+ "Settings' tab."
+ msgstr ""
+-"這是將從其上產生 ksmbd 設定的檔案「/etc/ksmbd/smb.conf.template」的內容。由管"
++"這是將從其上產生 ksmbd 設定的檔案「/etc/ksmbd/ksmbd.conf.template」的內容。由管"
+ "道符號 (「|」) 包圍的值不應變更。它們將從「一般設定」標籤中取得其值。"
+ 
+ #: applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js:38

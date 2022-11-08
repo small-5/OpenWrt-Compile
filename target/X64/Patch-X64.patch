@@ -120,7 +120,7 @@
  
  menuentry "@TITLE@" {
  	linux /boot/vmlinuz @GPT_ROOTPART@ @CMDLINE@ noinitrd
-+	initrd /boot/intel-ucode.img /boot/amd-ucode.img
++	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
  menuentry "@TITLE@ (failsafe)" {
  	linux /boot/vmlinuz failsafe=true @GPT_ROOTPART@ @CMDLINE@ noinitrd
@@ -131,7 +131,7 @@
  
  menuentry "@TITLE@" {
  	linux /boot/vmlinuz root=/dev/sr0 rootfstype=iso9660 rootwait @CMDLINE@ noinitrd
-+	initrd /boot/intel-ucode.img /boot/amd-ucode.img
++	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
 
 --- a/target/linux/x86/image/grub-pc.cfg
@@ -140,7 +140,7 @@
  
  menuentry "@TITLE@" {
  	linux /boot/vmlinuz @ROOTPART@ @CMDLINE@ noinitrd
-+	initrd /boot/intel-ucode.img /boot/amd-ucode.img
++	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
  menuentry "@TITLE@ (failsafe)" {
  	linux /boot/vmlinuz failsafe=true @ROOTPART@ @CMDLINE@ noinitrd

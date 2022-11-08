@@ -27,6 +27,7 @@ cp -r target/$path/. Small_5
 
 if [ $A = 1 ];then
 	rm -rf openwrt/target/linux/ramips
+	cp -r target/target/kernel-5.4/. Small_5
 	cp -r target/target/ramips/. Small_5
 	chmod 0775 Small_5/target/linux/ramips/mt76x8/base-files/etc/init.d/* Small_5/target/linux/ramips/mt76x8/base-files/lib/upgrade/*
 	chmod 0775 Small_5/target/linux/ramips/mt7620/base-files/etc/init.d/* Small_5/target/linux/ramips/mt7620/base-files/lib/upgrade/*
@@ -41,6 +42,7 @@ elif [ $A = 2 ];then
 	chmod 0775 Small_5/package/boot/arm-trusted-firmware-rockchip-vendor/*.sh
 elif [ $A = 3 ];then
 	rm -rf openwrt/package/firmware/ipq-wifi openwrt/target/linux/ipq40xx
+	cp -r target/target/kernel-5.4/. Small_5
 	cp -r target/target/ipq40xx/. Small_5
 	chmod 0775 Small_5/target/linux/ipq40xx/base-files/etc/init.d/* Small_5/target/linux/ipq40xx/base-files/lib/upgrade/*
 fi
