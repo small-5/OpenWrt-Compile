@@ -103,12 +103,12 @@ if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
 	if /usr/share/overwall/curl 0 $H/dnsmasq.adblock $O "$I";then
 		echo "`eval $E` [$A successful]"
 		gen
-		if ! cmp -s $O $P/adblock.conf;then
+		if cmp -s $O $P/adblock.conf;then
+			echo "`eval $E` [Adblock Plus Rules no change]"
+		else
 			echo "`eval $E` [Adblock Plus Rules need update]"
 			mv -f $O $P/adblock.conf
 			C=1
-		else
-			echo "`eval $E` [Adblock Plus Rules no change]"
 		fi
 	else
 		echo "`eval $E` [$A failed]"
