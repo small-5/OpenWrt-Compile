@@ -1266,10 +1266,10 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=ff2cdcdaaa5864c18cfc9aec1a4294be5c1a6675
++PKG_SOURCE_VERSION:=c7f7e078218edbe7b1f609dc688fdc6bebe051f1
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.6.2
+-PKG_VERSION:=1.6.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.6.3_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=$(AUTORELEASE)
@@ -1277,7 +1277,7 @@
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=bdfeea9dc321007ae4e207c4d6e3a86a6787754a0ac8cf26313b19ce5567c4e9
+-PKG_HASH:=2eff51567046ab2046c8f50552bf1f531071f0f9f189a32f7035f243c0143b97
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1428,15 +1428,30 @@
 
 --- a/feeds/packages/utils/dockerd/Makefile
 +++ b/feeds/packages/utils/dockerd/Makefile
-@@ -34,7 +34,7 @@
+@@ -34,11 +34,11 @@
    TITLE:=Docker Community Edition Daemon
    URL:=https://www.docker.com/
    DEPENDS:=$(GO_ARCH_DEPENDS) \
 -    +ca-certificates \
 +    +ca-bundle \
      +containerd \
-     +iptables \
+-    +iptables \
++    +iptables-legacy \
      +iptables-mod-extra \
+-    +IPV6:ip6tables \
++    +IPV6:ip6tables-legacy \
+     +IPV6:kmod-ipt-nat6 \
+     +KERNEL_SECCOMP:libseccomp \
+     +kmod-ipt-nat \
+@@ -47,7 +47,7 @@
+     +kmod-veth \
+     +libnetwork \
+     +tini \
+-    +uci-firewall
++    +firewall
+   USERID:=docker:docker
+   MENU:=1
+ endef
 
 --- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
 +++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
@@ -1738,94 +1753,6 @@
  
  					if (m) {
  						push(rules, {
-
---- a/feeds/luci/modules/luci-base/htdocs/luci-static/resources/ui.js
-+++ b/feeds/luci/modules/luci-base/htdocs/luci-static/resources/ui.js
-@@ -1053,7 +1053,7 @@
- 			'disabled': this.options.disabled ? '' : null
- 		}, E('ul'));
- 
--		var keys = Object.keys(this.choices);
-+		var keys = Object.keys(this.choices || {});
- 
- 		if (this.options.sort === true)
- 			keys.sort(L.naturalCompare);
-
---- a/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
-+++ b/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
-@@ -46,14 +46,14 @@ return view.extend({
- 
- 		o = s.taboption('template', form.TextValue, '_tmpl',
- 			null,
--			_("This is the content of the file '/etc/ksmbd/smb.conf.template' from which your ksmbd configuration will be generated. \
-+			_("This is the content of the file '/etc/ksmbd/ksmbd.conf.template' from which your ksmbd configuration will be generated. \
- 			Values enclosed by pipe symbols ('|') should not be changed. They get their values from the 'General Settings' tab."));
- 		o.rows = 20;
- 		o.cfgvalue = function(section_id) {
--			return fs.trimmed('/etc/ksmbd/smb.conf.template');
-+			return fs.trimmed('/etc/ksmbd/ksmbd.conf.template');
- 		};
- 		o.write = function(section_id, formvalue) {
--			return fs.write('/etc/ksmbd/smb.conf.template', formvalue.trim().replace(/\r\n/g, '\n') + '\n');
-+			return fs.write('/etc/ksmbd/ksmbd.conf.template', formvalue.trim().replace(/\r\n/g, '\n') + '\n');
- 		};
- 
- 
-@@ -76,7 +76,7 @@ return view.extend({
- 		o = s.option(form.Flag, 'read_only', _('Read-only'));
- 		o.enabled = 'yes';
- 		o.disabled = 'no';
--		o.default = 'no'; // smb.conf default is 'yes'
-+		o.default = 'no'; // ksmbd.conf default is 'yes'
- 		o.rmempty = false;
- 
- 		s.option(form.Flag, 'force_root', _('Force Root'));
-@@ -87,7 +87,7 @@ return view.extend({
- 		o = s.option(form.Flag, 'guest_ok', _('Allow guests'));
- 		o.enabled = 'yes';
- 		o.disabled = 'no';
--		o.default = 'yes'; // smb.conf default is 'no'
-+		o.default = 'yes'; // ksmbd.conf default is 'no'
- 		o.rmempty = false;
- 
- 		o = s.option(form.Flag, 'inherit_owner', _('Inherit owner'));
-@@ -102,13 +102,13 @@ return view.extend({
- 
- 		o = s.option(form.Value, 'create_mask', _('Create mask'));
- 		o.maxlength = 4;
--		o.default = '0666'; // smb.conf default is '0744'
-+		o.default = '0666'; // ksmbd.conf default is '0744'
- 		o.placeholder = '0666';
- 		o.rmempty = false;
- 
- 		o = s.option(form.Value, 'dir_mask', _('Directory mask'));
- 		o.maxlength = 4;
--		o.default = '0777'; // smb.conf default is '0755'
-+		o.default = '0777'; // ksmbd.conf default is '0755'
- 		o.placeholder = '0777';
- 		o.rmempty = false;
- 
-
---- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/rpcd/acl.d/luci-app-ksmbd.json
-+++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/rpcd/acl.d/luci-app-ksmbd.json
-@@ -3,7 +3,7 @@
- 		"description": "Grant access to LuCI app ksmbd",
- 		"read": {
- 			"file": {
--				"/etc/ksmbd/smb.conf.template": [ "read" ],
-+				"/etc/ksmbd/ksmbd.conf.template": [ "read" ],
- 				"/usr/sbin/ksmbd.mountd": [ "exec" ],
- 				"/sbin/modinfo": [ "exec" ]
- 			},
-@@ -11,7 +11,7 @@
- 		},
- 		"write": {
- 			"file": {
--				"/etc/ksmbd/smb.conf.template": [ "write" ]
-+				"/etc/ksmbd/ksmbd.conf.template": [ "write" ]
- 			},
- 			"uci": [ "ksmbd" ]
- 		}
 
 --- a/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
 +++ b/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
