@@ -870,8 +870,8 @@ gen_dns(){
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
-			0)doh_l="https://223.5.5.5/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://223.6.6.6/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com,https://[2400:3200:baba::1]/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com";dns_l=$Ali;;
-			1)doh_l="https://162.14.21.56/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub,https://162.14.21.178/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub";dns_l="162.14.21.56 162.14.21.178";;
+			0)for i in $(nslookup dns.alidns.com 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
+			1)for i in $(nslookup doh.pub 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
 			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali && dns_d=1;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
