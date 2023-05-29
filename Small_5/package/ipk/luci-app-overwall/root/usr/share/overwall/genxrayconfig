@@ -1,4 +1,5 @@
 #!/usr/bin/lua
+local fs = require "nixio.fs"
 local ucursor=require "luci.model.uci".cursor()
 local json=require "luci.jsonc"
 local server_section=arg[1]
@@ -9,6 +10,19 @@ local ip_addr=arg[5]
 local server=ucursor:get_all("overwall",server_section)
 local tls_host=server.tls_host or server.http_host or server.ws_host or server.h2_host or server.server
 if server.tls=='1' then server.security="none" end
+local function get_domain_excluded()
+	local content = fs.readfile("/etc/overwall/excluded.list")
+	if not content then return nil end
+	local hosts = {}
+	string.gsub(content, '[^' .. "\n" .. ']+', function(w)
+		local s = w:gsub("^%s*(.-)%s*$", "%1") -- Trim
+		if s == "" then return end
+		if s:find("#") and s:find("#") == 1 then return end
+		if not s:find("#") or s:find("#") ~= 1 then table.insert(hosts, s) end
+	end)
+	if #hosts == 0 then hosts = nil end
+	return hosts
+end
 local Xray={
 log={
 loglevel="warning"
@@ -22,7 +36,8 @@ inbound=(local_port~="0") and {
 	},
 	sniffing={
 		enabled=true,
-		destOverride={"http","tls"}
+		destOverride={"http","tls"},
+		domainsExcluded=get_domain_excluded()
 	}
 } or nil,
 inboundDetour=(proto=="tcp" and socks_port~="0") and {
