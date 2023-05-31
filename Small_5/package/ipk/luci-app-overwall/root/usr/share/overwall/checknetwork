@@ -9,7 +9,7 @@ log(){
 }
 
 sleep 2
-while ! curl -so /dev/null -m 3 www.163.com;do
+while ! curl -so /dev/null -m 3 www.taobao.com;do
 	sleep 2
 done
 log "Check network status successful!"

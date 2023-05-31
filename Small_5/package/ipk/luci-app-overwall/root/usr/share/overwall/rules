@@ -1,28 +1,24 @@
 #!/bin/sh
 TAG="OVERWALL_RULE"
 IPT="iptables -t nat"
+IP6T="ip6tables -t nat"
 FWI=$(uci -q get firewall.overwall.path) || FWI=/var/etc/overwall.include
 FILE=/tmp/overwall.ipset
 MODE=0
 
 flush_iptables(){
-	local ipt="iptables -t $1"
-	local DAT=$(iptables-save -t $1)
+	local ipt="ip${2}tables -t $1"
+	local DAT=$(ip${2}tables-save -t $1)
 	eval $(echo "$DAT" | grep $TAG | sed -e 's/^-A/$ipt -D/' -e 's/$/;/')
 	for X in $(echo "$DAT" | awk '/^:OVERWALL/{print$1}');do
 		$ipt -F ${X:1} 2>/dev/null && $ipt -X ${X:1}
 	done
 }
 
-flush_dns(){
-	while ip6tables -t nat -D PREROUTING -p $1 --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53 2>/dev/null;do :;done
-}
-
 flush_r(){
 	flush_iptables nat
 	flush_iptables mangle
-	flush_dns udp
-	flush_dns tcp
+	flush_iptables nat 6
 	while ip rule del fwmark 1 lookup 100 2>/dev/null;do :;done
 	ip route del local 0.0.0.0/0 dev lo table 100 2>/dev/null
 	ipset -X over_wan_ac 2>/dev/null
@@ -40,9 +36,18 @@ flush_r(){
 	echo '#!/bin/sh' > $FWI
 }
 
+gen_ipv6(){
+	$IP6T -N OVERWALL_WAN_FW 2>/dev/null && $IP6T -A OVERWALL_WAN_FW -p tcp -j REDIRECT --to-ports $local_port && $IP6T -N OVERWALL_WAN_AC && $IP6T -I OUTPUT 1 -p tcp -m comment --comment $TAG -j OVERWALL_WAN_AC
+	I=1
+}
+
+proxy_rules(){
+	$1 -A OVERWALL_WAN_AC -d $2 -j OVERWALL_WAN_FW
+}
+
 ipset_r(){
-	$IPT -N OVERWALL_WAN_FW || return 1
-	$IPT -A OVERWALL_WAN_FW -p tcp $PROXY_PORTS -j REDIRECT --to-ports $local_port 2>/dev/null
+	$IPT -N OVERWALL_WAN_FW 2>/dev/null || return 1
+	$IPT -A OVERWALL_WAN_FW -p tcp $PROXY_PORTS -j REDIRECT --to-ports $local_port
 	[ $MODE = oversea ] && B=1
 	[ $MODE = router -o $MODE = all ] && [ ! "$PROXY_PORTS" ] && B=1
 	[ $YB_SERVER ] && ipset -N youtube hash:net 2>/dev/null
@@ -86,21 +91,57 @@ EOF
 	rm -f $FILE
 	for i in $WAN_BP_IP;do ipset -! add over_wan_ac $i;done
 	$IPT -N OVERWALL_WAN_AC
-	$IPT -A OVERWALL_WAN_AC -d $server -j RETURN
-	if ipset list youtube >/dev/null 2>&1;then
-		[ "$(uci -q get overwall.@global[0].yb_proxy)" = 1 ] && $IPT -A OVERWALL_WAN_AC -d $YB_SERVER -j OVERWALL_WAN_FW || ipset -! add over_wan_ac $YB_SERVER
+	echo $server | grep -q : || $IPT -A OVERWALL_WAN_AC -d $server -j RETURN
+	if [ $YB_SERVER ];then
+		if [ "$(uci -q get overwall.@global[0].yb_proxy)" = 1 ];then
+			if echo $YB_SERVER | grep -q :;then
+				gen_ipv6
+				proxy_rules "$IP6T" $YB_SERVER
+			else
+				proxy_rules "$IPT" $YB_SERVER
+			fi
+		else
+			ipset add over_wan_ac $YB_SERVER 2>/dev/null
+		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set youtube dst -j REDIRECT --to-ports $YB_PORT
 	fi
-	if ipset list netflix >/dev/null 2>&1;then
-		[ "$(uci -q get overwall.@global[0].nf_proxy)" = 1 ] && $IPT -A OVERWALL_WAN_AC -d $NF_SERVER -j OVERWALL_WAN_FW || ipset -! add over_wan_ac $NF_SERVER
+	if [ $NF_SERVER ];then
+		if [ "$(uci -q get overwall.@global[0].nf_proxy)" = 1 ];then
+			if echo $NF_SERVER | grep -q :;then
+				gen_ipv6
+				proxy_rules "$IP6T" $NF_SERVER
+			else
+				proxy_rules "$IPT" $NF_SERVER
+			fi
+		else
+			ipset add over_wan_ac $NF_SERVER 2>/dev/null
+		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports $NF_PORT
 	fi
-	if ipset list custom >/dev/null 2>&1;then
-		[ "$(uci -q get overwall.@global[0].cu_proxy)" = 1 ] && $IPT -A OVERWALL_WAN_AC -d $CU_SERVER -j OVERWALL_WAN_FW || ipset -! add over_wan_ac $CU_SERVER
+	if [ $CU_SERVER ];then
+		if [ "$(uci -q get overwall.@global[0].cu_proxy)" = 1 ];then
+			if echo $CU_SERVER | grep -q :;then
+				gen_ipv6
+				proxy_rules "$IP6T" $CU_SERVER
+			else
+				proxy_rules "$IPT" $CU_SERVER
+			fi
+		else
+			ipset add over_wan_ac $CU_SERVER 2>/dev/null
+		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set custom dst -j REDIRECT --to-ports $CU_PORT
 	fi
-	if ipset list telegram >/dev/null 2>&1;then
-		[ "$(uci -q get overwall.@global[0].tg_proxy)" = 1 ] && $IPT -A OVERWALL_WAN_AC -d $TG_SERVER -j OVERWALL_WAN_FW || ipset -! add over_wan_ac $TG_SERVER
+	if [ $TG_SERVER ];then
+		if [ "$(uci -q get overwall.@global[0].tg_proxy)" = 1 ];then
+			if echo $TG_SERVER | grep -q :;then
+				gen_ipv6
+				proxy_rules "$IP6T" $TG_SERVER
+			else
+				proxy_rules "$IPT" $TG_SERVER
+			fi
+		else
+			ipset add over_wan_ac $TG_SERVER 2>/dev/null
+		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set telegram dst -j REDIRECT --to-ports $TG_PORT
 	fi
 	$IPT -A OVERWALL_WAN_AC -m set --match-set over_wan_ac dst -j RETURN
@@ -129,8 +170,8 @@ EOF
 	if [ $y ];then
 		$IPT -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
 		$IPT -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
-		ip6tables -t nat -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
-		ip6tables -t nat -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
+		$IP6T -t nat -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
+		$IP6T -t nat -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
 	fi
 	$IPT -I OUTPUT 1 -p tcp -m comment --comment $TAG -j OVERWALL_WAN_AC
 }
@@ -150,7 +191,7 @@ tp_rule(){
 		$ipt -A OVERWALL_TPROXY -p udp -m set --match-set blacklist dst --dport 443 -j DROP
 	fi
 	$ipt -A OVERWALL_TPROXY -p udp --dport 53 -j RETURN
-	$ipt -A OVERWALL_TPROXY -p udp -d $SERVER -j RETURN
+	echo $SERVER | grep -q : || $ipt -A OVERWALL_TPROXY -p udp -d $SERVER -j RETURN
 	$ipt -A OVERWALL_TPROXY -p udp -m set --match-set over_wan_ac dst -j RETURN
 	ipset list fplan >/dev/null 2>&1 && $ipt -A OVERWALL_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
 	ipset list blacklist >/dev/null 2>&1 && $ipt -A OVERWALL_TPROXY -p udp $PROXY_PORTS -m set --match-set blacklist dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
@@ -172,24 +213,26 @@ tp_rule(){
 gen_include(){
 	extract_rules() {
 		echo "*$1"
-		iptables-save -t $1 | grep OVERWALL | sed "s/^-A \(OUTPUT\|PREROUTING\)/-I \1 1/"
+		ip${2}tables-save -t $1 | grep OVERWALL | sed "s/^-A \(OUTPUT\|PREROUTING\)/-I \1 1/"
 		echo 'COMMIT'
 	}
 	cat <<-EOF >> $FWI
+	main_ip=$server
+	$([ $SERVER ] && echo udp_ip=$SERVER)
 	iptables-save -c | grep -v OVERWALL | iptables-restore -c
 	iptables-restore -n <<-EOT
 	$(extract_rules nat)
 	$(extract_rules mangle)
 	EOT
 EOF
-	if [ $y ];then
-		sed -i -e 's/-I PREROUTING 1 -p tcp/-I PREROUTING 2 -p tcp/' -e 's/PREROUTING 2 -p tcp -m set/PREROUTING 3 -p tcp -m set/' $FWI
+	if [ $y ] || [ $I ];then
 		cat <<-EOF >> $FWI
-	while ip6tables -t nat -D PREROUTING -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53 2>/dev/null;do :;done
-	while ip6tables -t nat -D PREROUTING -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53 2>/dev/null;do :;done
-	ip6tables -t nat -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
-	ip6tables -t nat -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
+	ip6tables-save -c | grep -v OVERWALL | ip6tables-restore -c
+	ip6tables-restore -n <<-EOT
+	$(extract_rules nat 6)
+	EOT
 EOF
+		[ $y ] && sed -i -e 's/-I PREROUTING 1 -p tcp/-I PREROUTING 3 -p tcp/' -e 's/PREROUTING 3 -p tcp -m tcp --dport 53/PREROUTING 2 -p tcp -m tcp --dport 53/' $FWI || true
 	fi
 }
 

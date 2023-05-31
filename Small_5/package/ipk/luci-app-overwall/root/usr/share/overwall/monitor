@@ -22,7 +22,7 @@ smartdns=$8
 chinadns=$9
 socks5=${10}
 server_count=${11}
-server=`cat /tmp/etc/$NAME.include | grep '\-A SS_SPEC_WAN_AC \-d' | grep RETURN | awk '{print$4}' | sed 's/\/.*//'`
+server=`cat /tmp/etc/$NAME.include | grep udp_ip= | cut -d = -f2`;echo $server | grep -q : && server=[$server]
 GLOBAL_SERVER=$(uci_get_by_type global global_server)
 kcp_port=$(uci_get_by_name $GLOBAL_SERVER kcp_port)
 server_port=$(uci_get_by_name $GLOBAL_SERVER server_port)

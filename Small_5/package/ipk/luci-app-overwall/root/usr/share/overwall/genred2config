@@ -12,12 +12,13 @@ reuseport=on;
 EOF
 
 if [ "$2" == "socks5" ];then
+	echo $5 | grep -q : && a=[$5] || a=$5
 	if [ "$3" == "tcp" ];then
 		if [ "$7" == "0" ];then
 			cat <<-EOF >>$1
 redsocks {
-bind="0.0.0.0:$4";
-relay="$5:$6";
+bind="[::]:$4";
+relay="$a:$6";
 type=socks5;
 autoproxy=0;
 timeout=10;
@@ -26,8 +27,8 @@ EOF
 		else
 			cat <<-EOF >>$1
 redsocks {
-bind="0.0.0.0:$4";
-relay="$5:$6";
+bind="[::]:$4";
+relay="$a:$6";
 type=socks5;
 autoproxy=0;
 timeout=10;
@@ -41,7 +42,7 @@ EOF
 			cat <<-EOF >>$1
 redudp {
 bind="0.0.0.0:$4";
-relay="$5:$6";
+relay="$a:$6";
 type=socks5;
 udp_timeout=10;
 }
@@ -50,7 +51,7 @@ EOF
 			cat <<-EOF >>$1
 redudp {
 bind="0.0.0.0:$4";
-relay="$5:$6";
+relay="$a:$6";
 type=socks5;
 udp_timeout=10;
 login="$8";
@@ -62,7 +63,7 @@ EOF
 else
 	cat <<-EOF >>$1
 redsocks {
-bind="0.0.0.0:$4";
+bind="[::]:$4";
 type=direct;
 interface=$3;
 autoproxy=0;

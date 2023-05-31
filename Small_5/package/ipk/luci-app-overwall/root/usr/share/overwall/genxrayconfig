@@ -40,7 +40,7 @@ inbound=(local_port~="0") and {
 		domainsExcluded=get_domain_excluded()
 	}
 } or nil,
-inboundDetour=(proto=="tcp" and socks_port~="0") and {
+inboundDetour=(socks_port~="0") and {
 	{
 	protocol="socks",
 	port=socks_port,

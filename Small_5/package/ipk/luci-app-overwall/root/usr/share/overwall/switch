@@ -18,14 +18,14 @@ log(){
 
 get_ip(){
 	i=0
-	if ! echo $ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+	if ! echo $ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 		r=1
 		while ! nslookup $ip 127.0.0.1:5336 >/dev/null 2>&1;do
 			[ $r -ge 10 ] && return 1 || let r++
 			sleep 1
 		done
-		ip=$(nslookup $ip 127.0.0.1:5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");i=$?
-		ip=$(echo "$ip" | sed -n 1p)
+		ip=$(nslookup $ip 127.0.0.1:5336 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+		[ $ip ] || i=1
 	fi
 	return $i
 }
@@ -84,7 +84,6 @@ EOF
 "protocol_param":"$(uci_get_by_name $1 protocol_param)",
 "obfs":"$(uci_get_by_name $1 obfs)",
 "obfs_param":"$(uci_get_by_name $1 obfs_param)",
-"reuse_port":true,
 "fast_open":$fast
 }
 EOF
@@ -107,7 +106,7 @@ curl_check(){
 	fi
 	type=$(uci_get_by_name $1 type)
 	if [ $type = tun ];then
-		curl --interface $(uci_get_by_name $1 iface br-lan) --resolve www.google.com:443:216.239.38.120 -so /dev/null --connect-timeout 20 https://www.google.com;i=$?
+		curl --interface $(uci_get_by_name $1 iface br-lan) --resolve www.google.com:443:216.239.38.120 -so /dev/null -m 10 https://www.google.com;i=$?
 		[ $i = 0 ] || log "Server : $($UCI$1.alias || uci_get_by_name $1 server) cURL check error, Try to switch another server."
 		return $i
 	elif [ $type != socks5 ];then
@@ -131,7 +130,7 @@ curl_check(){
 			sed -i 's/\\//g' $J
 			$cmd -c $J >/dev/null 2>&1 &;;
 		trojan)
-			$S/gentrojanconfig $1 client $lport $ip > $J
+			$S/gentrojanconfig $1 client $lport $ip :: > $J
 			sed -i 's/\\//g' $J
 			$cmd -c $J >/dev/null 2>&1 &;;
 		naiveproxy)
@@ -151,7 +150,7 @@ curl_check(){
 		[ $r -ge 10 ] && return 1 || let r++
 		sleep 1
 	done
-	curl -x socks5://$IP:$lport $param --resolve www.google.com:443:216.239.38.120 -so /dev/null --connect-timeout 20 https://www.google.com;i=$?
+	curl -x socks5://$IP:$lport $param --resolve www.google.com:443:216.239.38.120 -so /dev/null -m 10 https://www.google.com;i=$?
 	kill -9 $(ps -ww | grep $J | grep -v grep | awk '{print$1}') 2>/dev/null
 	rm -f $J
 	[ $i = 0 ] || log "Server : $($UCI$1.alias || uci_get_by_name $1 server) cURL check error, Try to switch another server."
@@ -176,8 +175,8 @@ test_proxy(){
 
 check_proxy(){
 	for i in $(seq 1 $(uci_get_by_type global switch_try_count 3));do
-		curl -so /dev/null --connect-timeout $time_b https://www.google.com && return 0
-		curl -so /dev/null --connect-timeout $time_b https://www.163.com && a=1 || a=2
+		curl -so /dev/null -m $time_b https://www.google.com && return 0
+		curl -so /dev/null -m $time_b https://www.taobao.com && a=1 || a=2
 		sleep 1
 	done
 	return $a

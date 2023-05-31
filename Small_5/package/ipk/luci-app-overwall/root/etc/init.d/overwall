@@ -31,6 +31,7 @@ Ali="223.5.5.5 223.6.6.6 2400:3200::1 2400:3200:baba::1"
 ref=/tmp/resolv.conf.d/resolv.conf.auto;[ -s $ref ] || ref=/tmp/resolv.conf.auto
 REF=$(cat $ref 2>/dev/null | grep nameserver | awk '{print$2}')
 [ "$REF" ] || REF=$Ali
+tcp_udp_same=0
 redir_tcp=0
 kcp_enable=0
 redir_udp=0
@@ -117,7 +118,7 @@ gen_config_file(){
 {
 "server":"$hostip",
 "server_port":$sport,
-"local_address":"0.0.0.0",
+"local_address":"$3",
 "local_port":$lport,
 "password":"$pass",
 "timeout":$timeout,
@@ -135,7 +136,7 @@ EOF
 {
 "server":"$hostip",
 "server_port":$sport,
-"local_address":"0.0.0.0",
+"local_address":"$3",
 "local_port":$lport,
 "password":"$pass",
 "timeout":$timeout,
@@ -153,7 +154,7 @@ EOF
 {
 "listen":"$PROTO://0.0.0.0:$lport",
 "proxy":"https://$(uci_get_by_name $1 username):$pass@$(uci_get_by_name $1 server):$sport",
-"concurrency":"${3:-1}"
+"concurrency":"${4:-1}"
 }
 EOF
 ;;
@@ -195,7 +196,7 @@ start_dns(){
 }
 
 check_net(){
-	if ! curl -so /dev/null -m 3 www.163.com;then
+	if ! curl -so /dev/null -m 3 www.taobao.com;then
 		log "Over Rules  : Wait for network to connect..."
 		firstdown 1;exit 1
 	fi
@@ -209,7 +210,7 @@ get_soip(){
 			cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status successful!' || log "Over Rules  : Check network status successful!"
 		fi
 		socks5_ip=$(uci_get_by_name $SO_SERVER server)
-		if ! echo $socks5_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $socks5_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $socks5_ip >/dev/null 2>&1;do
@@ -217,10 +218,10 @@ get_soip(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $socks5_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			socks5_ip=$(nslookup $socks5_ip 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $socks5_ip ];then
 				log "Socks5 Node : Unable to get server address.Check domain name!";return 1
 			fi
-			socks5_ip=$(echo "$A" | sed -n 1p)
 		fi
 	fi
 }
@@ -291,7 +292,7 @@ rules(){
 		[ "$NF_SERVER" -a "$TG_SERVER" = "$NF_SERVER" ] && TG_NF=1 && TG_SERVER=
 		[ "$CU_SERVER" -a "$TG_SERVER" = "$CU_SERVER" ] && TG_CU=1 && TG_SERVER=
 	fi
-	if ! echo $server | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+	if ! echo $server | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 		if [ -f $LOCK ];then
 			r=1
 			while ! nslookup $server >/dev/null 2>&1;do
@@ -299,10 +300,10 @@ rules(){
 				sleep 1
 			done
 		fi
-		if ! A=$(nslookup $server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+		server=$(nslookup $server 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+		if ! [ $server ];then
 			log "Main Node   : Unable to get server address.Check domain name!";return 1
 		fi
-		server=$(echo "$A" | sed -n 1p)
 	fi
 
 	local_port=$(uci_get_by_name $GLOBAL_SERVER local_port 1234)
@@ -314,7 +315,7 @@ rules(){
 		udp_local_port=$local_port
 	elif [ $UDP_RELAY_SERVER ];then
 		udp_server=$(uci_get_by_name $UDP_RELAY_SERVER server)
-		if ! echo $udp_server | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $udp_server | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $udp_server >/dev/null 2>&1;do
@@ -322,10 +323,10 @@ rules(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $udp_server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			udp_server=$(nslookup $udp_server 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $udp_server ];then
 				log "UDP Node    : Unable to get server address.Check domain name!";return 1
 			fi
-			udp_server=$(echo "$A" | sed -n 1p)
 		fi
 		udp_local_port=$(uci_get_by_name $UDP_RELAY_SERVER local_port 1234)
 		UDP=1
@@ -345,7 +346,7 @@ rules(){
 
 	if [ $YB_SERVER ];then
 		yb_ip=$(uci_get_by_name $YB_SERVER server)
-		if ! echo $yb_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $yb_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $yb_ip >/dev/null 2>&1;do
@@ -353,10 +354,10 @@ rules(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $yb_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			yb_ip=$(nslookup $yb_ip 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $yb_ip ];then
 				log "Y2B Node    : Unable to get server address.Check domain name!";return 1
 			fi
-			yb_ip=$(echo "$A" | sed -n 1p)
 		fi
 		ytype=$(uci_get_by_name $YB_SERVER type)
 		yb_local_port=$(uci_get_by_name $YB_SERVER local_port 1234)
@@ -368,7 +369,7 @@ rules(){
 
 	if [ $NF_SERVER ];then
 		nf_ip=$(uci_get_by_name $NF_SERVER server)
-		if ! echo $nf_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $nf_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $nf_ip >/dev/null 2>&1;do
@@ -376,10 +377,10 @@ rules(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $nf_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			nf_ip=$(nslookup $nf_ip 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $nf_ip ];then
 				log "NF Node     : Unable to get server address.Check domain name!";return 1
 			fi
-			nf_ip=$(echo "$A" | sed -n 1p)
 		fi
 		ntype=$(uci_get_by_name $NF_SERVER type)
 		nf_local_port=$(uci_get_by_name $NF_SERVER local_port 1234)
@@ -392,7 +393,7 @@ rules(){
 
 	if [ $CU_SERVER ];then
 		cu_ip=$(uci_get_by_name $CU_SERVER server)
-		if ! echo $cu_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $cu_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $cu_ip >/dev/null 2>&1;do
@@ -400,10 +401,10 @@ rules(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $cu_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			cu_ip=$(nslookup $cu_ip 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $cu_ip ];then
 				log "Custom Node : Unable to get server address.Check domain name!";return 1
 			fi
-			cu_ip=$(echo "$A" | sed -n 1p)
 		fi
 		ctype=$(uci_get_by_name $CU_SERVER type)
 		cu_local_port=$(uci_get_by_name $CU_SERVER local_port 1234)
@@ -417,7 +418,7 @@ rules(){
 
 	if [ $TG_SERVER ];then
 		tg_ip=$(uci_get_by_name $TG_SERVER server)
-		if ! echo $tg_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
+		if ! echo $tg_ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$">/dev/null;then
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $tg_ip >/dev/null 2>&1;do
@@ -425,10 +426,10 @@ rules(){
 					sleep 1
 				done
 			fi
-			if ! A=$(nslookup $tg_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
+			tg_ip=$(nslookup $tg_ip 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p)
+			if ! [ $tg_ip ];then
 				log "TG Node     : Unable to get server address.Check domain name!";return 1
 			fi
-			tg_ip=$(echo "$A" | sed -n 1p)
 		fi
 		gtype=$(uci_get_by_name $TG_SERVER type)
 		tg_local_port=$(uci_get_by_name $TG_SERVER local_port 1234)
@@ -485,12 +486,17 @@ start_tcp(){
 	[ $threads = 0 ] && threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
 	cmd=$(f_bin $ttype)
 	[ ! $cmd ] && log "Main Node   : Can't find $(echo $ttype | tr a-z A-Z) program, start failed!" && return 1
+	if [ $GLOBAL_SERVER = "$UDP_RELAY_SERVER" ];then
+		case $ttype in
+			vmess|vless)tcp_udp_same=1;CONFIG_FILE=$CONFIG_FILE-udp;;
+		esac
+	fi
 	[ $YB_GL ] && CONFIG_FILE=$CONFIG_FILE-yb
 	[ $NF_GL ] && CONFIG_FILE=$CONFIG_FILE-nf
 	[ $CU_GL ] && CONFIG_FILE=$CONFIG_FILE-cu
 	[ $tg_gl ] && CONFIG_FILE=$CONFIG_FILE-tg
 	CONFIG_FILE=$CONFIG_FILE.json
-	gen_config_file $GLOBAL_SERVER 0 $threads
+	gen_config_file $GLOBAL_SERVER 0 :: $threads
 	redir_tcp=1
 	case $ttype in
 		ss|ssr)
@@ -506,16 +512,15 @@ start_tcp(){
 			else
 				port=0;V2=$CONFIG_FILE
 			fi
-			$BIN_DIR/genxrayconfig $GLOBAL_SERVER tcp $local_port $port $server > $V2
+			$BIN_DIR/genxrayconfig $GLOBAL_SERVER $([ $tcp_udp_same = 1 ] && echo tcp,udp || echo tcp) $local_port $port $server > $V2
 			sed -i 's/\\//g' $V2
 			$cmd -c $V2 >/dev/null 2>&1 &
 			log "Main Node   : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
-			if [ "$socks5_start" = 1 ];then
-				log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
-			fi;;
+			[ $tcp_udp_same = 1 ] && log "UDP Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
+			[ "$socks5_start" = 1 ] && log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!" || true;;
 		trojan)
 			redir_tcp=$threads
-			$BIN_DIR/gentrojanconfig $GLOBAL_SERVER nat $local_port $server > $CONFIG_FILE
+			$BIN_DIR/gentrojanconfig $GLOBAL_SERVER nat $local_port $server :: > $CONFIG_FILE
 			sed -i 's/\\//g' $CONFIG_FILE
 			for i in $(seq 1 $threads);do
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1 &
@@ -548,7 +553,7 @@ start_udp(){
 	redir_udp=1
 	case $utype in
 		ss|ssr)
-			gen_config_file $UDP_RELAY_SERVER 1
+			gen_config_file $UDP_RELAY_SERVER 1 0.0.0.0
 			$cmd -c $CONFIG_UDP_FILE -U >/dev/null 2>&1 &
 			[ $utype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "UDP Node    : $name Started!";;
@@ -558,7 +563,7 @@ start_udp(){
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
 			log "UDP Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER nat $udp_local_port $udp_server > $CONFIG_UDP_FILE
+			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER nat $udp_local_port $udp_server 0.0.0.0 > $CONFIG_UDP_FILE
 			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
 			log "UDP Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -583,7 +588,7 @@ start_yb(){
 	[ $CU_YB ] && CONFIG_YB_FILE=$CONFIG_YB_FILE-cu
 	[ $TG_YB ] && CONFIG_YB_FILE=$CONFIG_YB_FILE-tg
 	CONFIG_YB_FILE=$CONFIG_YB_FILE.json
-	gen_config_file $YB_SERVER 2
+	gen_config_file $YB_SERVER 2 ::
 	redir_yb=1
 	case $ytype in
 		ss|ssr)
@@ -596,7 +601,7 @@ start_yb(){
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			log "Y2B Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $YB_SERVER nat $yb_local_port $yb_ip > $CONFIG_YB_FILE
+			$BIN_DIR/gentrojanconfig $YB_SERVER nat $yb_local_port $yb_ip :: > $CONFIG_YB_FILE
 			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			log "Y2B Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -621,7 +626,7 @@ start_nf(){
 	[ $CU_NF ] && CONFIG_NF_FILE=$CONFIG_NF_FILE-cu
 	[ $TG_NF ] && CONFIG_NF_FILE=$CONFIG_NF_FILE-tg
 	CONFIG_NF_FILE=$CONFIG_NF_FILE.json
-	gen_config_file $NF_SERVER 3
+	gen_config_file $NF_SERVER 3 ::
 	redir_nf=1
 	case $ntype in
 		ss|ssr)
@@ -634,7 +639,7 @@ start_nf(){
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			log "NF Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $NF_SERVER nat $nf_local_port $nf_ip > $CONFIG_NF_FILE
+			$BIN_DIR/gentrojanconfig $NF_SERVER nat $nf_local_port $nf_ip :: > $CONFIG_NF_FILE
 			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			log "NF Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -658,7 +663,7 @@ start_cu(){
 	[ ! $cmd ] && log "Custom Node : Can't find $(echo $ctype | tr a-z A-Z) program, start failed!" && return 1
 	[ $TG_CU ] && CONFIG_CU_FILE=$CONFIG_CU_FILE-tg
 	CONFIG_CU_FILE=$CONFIG_CU_FILE.json
-	gen_config_file $CU_SERVER 4
+	gen_config_file $CU_SERVER 4 ::
 	redir_cu=1
 	case $ctype in
 		ss|ssr)
@@ -671,7 +676,7 @@ start_cu(){
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
 			log "Custom Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $CU_SERVER nat $cu_local_port $cu_ip > $CONFIG_CU_FILE
+			$BIN_DIR/gentrojanconfig $CU_SERVER nat $cu_local_port $cu_ip :: > $CONFIG_CU_FILE
 			sed -i 's/\\//g' $CONFIG_CU_FILE
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
 			log "Custom Node : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -693,7 +698,7 @@ start_cu(){
 start_tg(){
 	cmd=$(f_bin $gtype)
 	[ ! $cmd ] && log "TG Node     : Can't find $(echo $gtype | tr a-z A-Z) program, start failed!" && return 1
-	gen_config_file $TG_SERVER 5
+	gen_config_file $TG_SERVER 5 ::
 	redir_tg=1
 	case $gtype in
 		ss|ssr)
@@ -706,7 +711,7 @@ start_tg(){
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			log "TG Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $TG_SERVER nat $tg_local_port $tg_ip > $CONFIG_TG_FILE
+			$BIN_DIR/gentrojanconfig $TG_SERVER nat $tg_local_port $tg_ip :: > $CONFIG_TG_FILE
 			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			log "TG Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -872,7 +877,7 @@ gen_dns(){
 		case $dns_l in
 			0)for i in $(nslookup dns.alidns.com 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
 			1)for i in $(nslookup doh.pub 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
-			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali && dns_d=1;;
+			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
 	else
@@ -1132,7 +1137,7 @@ start_local(){
 	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-local) || cmd=$(f_bin $type)
 	[ ! $cmd ] && log "Socks5 Node : Can't find $(echo $type | tr a-z A-Z) program, start failed!" && return 1
 	socks5_port=$(uci_get_by_type socks5_proxy local_port 1080)
-	gen_config_file $SO_SERVER 6
+	gen_config_file $SO_SERVER 6 ::
 	local_enable=1
 	case $type in
 		ss|ssr)
@@ -1145,7 +1150,7 @@ start_local(){
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
-			$BIN_DIR/gentrojanconfig $SO_SERVER client $socks5_port $socks5_ip > $CONFIG_SOCK5_FILE
+			$BIN_DIR/gentrojanconfig $SO_SERVER client $socks5_port $socks5_ip :: > $CONFIG_SOCK5_FILE
 			sed -i 's/\\//g' $CONFIG_SOCK5_FILE
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			log "Socks5 Node : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
@@ -1261,7 +1266,7 @@ start(){
 	fi
 	if rules;then
 		if start_tcp;then
-			[ "$UDP" ] && start_udp
+			[ "$UDP" -a $tcp_udp_same = 0 ] && start_udp
 			[ "$YB" ] && start_yb
 			[ "$NF" ] && start_nf
 			[ "$CU" ] && start_cu

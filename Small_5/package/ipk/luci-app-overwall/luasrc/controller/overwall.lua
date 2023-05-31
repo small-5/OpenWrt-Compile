@@ -50,7 +50,7 @@ end
 function status()
 	local e={}
 	e.tcp=CALL("ps -ww | grep overwall-tcp | grep -qv grep")==0
-	e.udp=CALL("ps -ww | grep overwall-udp | grep -qv grep")==0
+	e.udp=CALL("ps -ww | grep overwall.*udp | grep -qv grep")==0
 	e.yb=CALL("ps -ww | grep overwall.*yb | grep -qv grep")==0
 	e.nf=CALL("ps -ww | grep overwall.*nf | grep -qv grep")==0
 	e.cu=CALL("ps -ww | grep overwall.*cu | grep -qv grep")==0
@@ -68,7 +68,7 @@ function check()
 	local r=0
 	local u=http.formvalue("url")
 	if u=="1" then
-		u="www.jd.com"
+		u="www.taobao.com"
 	else
 		u="www.google.com/generate_204"
 	end
@@ -86,7 +86,7 @@ end
 function ip()
 	local r
 	if http.formvalue("set")=="0" then
-		r=EXEC("cat /tmp/etc/overwall.include | grep -Eo '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' | sed -n 1p")
+		r=EXEC("cat /tmp/etc/overwall.include | grep main_ip= | cut -d = -f2")
 	else
 		r=EXEC("curl -Lsm 5 https://www.cloudflare.com/cdn-cgi/trace | grep ip= | cut -d = -f2")
 	end
@@ -157,8 +157,8 @@ function checksrv()
 			n="%s:%s"%{s.server,s.server_port}
 		end
 		local dp=EXEC("netstat -unl | grep -q :5336 && echo -n 5336 || echo -n 53")
-		local ip=EXEC("echo "..s.server.." | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ || \\\
-		nslookup "..s.server.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ | sed -n 1p")
+		local ip=EXEC("echo "..s.server.." | grep -E '^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$' || \\\
+		nslookup "..s.server.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p")
 		ip=EXEC("echo -n "..ip)
 		local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null")
 		local t=EXEC(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",s.server_port,ip))
@@ -185,8 +185,8 @@ function ping()
 	local domain=http.formvalue("domain")
 	local port=http.formvalue("port")
 	local dp=EXEC("netstat -unl | grep -q :5336 && echo -n 5336 || echo -n 53")
-	local ip=EXEC("echo "..domain.." | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ || \\\
-	nslookup "..domain.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E ^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ | sed -n 1p")
+	local ip=EXEC("echo "..domain.." | grep -E '^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$' || \\\
+	nslookup "..domain.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p")
 	ip=EXEC("echo -n "..ip)
 	local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null")
 	e.ping=EXEC(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",port,ip))

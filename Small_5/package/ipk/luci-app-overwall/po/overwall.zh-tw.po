@@ -34,8 +34,8 @@ msgstr "本機服務端"
 msgid "Google Delay"
 msgstr "谷歌延遲"
 
-msgid "JD Delay"
-msgstr "京東延遲"
+msgid "Taobao Delay"
+msgstr "淘寶延遲"
 
 msgid "Ingress IP"
 msgstr "入口IP"

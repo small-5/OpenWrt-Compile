@@ -5,12 +5,13 @@ local server_section=arg[1]
 local proto=arg[2]
 local local_port=arg[3]
 local ip_addr=arg[4]
+local lo_addr=arg[5]
 local server=ucursor:get_all("overwall",server_section)
 
 local trojan={
 	log_level=5,
 	run_type=proto,
-	local_addr="0.0.0.0",
+	local_addr=lo_addr,
 	local_port=tonumber(local_port),
 	remote_addr=ip_addr,
 	remote_port=tonumber(server.server_port),
