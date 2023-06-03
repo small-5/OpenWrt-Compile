@@ -4,6 +4,8 @@ local sid=arg[1]
 local uuid=luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 local A=luci.sys.call("which obfs-local >/dev/null")
 local B=luci.sys.call("which xray-plugin >/dev/null")
+local C=luci.sys.call("which ss-redir >/dev/null")
+local D=luci.sys.call("which xray >/dev/null")
 
 local encrypt_methods={
 "none",
@@ -37,6 +39,12 @@ local encrypt_methods_ss={
 "aes-256-gcm",
 "chacha20-ietf-poly1305",
 "xchacha20-ietf-poly1305"
+}
+
+local encrypt_methods_ss2022={
+"2022-blake3-aes-128-gcm",
+"2022-blake3-aes-256-gcm",
+"2022-blake3-chacha20-poly1305"
 }
 
 local protocol={
@@ -93,13 +101,13 @@ o.template="overwall/url"
 o.value=sid
 
 o=s:option(ListValue,"type",translate("Server Node Type"))
-if luci.sys.call("which ss-redir >/dev/null")==0 then
-o:value("ss",translate("Shadowsocks New Version"))
+if C==0 or D==0 then
+o:value("ss",translate("Shadowsocks"))
 end
 if luci.sys.call("which ssr-redir >/dev/null")==0 then
 o:value("ssr",translate("ShadowsocksR"))
 end
-if luci.sys.call("which xray >/dev/null")==0 then
+if D==0 then
 o:value("vmess",translate("VMess"))
 o:value("vless",translate("VLESS"))
 end
@@ -164,7 +172,12 @@ for _,v in ipairs(encrypt_methods) do o:value(v) end
 o:depends("type","ssr")
 
 o=s:option(ListValue,"encrypt_method_ss",translate("Encrypt Method"))
+if C==0 then
 for _,v in ipairs(encrypt_methods_ss) do o:value(v) end
+end
+if D==0 then
+for _,v in ipairs(encrypt_methods_ss2022) do o:value(v) end
+end
 o:depends("type","ss")
 
 if A==0 or B==0 then

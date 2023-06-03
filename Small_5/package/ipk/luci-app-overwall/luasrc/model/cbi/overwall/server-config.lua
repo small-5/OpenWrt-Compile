@@ -3,6 +3,8 @@ local ov="overwall"
 local sid=arg[1]
 local A=luci.sys.call("which obfs-server >/dev/null")
 local B=luci.sys.call("which xray-plugin >/dev/null")
+local C=luci.sys.call("which ss-server >/dev/null")
+local D=luci.sys.call("which xray >/dev/null")
 
 local encrypt_methods_ss={
 "aes-128-gcm",
@@ -10,6 +12,12 @@ local encrypt_methods_ss={
 "aes-256-gcm",
 "chacha20-ietf-poly1305",
 "xchacha20-ietf-poly1305"
+}
+
+local encrypt_methods_ss2022={
+"2022-blake3-aes-128-gcm",
+"2022-blake3-aes-256-gcm",
+"2022-blake3-chacha20-poly1305"
 }
 
 local encrypt_methods={
@@ -62,8 +70,8 @@ s.addremove=false
 o=s:option(Flag,"enable",translate("Enable"))
 
 o=s:option(ListValue,"type",translate("Server Type"))
-if luci.sys.call("which ss-server >/dev/null")==0 then
-	o:value("ss",translate("Shadowsocks New Version"))
+if C==0 or D==0 then
+	o:value("ss",translate("Shadowsocks"))
 end
 if luci.sys.call("which ssr-server >/dev/null")==0 then
 	o:value("ssr",translate("ShadowsocksR"))
@@ -96,7 +104,12 @@ o:depends("type","ss")
 o:depends("auth_enable",1)
 
 o=s:option(ListValue,"encrypt_method_ss",translate("Encrypt Method"))
+if C==0 then
 for _,v in ipairs(encrypt_methods_ss) do o:value(v) end
+end
+if D==0 then
+for _,v in ipairs(encrypt_methods_ss2022) do o:value(v) end
+end
 o:depends("type","ss")
 
 if A==0 or B==0 then

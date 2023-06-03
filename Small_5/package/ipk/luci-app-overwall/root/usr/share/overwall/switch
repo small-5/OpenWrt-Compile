@@ -35,7 +35,7 @@ f_bin(){
 	case $1 in
 		ss)w=$(which ss-local);;
 		ssr)w=$(which ssr-local);;
-		vmess|vless)w=$(which xray);;
+		ss2022|vmess|vless)w=$(which xray);;
 		trojan)w=$(which trojan-plus);;
 		naiveproxy)w=$(which naive);;
 	esac
@@ -104,7 +104,10 @@ curl_check(){
 	if [ $(uci_get_by_name $1 kcp_enable 0) = 1 ];then
 		log "Skip KCPTUN Node!";return 1
 	fi
-	type=$(uci_get_by_name $1 type)
+	case $(uci_get_by_name $1 encrypt_method_ss) in
+		2022-blake3-aes-128-gcm|2022-blake3-aes-256-gcm|2022-blake3-chacha20-poly1305)type=ss2022;;
+		*)type=$(uci_get_by_name $1 type);;
+	esac
 	if [ $type = tun ];then
 		curl --interface $(uci_get_by_name $1 iface br-lan) --resolve www.google.com:443:216.239.38.120 -so /dev/null -m 10 https://www.google.com;i=$?
 		[ $i = 0 ] || log "Server : $($UCI$1.alias || uci_get_by_name $1 server) cURL check error, Try to switch another server."
@@ -113,7 +116,7 @@ curl_check(){
 		cmd=$(f_bin $type)
 		if [ ! $cmd ];then
 			[ $type = ss -o $type = ssr ] && type=$type-local
-			log "Can't find $(echo $type) program, Skip this Node($($UCI$1.alias || uci_get_by_name $1 server))."
+			log "Can't find $(echo $type | tr a-z A-Z) program, Skip this Node($($UCI$1.alias || uci_get_by_name $1 server))."
 			return 1
 		fi
 	fi
@@ -125,7 +128,7 @@ curl_check(){
 	case $type in
 		ss|ssr)
 			$cmd -c $J >/dev/null 2>&1 &;;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$S/genxrayconfig $1 tcp 0 $lport $ip > $J
 			sed -i 's/\\//g' $J
 			$cmd -c $J >/dev/null 2>&1 &;;

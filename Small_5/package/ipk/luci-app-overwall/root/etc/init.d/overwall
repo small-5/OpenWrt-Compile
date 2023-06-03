@@ -89,7 +89,7 @@ f_bin(){
 		ssr)ret=$(which ssr-redir);;
 		ssr-local)ret=$(which ssr-local);;
 		ssr-server)ret=$(which ssr-server);;
-		vmess|vless)ret=$(which xray);;
+		ss2022|vmess|vless)ret=$(which xray);;
 		trojan)ret=$(which trojan-plus);;
 		naiveproxy)ret=$(which naive);;
 		socks5|tun)ret=$(which redsocks2);;
@@ -103,6 +103,10 @@ gen_config_file(){
 	timeout=$(uci_get_by_name $1 timeout 60)
 	[ $(uci_get_by_name $1 fast_open 0) = 1 ] && fast=true || fast=false
 	type=$(uci_get_by_name $1 type)
+	method=$(uci_get_by_name $1 encrypt_method_ss)
+	case $method in
+		2022-blake3-aes-128-gcm|2022-blake3-aes-256-gcm|2022-blake3-chacha20-poly1305)return;;
+	esac
 	case $2 in
 		0)[ $kcp_enable = 1 ] && hostip=127.0.0.1 || hostip=$server;lport=$local_port;config_file=$CONFIG_FILE;PROTO=redir;;
 		1)[ $type = naiveproxy ] && return 1;hostip=$udp_server;lport=$udp_local_port;config_file=$CONFIG_UDP_FILE;;
@@ -122,7 +126,7 @@ gen_config_file(){
 "local_port":$lport,
 "password":"$pass",
 "timeout":$timeout,
-"method":"$(uci_get_by_name $1 encrypt_method_ss)",
+"method":"$method",
 "reuse_port":true,
 "fast_open":$fast
 }
@@ -248,6 +252,13 @@ shunt_rules(){
 	[ ! "$Z" -a $run_mode = gfw ] && Z=4
 }
 
+get_type(){
+	case $(uci_get_by_name $1 encrypt_method_ss) in
+		2022-blake3-aes-128-gcm|2022-blake3-aes-256-gcm|2022-blake3-chacha20-poly1305)echo ss2022;;
+		*)echo $(uci_get_by_name $1 type);;
+	esac
+}
+
 rules(){
 	server=$(uci_get_by_name $GLOBAL_SERVER server)
 	if [ ! $server ];then
@@ -332,8 +343,8 @@ rules(){
 		UDP=1
 	fi
 
-	ttype=$(uci_get_by_name $GLOBAL_SERVER type)
-	utype=$(uci_get_by_name $UDP_RELAY_SERVER type)
+	ttype=$(get_type $GLOBAL_SERVER)
+	utype=$(get_type $UDP_RELAY_SERVER)
 	if [ $UDP ];then
 		[ $ttype = trojan -o $utype = trojan ] && [ $udp_local_port = $local_port ] && let udp_local_port=local_port+1;UDP="-S $udp_server -L $udp_local_port"
 	fi
@@ -359,7 +370,7 @@ rules(){
 				log "Y2B Node    : Unable to get server address.Check domain name!";return 1
 			fi
 		fi
-		ytype=$(uci_get_by_name $YB_SERVER type)
+		ytype=$(get_type $YB_SERVER)
 		yb_local_port=$(uci_get_by_name $YB_SERVER local_port 1234)
 		[ $yb_local_port = $local_port ] && let yb_local_port=local_port+1
 		[ "$utype" = trojan -o $ytype = trojan ] && [ $yb_local_port = "$udp_local_port" ] && let yb_local_port=yb_local_port+1
@@ -382,7 +393,7 @@ rules(){
 				log "NF Node     : Unable to get server address.Check domain name!";return 1
 			fi
 		fi
-		ntype=$(uci_get_by_name $NF_SERVER type)
+		ntype=$(get_type $NF_SERVER)
 		nf_local_port=$(uci_get_by_name $NF_SERVER local_port 1234)
 		[ $nf_local_port = $local_port ] && let nf_local_port=local_port+1
 		[ "$utype" = trojan -o $ntype = trojan ] && [ $nf_local_port = "$udp_local_port" ] && let nf_local_port=nf_local_port+1
@@ -406,7 +417,7 @@ rules(){
 				log "Custom Node : Unable to get server address.Check domain name!";return 1
 			fi
 		fi
-		ctype=$(uci_get_by_name $CU_SERVER type)
+		ctype=$(get_type $CU_SERVER)
 		cu_local_port=$(uci_get_by_name $CU_SERVER local_port 1234)
 		[ $cu_local_port = $local_port ] && let cu_local_port=local_port+1
 		[ "$utype" = trojan -o $ctype = trojan ] && [ $cu_local_port = "$udp_local_port" ] && let cu_local_port=cu_local_port+1
@@ -431,7 +442,7 @@ rules(){
 				log "TG Node     : Unable to get server address.Check domain name!";return 1
 			fi
 		fi
-		gtype=$(uci_get_by_name $TG_SERVER type)
+		gtype=$(get_type $TG_SERVER)
 		tg_local_port=$(uci_get_by_name $TG_SERVER local_port 1234)
 		[ $tg_local_port = $local_port ] && let tg_local_port=local_port+1
 		[ "$utype" = trojan -o $gtype = trojan ] && [ $tg_local_port = "$udp_local_port" ] && let tg_local_port=tg_local_port+1
@@ -488,7 +499,7 @@ start_tcp(){
 	[ ! $cmd ] && log "Main Node   : Can't find $(echo $ttype | tr a-z A-Z) program, start failed!" && return 1
 	if [ $GLOBAL_SERVER = "$UDP_RELAY_SERVER" ];then
 		case $ttype in
-			vmess|vless)tcp_udp_same=1;CONFIG_FILE=$CONFIG_FILE-udp;;
+			ss2022|vmess|vless)tcp_udp_same=1;CONFIG_FILE=$CONFIG_FILE-udp;;
 		esac
 	fi
 	[ $YB_GL ] && CONFIG_FILE=$CONFIG_FILE-yb
@@ -506,7 +517,7 @@ start_tcp(){
 			done
 			[ $ttype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "Main Node   : $name $threads Threads Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			if [ "$SO_SERVER" = $GLOBAL_SERVER ];then
 				port=$(uci_get_by_type socks5_proxy local_port 1080);socks5_start=1;V2=${CONFIG_FILE%.*}-socks5.json
 			else
@@ -557,7 +568,7 @@ start_udp(){
 			$cmd -c $CONFIG_UDP_FILE -U >/dev/null 2>&1 &
 			[ $utype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "UDP Node    : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $UDP_RELAY_SERVER udp $udp_local_port 0 $udp_server > $CONFIG_UDP_FILE
 			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
@@ -595,7 +606,7 @@ start_yb(){
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			[ $ytype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "Y2B Node    : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $YB_SERVER tcp $yb_local_port 0 $yb_ip > $CONFIG_YB_FILE
 			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
@@ -633,7 +644,7 @@ start_nf(){
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			[ $ntype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "NF Node     : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $NF_SERVER tcp $nf_local_port 0 $nf_ip > $CONFIG_NF_FILE
 			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
@@ -670,7 +681,7 @@ start_cu(){
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
 			[ $ctype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "Custom Node : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $CU_SERVER tcp $cu_local_port 0 $cu_ip > $CONFIG_CU_FILE
 			sed -i 's/\\//g' $CONFIG_CU_FILE
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
@@ -705,7 +716,7 @@ start_tg(){
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			[ $gtype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "TG Node     : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $TG_SERVER tcp $tg_local_port 0 $tg_ip > $CONFIG_TG_FILE
 			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
@@ -1133,18 +1144,21 @@ add_cron(){
 }
 
 start_local(){
-	type=$(uci_get_by_name $SO_SERVER type)
-	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-local) || cmd=$(f_bin $type)
-	[ ! $cmd ] && log "Socks5 Node : Can't find $(echo $type | tr a-z A-Z) program, start failed!" && return 1
+	ltype=$(get_type $SO_SERVER)
+	case $ltype in
+		ss|ssr)cmd=$(f_bin $ltype-local);;
+		*)cmd=$(f_bin $ltype);;
+	esac
+	[ ! $cmd ] && log "Socks5 Node : Can't find $(echo $ltype | tr a-z A-Z) program, start failed!" && return 1
 	socks5_port=$(uci_get_by_type socks5_proxy local_port 1080)
 	gen_config_file $SO_SERVER 6 ::
 	local_enable=1
-	case $type in
+	case $ltype in
 		ss|ssr)
 			$cmd -c $CONFIG_SOCK5_FILE -u >/dev/null 2>&1 &
-			[ $type = ss ] && name=Shadowsocks || name=ShadowsocksR
+			[ $ltype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "Socks5 Node : $name Started!";;
-		vmess|vless)
+		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $SO_SERVER tcp 0 $socks5_port $socks5_ip > $CONFIG_SOCK5_FILE
 			sed -i 's/\\//g' $CONFIG_SOCK5_FILE
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
@@ -1163,10 +1177,11 @@ start_local(){
 
 gen_service_file(){
 	[ $(uci_get_by_name $1 fast_open 0) = 1 ] && fast=true || fast=false
-	if [ $2 = ss ];then
-		cat >$3 <<EOF
+	timeout=$(uci_get_by_name $1 timeout 60)
+	case $2 in
+		ss)cat >$3 <<EOF
 {
-"server":"0.0.0.0",
+"server":["::","0.0.0.0"],
 "server_port":$port,
 "password":"$pass",
 "timeout":$timeout,
@@ -1176,12 +1191,23 @@ gen_service_file(){
 EOF
 		plugin=$(uci_get_by_name $1 plugin)
 		if which $plugin >/dev/null 2>&1;then
-			sed -i "s@0.0.0.0\",@0.0.0.0\",\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $3
-		fi
-	else
-		cat >$3 <<EOF
+			sed -i "s@0.0.0.0\"],@0.0.0.0\"],\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $3
+		fi;;
+		ss2022)cat >$3 <<EOF
 {
-"server":"0.0.0.0",
+	"inbounds":[{
+		"port":$port,
+		"protocol":"shadowsocks",
+		"settings":{"password":"$pass","method":"$(uci_get_by_name $1 encrypt_method_ss)","network":"tcp,udp"},
+		"sniffing":{"enabled":true,"destOverride":["http", "tls"]}
+	}],
+	"outbounds":[{"protocol":"freedom","streamSettings":{"sockopt":{"tcpFastOpen":$fast}}}]
+}
+EOF
+;;
+		ssr)cat >$3 <<EOF
+{
+"server":["::","0.0.0.0"],
 "server_port":$port,
 "password":"$pass",
 "timeout":$timeout,
@@ -1193,25 +1219,36 @@ EOF
 "fast_open":$fast
 }
 EOF
-	fi
+;;
+	esac
 }
 
 run_server(){
 	[ $(uci_get_by_name $1 enable 0) = 0 ] && return 1
 	let server_count=server_count+1
-	[ $server_count = 1 ] && iptables-save -t filter | grep -q OVERWALL-S-RULE || iptables -N OVERWALL-S-RULE && iptables -I INPUT -j OVERWALL-S-RULE
-	type=$(uci_get_by_name $1 type ssr)
-	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-server) || cmd=$(which microsocks)
-	[ ! $cmd ] && log "Over server : Can't find $cmd program, start failed!" && return 1
+	if [ $server_count = 1 ];then
+		iptables-save -t filter | grep -q OVERWALL-S-RULE || iptables -N OVERWALL-S-RULE && iptables -I INPUT -j OVERWALL-S-RULE
+		ip6tables-save -t filter | grep -q OVERWALL-S-RULE || ip6tables -N OVERWALL-S-RULE && ip6tables -I INPUT -j OVERWALL-S-RULE
+	fi
+	stype=$(get_type $1)
+	case $stype in
+		ss|ssr)cmd=$(f_bin $stype-server);;
+		socks5)cmd=$(which microsocks);;
+		*)cmd=$(f_bin $stype);;
+	esac
+	[ ! $cmd ] && log "Over server : Can't find $(echo $stype | tr a-z A-Z) program, start failed!" && return 1
 	port=$(uci_get_by_name $1 server_port)
 	pass=$(uci_get_by_name $1 password)
 	name=overwall-server_$server_count
-	case $type in
-		ss|ssr)timeout=$(uci_get_by_name $1 timeout 60);gen_service_file $1 $type /var/etc/$name.json
-			$cmd -c /var/etc/$name.json -u >/dev/null 2>&1 &
-			[ $type = ss ] && name=Shadowsocks || name=ShadowsocksR
-			log "Over server : $name Server$server_count Started!";;
-		*)
+	file=/var/etc/$name.json
+	gen_service_file $1 $stype $file
+	case $stype in
+		ss2022)$cmd -c $file >/dev/null 2>&1 &
+			log "Over server : $($cmd -version | head -1 | awk '{print$1,$2}') Server_$server_count Started!";;
+		ss|ssr)$cmd -c $file -u >/dev/null 2>&1 &
+			[ $stype = ss ] && name=Shadowsocks || name=ShadowsocksR
+			log "Over server : $name Server_$server_count Started!";;
+		socks5)
 		if [ $(uci_get_by_name $1 auth_enable 0) = 1 ];then
 			username=$(uci_get_by_name $1 username)
 			if [ "$username" ];then
@@ -1221,24 +1258,30 @@ run_server(){
 				return 1
 			fi
 		fi
-		$cmd -p $port $param $name >/dev/null 2>&1 &
-		log "Over server : Socks5 Server$server_count Started!";;
+		$cmd -i :: -p $port $param $name >/dev/null 2>&1 &
+		log "Over server : Socks5 Server_$server_count Started!";;
 	esac
 	iptables -A OVERWALL-S-RULE -p tcp --dport $port -j ACCEPT
 	iptables -A OVERWALL-S-RULE -p udp --dport $port -j ACCEPT
+	ip6tables -A OVERWALL-S-RULE -p tcp --dport $port -j ACCEPT
+	ip6tables -A OVERWALL-S-RULE -p udp --dport $port -j ACCEPT
 }
 
 gen_serv_include(){
 	[ -s $FWI ] || echo '#!/bin/sh' > $FWI
 	extract_rules(){
 		echo "*filter"
-		iptables-save -t filter | grep OVERWALL-S-RULE | sed -e "s/^-A INPUT/-I INPUT/"
+		ip${1}tables-save -t filter | grep OVERWALL-S-RULE | sed -e "s/^-A INPUT/-I INPUT/"
 		echo 'COMMIT'
 	}
 	cat >> $FWI <<EOF
 iptables-save -c | grep -v OVERWALL-S-RULE | iptables-restore -c
 iptables-restore -n <<-EOT
 $(extract_rules)
+EOT
+ip6tables-save -c | grep -v OVERWALL-S-RULE | ip6tables-restore -c
+ip6tables-restore -n <<-EOT
+$(extract_rules 6)
 EOT
 EOF
 }
@@ -1287,7 +1330,8 @@ stop(){
 	kill -9 $(ps -ww | grep -E "$BIN_DIR/[^switch]|gfw.b64|$VAR" | grep -v grep | awk '{print$1}') 2>/dev/null
 	killall -q -9 smartdns chinadns-ng kcptun-client xray-plugin microsocks
 	$BIN_DIR/rules -f
-	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE;while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done)
+	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE)
+	[ $(ip6tables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while ip6tables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;ip6tables -F OVERWALL-S-RULE && ip6tables -X OVERWALL-S-RULE)
 	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/gfw.b64
 	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
 	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
