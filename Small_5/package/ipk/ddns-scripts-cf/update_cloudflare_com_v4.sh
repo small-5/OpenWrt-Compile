@@ -16,7 +16,7 @@ local __TMP __I __DOMAIN __TYPE __CMDBASE __ZONEID __POST __POST2 __RECIP __RECI
 
 # 構造基本通訊命令
 build_command(){
-	__CMDBASE="$CURL -Ss"
+	__CMDBASE="$CURL -Ssm 5"
 	# 綁定用於通訊的主機/IP
 	if [ -n "$bind_network" ];then
 		local __DEVICE
