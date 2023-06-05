@@ -16,7 +16,6 @@ define Build/boot-common
 	rm -fR $@.boot
 	mkdir -p $@.boot
 
-	$(CP) $(DTS_DIR)/$(DEVICE_DTS).dtb $@.boot/rockchip.dtb
 	$(CP) $(IMAGE_KERNEL) $@.boot/kernel.img
 endef
 
@@ -68,9 +67,13 @@ endef
 ### Devices ###
 define Device/Default
   PROFILES := Default
-  KERNEL := kernel-bin | lzma
+  KERNEL = kernel-bin | lzma | fit lzma $$(DTS_DIR)/$$(DEVICE_DTS).dtb
+  BOOT_SCRIPT :=
+  BOOT_FLOW :=
   IMAGES := sysupgrade.img.gz
+  IMAGE/sysupgrade.img.gz = boot-common | boot-script $$(BOOT_SCRIPT) | $$(BOOT_FLOW) | gzip | append-metadata
   DEVICE_DTS = rockchip/$$(SOC)-$(lastword $(subst _, ,$(1)))
+  UBOOT_DEVICE_NAME = $(lastword $(subst _, ,$(1)))-$$(SOC)
 endef
 
 include $(SUBTARGET).mk

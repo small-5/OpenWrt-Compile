@@ -90,14 +90,14 @@
 
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
-@@ -599,7 +599,7 @@
+@@ -599,7 +599,7 @@ msgstr "重新載入此服務"
  
- #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:740
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:738
  msgid "Replaces [DOMAIN] in Update-URL (URL-encoded)"
 -msgstr "取代 Update-URL 中的 [DOMAIN] (URL-encoded)"
 +msgstr "替換更新 URL（已編碼 URL）中的 [DOMAIN]"
  
- #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:752
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:750
  msgid "Replaces [PASSWORD] in Update-URL (URL-encoded)"
 
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
@@ -183,7 +183,7 @@
 
 --- a/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -167,6 +167,10 @@
+@@ -171,6 +171,10 @@ return view.extend({
  			return null;
  		};
  
@@ -197,15 +197,44 @@
 
 --- a/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
 +++ b/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
-@@ -52,7 +52,7 @@
+@@ -60,7 +60,7 @@ msgstr ""
  msgid ""
  "<var data-tooltip=\"ACCEPT\">Accept</var> %{src?%{dest?forward:input}:output}"
  msgstr ""
 -"<var data-tooltip=\"ACCEPT\">套用</var> %{src?%{dest?forward:input}:output}"
 +"<var data-tooltip=\"ACCEPT\">接受</var> %{src?%{dest?forward:input}:output}"
  
- #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/snats.js:87
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/snats.js:93
  msgid "<var data-tooltip=\"ACCEPT\">Prevent source rewrite</var>"
+
+--- a/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
++++ b/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
+@@ -9,23 +9,17 @@ return view.extend({
+ 		return Promise.all([
+ 			L.resolveDefault(fs.stat('/sbin/block'), null),
+ 			L.resolveDefault(fs.stat('/etc/config/fstab'), null),
+-			L.resolveDefault(fs.exec('/usr/sbin/ksmbd.mountd', ['-V']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version : (\S+)/))[1] }),
+-			L.resolveDefault(fs.exec('/sbin/modinfo', ['ksmbd']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version:\t(\S+)/))[1] }),
++			L.resolveDefault(fs.exec('/usr/sbin/ksmbd.mountd', ['-V']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version : (\S+)/))[1] })
+ 		]);
+ 	},
+ 	render: function(stats) {
+-		var m, s, o, v, v2;
++		var m, s, o, v;
+ 		v = '?';
+-		v2 = '?';
+ 
+ 		m = new form.Map('ksmbd', _('Network Shares'));
+ 
+ 		if (stats[2])
+ 			v = stats[2].trim();
+-		if (stats[3])
+-			v2 = stats[3].trim();
+-		if (v != v2)
+-			v = v +'/'+ v2;
+ 		s = m.section(form.TypedSection, 'globals', 'Ksmbd/Kmod Version ' + v);
+ 		s.anonymous = true;
+ 
 
 --- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
 +++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
@@ -248,20 +277,9 @@
  #~ msgstr "收集資料中..."
  
 
---- a/feeds/luci/collections/luci/Makefile
-+++ b/feeds/luci/collections/luci/Makefile
-@@ -13,7 +13,6 @@
- LUCI_DESCRIPTION:=Standard OpenWrt set including full admin with ppp support and the default Bootstrap theme
- LUCI_DEPENDS:= \
- 	+IPV6:luci-proto-ipv6 \
--	+luci-app-attendedsysupgrade \
- 	+luci-app-firewall \
- 	+luci-app-opkg \
- 	+luci-mod-admin-full \
-
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2375,7 +2375,7 @@
+@@ -2461,7 +2461,7 @@ msgstr "不要分段"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -270,7 +288,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3696,17 +3696,6 @@
+@@ -3851,18 +3851,6 @@ msgstr "偽造的NX網域覆蓋"
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -281,6 +299,7 @@
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:88
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:89
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:90
+-#: protocols/luci-proto-mbim/htdocs/luci-static/resources/protocol/mbim.js:96
 -#: protocols/luci-proto-ncm/htdocs/luci-static/resources/protocol/ncm.js:87
 -msgid "IPv4"
 -msgstr "IPv4 地址"
@@ -288,7 +307,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3790,22 +3779,6 @@
+@@ -3950,23 +3938,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -304,6 +323,7 @@
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:98
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:99
 -#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:100
+-#: protocols/luci-proto-mbim/htdocs/luci-static/resources/protocol/mbim.js:97
 -#: protocols/luci-proto-ncm/htdocs/luci-static/resources/protocol/ncm.js:89
 -msgid "IPv6"
 -msgstr "IPv6"
@@ -311,7 +331,107 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
  msgid "IPv6 Firewall"
  msgstr "IPv6防火牆"
-@@ -9198,7 +9171,7 @@
+@@ -4690,7 +4661,7 @@ msgstr "語言與主題"
+ msgid ""
+ "Larger weights (of the same prio) are given a proportionately higher "
+ "probability of being selected."
+-msgstr ""
++msgstr "較大的權重（相同的優先級下）被賦予相應較高的被選中概率。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:629
+ msgid "Last member interval"
+@@ -4846,7 +4817,7 @@ msgstr "監聽連接埠"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:375
+ msgid "Listen address"
+-msgstr ""
++msgstr "監聽位址"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:410
+ msgid "Listen and Relay To IP family must be homogeneous."
+@@ -5893,6 +5864,8 @@ msgid ""
+ "Note: you may also need a DHCP Proxy (currently unavailable) when specifying "
+ "a non-standard Relay To port(<code>addr#port</code>)."
+ msgstr ""
++"注意：在指定非標準 Relay To 端口時，你可能還需要 DHCP 代理（當前不可用）"
++"(<code>addr#port</code>)。"
+ 
+ #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:142
+ msgid "Notes"
+@@ -6178,7 +6151,7 @@ msgstr "選項:"
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:660
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:692
+ msgid "Ordinal: lower comes first."
+-msgstr ""
++msgstr "序數：較低的優先。"
+ 
+ #: protocols/luci-proto-batman-adv/htdocs/luci-static/resources/protocol/batadv.js:55
+ msgid "Originator Interval"
+@@ -7114,29 +7087,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:687
+ #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:39
+ msgid "Relay"
+-msgstr "延遲"
++msgstr "中繼"
+ 
+ #: modules/luci-compat/luasrc/model/network/proto_relay.lua:157
+ #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:36
+ msgid "Relay Bridge"
+-msgstr "橋接延遲"
++msgstr "橋接中繼"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:354
+ msgid "Relay DHCP requests elsewhere. OK: v4↔v4, v6↔v6. Not OK: v4↔v6, v6↔v4."
+-msgstr ""
++msgstr "從別處中繼 DHCP 請求。OK: v4↔v4, v6↔v6. Not OK: v4↔v6, v6↔v4。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:387
+ msgid "Relay To address"
+-msgstr ""
++msgstr "Relay To 位址"
+ 
+ #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:154
+ msgid "Relay between networks"
+-msgstr "網路間的延遲"
++msgstr "網路間的中繼"
+ 
+ #: modules/luci-compat/luasrc/model/network/proto_relay.lua:12
+ #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:64
+ msgid "Relay bridge"
+-msgstr "橋接延遲"
++msgstr "橋接中繼"
+ 
+ #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6in4.js:50
+ #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6rd.js:49
+@@ -7166,11 +7139,11 @@ msgstr "移除"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:469
+ msgid "Remove IPv4 addresses from the results and only return IPv6 addresses."
+-msgstr ""
++msgstr "從結果中刪除 IPv4 地址，只返回 IPv6 地址。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:463
+ msgid "Remove IPv6 addresses from the results and only return IPv4 addresses."
+-msgstr ""
++msgstr "從結果中刪除 IPv6 地址，只返回 IPv4 地址。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1319
+ msgid "Remove related device settings from the configuration"
+@@ -8452,11 +8425,11 @@ msgstr "與瀏覽器同步時間"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:298
+ msgid "Syntax: <code>/fqdn[/fqdn…]/[ipaddr]</code>."
+-msgstr ""
++msgstr "語法：<code>/fqdn[/fqdn…]/[ipaddr]</code>."
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:645
+ msgid "Syntax: <code>_service._proto.example.com</code>."
+-msgstr ""
++msgstr "語法：<code>_service._proto.example.com</code>."
+ 
+ #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:26
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js:22
+@@ -9528,7 +9501,7 @@ msgstr "無標題的同行"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -320,6 +440,43 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
  msgid "Up Delay"
+@@ -10008,7 +9981,7 @@ msgstr "薄弱"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:665
+ msgid "Weight"
+-msgstr ""
++msgstr "權重"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1046
+ msgid ""
+@@ -10195,15 +10168,15 @@ msgstr ""
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:635
+ msgid "You may add multiple records for the same Target."
+-msgstr ""
++msgstr "你可以為同一目標添加多條記錄。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:672
+ msgid "You may add multiple records for the same domain."
+-msgstr ""
++msgstr "你可以為同一個域添加多條記錄。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:356
+ msgid "You may add multiple unique Relay To on the same Listen addr."
+-msgstr ""
++msgstr "你可以在同一個偵聽地址上添加多個不同的 Relay To 地址。"
+ 
+ #: themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/header.ut:78
+ #: themes/luci-theme-material/ucode/template/themes/material/header.ut:98
+@@ -10244,6 +10217,8 @@ msgid ""
+ "_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . (Note: while _http is "
+ "possible, no browsers support SRV records.)"
+ msgstr ""
++"_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . （注：雖然 _http 有可"
++"能，但沒有瀏覽器支持 SRV 記錄。）"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:530
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/routes.js:152
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
 +++ b/feeds/luci/modules/luci-base/root/etc/config/luci
@@ -333,7 +490,7 @@
 
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -65,6 +65,12 @@
+@@ -72,6 +72,12 @@ const methods = {
  		}
  	},
  
@@ -359,7 +516,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -684,6 +684,7 @@
+@@ -701,6 +701,7 @@ return view.extend({
  						so.default = so.enabled;
  
  						ss.taboption('advanced', form.Flag, 'force', _('Force'), _('Force DHCP on this network even if another server is detected.'));
@@ -367,7 +524,7 @@
  
  						// XXX: is this actually useful?
  						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
-@@ -933,6 +934,7 @@
+@@ -950,6 +951,7 @@ return view.extend({
  				ifc.renderFormOptions(s);
  
  				// Common interface options
@@ -375,7 +532,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Flag, 'defaultroute', _('Use default gateway'), _('If unchecked, no default route is configured'));
  				o.default = o.enabled;
  
-@@ -1029,6 +1031,7 @@
+@@ -1046,6 +1048,7 @@ return view.extend({
  				o = nettools.replaceOption(s, 'advanced', form.Value, 'ip6weight', _('IPv6 preference'), _('When delegating prefixes to multiple downstreams, interfaces with a higher preference value are considered first when allocating subnets.'));
  				o.datatype = 'uinteger';
  				o.placeholder = '0';
@@ -386,20 +543,19 @@
 
 --- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
 +++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-@@ -10,7 +10,8 @@
+@@ -8,7 +8,7 @@
+ 				"/www/luci-static/resources/view/status/include": [ "list" ]
  			},
  			"ubus": {
+-				"luci": [ "getVersion" ],
++				"luci": [ "getCPUInfo", "getVersion" ],
  				"file": [ "list", "read" ],
--				"system": [ "board", "info" ]
-+				"system": [ "board", "info" ],
-+				"luci": [ "getCPUInfo" ]
+ 				"system": [ "board", "info" ]
  			}
- 		},
- 		"write": {
 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -13,6 +13,11 @@
+@@ -18,6 +18,11 @@ var callSystemInfo = rpc.declare({
  	method: 'info'
  });
  
@@ -411,15 +567,15 @@
  return baseclass.extend({
  	title: _('System'),
  
-@@ -20,6 +25,7 @@
+@@ -25,6 +30,7 @@ return baseclass.extend({
  		return Promise.all([
  			L.resolveDefault(callSystemBoard(), {}),
  			L.resolveDefault(callSystemInfo(), {}),
 +			L.resolveDefault(callCPUInfo(), {}),
- 			fs.lines('/usr/lib/lua/luci/version.lua')
+ 			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
  		]);
  	},
-@@ -27,7 +33,8 @@
+@@ -32,7 +38,8 @@ return baseclass.extend({
  	render: function(data) {
  		var boardinfo   = data[0],
  		    systeminfo  = data[1],
@@ -427,9 +583,9 @@
 +		    cpuinfo     = data[2],
 +		    luciversion = data[3];
  
- 		luciversion = luciversion.filter(function(l) {
- 			return l.match(/^\s*(luciname|luciversion)\s*=/);
-@@ -63,7 +70,8 @@
+ 		luciversion = luciversion.branch + ' ' + luciversion.revision;
+ 
+@@ -64,7 +71,8 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
@@ -439,18 +595,6 @@
  		];
  
  		var table = E('table', { 'class': 'table' });
-
---- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
-+++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
-@@ -87,7 +87,7 @@
- 		    res = [];
- 
- 		for (var i = 0; i < lines.length; i++) {
--			var m = lines[i].match(/^([0-9a-f:.]+) (.+) (\S+)$/),
-+			var m = lines[i].match(/^([0-9a-f:.]+) (.+) (\S+)/),
- 			    addr = m ? m[1] : null,
- 			    flags = m ? m[2].trim().split(/\s+/) : [],
- 			    state = (m ? m[3] : null) || 'FAILED';
 
 --- a/feeds/packages/net/aria2/files/aria2.conf
 +++ b/feeds/packages/net/aria2/files/aria2.conf
@@ -588,7 +732,7 @@
 
 --- a/feeds/packages/net/miniupnpd/Makefile
 +++ b/feeds/packages/net/miniupnpd/Makefile
-@@ -47,6 +47,7 @@
+@@ -41,6 +41,7 @@ endef
  
  define Package/miniupnpd-iptables
    $(call Package/miniupnpd/Default)
@@ -596,7 +740,7 @@
    DEPENDS+= \
  	+IPV6:ip6tables \
  	+IPV6:libip6tc \
-@@ -63,8 +64,6 @@
+@@ -57,8 +58,6 @@ define Package/miniupnpd-nftables
  	+libnftnl
    TITLE+= (nftables)
    VARIANT:=nftables
@@ -623,7 +767,7 @@
 
 --- a/feeds/packages/net/openvpn/files/openvpn.init
 +++ b/feeds/packages/net/openvpn/files/openvpn.init
-@@ -42,9 +42,8 @@
+@@ -42,9 +42,8 @@ append_params() {
  		config_get v "$s" "$p"
  		IFS="$LIST_SEP"
  		for v in $v; do
@@ -635,7 +779,7 @@
  		done
  		unset IFS
  	done
-@@ -70,14 +69,6 @@
+@@ -70,14 +69,6 @@ section_enabled() {
  	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
  }
  
@@ -650,7 +794,7 @@
  openvpn_get_dev() {
  	local dev dev_type
  	local name="$1"
-@@ -112,38 +103,10 @@
+@@ -112,38 +103,10 @@ openvpn_get_dev() {
  	echo "--dev-type $dev_type --dev $dev"
  }
  
@@ -689,10 +833,13 @@
  
  	procd_open_instance "$name"
  	procd_set_param command "$PROG"	\
-@@ -153,11 +116,8 @@
+@@ -153,14 +116,8 @@ openvpn_add_instance() {
  		--config "$conf" \
  		--up "/usr/libexec/openvpn-hotplug up $name" \
  		--down "/usr/libexec/openvpn-hotplug down $name" \
+-		--route-up "/usr/libexec/openvpn-hotplug route-up $name" \
+-		--route-pre-down "/usr/libexec/openvpn-hotplug route-pre-down $name" \
+-		--ipchange "/usr/libexec/openvpn-hotplug ipchange $name" \
 -		${up:+--setenv user_up "$up"} \
 -		${down:+--setenv user_down "$down"} \
 -		--script-security "${security:-2}" \
@@ -703,7 +850,7 @@
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -178,28 +138,23 @@
+@@ -181,28 +138,23 @@ start_instance() {
  		return 1
  	}
  
@@ -737,7 +884,7 @@
  }
  
  start_service() {
-@@ -216,7 +171,6 @@
+@@ -219,7 +171,6 @@ start_service() {
  		fi
  	}
  
@@ -745,7 +892,7 @@
  	. /usr/share/openvpn/openvpn.options
  	config_load 'openvpn'
  
-@@ -226,7 +180,7 @@
+@@ -229,7 +180,7 @@ start_service() {
  	else
  		config_foreach start_instance 'openvpn'
  
@@ -754,7 +901,7 @@
  		for path in /etc/openvpn/*.conf; do
  			if [ -f "$path" ]; then
  				name="${path##*/}"; name="${name%.conf}"
-@@ -241,14 +195,16 @@
+@@ -244,14 +195,16 @@ start_service() {
  					continue
  				fi
  
@@ -796,7 +943,7 @@
 
 --- a/feeds/packages/net/openvpn/Makefile
 +++ b/feeds/packages/net/openvpn/Makefile
-@@ -93,20 +93,13 @@
+@@ -91,20 +91,13 @@ define Build/Configure
  	)
  endef
  
@@ -817,7 +964,7 @@
  		$(1)/usr/libexec \
  		$(1)/etc/hotplug.d/openvpn
  
-@@ -132,18 +125,11 @@
+@@ -130,18 +123,11 @@ define Package/openvpn-$(BUILD_VARIANT)/install
  
  	$(INSTALL_DATA) \
  		files/etc/openvpn.user \
@@ -840,39 +987,24 @@
 
 --- a/feeds/packages/net/smartdns/Makefile
 +++ b/feeds/packages/net/smartdns/Makefile
-@@ -1,18 +1,13 @@
--#
--# Copyright (c) 2018-2022 Nick Peng (pymumu@gmail.com)
--# This is free software, licensed under the GNU General Public License v3.
--#
--
+@@ -6,13 +6,12 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=smartdns
--PKG_VERSION:=1.2022.38.1
-+PKG_VERSION:=1.2022.99
+-PKG_VERSION:=1.2023.42
++PKG_VERSION:=1.2099.99
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
--PKG_SOURCE_VERSION:=9bc857f628299573c7eca0833229d9812b1c1de4
--PKG_MIRROR_HASH:=a202b765e6ce8355335c80214819add3ed72a82426b033d7d5adf1448b415063
-+PKG_SOURCE_VERSION:=24661c2419a81e660b11a0e3d35a3bc269cd4bfa
-+#不要更新5bd521c36bae56af229dbe96710c13df3c278272之後的版本，此次提交導致chinadns-ng的5337解析IP不正常，當前commit(24661c2419a81e660b11a0e3d35a3bc269cd4bfa)爲體積最佳的版本，之後的版本文件體積都有增大（都是用不上的功能）
+-PKG_SOURCE_VERSION:=ed102cda03c56e9c63040d33d4a391b56491493e
+-PKG_MIRROR_HASH:=366e98b92c3d22844ff5fc52c35f65c3b01e1b92fc9dc14c474823f0cc3ed11a
++PKG_SOURCE_VERSION:=ad43c796cfcf4787f78306ce1302e854c9e57d07
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
-@@ -29,7 +24,7 @@
-   SECTION:=net
-   CATEGORY:=Network
-   TITLE:=smartdns server
--  DEPENDS:=+libpthread +libopenssl
-+  DEPENDS:=+libc +libpthread +libopenssl
-   URL:=https://www.github.com/pymumu/smartdns/
- endef
- 
-@@ -39,21 +34,9 @@
- Unlike dnsmasq's all-servers, smartdns returns the fastest IP. 
+@@ -39,24 +38,9 @@
+ Unlike dnsmasq's all-servers, smartdns returns the fastest IP, and encrypt DNS queries with DoT or DoH. 
  endef
  
 -define Package/smartdns/conffiles
@@ -880,10 +1012,13 @@
 -/etc/smartdns/address.conf
 -/etc/smartdns/blacklist-ip.conf
 -/etc/smartdns/custom.conf
+-/etc/smartdns/domain-block.list
+-/etc/smartdns/domain-forwarding.list
 -endef
 -
  define Package/smartdns/install
--	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/config $(1)/etc/init.d $(1)/etc/smartdns
+-	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/config $(1)/etc/init.d 
+-	$(INSTALL_DIR) $(1)/etc/smartdns $(1)/etc/smartdns/domain-set $(1)/etc/smartdns/conf.d/
 -	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/smartdns $(1)/usr/sbin/smartdns
 -	$(INSTALL_BIN) $(PKG_BUILD_DIR)/package/openwrt/files/etc/init.d/smartdns $(1)/etc/init.d/smartdns
 -	$(INSTALL_CONF) $(PKG_BUILD_DIR)/package/openwrt/address.conf $(1)/etc/smartdns/address.conf
@@ -986,7 +1121,7 @@
 
 --- a/feeds/packages/net/frp/files/frpc.init
 +++ b/feeds/packages/net/frp/files/frpc.init
-@@ -13,7 +13,6 @@
+@@ -13,7 +13,6 @@ _err() {
  
  config_cb() {
  	[ $# -eq 0 ] && return
@@ -994,7 +1129,7 @@
  	local type="$1"
  	local name="$2"
  	if [ "$type" = "conf" ]; then
-@@ -21,6 +20,7 @@
+@@ -21,6 +20,7 @@ config_cb() {
  		option_cb() {
  			local option="$1"
  			local value="$2"
@@ -1002,7 +1137,7 @@
  			[ "$option" = "name" ] && \
  			sed -i "s/$CONFIG_SECTION/$value/g" "$conf_file" || \
  			echo "$option = $value" >> "$conf_file";
-@@ -43,6 +43,7 @@
+@@ -43,6 +43,7 @@ service_triggers()
  }
  
  start_service() {
@@ -1010,53 +1145,53 @@
  	local init_cfg=" "
  	local conf_file="/var/etc/$NAME.ini"
  
-@@ -78,7 +79,10 @@
+@@ -69,7 +70,6 @@ start_service() {
+ 
+ 	procd_open_instance
+ 	procd_set_param command "$PROG" -c "$conf_file"
+-	procd_set_param file $conf_file
+ 	procd_set_param stdout $stdout
+ 	procd_set_param stderr $stderr
+ 	[ -n "$user" ] && procd_set_param user "$user"
+@@ -78,3 +78,11 @@ start_service() {
+ 	[ -n "$env" ] && config_list_foreach "$init_cfg" env "procd_append_param env"
  	procd_close_instance
  }
- 
++
 +stop_service(){
 +	rm -f /var/etc/$NAME.ini
 +}
 +
- reload_service() {
--	stop
--	start
++reload_service() {
 +	restart
- }
++}
 
 --- a/feeds/packages/net/frp/Makefile
 +++ b/feeds/packages/net/frp/Makefile
-@@ -1,16 +1,20 @@
+@@ -1,12 +1,16 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=da51adc27670f495478f50634462954319e4fc14
++PKG_SOURCE_VERSION:=9ba6a064709cbf8a0036df905c3f0e1262bb0355
 +
  PKG_NAME:=frp
--PKG_VERSION:=0.44.0
--PKG_RELEASE:=$(AUTORELEASE)
+-PKG_VERSION:=0.48.0
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.44.0_git-$(PKG_SOURCE_SHORTID)
-+PKG_RELEASE:=1
-+PKG_LICENSE:=Apache-2.0
-+PKG_LICENSE_FILES:=LICENSE
++PKG_VERSION:=0.48.0_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
--PKG_HASH:=51a908c12ddf5cab0f3223f09ba7b8ff0890075d399fd2b51839abcf57b9d159
+-PKG_HASH:=efba8ec9fad3369ce62631369f52b78a7248df426b5b54311e96231adac5cc76
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
--PKG_LICENSE:=Apache-2.0
--PKG_LICENSE_FILES:=LICENSE
- 
- PKG_BUILD_DEPENDS:=golang/host
- PKG_BUILD_PARALLEL:=1
-@@ -27,8 +31,6 @@
- 
+ PKG_LICENSE:=Apache-2.0
+@@ -25,8 +29,6 @@ include ../../lang/golang/golang-package.mk
+ define Package/frp/install
  	$(INSTALL_DIR) $(1)/usr/bin/
- 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $(1)/usr/bin/
+ 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/$(2) $(1)/usr/bin/
 -	$(INSTALL_DIR) $(1)/etc/frp/$(2).d/
 -	$(INSTALL_DATA) $(PKG_BUILD_DIR)/conf/$(2)_full.ini $(1)/etc/frp/$(2).d/
  	$(INSTALL_DIR) $(1)/etc/config/
@@ -1065,28 +1200,27 @@
 
 --- a/feeds/packages/net/kcptun/Makefile
 +++ b/feeds/packages/net/kcptun/Makefile
-@@ -1,13 +1,16 @@
+@@ -1,12 +1,16 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=b4684d7d908f6246988b3cda3dc84615ad84c991
++PKG_SOURCE_VERSION:=432e75c76ad7534a486d30ed6ed35051dba0eb53
 +
  PKG_NAME:=kcptun
--PKG_VERSION:=20210922
+-PKG_VERSION:=20230207
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=$(AUTORELEASE)
+ PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/xtaci/kcptun/tar.gz/v${PKG_VERSION}?
--PKG_SOURCE_DATE:=2021-09-22
--PKG_HASH:=f6a08f0fe75fa85d15f9c0c28182c69a5ad909229b4c230a8cbe38f91ba2d038
+-PKG_HASH:=09054b52d5799a8e47edb36f2db335d929d5bbb63a26f7ba2fe03c64ec39d550
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
  PKG_LICENSE:=MIT
-@@ -24,26 +27,6 @@
+@@ -23,26 +27,6 @@ GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
  include $(INCLUDE_DIR)/package.mk
  include ../../lang/golang/golang-package.mk
  
@@ -1113,7 +1247,7 @@
  define Package/kcptun/Default
    define Package/kcptun-$(1)
      SECTION:=net
-@@ -51,7 +34,6 @@
+@@ -50,7 +34,6 @@ define Package/kcptun/Default
      SUBMENU:=Web Servers/Proxies
      TITLE:=KCP-based Secure Tunnel $(1)
      URL:=https://github.com/xtaci/kcptun
@@ -1121,7 +1255,7 @@
    endef
  
    define Package/kcptun-$(1)/description
-@@ -67,7 +49,6 @@
+@@ -66,7 +49,6 @@ This package only contains kcptun $(1).
    endef
  endef
  
@@ -1132,26 +1266,25 @@
 
 --- a/feeds/packages/net/shadowsocks-libev/Makefile
 +++ b/feeds/packages/net/shadowsocks-libev/Makefile
-@@ -12,19 +12,22 @@
+@@ -12,19 +12,22 @@ include $(TOPDIR)/rules.mk
  # - update cipher list by checking src/crypto.c:crypto_init()
  # - check if default mode has changed from being tcp_only
  #
--PKG_NAME:=shadowsocks-libev
++PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
++PKG_SOURCE_VERSION:=d83ace0f0d9c05656c13d66aa4a449bf70143254
++
+ PKG_NAME:=shadowsocks-libev
 -PKG_VERSION:=3.3.5
--PKG_RELEASE:=7
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=9
 -
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
 -PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
 -
 -PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
-+PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=7f7f68afe40b227195f5d9a6bb03c7bce41d45d8
- 
-+PKG_NAME:=shadowsocks-libev
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
-+PKG_RELEASE:=9
+-
  PKG_LICENSE:=GPL-3.0-or-later
  PKG_LICENSE_FILES:=LICENSE
  
@@ -1163,8 +1296,8 @@
 +
  PKG_FIXUP:=autoreconf
  PKG_INSTALL:=1
- PKG_USE_MIPS16:=0
-@@ -33,27 +36,6 @@
+ PKG_BUILD_FLAGS:=no-mips16 lto
+@@ -33,27 +36,6 @@ PKG_BUILD_DEPENDS:=c-ares pcre
  
  include $(INCLUDE_DIR)/package.mk
  
@@ -1192,7 +1325,7 @@
  define Package/shadowsocks-libev/Default
    define Package/shadowsocks-libev-$(1)
      SECTION:=net
-@@ -61,7 +43,7 @@
+@@ -61,7 +43,7 @@ define Package/shadowsocks-libev/Default
      SUBMENU:=Web Servers/Proxies
      TITLE:=shadowsocks-libev $(1)
      URL:=https://github.com/shadowsocks/shadowsocks-libev
@@ -1201,7 +1334,7 @@
    endef
  
    define Package/shadowsocks-libev-$(1)/install
-@@ -82,28 +64,6 @@
+@@ -82,28 +64,6 @@ define shadowsocks-libev/templates
  endef
  $(eval $(call shadowsocks-libev/templates))
  
@@ -1230,8 +1363,8 @@
  define Build/Prepare
  	$(call Build/Prepare/Default)
  	$(FIND) $(PKG_BUILD_DIR) \
-@@ -123,8 +83,6 @@
- TARGET_CFLAGS += -flto
+@@ -122,8 +82,6 @@ CONFIGURE_ARGS += \
+ 
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
 -$(eval $(call BuildPackage,shadowsocks-libev-config))
@@ -1248,10 +1381,10 @@
  PKG_NAME:=sqm-scripts
 -PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
 -PKG_VERSION:=1.5.2
-+PKG_SOURCE_VERSION:=54131540c8602b88bba1d071ec34eb965ce01704
++PKG_SOURCE_VERSION:=75dee1468721b3831b5437f83c8d73bc86520330
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=$(AUTORELEASE)
+ PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
@@ -1266,18 +1399,18 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=c7f7e078218edbe7b1f609dc688fdc6bebe051f1
++PKG_SOURCE_VERSION:=a4e80f01e4c6fe6973fa4fc6cce0caf1843d183c
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.6.3
+-PKG_VERSION:=1.8.1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.6.3_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=$(AUTORELEASE)
++PKG_VERSION:=1.8.1_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=2eff51567046ab2046c8f50552bf1f531071f0f9f189a32f7035f243c0143b97
+-PKG_HASH:=477ad92b80700b4742e59ad7848ca4726201841a57339e4c1bf9012e395622e2
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1292,8 +1425,8 @@
 +
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
- PKG_USE_MIPS16:=0
-@@ -30,7 +37,7 @@
+ PKG_BUILD_FLAGS:=no-mips16
+@@ -30,7 +37,7 @@ define Package/xray/template
    TITLE:=A platform for building proxies to bypass network restrictions
    SECTION:=net
    CATEGORY:=Network
@@ -1302,7 +1435,7 @@
  endef
  
  define Package/xray-core
-@@ -38,13 +45,6 @@
+@@ -38,13 +45,6 @@ define Package/xray-core
    DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
  endef
  
@@ -1316,7 +1449,7 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -54,36 +54,43 @@
+@@ -54,36 +54,43 @@ define Package/xray-core/description
    $(call Package/xray/description)
  endef
  
@@ -1389,25 +1522,25 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=e0acccc3c918b59678033e585b31eb000c68fdf2
++PKG_SOURCE_VERSION:=ce989d0d67cb665d236956d4dd5562803b5845ac
  PKG_NAME:=zerotier
--PKG_VERSION:=1.10.2
+-PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.10.2_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=$(AUTORELEASE)
++PKG_VERSION:=1.10.6_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=9f98b1670785f42294b9858068d42c6b8c2fdee6402e871a36562b47559e74e7
+-PKG_HASH:=5dc185a65baf8caa3fb739cbc8043677aa117604be9036a28c34f8fda5d6eafe
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  
  PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
  PKG_LICENSE:=BSL 1.1
-@@ -61,10 +62,6 @@
- TARGET_CFLAGS += -ffunction-sections -fdata-sections
- TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
+@@ -62,10 +63,6 @@ endef
+ TARGET_CFLAGS += -Wl,-z,noexecstack
+ TARGET_LDFLAGS += -Wl,--as-needed -Wl,-z,noexecstack
  
 -define Package/zerotier/conffiles
 -/etc/config/zerotier
@@ -1416,7 +1549,7 @@
  define Package/zerotier/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
-@@ -74,8 +71,6 @@
+@@ -75,8 +72,6 @@ define Package/zerotier/install
  ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
  endif
@@ -1428,7 +1561,7 @@
 
 --- a/feeds/packages/utils/dockerd/Makefile
 +++ b/feeds/packages/utils/dockerd/Makefile
-@@ -34,11 +34,11 @@
+@@ -34,11 +34,11 @@ define Package/dockerd
    TITLE:=Docker Community Edition Daemon
    URL:=https://www.docker.com/
    DEPENDS:=$(GO_ARCH_DEPENDS) \
@@ -1443,292 +1576,15 @@
      +IPV6:kmod-ipt-nat6 \
      +KERNEL_SECCOMP:libseccomp \
      +kmod-ipt-nat \
-@@ -47,7 +47,7 @@
+@@ -46,7 +46,7 @@ define Package/dockerd
+     +kmod-nf-ipvs \
      +kmod-veth \
-     +libnetwork \
      +tini \
--    +uci-firewall
-+    +firewall
+-    +uci-firewall \
++    +firewall \
+     @!(mips||mipsel)
    USERID:=docker:docker
    MENU:=1
- endef
-
---- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
-+++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/cascade.css
-@@ -257,18 +257,6 @@
- 	vertical-align: top;
- }
- 
--.control-group {
--	display: inline-flex;
--	gap: .2em;
--}
--
--.control-group > input + :not(input):not(select),
--.control-group > select + :not(input):not(select) {
--	margin-left: calc(-.2em + -2px);
--	border-radius: 0 3px 3px 0;
--	padding: 0 6px;
--}
--
- /*
-  * Scaffolding
-  * Basic and global styles for generating a grid system, structural layout, and page templates
-@@ -614,7 +602,7 @@
- 	margin-bottom: 4px;
- 	box-shadow: 0 0 2px var(--border-color-high);
- 	background: var(--background-color-high);
--	padding: 6px 2em 6px 4px;
-+	padding: 2px 2em 2px 4px;
- 	border: 1px solid var(--border-color-high);
- 	border-radius: 3px;
- 	color: var(--text-color-high);
-@@ -1721,6 +1709,25 @@
- 	width: 100%;
- }
- 
-+input[type="text"] + .cbi-button,
-+input[type="password"] + .cbi-button,
-+select + .cbi-button,
-+.cbi-select + .cbi-button {
-+	border-radius: 0 3px 3px 0;
-+	border-color: var(--border-color-high);
-+	margin-left: -2px;
-+	padding: 0 6px;
-+	vertical-align: top;
-+	height: 30px;
-+	font-size: 14px;
-+	line-height: 28px;
-+}
-+
-+select + .cbi-button,
-+.cbi-select + .cbi-button {
-+	position: relative;
-+}
-+
- .cbi-title-ref {
- 	color: #37c;
- }
-@@ -2537,7 +2544,3 @@
- [data-darkmode="true"] [data-page="admin-statistics-graphs"] [data-plugin] img {
- 	filter: invert(100%) hue-rotate(150deg);
- }
--
--[data-page="admin-system-admin-sshkeys"] .cbi-dynlist {
--	max-width: none;
--}
-
---- a/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/mobile.css
-+++ b/feeds/luci/themes/luci-theme-bootstrap/htdocs/luci-static/bootstrap/mobile.css
-@@ -3,10 +3,6 @@
- }
- 
- @media screen and (max-device-width: 600px) {
--	.modal {
--		margin: 1.5em auto;
--	}
--
- 	.tabs, .cbi-tabmenu {
- 		background: linear-gradient(var(--background-color-high) 20%, var(--border-color-medium) 100%);
- 		background-size: 1px 34px;
-@@ -41,7 +37,7 @@
- 	.table .th,
- 	.table .td,
- 	.table .tr::before {
--		flex: 1 1 50%;
-+		flex: 2 2 33%;
- 		align-self: flex-start;
- 		overflow: hidden;
- 		text-overflow: ellipsis;
-@@ -79,8 +75,6 @@
- 
- 	.td.cbi-value-field {
- 		align-self: flex-start;
--		flex-basis: 100%;
--		margin-bottom: .3em;
- 	}
- 
- 	.td.cbi-value-field .cbi-button {
-@@ -118,15 +112,7 @@
- 		border-bottom: 1px solid var(--border-color-medium);
- 	}
- 
--	.td[data-title]::before {
--		content: attr(data-title);
--		font-weight: bold;
--		display: block;
--		overflow: hidden;
--		text-overflow: ellipsis;
--		white-space: pre-line;
--	}
--
-+	.td[data-title]::before,
- 	.td[data-description]::after {
- 		display: block;
- 	}
-@@ -135,11 +121,15 @@
- 		align-self: flex-start;
- 	}
- 
-+	.td[data-title] ~ .td.cbi-section-actions::before {
-+		display: block;
-+		content: "\a0";
-+	}
-+
- 	.td.cbi-section-actions {
- 		overflow: initial;
- 		max-width: 100%;
- 		padding: 3px 2px;
--		flex-basis: 100%;
- 	}
- 
- 	.hide-sm,
-@@ -147,13 +137,17 @@
- 		display: none !important;
- 	}
- 
--	.td.cbi-value-field[data-widget="CBI.DummyValue"],
--	.td.cbi-value-field[data-widget="CBI.Button"],
--	.td.cbi-value-field[data-widget="CBI.FlagValue"],
--	.td.cbi-value-field[data-widget="dvalue"],
-+	.td.cbi-value-field {
-+		flex-basis: 100%;
-+	}
-+
-+	.td.cbi-value-field[data-widget="dvalue"] {
-+		flex-basis: 50%;
-+	}
-+
- 	.td.cbi-value-field[data-widget="button"],
- 	.td.cbi-value-field[data-widget="fvalue"] {
--		flex-basis: 50%;
-+		flex-basis: 25%;
- 		text-align: left;
- 	}
- 
-@@ -163,10 +157,6 @@
- 		background-color: transparent;
- 	}
- 
--	.cbi-tab-descr {
--		margin: 0 0 .5em 0;
--	}
--
- 	.cbi-value {
- 		padding-bottom: .5em;
- 		border-bottom: 1px solid var(--border-color-high);
-@@ -188,17 +178,11 @@
- 		font-weight: bold;
- 	}
- 
--	.cbi-value-field, .cbi-select, .cbi-dynlist, .cbi-dropdown:not(.btn):not(.cbi-button) {
-+	.cbi-value-field, .cbi-select, .cbi-dropdown:not(.btn):not(.cbi-button) {
- 		width: 100%;
- 		margin: 0;
- 	}
- 
--	.cbi-dynlist > .item {
--		min-height: 30px;
--		display: flex;
--		align-items: center;
--	}
--
- 	input, textarea, select,
- 	.cbi-dropdown > ul > li {
- 		font-size: 16px !important;
-@@ -210,8 +194,7 @@
- 	}
- 
- 	select, input[type="text"], input[type="password"],
--	.cbi-dropdown > ul > li input[type="text"],
--	.cbi-value-field .control-group {
-+	.cbi-dropdown > ul > li input[type="text"] {
- 		width: 100%;
- 		height: 30px;
- 	}
-@@ -220,9 +203,25 @@
- 		width: calc(100% - 25px);
- 	}
- 
-+	[data-dynlist] {
-+		display: block;
-+	}
-+
-+	[data-dynlist] > .add-item > input {
-+		width: calc(100% - 21px);
-+	}
-+
-+	[data-dynlist] > .add-item > .cbi-button {
-+		margin-right: -1px;
-+	}
-+
- 	input[type="text"] + .cbi-button,
- 	input[type="password"] + .cbi-button,
- 	select + .cbi-button {
-+		font-size: 14px !important;
-+		line-height:  28px;
-+		height: 30px;
-+		box-sizing: border-box;
- 		overflow: hidden;
- 		text-overflow: ellipsis;
- 	}
-@@ -244,8 +243,9 @@
- 		padding: 8px;
- 	}
- 
--	[data-page="admin-status-overview"] .td[width="33%"] {
--		flex-basis: 33%;
-+	[data-page="admin-status-overview"] .cbi-section:nth-of-type(1) .td:first-child,
-+	[data-page="admin-status-overview"] .cbi-section:nth-of-type(2) .td:first-child {
-+		flex-grow: 1;
- 	}
- 
- 	header .pull-right .label {
-@@ -300,6 +300,14 @@
- 		flex-basis: 12%;
- 	}
- 
-+	#cbi-network-switch_vlan .td.cbi-section-actions {
-+		flex-basis: 100%;
-+	}
-+
-+	#cbi-network-switch_vlan .td.cbi-section-actions::before {
-+		display: none;
-+	}
-+
- 	#cbi-network-switch_vlan .td.cbi-section-actions > * {
- 		width: auto;
- 		display: block;
-@@ -336,14 +344,6 @@
- 	[data-name="bridge-vlan"] .td[data-title]::before {
- 		content: attr(data-title);
- 	}
--
--	[data-page="admin-network-network"] .td[data-name="_ifacebox"] {
--		flex-basis: 40%;
--	}
--
--	[data-page="admin-network-network"] .td[data-name="_ifacestat"] {
--		flex-basis: 60%;
--	}
- }
- 
- @media screen and (max-device-width: 375px) {
-@@ -396,12 +396,9 @@
- 	body[data-page="admin-network-wireless"] .td.cbi-section-actions::before {
- 		content: none !important;
- 	}
-+}
- 
--	[data-page="admin-network-network"] .td[data-name="_ifacebox"],
--	[data-page="admin-network-network"] .td[data-name="_ifacestat"] {
--		flex-basis: 100%;
--	}
--
-+@media screen and (max-width: 375px) {
- 	.td .ifacebox {
- 		width: 100%;
- 		margin: 0 !important;
 
 --- a/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
 +++ b/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
@@ -1753,21 +1609,3 @@
  
  					if (m) {
  						push(rules, {
-
---- a/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
-+++ b/feeds/luci/applications/luci-app-ksmbd/po/zh_Hant/ksmbd.po
-@@ -109,12 +109,12 @@
- 
- #: applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js:49
- msgid ""
--"This is the content of the file '/etc/ksmbd/smb.conf.template' from which "
-+"This is the content of the file '/etc/ksmbd/ksmbd.conf.template' from which "
- "your ksmbd configuration will be generated. Values enclosed by pipe symbols "
- "('|') should not be changed. They get their values from the 'General "
- "Settings' tab."
- msgstr ""
--"這是將從其上產生 ksmbd 設定的檔案「/etc/ksmbd/smb.conf.template」的內容。由管"
-+"這是將從其上產生 ksmbd 設定的檔案「/etc/ksmbd/ksmbd.conf.template」的內容。由管"
- "道符號 (「|」) 包圍的值不應變更。它們將從「一般設定」標籤中取得其值。"
- 
- #: applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js:38

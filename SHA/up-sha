@@ -22,12 +22,11 @@ xtaci/kcptun|master|kcptun
 shadowsocks/shadowsocks-libev|master|shadowsocks-libev
 tohojo/sqm-scripts|master|sqm-scripts
 XTLS/Xray-core|main|xray
-zerotier/ZeroTierOne|master|zerotier"
+zerotier/ZeroTierOne|dev|zerotier
+pymumu/smartdns|master|smartdns"
 rm -f SHA
 for i in $A;do
 	i=$(echo $i | sed 's/|/ /g')
 	GET $i
 done
-sed -i 's/c1413335f0b5f15241d7072204902778d122a578/384dab4bae5ed9402e07ec1950e502c05812bc26/' SHA #ipt2socks
 sed -i 's/655c53d27df0bd69e0ecfa8309ce2940797f3362/8f6cb0911b9b4bcb00dfe1cd368c1cec1137e9e5/' SHA #microsocks
-sed -i 's/1951b49b774b0aab702348d0370e26bae1c3a7df/7797a938a3945f0316640067da693b148f412f0b/' SHA #redsocks2

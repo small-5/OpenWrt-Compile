@@ -1,6 +1,6 @@
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -67,7 +67,16 @@
+@@ -74,7 +74,16 @@
  
  	getCPUInfo: {
  		call: function() {
@@ -21,7 +21,7 @@
 
 --- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
 +++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-@@ -19,6 +19,15 @@
+@@ -18,6 +18,15 @@
  		}
  	},
  
@@ -40,7 +40,7 @@
 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -62,6 +62,7 @@
+@@ -63,6 +63,7 @@
  			_('Model'),            boardinfo.model,
  			_('Architecture'),     boardinfo.system,
  			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
@@ -48,7 +48,7 @@
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
  			_('Local Time'),       datestr,
-@@ -71,7 +72,7 @@
+@@ -72,7 +73,7 @@
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
  			) : null,
@@ -70,7 +70,7 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
-@@ -14,8 +14,8 @@
+@@ -16,8 +16,8 @@
  friendlyarm,nanopi-r4s-enterprise|\
  xunlong,orangepi-r1-plus|\
  xunlong,orangepi-r1-plus-lts)
@@ -79,16 +79,17 @@
 +	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 +	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0"
  	;;
- esac
+ friendlyarm,nanopi-r5c)
+ 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-@@ -13,7 +13,7 @@
+@@ -16,7 +16,7 @@
  	friendlyarm,nanopi-r4s-enterprise|\
  	xunlong,orangepi-r1-plus|\
  	xunlong,orangepi-r1-plus-lts)
 -		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
 +		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
  		;;
+ 	friendlyarm,nanopi-r5c|\
  	lunzn,fastrhino-r66s)
- 		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'

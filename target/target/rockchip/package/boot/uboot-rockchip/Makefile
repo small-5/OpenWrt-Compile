@@ -5,15 +5,18 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2022.10
-PKG_RELEASE:=$(AUTORELEASE)
-
-PKG_HASH:=50b4482a505bc281ba8470c399a3c26e145e29b23500bc35c50debd7fa46bdf8
+PKG_VERSION:=2023.07-rc3
+PKG_RELEASE:=1
+PKG_HASH:=42ec083674bd30fa4c16e78c3f5f453c08d9f737595a77b5dda595ac3a09d82f
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
+UBOOT_USE_BINMAN:=1
+UBOOT_USE_INTREE_DTC:=1
+
 include $(INCLUDE_DIR)/u-boot.mk
 include $(INCLUDE_DIR)/package.mk
+include ../arm-trusted-firmware-rockchip/atf-version.mk
 
 define U-Boot/Default
   BUILD_TARGET:=rockchip
@@ -24,145 +27,210 @@ endef
 
 # RK3328 boards
 
-define U-Boot/nanopi-r2c-rk3328
+define U-Boot/Default/rk3328
   BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3328
+  ATF:=$(RK3328_ATF)
+endef
+
+define U-Boot/nanopi-r2c-rk3328
+  $(U-Boot/Default/rk3328)
   NAME:=NanoPi R2C
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r2c
-  DEPENDS:=+PACKAGE_u-boot-nanopi-r2c-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
+endef
+
+define U-Boot/nanopi-r2c-plus-rk3328
+  $(U-Boot/Default/rk3328)
+  NAME:=NanoPi R2C Plus
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r2c-plus
 endef
 
 define U-Boot/nanopi-r2s-rk3328
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3328)
   NAME:=NanoPi R2S
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r2s
-  DEPENDS:=+PACKAGE_u-boot-nanopi-r2s-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/orangepi-r1-plus-rk3328
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3328)
   NAME:=Orange Pi R1 Plus
   BUILD_DEVICES:= \
     xunlong_orangepi-r1-plus
-  DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/orangepi-r1-plus-lts-rk3328
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3328)
   NAME:=Orange Pi R1 Plus LTS
   BUILD_DEVICES:= \
     xunlong_orangepi-r1-plus-lts
-  DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-lts-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
+define U-Boot/roc-cc-rk3328
+  $(U-Boot/Default/rk3328)
+  NAME:=ROC-RK3328-CC
+  BUILD_DEVICES:= \
+    firefly_roc-rk3328-cc
+endef
 
 # RK3399 boards
 
-define U-Boot/nanopi-r4s-rk3399
+define U-Boot/Default/rk3399
   BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3399
+  ATF:=$(RK3399_ATF)
+endef
+
+define U-Boot/guangmiao-g4c-rk3399
+  $(U-Boot/Default/rk3399)
+  NAME:=GuangMiao G4C
+  BUILD_DEVICES:= \
+    huake_guangmiao-g4c
+endef
+
+define U-Boot/nanopi-r4s-rk3399
+  $(U-Boot/Default/rk3399)
   NAME:=NanoPi R4S
   BUILD_DEVICES:= \
-    friendlyarm_nanopi-r4s \
+    friendlyarm_nanopi-r4s
+endef
+
+define U-Boot/nanopi-r4se-rk3399
+  $(U-Boot/Default/rk3399)
+  NAME:=NanoPi R4SE
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r4se
+endef
+
+define U-Boot/nanopi-r4s-enterprise-rk3399
+  $(U-Boot/Default/rk3399)
+  NAME:=NanoPi R4S Enterprise Edition
+  BUILD_DEVICES:= \
     friendlyarm_nanopi-r4s-enterprise
-  DEPENDS:=+PACKAGE_u-boot-nanopi-r4s-rk3399:arm-trusted-firmware-rk3399
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk3399_bl31_v1.35.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/rock-pi-4-rk3399
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3399)
   NAME:=Rock Pi 4
   BUILD_DEVICES:= \
     radxa_rock-pi-4a
-  DEPENDS:=+PACKAGE_u-boot-rock-pi-4-rk3399:arm-trusted-firmware-rockchip
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
 endef
 
 define U-Boot/rockpro64-rk3399
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3399)
   NAME:=RockPro64
   BUILD_DEVICES:= \
     pine64_rockpro64
-  DEPENDS:=+PACKAGE_u-boot-rockpro64-rk3399:arm-trusted-firmware-rockchip
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
 endef
 
 
 # RK3568 boards
 
-define U-Boot/fastrhino-r66s-rk3568
+define U-Boot/Default/rk3568
   BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568
+  ATF:=$(RK3568_ATF)
+  DDR:=$(RK3568_DDR)
+endef
+
+define U-Boot/fastrhino-r66s-rk3568
+  $(U-Boot/Default/rk3568)
   NAME:=Lunzn FastRhino R66S
   BUILD_DEVICES:= \
     lunzn_fastrhino-r66s
-  DEPENDS:=+PACKAGE_u-boot-fastrhino-r66s-rk3568:arm-trusted-firmware-rk3568
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk3568_bl31_v1.28.elf
-  DDR:=rk3568_ddr_1560MHz_v1.13.bin
 endef
 
 define U-Boot/fastrhino-r68s-rk3568
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/Default/rk3568)
   NAME:=Lunzn FastRhino R68S
   BUILD_DEVICES:= \
     lunzn_fastrhino-r68s
-  DEPENDS:=+PACKAGE_u-boot-fastrhino-r68s-rk3568:arm-trusted-firmware-rk3568
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk3568_bl31_v1.28.elf
-  DDR:=rk3568_ddr_1560MHz_v1.13.bin
+endef
+
+define U-Boot/mrkaio-m68s-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Mrkaio M68S
+  BUILD_DEVICES:= \
+    ezpro_mrkaio-m68s
+endef
+
+define U-Boot/nanopi-r5c-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=FriendlyARM NanoPi R5C
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r5c
+endef
+
+define U-Boot/nanopi-r5s-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=FriendlyARM NanoPi R5S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r5s
+endef
+
+
+# RK3588 boards
+
+define U-Boot/Default/rk3588
+  BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
+  ATF:=$(RK3588_ATF)
+  DDR:=$(RK3588_DDR)
+endef
+
+define U-Boot/nanopi-r6s-rk3588s
+  $(U-Boot/Default/rk3588)
+  NAME:=FriendlyARM NanoPi R6S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6s
 endef
 
 UBOOT_TARGETS := \
+  guangmiao-g4c-rk3399 \
   nanopi-r4s-rk3399 \
+  nanopi-r4se-rk3399 \
+  nanopi-r4s-enterprise-rk3399 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
   nanopi-r2c-rk3328 \
+  nanopi-r2c-plus-rk3328 \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
   orangepi-r1-plus-lts-rk3328 \
+  roc-cc-rk3328 \
   fastrhino-r66s-rk3568 \
-  fastrhino-r68s-rk3568
+  fastrhino-r68s-rk3568 \
+  mrkaio-m68s-rk3568 \
+  nanopi-r5c-rk3568 \
+  nanopi-r5s-rk3568 \
+  nanopi-r6s-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_MAKE_FLAGS += \
-  BL31=$(STAGING_DIR_IMAGE)/$(ATF)
+  PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
+  BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
+  $(if $(DDR),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(DDR))
 
 define Build/Configure
 	$(call Build/Configure/U-Boot)
 
-	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
-
-ifneq ($(DDR),)
-	$(INSTALL_DIR) $(PKG_BUILD_DIR)/tpl
-	$(CP) $(STAGING_DIR_IMAGE)/$(DDR) $(PKG_BUILD_DIR)/tpl/u-boot-tpl.bin
-endif
+	sed -i $(PKG_BUILD_DIR)/.config \
+	    -e 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' \
+	    -e 's|CONFIG_SPL_FIT_SIGNATURE=y|# CONFIG_SPL_FIT_SIGNATURE is not set|g' \
+	    -e 's|CONFIG_TOOLS_MKEFICAPSULE=y|# CONFIG_TOOLS_MKEFICAPSULE is not set|g'
 endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
-ifneq ($(USE_RKBIN),)
-	$(STAGING_DIR_IMAGE)/loaderimage --pack --uboot $(PKG_BUILD_DIR)/u-boot-dtb.bin $(PKG_BUILD_DIR)/uboot.img 0x200000
-	$(CP) $(PKG_BUILD_DIR)/uboot.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-uboot.img
-else
+ifneq ($(DDR),)
 	$(CP) $(PKG_BUILD_DIR)/idbloader.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-idbloader.img
 	$(CP) $(PKG_BUILD_DIR)/u-boot.itb $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-u-boot.itb
+else
+	$(STAGING_DIR_IMAGE)/loaderimage --pack --uboot $(PKG_BUILD_DIR)/u-boot-dtb.bin $(PKG_BUILD_DIR)/uboot.img 0x200000
+	$(CP) $(PKG_BUILD_DIR)/uboot.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-uboot.img
 endif
 endef
 

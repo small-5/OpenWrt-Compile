@@ -1,16 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2021-2022 ImmortalWrt.org
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl88x2bu
-PKG_RELEASE=1
+PKG_RELEASE:=1
 
-PKG_LICENSE:=GPLv2
-PKG_LICENSE_FILES:=
-
-PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/morrownr/88x2bu-20210702.git
-PKG_MIRROR_HASH:=b5c679381a5865864f943f0ee3d6d776633f761347c43eab87b9d4a5ccf2360b
-PKG_SOURCE_DATE:=2022-10-19
-PKG_SOURCE_VERSION:=73a681a0db4a9ad132f85d567e225374c1e6a12b
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_DATE:=2023-05-21
+PKG_SOURCE_VERSION:=cfbebf74e161993c66ccae09f9b7968983623c8f
+PKG_MIRROR_HASH:=6aa60625bb7b6b7a92aa28095928864255a6bcdc2efcf83db32e8b8b7d44047e
+
+PKG_LICENSE:=GPL-2.0-only
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_PARALLEL:=1
 
@@ -21,15 +25,14 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl88x2bu
   SUBMENU:=Wireless Drivers
-  TITLE:=Driver for Realtek 88x2bu devices
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=\
-	$(PKG_BUILD_DIR)/88x2bu.ko
-  AUTOLOAD:=$(call AutoProbe,88x2bu)
+  TITLE:=Realtek 8812BU/8822BU support
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11AC_SUPPORT
+  FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
+  AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
   PROVIDES:=kmod-rtl88x2bu
 endef
 
-NOSTDINC_FLAGS := \
+NOSTDINC_FLAGS:= \
 	$(KERNEL_NOSTDINC_FLAGS) \
 	-I$(PKG_BUILD_DIR) \
 	-I$(PKG_BUILD_DIR)/include \
@@ -37,16 +40,22 @@ NOSTDINC_FLAGS := \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
 	-I$(STAGING_DIR)/usr/include/mac80211 \
 	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/autoconf.h \
 	-include backport/backport.h
 
-NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
+NOSTDINC_FLAGS+= \
+	-DRTW_SINGLE_WIPHY \
+	-DRTW_USE_CFG80211_STA_EVENT \
+	-DCONFIG_IOCTL_CFG80211 \
+	-DCONFIG_CONCURRENT_MODE \
+	-DBUILD_OPENWRT
 
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(KERNEL_MAKE_FLAGS) \
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M="$(PKG_BUILD_DIR)" \
 		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 		CONFIG_RTL8822BU=m \
+		USER_MODULE_NAME=rtl88x2bu \
 		modules
 endef
 

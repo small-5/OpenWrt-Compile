@@ -4,12 +4,13 @@ local ucursor=require "luci.model.uci".cursor()
 local json=require "luci.jsonc"
 local server_section=arg[1]
 local proto=arg[2]
-local local_port=arg[3] or "0"
-local socks_port=arg[4] or "0"
+local local_port=arg[3]
+local socks_port=arg[4]
 local ip_addr=arg[5]
+local udp_addr=arg[6] or "127.0.0.1"
 local server=ucursor:get_all("overwall",server_section)
 local tls_host=server.tls_host or server.http_host or server.ws_host or server.h2_host or server.server
-if server.tls=='1' then server.security="none" end
+if server.tls=='1' then server.security="zero" end
 local function get_domain_excluded()
 	local content = fs.readfile("/etc/overwall/excluded.list")
 	if not content then return nil end
@@ -42,7 +43,8 @@ inbounds={(local_port~="0") and {
 	port=socks_port,
 		settings={
 			auth="noauth",
-			udp=true
+			udp=true,
+			ip=udp_addr
 		}
 } or nil},
 outbound=(server.type=="vmess" or server.type=="vless") and {
@@ -66,7 +68,7 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 	},
 	streamSettings={
 		network=server.transport,
-		security=(server.xtls=='1') and "xtls" or (server.tls=='1') and "tls" or "none",
+		security=(server.xtls=='1') and "xtls" or (server.tls=='1') and "tls" or nil,
 		tlsSettings=(server.tls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
 			fingerprint=server.fingerprint or nil,

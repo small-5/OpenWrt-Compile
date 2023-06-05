@@ -1,10 +1,9 @@
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -78,7 +78,7 @@
- 		default n
+@@ -75,6 +75,7 @@ menu "Global build settings"
+ 		bool "Show packages that require graphics support (local or remote)"
  
  	config BUILD_PATENTED
--		default n
 +		default y
  		bool "Compile with support for patented functionality"
  		help
@@ -12,16 +11,7 @@
 
 --- a/config/Config-images.in
 +++ b/config/Config-images.in
-@@ -92,7 +92,7 @@
- 
- 	menuconfig TARGET_ROOTFS_EXT4FS
- 		bool "ext4"
--		default y if USES_EXT4
-+		default n
- 		help
- 		  Build an ext4 root filesystem.
- 
-@@ -243,7 +243,7 @@
+@@ -242,7 +242,7 @@ menu "Target Images"
  	config GRUB_TIMEOUT
  		string "Seconds to wait before booting the default entry"
  		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
@@ -45,7 +35,7 @@
 
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
-@@ -162,8 +162,8 @@
+@@ -162,8 +162,8 @@ generate_network() {
  		static)
  			local ipad
  			case "$1" in
@@ -56,7 +46,7 @@
  			esac
  
  			netm=${netmask:-"255.255.255.0"}
-@@ -177,18 +177,7 @@
+@@ -177,18 +177,7 @@ generate_network() {
  		;;
  
  		dhcp)
@@ -75,7 +65,7 @@
  		;;
  
  		pppoe)
-@@ -196,16 +185,8 @@
+@@ -196,16 +185,8 @@ generate_network() {
  				set network.$1.proto='pppoe'
  				set network.$1.username='username'
  				set network.$1.password='password'
@@ -92,8 +82,8 @@
 -			}
  		;;
  
- 		qmi|\
-@@ -311,7 +292,8 @@
+ 		ncm|\
+@@ -312,7 +293,8 @@ generate_static_system() {
  		delete system.@system[0]
  		add system system
  		set system.@system[-1].hostname='OpenWrt'
@@ -103,7 +93,7 @@
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='64'
  		set system.@system[-1].urandom_seed='0'
-@@ -319,11 +301,9 @@
+@@ -320,11 +302,9 @@ generate_static_system() {
  		delete system.ntp
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
@@ -151,7 +141,7 @@
 
 --- a/package/base-files/image-config.in
 +++ b/package/base-files/image-config.in
-@@ -183,7 +183,7 @@
+@@ -190,7 +190,7 @@ if VERSIONOPT
  	config VERSION_REPO
  		string
  		prompt "Release repository"
@@ -160,72 +150,6 @@
  		help
  			This is the repository address embedded in the image, it defaults
  			to the trunk snapshot repo; the url may contain the following placeholders:
-
---- a/package/libs/mbedtls/Makefile
-+++ b/package/libs/mbedtls/Makefile
-@@ -22,6 +22,8 @@
- 
- PKG_CONFIG_DEPENDS := \
- 	CONFIG_LIBMBEDTLS_DEBUG_C \
-+	CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES \
-+	CONFIG_LIBMBEDTLS_HAVE_SSE2 \
- 	CONFIG_LIBMBEDTLS_HKDF_C
- 
- include $(INCLUDE_DIR)/package.mk
-@@ -59,6 +61,34 @@
- 
- 	 Usually, you don't need this, so don't select this if you're unsure.
- 
-+config LIBMBEDTLS_HAVE_ARMV8CE_AES
-+	depends on PACKAGE_libmbedtls
-+	bool
-+	default y
-+	prompt "Enable use of the ARMv8 Crypto Extensions"
-+	depends on aarch64 && !TARGET_bcm27xx && !TARGET_bcm4908
-+	help
-+	 Use of the ARMv8 Crypto Extensions greatly increase performance
-+	 (up to 4x faster on AES-GCM while 10x faster on raw AES).
-+
-+	 Related instructions should be included in all modern Aarch64
-+	 devices, except some wastes like Broadcom.
-+	 If you don't sure, say Y here.
-+
-+config LIBMBEDTLS_HAVE_SSE2
-+	depends on PACKAGE_libmbedtls
-+	bool
-+	default y if !TARGET_x86_legacy && !TARGET_x86_geode
-+	prompt "Enable use of x86 SSE2 instructions"
-+	depends on x86_64 || i386
-+	help
-+	 Use of SSE2 instructions greatly increase performance (up to
-+	 3x faster) with a minimum (~0.2%, or 23KB) increase in package
-+	 size, but it will bring no benefit if your hardware does not
-+	 support them, such as Geode GX and LX.  In this case you may
-+	 save 23KB by saying yes here.  AMD Geode NX, and Intel
-+	 Pentium 4 and above support SSE2.
-+
- config LIBMBEDTLS_HKDF_C
- 	depends on PACKAGE_libmbedtls
- 	bool "Enable the HKDF algorithm (RFC 5869)"
-@@ -89,6 +119,9 @@
- 
- TARGET_CFLAGS += -ffunction-sections -fdata-sections
- TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
-+ifneq ($(CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES),)
-+  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
-+endif
- 
- CMAKE_OPTIONS += \
- 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-@@ -101,6 +134,8 @@
- 
- 	awk 'BEGIN { rc = 1 } \
- 	     /#define MBEDTLS_DEBUG_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_DEBUG_C),,// )#define MBEDTLS_DEBUG_C"; rc = 0 } \
-+	     /#define MBEDTLS_ARMV8CE_AES_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES),,// )#define MBEDTLS_ARMV8CE_AES_C"; rc = 0 } \
-+	     /#define MBEDTLS_HAVE_SSE2/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_HAVE_SSE2),,// )#define MBEDTLS_HAVE_SSE2"; rc = 0 } \
- 	     { print } \
- 	     END { exit(rc) }' $(PKG_BUILD_DIR)/include/mbedtls/config.h \
- 	     >$(PKG_BUILD_DIR)/include/mbedtls/config.h.new && \
 
 --- a/package/network/config/firewall/files/firewall.config
 +++ b/package/network/config/firewall/files/firewall.config
@@ -478,7 +402,7 @@
 
 --- a/package/network/services/dnsmasq/files/dhcp.conf
 +++ b/package/network/services/dnsmasq/files/dhcp.conf
-@@ -1,33 +1,25 @@
+@@ -1,37 +1,25 @@
 +
  config dnsmasq
 -	option domainneeded	1
@@ -492,6 +416,7 @@
 -	option domain	'lan'
 -	option expandhosts	1
 -	option nonegcache	0
+-	option cachesize	1000
 -	option authoritative	1
 -	option readethers	1
 -	option leasefile	'/tmp/dhcp.leases'
@@ -503,6 +428,9 @@
 -	#list bogusnxdomain     '64.94.110.11'
 -	option localservice	1  # disable to allow DNS requests from non-local subnets
 -	option ednspacket_max	1232
+-	option filter_aaaa	0
+-	option filter_a		0
+-	#list addnmount		/some/path # read-only mount path to expose it to dnsmasq
 +	option domainneeded '1'
 +	option authoritative '1'
 +	option local '/lan/'
@@ -775,23 +703,23 @@
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL=$(PROJECT_GIT)/project/uhttpd.git
--PKG_SOURCE_DATE:=2022-08-12
-+PKG_SOURCE_DATE:=2022-12-31
- PKG_SOURCE_VERSION:=e3395cd90bed9b7b9fc319e79528fedcc0d947fe
- PKG_MIRROR_HASH:=14e9df9f85c406b8abbb14427e5f678383782500c549d842c0481cd954fc4ea3
+-PKG_SOURCE_DATE:=2023-01-28
++PKG_SOURCE_DATE:=2099-12-31
+ PKG_SOURCE_VERSION:=47561aa13574068403d48f13ea310f8511057b2b
+ PKG_MIRROR_HASH:=84500cf0c8224fe80b5717c9b6bad8ac13f44f286e3a88e8b12adfcf02e22c7c
  PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 --- a/tools/Makefile
 +++ b/tools/Makefile
-@@ -26,6 +26,7 @@
- tools-y += libressl libtool lzma m4 make-ext4fs meson missing-macros mkimage
- tools-y += mklibs mtd-utils mtools ninja padjffs2 patch-image
- tools-y += patchelf pkgconf quilt squashfskit4 sstrip zip zlib zstd
+@@ -68,6 +68,7 @@ tools-y += sstrip
+ tools-y += zip
+ tools-y += zlib
+ tools-y += zstd
 +tools-y += ucl upx
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS),y) += liblzo
  tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_B43_TOOLS),y) += b43-tools
- tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_ISL),y) += isl
- tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_TOOLCHAIN),y) += gmp mpc mpfr
-@@ -39,6 +40,7 @@
+ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(BUILD_BZIP2_TOOLS),y) += bzip2
+@@ -85,6 +86,7 @@ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_SPARSE),y) += sparse
  tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_LLVM_BUILD),y) += llvm-bpf
  
  # builddir dependencies
@@ -806,10 +734,10 @@
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL=$(PROJECT_GIT)/project/netifd.git
--PKG_SOURCE_DATE:=2022-08-25
-+PKG_SOURCE_DATE:=2022-12-31
- PKG_SOURCE_VERSION:=76d2d41b7355e02f95fbfa79affbd232fb090595
- PKG_MIRROR_HASH:=cd754decce7d9f9c69e0ad8c6801f306fa37dd6c8a7039aea610c1c71d06b8f9
+-PKG_SOURCE_DATE:=2023-06-04
++PKG_SOURCE_DATE:=2099-12-31
+ PKG_SOURCE_VERSION:=ec9dba72124597b7224bbfe75960386dc320f4bd
+ PKG_MIRROR_HASH:=baee39a3882a2b03fc83a3a6a8963c340fa8d884c7a8c9e80e7d2dddc50e24bd
  PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 --- a/include/target.mk
@@ -843,7 +771,7 @@
 
 --- a/package/network/utils/iptables/Makefile
 +++ b/package/network/utils/iptables/Makefile
-@@ -9,12 +9,12 @@
+@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
  include $(INCLUDE_DIR)/kernel.mk
  
  PKG_NAME:=iptables
@@ -859,7 +787,7 @@
  
  PKG_FIXUP:=autoreconf
  PKG_FLAGS:=nonshared
-@@ -50,18 +50,18 @@
+@@ -51,18 +51,18 @@ $(call Package/iptables/Default)
    DEPENDS+= +kmod-ipt-core +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 +libxtables
  endef
  
@@ -881,7 +809,7 @@
  IP firewall administration tool.
  
   Matches:
-@@ -104,7 +104,7 @@
+@@ -105,7 +105,7 @@ endef
  define Package/xtables-nft
  $(call Package/iptables/Default)
    TITLE:=IP firewall administration tool nft
@@ -890,7 +818,7 @@
  endef
  
  define Package/arptables-nft
-@@ -470,12 +470,12 @@
+@@ -471,12 +471,12 @@ define Package/iptables-mod-checksum/description
  iptables extension for the CHECKSUM calculation target
  endef
  
@@ -905,7 +833,7 @@
    ALTERNATIVES:=\
      200:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
      200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
-@@ -562,7 +562,7 @@
+@@ -563,7 +563,7 @@ define Package/libiptext-nft
   CATEGORY:=Libraries
   TITLE:=IPv4/IPv6 firewall - shared libiptext nft library
   ABI_VERSION:=0
@@ -914,7 +842,7 @@
  endef
  
  define Package/libxtables
-@@ -581,6 +581,12 @@
+@@ -582,6 +582,12 @@ define Package/libxtables/config
  	default n
  	help
  		This enable connlabel support in iptables.
@@ -927,7 +855,7 @@
  endef
  
  TARGET_CPPFLAGS := \
-@@ -605,6 +611,7 @@
+@@ -602,6 +608,7 @@ CONFIGURE_ARGS += \
  	--with-xtlibdir=/usr/lib/iptables \
  	--with-xt-lock-name=/var/run/xtables.lock \
  	$(if $(CONFIG_IPTABLES_CONNLABEL),,--disable-connlabel) \
@@ -935,7 +863,7 @@
  	$(if $(CONFIG_IPV6),,--disable-ipv6)
  
  MAKE_FLAGS := \
-@@ -637,6 +644,7 @@
+@@ -634,6 +641,7 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/iptables/*.h $(1)/usr/include/iptables/
  	$(CP) $(PKG_BUILD_DIR)/include/iptables.h $(1)/usr/include/
  	$(CP) $(PKG_BUILD_DIR)/include/ip6tables.h $(1)/usr/include/
@@ -943,7 +871,7 @@
  	$(CP) $(PKG_BUILD_DIR)/include/libiptc $(1)/usr/include/
  
  	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
-@@ -656,7 +664,7 @@
+@@ -653,7 +661,7 @@ define Package/xtables-legacy/install
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/xtables-legacy-multi $(1)/usr/sbin/
  endef
  
@@ -952,7 +880,7 @@
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/iptables-legacy{,-restore,-save} $(1)/usr/sbin/
  	$(INSTALL_DIR) $(1)/usr/lib/iptables
-@@ -687,7 +695,7 @@
+@@ -684,7 +692,7 @@ define Package/iptables-nft/install
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/iptables{,-restore}-translate $(1)/usr/sbin/
  endef
  
@@ -961,7 +889,7 @@
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ip6tables-legacy{,-restore,-save} $(1)/usr/sbin/
  endef
-@@ -750,11 +758,11 @@
+@@ -747,11 +755,11 @@ $(eval $(call BuildPackage,libiptext))
  $(eval $(call BuildPackage,libiptext6))
  $(eval $(call BuildPackage,libiptext-nft))
  $(eval $(call BuildPackage,xtables-legacy))
@@ -974,7 +902,7 @@
  $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
  $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m)))
  $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
-@@ -777,8 +785,8 @@
+@@ -774,8 +782,8 @@ $(eval $(call BuildPlugin,iptables-mod-nflog,$(IPT_NFLOG-m)))
  $(eval $(call BuildPlugin,iptables-mod-trace,$(IPT_DEBUG-m)))
  $(eval $(call BuildPlugin,iptables-mod-nfqueue,$(IPT_NFQUEUE-m)))
  $(eval $(call BuildPlugin,iptables-mod-checksum,$(IPT_CHECKSUM-m)))
@@ -1665,7 +1593,7 @@
 
 --- a/package/network/services/dnsmasq/Makefile
 +++ b/package/network/services/dnsmasq/Makefile
-@@ -30,7 +30,6 @@ PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_dhcp \
+@@ -31,7 +31,6 @@ PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_dhcp \
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_dnssec \
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_auth \
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_ipset \
@@ -1673,7 +1601,7 @@
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_conntrack \
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_noid \
  	CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_broken_rtc \
-@@ -62,11 +61,10 @@ endef
+@@ -63,11 +62,10 @@ endef
  
  define Package/dnsmasq-full
  $(call Package/dnsmasq/Default)
@@ -1687,7 +1615,7 @@
    VARIANT:=full
    PROVIDES:=dnsmasq
  endef
-@@ -85,7 +83,7 @@ define Package/dnsmasq-full/description
+@@ -86,7 +84,7 @@ define Package/dnsmasq-full/description
  $(call Package/dnsmasq/description)
  
  This is a fully configurable variant with DHCPv4, DHCPv6, DNSSEC, Authoritative DNS
@@ -1696,7 +1624,7 @@
  endef
  
  define Package/dnsmasq/conffiles
-@@ -111,9 +109,6 @@ define Package/dnsmasq-full/config
+@@ -112,9 +110,6 @@ define Package/dnsmasq-full/config
  		default y
  	config PACKAGE_dnsmasq_full_ipset
  		bool "Build with IPset support."
@@ -1706,7 +1634,7 @@
  		default y
  	config PACKAGE_dnsmasq_full_conntrack
  		bool "Build with Conntrack support."
-@@ -149,7 +144,6 @@ ifeq ($(BUILD_VARIANT),full)
+@@ -147,7 +142,6 @@ ifeq ($(BUILD_VARIANT),full)
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_dnssec),-DHAVE_DNSSEC) \
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_auth),,-DNO_AUTH) \
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_ipset),,-DNO_IPSET) \
@@ -1714,7 +1642,7 @@
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_conntrack),-DHAVE_CONNTRACK,) \
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_noid),-DNO_ID,) \
  		$(if $(CONFIG_PACKAGE_dnsmasq_$(BUILD_VARIANT)_broken_rtc),-DHAVE_BROKEN_RTC) \
-@@ -188,7 +182,6 @@ define Package/dnsmasq/install
+@@ -186,7 +180,6 @@ define Package/dnsmasq/install
  	$(INSTALL_DATA) ./files/dnsmasq_acl.json $(1)/usr/share/acl.d/
  	$(INSTALL_DIR) $(1)/etc/uci-defaults
  	$(INSTALL_BIN) ./files/50-dnsmasq-migrate-resolv-conf-auto.sh $(1)/etc/uci-defaults
@@ -1789,7 +1717,7 @@
  append_connmark_allowlist() {
  	xappend "--connmark-allowlist=$1"
  }
-@@ -795,54 +796,25 @@ dhcp_relay_add() {
+@@ -800,54 +801,25 @@ dhcp_relay_add() {
  
  dnsmasq_ipset_add() {
  	local cfg="$1"
@@ -1846,7 +1774,7 @@
  }
  
  dnsmasq_start()
-@@ -976,6 +948,7 @@ dnsmasq_start()
+@@ -984,6 +956,7 @@ dnsmasq_start()
  	config_list_foreach "$cfg" "server" append_server
  	config_list_foreach "$cfg" "rev_server" append_rev_server
  	config_list_foreach "$cfg" "address" append_address
@@ -1854,11 +1782,3 @@
  
  	local connmark_allowlist_enable
  	config_get connmark_allowlist_enable "$cfg" connmark_allowlist_enable 0
-@@ -1168,6 +1141,7 @@ dnsmasq_start()
- 	config_foreach filter_dnsmasq ipset dnsmasq_ipset_add "$cfg"
- 	echo >> $CONFIGFILE_TMP
- 
-+	echo >> $CONFIGFILE_TMP
- 	mv -f $CONFIGFILE_TMP $CONFIGFILE
- 	mv -f $HOSTFILE_TMP $HOSTFILE
- 

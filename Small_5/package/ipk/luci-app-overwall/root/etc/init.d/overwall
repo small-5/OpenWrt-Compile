@@ -194,7 +194,7 @@ start_dns(){
 		1)log "SmartDNS    : Local DNS start on UDP mode";;
 	esac
 	if [ $run_mode = router ];then
-		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 -f $([ $gfw_mode = 0 ] && echo -g $K/gfw.list)
+		service_start $(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 over_v4 -6 over_v6 $([ $gfw_mode = 0 ] && echo -g $K/gfw.list)
 		log "ChinaDNS    : Start ChinaDNS-NG successful!"
 	fi
 }
@@ -257,6 +257,10 @@ get_type(){
 		2022-blake3-aes-128-gcm|2022-blake3-aes-256-gcm|2022-blake3-chacha20-poly1305)echo ss2022;;
 		*)echo $(uci_get_by_name $1 type);;
 	esac
+}
+
+get_ip(){
+	echo $(ifconfig $(uci -qP /tmp/state get network.lan.ifname) | grep "inet addr" | awk '{print$2}' | tr -d addr:)
 }
 
 rules(){
@@ -523,7 +527,7 @@ start_tcp(){
 			else
 				port=0;V2=$CONFIG_FILE
 			fi
-			$BIN_DIR/genxrayconfig $GLOBAL_SERVER $([ $tcp_udp_same = 1 ] && echo tcp,udp || echo tcp) $local_port $port $server > $V2
+			$BIN_DIR/genxrayconfig $GLOBAL_SERVER $([ $tcp_udp_same = 1 ] && echo tcp,udp || echo tcp) $local_port $port $server $(get_ip) > $V2
 			sed -i 's/\\//g' $V2
 			$cmd -c $V2 >/dev/null 2>&1 &
 			log "Main Node   : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
@@ -1159,7 +1163,7 @@ start_local(){
 			[ $ltype = ss ] && name=Shadowsocks || name=ShadowsocksR
 			log "Socks5 Node : $name Started!";;
 		ss2022|vmess|vless)
-			$BIN_DIR/genxrayconfig $SO_SERVER tcp 0 $socks5_port $socks5_ip > $CONFIG_SOCK5_FILE
+			$BIN_DIR/genxrayconfig $SO_SERVER tcp 0 $socks5_port $socks5_ip $(get_ip) > $CONFIG_SOCK5_FILE
 			sed -i 's/\\//g' $CONFIG_SOCK5_FILE
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;

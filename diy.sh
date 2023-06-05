@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="民國111年11月11日 By Small_5"
+VERSION="民國112年6月6日 By Small_5"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
@@ -37,9 +37,8 @@ if [ $A = 1 ];then
 	chmod 0755 Small_5/target/linux/ramips/rt3883/base-files/lib/upgrade/*
 	[ "$B" = 1 ] && rm -f Small_5/Patch-K2P-32M.patch
 elif [ $A = 2 ];then
-	rm -rf openwrt/package/boot/uboot-rockchip openwrt/package/kernel/linux/modules/video.mk openwrt/target/linux/rockchip
+	rm -rf openwrt/package/boot/{uboot-rockchip,arm-trusted-firmware-rockchip} openwrt/package/kernel/linux/modules/video.mk openwrt/target/linux/rockchip
 	cp -r target/target/rockchip/. Small_5
-	chmod 0775 Small_5/package/boot/arm-trusted-firmware-rockchip-vendor/*.sh
 elif [ $A = 3 ];then
 	rm -rf openwrt/package/firmware/ipq-wifi openwrt/target/linux/ipq40xx
 	cp -r target/target/kernel-5.4/. Small_5

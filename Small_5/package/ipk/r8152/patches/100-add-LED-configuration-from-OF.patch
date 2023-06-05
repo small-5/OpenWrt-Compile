@@ -8,8 +8,8 @@
  #include <linux/crc32.h>
  #include <linux/if_vlan.h>
  #include <linux/uaccess.h>
-@@ -10109,6 +10110,22 @@
- 	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RSTTALLY, ocp_data);
+@@ -10122,6 +10123,22 @@ static void rtl_disable_spi(struct r8152
+ 	ocp_write_word(tp, MCU_TYPE_USB, 0xcbf0, ocp_data);
  }
  
 +static int r8152_led_configuration(struct r8152 *tp)
@@ -28,10 +28,10 @@
 +	return 0;
 +}
 +
- static void rtl_disable_spi(struct r8152 *tp)
+ static void r8152b_init(struct r8152 *tp)
  {
  	u32 ocp_data;
-@@ -10183,6 +10200,8 @@
+@@ -10183,6 +10200,8 @@ static void r8152b_init(struct r8152 *tp
  	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_USB_CTRL);
  	ocp_data &= ~(RX_AGG_DISABLE | RX_ZERO_EN);
  	ocp_write_word(tp, MCU_TYPE_USB, USB_USB_CTRL, ocp_data);
@@ -40,7 +40,7 @@
  }
  
  static void r8153_init(struct r8152 *tp)
-@@ -10326,6 +10345,8 @@
+@@ -10326,6 +10345,8 @@ static void r8153_init(struct r8152 *tp)
  		tp->coalesce = COALESCE_SLOW;
  		break;
  	}
@@ -49,7 +49,7 @@
  }
  
  static void r8153b_init(struct r8152 *tp)
-@@ -10428,6 +10449,8 @@
+@@ -10428,6 +10449,8 @@ static void r8153b_init(struct r8152 *tp
  	rtl_tally_reset(tp);
  
  	tp->coalesce = 15000;	/* 15 us */

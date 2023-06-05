@@ -1,6 +1,6 @@
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -67,7 +67,10 @@
+@@ -74,7 +74,10 @@
  
  	getCPUInfo: {
  		call: function() {
@@ -15,7 +15,7 @@
 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -62,6 +62,7 @@
+@@ -63,6 +63,7 @@
  			_('Model'),            boardinfo.model,
  			_('Architecture'),     boardinfo.system,
  			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
@@ -23,7 +23,7 @@
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
  			_('Local Time'),       datestr,
-@@ -71,7 +72,7 @@
+@@ -72,7 +73,7 @@
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
  			) : null,
