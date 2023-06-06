@@ -1,8 +1,0 @@
---- a/package/ipk/luci-app-flowoffload/root/etc/config/flowoffload
-+++ b/package/ipk/luci-app-flowoffload/root/etc/config/flowoffload
-@@ -1,4 +1,5 @@
- 
- config flowoffload
- 	option enabled '1'
-+	option hw '1'
- 
