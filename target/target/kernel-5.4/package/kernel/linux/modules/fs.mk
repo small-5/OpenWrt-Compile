@@ -10,7 +10,7 @@ FS_MENU:=Filesystems
 define KernelPackage/fs-9p
   SUBMENU:=$(FS_MENU)
   TITLE:=Plan 9 Resource Sharing Support
-  DEPENDS:=+kmod-9pnet
+  DEPENDS:=+kmod-9pnet +LINUX_6_1:kmod-fs-netfs
   KCONFIG:=\
 	CONFIG_9P_FS \
 	CONFIG_9P_FS_POSIX_ACL=n \
@@ -99,19 +99,19 @@ define KernelPackage/fs-cifs
   $(call AddDepends/nls)
   DEPENDS+= \
     +(LINUX_5_4||LINUX_5_10):kmod-crypto-md4\
+    +(LINUX_5_4||LINUX_5_10):kmod-crypto-arc4 \
     +kmod-crypto-md5 \
     +kmod-crypto-sha256 \
     +kmod-crypto-sha512 \
     +kmod-crypto-cmac \
     +kmod-crypto-hmac \
-    +(LINUX_5_4||LINUX_5_10):kmod-crypto-arc4 \
     +kmod-crypto-aead \
     +kmod-crypto-ccm \
     +kmod-crypto-ecb \
     +kmod-crypto-des \
-    +(LINUX_5_15):kmod-asn1-decoder \
-    +(LINUX_5_15):kmod-oid-registry \
-    +(LINUX_5_15):kmod-dnsresolver
+    +(LINUX_5_15||LINUX_6_1):kmod-asn1-decoder \
+    +(LINUX_5_15||LINUX_6_1):kmod-oid-registry \
+    +(LINUX_5_15||LINUX_6_1):kmod-dnsresolver
 endef
 
 define KernelPackage/fs-cifs/description
@@ -246,32 +246,25 @@ endef
 $(eval $(call KernelPackage,fs-f2fs))
 
 
-define KernelPackage/fs-netfs
-  SUBMENU:=$(FS_MENU)
-  TITLE:=Network Filesystems support
-  DEPENDS:=@LINUX_5_15
-  KCONFIG:= CONFIG_NETFS_SUPPORT
-  FILES:=$(LINUX_DIR)/fs/netfs/netfs.ko
-  AUTOLOAD:=$(call AutoLoad,28,netfs)
-endef
-
-$(eval $(call KernelPackage,fs-netfs))
-
 define KernelPackage/fs-fscache
   SUBMENU:=$(FS_MENU)
   TITLE:=General filesystem local cache manager
   DEPENDS:=+kmod-fs-netfs
   KCONFIG:=\
-	CONFIG_FSCACHE=m \
+	CONFIG_FSCACHE \
 	CONFIG_FSCACHE_STATS=y \
 	CONFIG_FSCACHE_HISTOGRAM=n \
 	CONFIG_FSCACHE_DEBUG=n \
 	CONFIG_FSCACHE_OBJECT_LIST=n \
-	CONFIG_CACHEFILES=y \
+	CONFIG_CACHEFILES \
 	CONFIG_CACHEFILES_DEBUG=n \
-	CONFIG_CACHEFILES_HISTOGRAM=n
-  FILES:=$(LINUX_DIR)/fs/fscache/fscache.ko
-  AUTOLOAD:=$(call AutoLoad,29,fscache)
+	CONFIG_CACHEFILES_HISTOGRAM=n \
+	CONFIG_CACHEFILES_ERROR_INJECTION=n@ge5.17 \
+	CONFIG_CACHEFILES_ONDEMAND=n@ge5.19
+  FILES:= \
+	$(LINUX_DIR)/fs/fscache/fscache.ko \
+	$(LINUX_DIR)/fs/cachefiles/cachefiles.ko
+  AUTOLOAD:=$(call AutoLoad,29,fscache cachefiles)
 endef
 
 $(eval $(call KernelPackage,fs-fscache))
@@ -375,6 +368,18 @@ endef
 $(eval $(call KernelPackage,fs-msdos))
 
 
+define KernelPackage/fs-netfs
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Network Filesystems support
+  DEPENDS:=@(LINUX_5_15||LINUX_6_1)
+  KCONFIG:= CONFIG_NETFS_SUPPORT
+  FILES:=$(LINUX_DIR)/fs/netfs/netfs.ko
+  AUTOLOAD:=$(call AutoLoad,28,netfs)
+endef
+
+$(eval $(call KernelPackage,fs-netfs))
+
+
 define KernelPackage/fs-nfs
   SUBMENU:=$(FS_MENU)
   TITLE:=NFS filesystem client support
@@ -432,7 +437,8 @@ define KernelPackage/fs-nfs-common-rpcsec
 	+kmod-crypto-sha1 \
 	+kmod-crypto-hmac \
 	+kmod-crypto-ecb \
-	+kmod-crypto-arc4
+	+kmod-crypto-arc4 \
+	+kmod-oid-registry
   KCONFIG:= \
 	CONFIG_SUNRPC_GSS \
 	CONFIG_RPCSEC_GSS_KRB5
@@ -509,7 +515,7 @@ $(eval $(call KernelPackage,fs-nfsd))
 
 define KernelPackage/fs-ntfs
   SUBMENU:=$(FS_MENU)
-  TITLE:=NTFS filesystem support
+  TITLE:=NTFS filesystem read-only (old driver) support
   KCONFIG:=CONFIG_NTFS_FS
   FILES:=$(LINUX_DIR)/fs/ntfs/ntfs.ko
   AUTOLOAD:=$(call AutoLoad,30,ntfs)
@@ -517,31 +523,30 @@ define KernelPackage/fs-ntfs
 endef
 
 define KernelPackage/fs-ntfs/description
- Kernel module for NTFS filesystem support
+ Kernel module for limited NTFS filesystem support. Support for writing
+ is extremely limited and disabled as a result.
 endef
 
 $(eval $(call KernelPackage,fs-ntfs))
 
 
-define KernelPackage/pstore
+define KernelPackage/fs-ntfs3
   SUBMENU:=$(FS_MENU)
-  TITLE:=Pstore file system
-  DEFAULT:=m if ALL_KMODS
-  KCONFIG:= \
-	CONFIG_PSTORE \
-	CONFIG_PSTORE_COMPRESS=y \
-	CONFIG_PSTORE_COMPRESS_DEFAULT="deflate" \
-	CONFIG_PSTORE_DEFLATE_COMPRESS=y \
-	CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
-  FILES:= $(LINUX_DIR)/fs/pstore/pstore.ko
-  AUTOLOAD:=$(call AutoLoad,30,pstore,1)
+  TITLE:=NTFS filesystem read & write (new driver) support
+  KCONFIG:= CONFIG_NTFS3_FS CONFIG_NTFS3_FS_POSIX_ACL=y
+  FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
+  $(call AddDepends/nls)
+  AUTOLOAD:=$(call AutoLoad,80,ntfs3)
 endef
 
-define KernelPackage/pstore/description
- Kernel module for pstore filesystem support
+define KernelPackage/fs-ntfs3/description
+ Kernel module for fully functional NTFS filesystem support. It allows
+ reading as well as writing.
+
+ It supports NTFS versions up to 3.1.
 endef
 
-$(eval $(call KernelPackage,pstore))
+$(eval $(call KernelPackage,fs-ntfs3))
 
 
 define KernelPackage/fs-reiserfs
@@ -601,7 +606,7 @@ define KernelPackage/fs-vfat
   FILES:= \
 	$(LINUX_DIR)/fs/fat/fat.ko \
 	$(LINUX_DIR)/fs/fat/vfat.ko
-  AUTOLOAD:=$(call AutoLoad,30,fat vfat)
+  AUTOLOAD:=$(call AutoLoad,30,fat vfat,1)
   $(call AddDepends/nls,cp437 iso8859-1 utf8)
 endef
 
@@ -610,6 +615,22 @@ define KernelPackage/fs-vfat/description
 endef
 
 $(eval $(call KernelPackage,fs-vfat))
+
+
+define KernelPackage/fs-virtiofs
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Virtiofs filesystem support
+  DEPENDS:=+kmod-fuse
+  KCONFIG:=CONFIG_VIRTIO_FS
+  FILES:=$(LINUX_DIR)/fs/fuse/virtiofs.ko
+  AUTOLOAD:=$(call AutoLoad,30,virtiofs)
+endef
+
+define KernelPackage/fs-virtiofs/description
+  Kernel module for Virtiofs filesystem support
+endef
+
+$(eval $(call KernelPackage,fs-virtiofs))
 
 
 define KernelPackage/fs-xfs
@@ -641,19 +662,3 @@ define KernelPackage/fuse/description
 endef
 
 $(eval $(call KernelPackage,fuse))
-
-
-define KernelPackage/fs-ntfs3
-  SUBMENU:=$(FS_MENU)
-  TITLE:=Ntfs3 support
-  KCONFIG:= CONFIG_NTFS3_FS CONFIG_NTFS3_FS_POSIX_ACL=y
-  FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
-  $(call AddDepends/nls)
-  AUTOLOAD:=$(call AutoLoad,80,ntfs3)
-endef
-
-define KernelPackage/fuse/description
- Kernel module for new NTFS3 filesystem support
-endef
-
-$(eval $(call KernelPackage,fs-ntfs3))
