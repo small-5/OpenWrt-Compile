@@ -22,7 +22,7 @@ if [ $A = 1 ];then
 	rm -rf openwrt/include/u-boot.mk openwrt/package/boot/{arm-trusted-firmware-rockchip,uboot-rockchip} openwrt/package/kernel/linux/modules/video.mk openwrt/target/linux/rockchip
 	cp -r target/target/rockchip/. Small_5
 elif [ $A = 2 ];then
-	rm -rf openwrt/package/firmware/ipq-wifi openwrt/target/linux/ipq40xx
+	rm -rf openwrt/package/firmware/ipq-wifi openwrt/package/kernel/ath10k-ct openwrt/target/linux/ipq40xx
 	cp -r target/target/kernel-5.4/. Small_5
 	cp -r target/target/ipq40xx/. Small_5
 	chmod 0775 Small_5/target/linux/ipq40xx/base-files/etc/init.d/* Small_5/target/linux/ipq40xx/base-files/lib/upgrade/*
