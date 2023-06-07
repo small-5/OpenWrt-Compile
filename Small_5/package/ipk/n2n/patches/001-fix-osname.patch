@@ -1,0 +1,21 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -134,17 +134,7 @@
+ MACHINE=`uname -m`
+ SYSTEM=`uname -s`
+ 
+-if test $SYSTEM = "Linux"; then
+-   if test -f /etc/debian_version; then
+-      DEBIAN_VERSION=`cat /etc/debian_version`
+-      OSNAME="Debian $DEBIAN_VERSION"
+-   else
+-      OSNAME=`./config.guess`
+-   fi
+-else
+-dnl> wget -O config.guess 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
+-   OSNAME=`./config.guess`
+-fi
++OSNAME="Openwrt"
+ AC_DEFINE_UNQUOTED(PACKAGE_OSNAME, "${OSNAME}", [OS name])
+ 
+ AC_SUBST(CC)
