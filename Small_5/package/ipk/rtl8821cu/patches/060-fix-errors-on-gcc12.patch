@@ -19,6 +19,23 @@
  
  		iface = dvobj->padapters[i];
 
+--- a/core/rtw_br_ext.c
++++ b/core/rtw_br_ext.c
+@@ -117,7 +117,13 @@
+ 	/* have a room for new tag */
+ 	memmove(((unsigned char *)ph->tag + data_len), (unsigned char *)ph->tag, ntohs(ph->length));
+ 	ph->length = htons(ntohs(ph->length) + data_len);
++#if (defined __GNUC__) && (__GNUC__ > 10)
++    #pragma GCC diagnostic ignored "-Wstringop-overread"
++#endif
+ 	memcpy((unsigned char *)ph->tag, tag, data_len);
++#if (defined __GNUC__) && (__GNUC__ > 10)
++    #pragma GCC diagnostic pop
++#endif
+ 	return data_len;
+ }
+ 
+
 --- a/core/rtw_sta_mgt.c
 +++ b/core/rtw_sta_mgt.c
 @@ -372,21 +372,17 @@ static void	_rtw_free_sta_recv_priv_lock(struct sta_recv_priv *psta_recvpriv)
