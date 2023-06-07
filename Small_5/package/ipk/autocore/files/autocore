@@ -13,18 +13,14 @@ start()
 	mkdir -p /tmp/sysinfo
 	echo $g > /tmp/sysinfo/model
 
-	a=$(ip address | grep ^[0-9] | awk -F: '{print $2}' | sed "s/ //g" | grep '^[e]' | grep -v "@" | grep -v "\.")
-	b=$(echo "$a" | wc -l)
-	for i in $(seq 1 $b)
-	do
-		c=$(echo "$a" | sed -n ${i}p)
-		ethtool -K $c rx-checksum on >/dev/null 2>&1
-		ethtool -K $c tx-checksum-ip-generic on >/dev/null 2>&1 || (
-		ethtool -K $c tx-checksum-ipv4 on >/dev/null 2>&1
-		ethtool -K $c tx-checksum-ipv6 on >/dev/null 2>&1)
-		ethtool -K $c tx-scatter-gather on >/dev/null 2>&1
-		ethtool -K $c gso on >/dev/null 2>&1
-		ethtool -K $c tso on >/dev/null 2>&1
-		ethtool -K $c ufo on >/dev/null 2>&1
+	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | grep -Ev "@|\." | xargs);do
+		ethtool -K $i rx-checksum on 2>/dev/null
+		ethtool -K $i tx-checksum-ip-generic on 2>/dev/null || {
+		ethtool -K $i tx-checksum-ipv4 on 2>/dev/null
+		ethtool -K $i tx-checksum-ipv6 on 2>/dev/null}
+		ethtool -K $i tx-scatter-gather on 2>/dev/null
+		ethtool -K $i gso on 2>/dev/null
+		ethtool -K $i tso on 2>/dev/null
+		ethtool -K $i ufo on 2>/dev/null
 	done
 }

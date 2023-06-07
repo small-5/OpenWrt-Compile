@@ -465,7 +465,7 @@
 
 --- a/package/network/services/odhcpd/files/odhcpd.defaults
 +++ b/package/network/services/odhcpd/files/odhcpd.defaults
-@@ -11,41 +11,20 @@
+@@ -11,41 +11,21 @@
  json_select ..
  json_select ..
  
@@ -507,6 +507,7 @@
 -set dhcp.lan.dhcpv6=$V6MODE
 -set dhcp.lan.ra=$V6MODE
 -set dhcp.lan.ra_slaac=1
++set dhcp.odhcpd.preferred_lifetime=2h
 +set dhcp.lan.ra=$MODE
 +set dhcp.lan.dhcpv6=$MODE
  add_list dhcp.lan.ra_flags=managed-config

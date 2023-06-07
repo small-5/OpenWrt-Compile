@@ -87,6 +87,14 @@
  	},
  
  	poll_status: function(map, data) {
+@@ -481,6 +490,7 @@
+ 					uci.set('ddns', section_id, 'service_name', service_value);
+ 				}
+ 				uci.set('ddns', section_id, 'use_ipv6', ipv6_value);
++				ui.hideModal();
+ 			}).then(L.bind(m.children[1].renderMoreOptionsModal, m.children[1], section_id));
+ 		};
+ 
 
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
@@ -516,7 +524,35 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -701,6 +701,7 @@ return view.extend({
+@@ -667,9 +667,9 @@
+ 										uci.set('dhcp', section_id, 'interface', section_id);
+ 
+ 										if (protoval == 'static') {
+-											uci.set('dhcp', section_id, 'start', 100);
++											uci.set('dhcp', section_id, 'start', 10);
+ 											uci.set('dhcp', section_id, 'limit', 150);
+-											uci.set('dhcp', section_id, 'leasetime', '12h');
++											uci.set('dhcp', section_id, 'leasetime', '2h');
+ 										}
+ 										else {
+ 											uci.set('dhcp', section_id, 'ignore', 1);
+@@ -686,7 +686,7 @@
+ 						so = ss.taboption('general', form.Value, 'start', _('Start'), _('Lowest leased address as offset from the network address.'));
+ 						so.optional = true;
+ 						so.datatype = 'or(uinteger,ip4addr("nomask"))';
+-						so.default = '100';
++						so.default = '10';
+ 
+ 						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
+ 						so.optional = true;
+@@ -695,12 +695,13 @@
+ 
+ 						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
+ 						so.optional = true;
+-						so.default = '12h';
++						so.default = '2h';
+ 
+ 						so = ss.taboption('advanced', form.Flag, 'dynamicdhcp', _('Dynamic <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr>'), _('Dynamically allocate DHCP addresses for clients. If disabled, only clients having static leases will be served.'));
  						so.default = so.enabled;
  
  						ss.taboption('advanced', form.Flag, 'force', _('Force'), _('Force DHCP on this network even if another server is detected.'));
@@ -524,7 +560,7 @@
  
  						// XXX: is this actually useful?
  						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
-@@ -950,6 +951,7 @@ return view.extend({
+@@ -950,6 +951,7 @@
  				ifc.renderFormOptions(s);
  
  				// Common interface options
@@ -532,7 +568,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Flag, 'defaultroute', _('Use default gateway'), _('If unchecked, no default route is configured'));
  				o.default = o.enabled;
  
-@@ -1046,6 +1048,7 @@ return view.extend({
+@@ -1046,6 +1048,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Value, 'ip6weight', _('IPv6 preference'), _('When delegating prefixes to multiple downstreams, interfaces with a higher preference value are considered first when allocating subnets.'));
  				o.datatype = 'uinteger';
  				o.placeholder = '0';
@@ -999,7 +1035,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=ed102cda03c56e9c63040d33d4a391b56491493e
 -PKG_MIRROR_HASH:=366e98b92c3d22844ff5fc52c35f65c3b01e1b92fc9dc14c474823f0cc3ed11a
-+PKG_SOURCE_VERSION:=ad43c796cfcf4787f78306ce1302e854c9e57d07
++PKG_SOURCE_VERSION:=9b7b2ad12d3e4e2097476c7e6fe2bba84f0f2dfc
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1399,7 +1435,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=a4e80f01e4c6fe6973fa4fc6cce0caf1843d183c
++PKG_SOURCE_VERSION:=038f849dd314c60524f46f2db5a06f7f51562602
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.1

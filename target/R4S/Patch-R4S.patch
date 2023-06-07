@@ -1,6 +1,6 @@
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -74,7 +74,16 @@
+@@ -74,7 +74,10 @@
  
  	getCPUInfo: {
  		call: function() {
@@ -9,34 +9,9 @@
 +			rv.cpufreq = popen('echo A72:$(expr $(cat /sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq) / 1000) MHz A53:$(expr $(cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq) / 1000) MHz +$(awk \'{printf("%.1f°C",$0/1000)}\' /sys/class/thermal/thermal_zone0/temp)').read('all');
 +			rv.cpufree = popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all');
 +			return rv;
-+		}
-+	},
-+
-+	getETHInfo: {
-+		call: function() {
-+			return { result: popen('ethinfo').read('all') };
  		}
  	},
  
-
---- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-+++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-@@ -18,6 +18,15 @@
- 		}
- 	},
- 
-+	"luci-mod-status-index-ethinfo": {
-+		"description": "Grant access to ETHInfo status display",
-+		"read": {
-+			"ubus": {
-+				"luci": [ "getETHInfo" ]
-+			}
-+		}
-+	},
-+
- 	"luci-mod-status-index-dhcp": {
- 		"description": "Grant access to DHCP status display",
- 		"read": {
 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js

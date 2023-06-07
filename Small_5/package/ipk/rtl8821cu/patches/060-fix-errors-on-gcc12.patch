@@ -62,6 +62,21 @@
  {
  	_irqL	 irqL;
 
+--- a/hal/hal_hci/hal_usb.c
++++ b/hal/hal_hci/hal_usb.c
+@@ -25,7 +25,11 @@
+ 
+ #ifdef PLATFORM_LINUX
+ 	tasklet_init(&precvpriv->recv_tasklet,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0))
+ 		     (void(*)(unsigned long))usb_recv_tasklet,
++#else
++		     (void *)usb_recv_tasklet,
++#endif
+ 		     (unsigned long)padapter);
+ #endif /* PLATFORM_LINUX */
+ 
+
 --- a/hal/phydm/halrf/halrf.c
 +++ b/hal/phydm/halrf/halrf.c
 @@ -863,9 +863,7 @@ void halrf_support_ability_debug(void *dm_void, char input[][16], u32 *_used,
@@ -447,6 +462,21 @@
  
  	if ((strcmp(input[1], help) == 0)) {
 
+--- a/hal/rtl8821c/usb/rtl8821cu_xmit.c
++++ b/hal/rtl8821c/usb/rtl8821cu_xmit.c
+@@ -908,7 +908,11 @@
+ 
+ #ifdef PLATFORM_LINUX
+ 	tasklet_init(&pxmitpriv->xmit_tasklet,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0))
+ 		     (void(*)(unsigned long))rtl8821cu_xmit_tasklet,
++#else
++		     (void *)rtl8821cu_xmit_tasklet,
++#endif
+ 		     (unsigned long)padapter);
+ #endif
+ #ifdef CONFIG_TX_EARLY_MODE
+
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
 @@ -2864,8 +2864,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
@@ -469,3 +499,27 @@
  			&& rtw_get_p2p_ie((u8 *)request->ie, request->ie_len, NULL, NULL)
  		) {
  			if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
+
+--- a/os_dep/linux/ioctl_linux.c
++++ b/os_dep/linux/ioctl_linux.c
+@@ -9778,7 +9778,7 @@ static int rtw_mp_efuse_set(struct net_device *dev,
+ 		rtw_hal_read_chip_info(padapter);
+ 		/* set mac addr*/
+ 		rtw_macaddr_cfg(adapter_mac_addr(padapter), get_hal_mac_addr(padapter));
+-		_rtw_memcpy(padapter->pnetdev->dev_addr, get_hal_mac_addr(padapter), ETH_ALEN); /* set mac addr to net_device */
++		_rtw_memcpy((void *)padapter->pnetdev->dev_addr, get_hal_mac_addr(padapter), ETH_ALEN); /* set mac addr to net_device */
+ 
+ #ifdef CONFIG_P2P
+ 		rtw_init_wifidirect_addrs(padapter, adapter_mac_addr(padapter), adapter_mac_addr(padapter));
+
+--- a/os_dep/osdep_service.c
++++ b/os_dep/osdep_service.c
+@@ -2491,7 +2491,7 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
+ 
+ 	rtw_init_netdev_name(pnetdev, ifname);
+ 
+-	_rtw_memcpy(pnetdev->dev_addr, adapter_mac_addr(padapter), ETH_ALEN);
++	_rtw_memcpy((void *)pnetdev->dev_addr, adapter_mac_addr(padapter), ETH_ALEN);
+ 
+ 	if (rtnl_lock_needed)
+ 		ret = register_netdev(pnetdev);
