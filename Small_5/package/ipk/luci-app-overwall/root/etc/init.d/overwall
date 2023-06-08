@@ -745,6 +745,16 @@ start_tg(){
 	esac
 }
 
+get_doh(){
+	r=1
+	local a
+	while ! a=$(nslookup $1 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort | grep -E "\.|:");do
+		[ $r -ge 20 ] && log "SmartDNS    : Get Local DoH failed!" && return 1
+		let r++;sleep 1
+	done
+	echo $a
+}
+
 gen_dns(){
 	dns_mode=$(uci_get_by_type global dns_mode 0)
 	dns_mode_y=$(uci_get_by_type global dns_mode_y 0)
@@ -890,8 +900,8 @@ gen_dns(){
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
-			0)for i in $(nslookup dns.alidns.com 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
-			1)for i in $(nslookup doh.pub 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
+			0)for i in $(get_doh dns.alidns.com);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
+			1)for i in $(get_doh doh.pub);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
 			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
