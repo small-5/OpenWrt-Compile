@@ -1558,7 +1558,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=ce989d0d67cb665d236956d4dd5562803b5845ac
++PKG_SOURCE_VERSION:=9b7d13476f2dd46a32ebbdaf051e92f0ba4c1702
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
