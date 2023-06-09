@@ -16,11 +16,13 @@ start()
 	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | grep -Ev "@|\." | xargs);do
 		ethtool -K $i rx-checksum on 2>/dev/null
 		ethtool -K $i tx-checksum-ip-generic on 2>/dev/null || {
-		ethtool -K $i tx-checksum-ipv4 on 2>/dev/null
-		ethtool -K $i tx-checksum-ipv6 on 2>/dev/null}
+			ethtool -K $i tx-checksum-ipv4 on 2>/dev/null
+			ethtool -K $i tx-checksum-ipv6 on 2>/dev/null
+		}
 		ethtool -K $i tx-scatter-gather on 2>/dev/null
 		ethtool -K $i gso on 2>/dev/null
 		ethtool -K $i tso on 2>/dev/null
 		ethtool -K $i ufo on 2>/dev/null
 	done
+	true
 }
