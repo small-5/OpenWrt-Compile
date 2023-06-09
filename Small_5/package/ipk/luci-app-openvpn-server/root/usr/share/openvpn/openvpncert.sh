@@ -1,26 +1,30 @@
 #!/bin/sh
 # 防止重複啟動
 [ -f /var/lock/openvpncert.lock ] && exit 1
+export EASYRSA="/tmp/easyrsa3"
+export EASYRSA_VARS_FILE="/etc/easy-rsa/vars"
+export EASYRSA_BATCH=1
+D=/tmp/easyrsa3/pki
+
+gen(){
+	easyrsa init-pki >/dev/null 2>&1 || return 1
+	easyrsa build-ca nopass >/dev/null 2>&1 || return 1
+	easyrsa gen-req server nopass >/dev/null 2>&1 || return 1
+	easyrsa sign server server >/dev/null 2>&1 || return 1
+	easyrsa gen-req client nopass >/dev/null 2>&1 || return 1
+	easyrsa sign client client >/dev/null 2>&1 || return 1
+	if [ -n "$(uci -q get openvpn.myvpn.tls_auth)" ];then
+		openvpn --genkey secret /etc/openvpn/ta.key >/dev/null 2>&1 || return 1
+	fi
+	cp $D/ca.crt /etc/openvpn || return 1
+	cp $D/issued/server.crt /etc/openvpn || return 1
+	cp $D/private/server.key /etc/openvpn || return 1
+	cp $D/issued/client.crt /etc/openvpn || return 1
+	cp $D/private/client.key /etc/openvpn || return 1
+}
+
 touch /var/lock/openvpncert.lock
 rm -rf /tmp/easyrsa3
-(
-easyrsa init-pki || return 1
-echo -en "\n\n\n\n\n\n\n" | easyrsa build-ca nopass || return 1
-echo -en "\n\n\n\n\n\n\n" | easyrsa gen-req server nopass || return 1
-echo -en "yes" | easyrsa sign server server || return 1
-echo -en "\n\n\n\n\n\n\n" | easyrsa gen-req client nopass || return 1
-echo -en "yes" | easyrsa sign client client || return 1
-cp /tmp/easyrsa3/pki/ca.crt /etc/openvpn/ || return 1
-cp /tmp/easyrsa3/pki/issued/server.crt /etc/openvpn/ || return 1
-cp /tmp/easyrsa3/pki/private/server.key /etc/openvpn/ || return 1
-cp /tmp/easyrsa3/pki/issued/client.crt /etc/openvpn/ || return 1
-cp /tmp/easyrsa3/pki/private/client.key /etc/openvpn/ || return 1
-[ -n "$(uci -q get openvpn.myvpn.tls_auth)" ] && (openvpn --genkey --secret /etc/openvpn/ta.key || return 1) || return 0
-)
-if [ $? -eq 0 ]; then
-	echo "OpenVPN Cert renew successfully" 
-else
-	echo "OpenVPN Cert renew failed"
-fi
-rm -rf /tmp/easyrsa3
-rm -f /var/lock/openvpncert.lock
+gen
+[ $? = 0 ] && echo "OpenVPN Cert renew successfully" || echo "OpenVPN Cert renew failed"
+rm -rf /tmp/easyrsa3 /var/lock/openvpncert.lock

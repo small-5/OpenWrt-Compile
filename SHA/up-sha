@@ -5,9 +5,11 @@ GET(){
 
 A="zfl9/chinadns-ng|master|chinadns-ng
 llccd/netfilter-full-cone-nat|dev|fullconenat
+aarond10/https_dns_proxy|master|https_dns_proxy
 zfl9/ipt2socks|master|ipt2socks
 rofl0r/microsocks|master|microsocks
 ntop/n2n|dev|n2n
+OpenVPN/easy-rsa|master|openvpn-easy-rsa
 code4craft/pdnsd|master|pdnsd
 semigodking/redsocks|master|redsocks2
 aircrack-ng/rtl8812au|v5.6.4.2|rtl8812au-ac
@@ -17,7 +19,6 @@ peter-tank/trojan-plus|master|trojan-plus
 Wind4/vlmcsd|master|vlmcsd
 teddysun/xray-plugin|main|xray-plugin
 fatedier/frp|dev|frp
-aarond10/https_dns_proxy|master|https_dns_proxy
 xtaci/kcptun|master|kcptun
 shadowsocks/shadowsocks-libev|master|shadowsocks-libev
 tohojo/sqm-scripts|master|sqm-scripts
