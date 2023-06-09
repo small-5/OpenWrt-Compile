@@ -81,7 +81,7 @@ while :;do
 	if [ $smartdns = 1 ] && [ $(ps -ww | grep smartdns | grep -v grep | wc -l) = 0 ];then
 		log "SmartDNS Error. Restart!"
 		killall -q -9 smartdns
-		$(which smartdns) -c /var/etc/smartdns/smartdns.conf
+		$(which smartdns) -f -c /var/etc/smartdns/smartdns.conf >/dev/null 2>&1 &
 	fi
 #chinadns-ng
 	if [ $chinadns = 1 ] && [ $(ps -ww | grep chinadns-ng | grep -v grep | wc -l) = 0 ];then

@@ -166,7 +166,7 @@ EOF
 }
 
 start_dns(){
-	$(which smartdns) -c $DNS_T
+	service_start $(which smartdns) -f -c $DNS_T
 	case $dns_mode in
 		0)log "SmartDNS    : Main DNS start on DoH mode";;
 		1)log "SmartDNS    : Main DNS start on TCP mode";;
@@ -1366,7 +1366,7 @@ bind :5336
 bind :5337
 $(echo $REF | sed 's/ /\n/g' | sed 's/^/server /g')
 EOF
-		$(which smartdns) -c $DNS_T
+		service_start $(which smartdns) -f -c $DNS_T
 		r=1
 		while ! ps -ww | grep smartdns | grep -qv grep;do
 			[ $r -ge 10 ] && return 1 || let r++
