@@ -181,7 +181,6 @@ function checksrv()
 end
 
 function ping()
-	local e={}
 	local domain=http.formvalue("domain")
 	local port=http.formvalue("port")
 	local dp=EXEC("netstat -unl | grep -q :5336 && echo -n 5336 || echo -n 53")
@@ -189,12 +188,12 @@ function ping()
 	nslookup "..domain.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p")
 	ip=EXEC("echo -n "..ip)
 	local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null")
-	e.ping=EXEC(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",port,ip))
+	local e=EXEC(string.format("echo -n $(tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}')",port,ip))
 	if (iret==0) then
 		CALL("ipset del over_wan_ac "..ip)
 	end
 	http.prepare_content("application/json")
-	http.write_json(e)
+	http.write_json({ping=e})
 end
 
 function getlog()
