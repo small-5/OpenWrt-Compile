@@ -30,17 +30,17 @@ uci -q get openvpn.myvpn.float >/dev/null && echo float >> /tmp/my.ovpn
 echo '<ca>' >> /tmp/my.ovpn
 cat /etc/openvpn/ca.crt >> /tmp/my.ovpn
 echo '</ca>' >> /tmp/my.ovpn
-[ $(uci -q get openvpn.myvpn.verify_client_cert) ] || (
+[ $(uci -q get openvpn.myvpn.verify_client_cert) ] || {
 echo '<cert>' >> /tmp/my.ovpn
 cat /etc/openvpn/client.crt >> /tmp/my.ovpn
 echo '</cert>' >> /tmp/my.ovpn
 echo '<key>' >> /tmp/my.ovpn
 cat /etc/openvpn/client.key >> /tmp/my.ovpn
 echo '</key>' >> /tmp/my.ovpn
-)
-[ $status ] && (
+}
+[ $status ] && {
 echo '<tls-auth>' >> /tmp/my.ovpn
 cat /etc/openvpn/ta.key >> /tmp/my.ovpn
 echo '</tls-auth>' >> /tmp/my.ovpn
-)
+}
 [ "$OVPN" ] && cat /etc/openvpn/ovpnadd/ovpnadd.conf >> /tmp/my.ovpn
