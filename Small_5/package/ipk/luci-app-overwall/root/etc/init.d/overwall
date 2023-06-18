@@ -218,7 +218,7 @@ get_soip(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $socks5_ip >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -311,7 +311,7 @@ rules(){
 		if [ -f $LOCK ];then
 			r=1
 			while ! nslookup $server >/dev/null 2>&1;do
-				[ $r -ge 20 ] && return 1 || let r++
+				[ $r -ge 10 ] && break || let r++
 				sleep 1
 			done
 		fi
@@ -334,7 +334,7 @@ rules(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $udp_server >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -365,7 +365,7 @@ rules(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $yb_ip >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -388,7 +388,7 @@ rules(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $nf_ip >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -412,7 +412,7 @@ rules(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $cu_ip >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -437,7 +437,7 @@ rules(){
 			if [ -f $LOCK ];then
 				r=1
 				while ! nslookup $tg_ip >/dev/null 2>&1;do
-					[ $r -ge 20 ] && return 1 || let r++
+					[ $r -ge 10 ] && break || let r++
 					sleep 1
 				done
 			fi
@@ -749,7 +749,7 @@ get_doh(){
 	r=1
 	local a
 	while ! a=$(nslookup $1 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sort | grep -E "\.|:");do
-		[ $r -ge 20 ] && log "SmartDNS    : Get Local DoH failed!" && return 1
+		[ $r -ge 10 ] && log "SmartDNS    : Get Local DoH failed!" && return 1
 		let r++;sleep 1
 	done
 	echo $a
