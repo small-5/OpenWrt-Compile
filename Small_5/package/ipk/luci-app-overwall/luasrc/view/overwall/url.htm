@@ -49,26 +49,21 @@ function dictvalue(d,key){
 }
 
 function parseNodeUrl(url){
-	var m=url.match(/^(([^:\/?#]+:)?(?:\/\/((?:([^\/?#:]*)([^\/?#:]*)@)?([^\/?#:]*)(?::([^\/?#:]*))?)))?([^?#]*)(\?[^#]*)?(#.*)?$/),
-		r={
-			hash:m[10] || '',// #asd
-			host:m[3] || '',// localhost:257
-			hostname:m[6] || '',// localhost
-			href:m[0] || '',// http://username:password@localhost:257/deploy/?asd=asd#asd
-			origin:m[1] || '',// http://username:password@localhost:257
-			pathname:m[8] || (m[1] ? '/':''),// /deploy/
-			port:m[7] || '',// 257
-			protocol:m[2] || '',// http:
-			search:m[9] || '',// ?asd=asd
-			passwd:m[4] || '',// username
-			removed:m[5] || '' // password
-		};
-	if (r.protocol.length==2){
-		r.protocol="file:///"+r.protocol.toUpperCase();
-		r.origin=r.protocol+"//"+r.host;
+	let str="http"+url.substring(url.indexOf("://"));
+	try {
+		var parsedUrl=new URL(str);
+	}catch(e){
+		return r={passwd:''};
 	}
-	r.href=r.origin+r.pathname+r.search+r.hash;
-	return m && r;
+	var r={
+		hash:parsedUrl.hash, // #asd
+		host:parsedUrl.host, // localhost:257
+		hostname:parsedUrl.hostname, // localhost
+		port:parsedUrl.port, // 257
+		search:parsedUrl.search, // ?asd=asd
+		passwd:parsedUrl.username || parsedUrl.password // username
+	};
+	return r;
 }
 
 function buildUrl(btn,urlname,sid){
@@ -114,15 +109,22 @@ function buildUrl(btn,urlname,sid){
 	if (!s) return false;
 	var v_type=opt.get("type").value;
 	var v_alias=opt.get("alias").value;
+	try {
+		var v_add=opt.get("server").value;
+		const ipv6Regex=/:/;
+		if (ipv6Regex.test(v_add)){
+			v_add="["+v_add+"]"
+		}
+	}catch(e){
+	}
 	var url=null;
 	switch (v_type){
 	case "ss":
-		var v_server=opt.get("server");
 		var v_port=opt.get("server_port");
 		var v_method=opt.get("encrypt_method_ss");
 		var v_password=opt.get("password");
 		url=b64encsafe(v_method.value+":"+v_password.value)+"@"+
-			v_server.value+":"+
+			v_add+":"+
 			v_port.value+"/?";
 		var params='';
 		var v_plugin=opt.get("plugin").value;
@@ -140,7 +142,6 @@ function buildUrl(btn,urlname,sid){
 		url+=params;
 		break;
 	case "ssr":
-		var v_server=opt.get("server");
 		var v_port=opt.get("server_port");
 		var v_protocol=opt.get("protocol");
 		var v_method=opt.get("encrypt_method");
@@ -148,7 +149,7 @@ function buildUrl(btn,urlname,sid){
 		var v_password=opt.get("password");
 		var v_obfs_param=opt.get("obfs_param");
 		var v_protocol_param=opt.get("protocol_param");
-		var ssr_str=v_server.value+":"+
+		var ssr_str=v_add+":"+
 			v_port.value+":"+
 			v_protocol.value+":"+
 			v_method.value+":"+
@@ -203,10 +204,9 @@ function buildUrl(btn,urlname,sid){
 		break;
 	case "vless":
 		var v_password=opt.get("uuid");
-		var v_server=opt.get("server");
 		var v_port=opt.get("server_port");
 		url=encodeURIComponent(v_password.value)+
-			"@"+v_server.value+
+			"@"+v_add+
 			":"+v_port.value+"?";
 		var params='';
 		var v_transport=opt.get("transport").value;
@@ -255,10 +255,9 @@ function buildUrl(btn,urlname,sid){
 		break;
 	case "trojan":
 		var v_password=opt.get("password");
-		var v_server=opt.get("server");
 		var v_port=opt.get("server_port");
 		url=encodeURIComponent(v_password.value)+
-			"@"+v_server.value+
+			"@"+v_add+
 			":"+v_port.value+"/?";
 		var params='';
 		if (opt.get("tls_host").value!=''){
@@ -358,8 +357,8 @@ function fromUrl(btn,urlname,sid){
 		if (sipIndex!=-1){
 			var userInfo=b64decsafe(url0.substr(0,sipIndex));
 			var temp=url0.substr(sipIndex+1).split("/?");
-			var serverInfo=temp[0].split(":");
-			var server=serverInfo[0];
+			var serverInfo=temp[0].split(/:(?!.*:)/);
+			var server=serverInfo[0].replace(/\[|\]/g,"");
 			var port=serverInfo[1];
 			var method,password,plugin,pluginOpts;
 			if (temp[1]){
@@ -392,8 +391,8 @@ function fromUrl(btn,urlname,sid){
 			opt.set('type',"ss");
 			opt.get('type').dispatchEvent(event);
 			var part1=team[0].split(':');
-			var part2=team[1].split(':');
-			opt.set('server',part2[0]);
+			var part2=team[1].split(/:(?!.*:)/);
+			opt.set('server',part2[0].replace(/\[|\]/g,""));
 			opt.set('server_port',part2[1]);
 			opt.set('password',part1[1]);
 			opt.set('encrypt_method_ss',part1[0]);
@@ -412,7 +411,6 @@ function fromUrl(btn,urlname,sid){
 		}else{
 			var url0=sstr;
 		}
-		console.log(param);
 		var ssm=url0.match(/^(.+):([^:]+):([^:]*):([^:]+):([^:]*):([^:]+)/);
 		if (!ssm || ssm.length < 7){
 			s.innerHTML="<font color='red'><%:Invalid URL%></font>";
@@ -428,7 +426,7 @@ function fromUrl(btn,urlname,sid){
 		}
 		opt.set('type',"ssr");
 		opt.get('type').dispatchEvent(event);
-		opt.set('server',ssm[1]);
+		opt.set('server',ssm[1].replace(/\[|\]/g,""));
 		opt.set('server_port',ssm[2]);
 		opt.set('protocol',ssm[3]);
 		opt.set('encrypt_method',ssm[4]);
@@ -441,7 +439,6 @@ function fromUrl(btn,urlname,sid){
 		break;
 	case "trojan":
 		var m=parseNodeUrl(ssrurl);
-		console.log(m.search);
 		var password=m.passwd;
 		if (password==''){
 			s.innerHTML="<font color='red'><%:Invalid URL%></font>";
@@ -460,7 +457,7 @@ function fromUrl(btn,urlname,sid){
 		}
 		opt.set('type',"trojan");
 		opt.get('type').dispatchEvent(event);
-		opt.set('server',m.hostname);
+		opt.set('server',m.hostname.replace(/\[|\]/g,""));
 		opt.set('server_port',m.port);
 		opt.set('password',decodeURIComponent(password));
 		if (queryParam.peer || queryParam.sni){
@@ -476,7 +473,6 @@ function fromUrl(btn,urlname,sid){
 			if (ssu[1].indexOf("@")!=-1){
 				var ssm={};
 				var m=parseNodeUrl(ssrurl);
-				console.log(m.search);
 				var password=m.passwd;
 				if (password==''){
 					s.innerHTML="<font color='red'><%:Invalid URL%></font>";
@@ -494,7 +490,7 @@ function fromUrl(btn,urlname,sid){
 					}
 				}
 				ssm.ps=m.hash.substr(1)
-				ssm.add=m.hostname
+				ssm.add=m.hostname.replace(/\[|\]/g,"")
 				ssm.port=m.port
 				ssm.id=password
 				ssm.security=queryParam.encryption
@@ -517,7 +513,6 @@ function fromUrl(btn,urlname,sid){
 			var sstr=b64DecodeUnicode(ssu[1]);
 			var ploc=sstr.indexOf("/?");
 			var ssm=JSON.parse(sstr);
-			console.log(ssm);
 		}
 		opt.set('type',"vmess");
 		opt.get('type').dispatchEvent(event);
@@ -558,14 +553,13 @@ function fromUrl(btn,urlname,sid){
 		opt.set('type',"vless");
 		opt.get('type').dispatchEvent(event);
 		var m=parseNodeUrl(ssrurl);
-		console.log(m.search);
 		var password=m.passwd;
 		if (password==''){
 			s.innerHTML="<font color='red'><%:Invalid URL%></font>";
 			return false;
 		}
 		opt.set('uuid',password);
-		opt.set('server',m.hostname);
+		opt.set('server',m.hostname.replace(/\[|\]/g,""));
 		opt.set('server_port',m.port);
 		opt.set('alias',m.hash.substr(1));
 		var queryParam={};

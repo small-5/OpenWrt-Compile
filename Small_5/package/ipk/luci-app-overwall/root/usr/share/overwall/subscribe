@@ -4,6 +4,7 @@ require "nixio"
 require "luci.util"
 SYS=require "luci.sys"
 require "luci.jsonc"
+require "luci.cbi.datatypes"
 local tinsert=table.insert
 local ssub,slen,schar,sbyte,sformat,sgsub=string.sub,string.len,string.char,string.byte,string.format,string.gsub
 local jsonParse,jsonStringify=luci.jsonc.parse,luci.jsonc.stringify
@@ -101,23 +102,19 @@ local function parseNodeUrl(A,B)
 	result.uuid=UrlDecode(Info[1])
 	local port="443"
 	Info[2]=(Info[2] or ""):gsub("/%?","?")
-	local hostInfo=nil
-	if Info[2]:find(":") then
-		hostInfo=split(Info[2],":")
-		result.server=hostInfo[1]
-		local idx_port=2
-		if hostInfo[2]:find("?") then
-			hostInfo=split(hostInfo[2],"?")
-			idx_port=1
-		end
-		if hostInfo[idx_port] ~= "" then port=hostInfo[idx_port] end
-	else
-		if Info[2]:find("?") then
-			hostInfo=split(Info[2],"?")
-		end
-		result.server=hostInfo and hostInfo[1] or Info[2]
-	end
 	local query=split(Info[2],"?")
+	local host_port=query[1]
+	if host_port:find(":") then
+		local sp=split(host_port,":")
+		port=sp[#sp]
+		if host_port:match('%[(.*)%]') then
+			result.server=host_port:match('%[(.*)%]')
+		else
+			result.server=sp[1]
+		end
+	else
+		result.server=host_port
+	end
 	local params={}
 	for _,v in pairs(split(query[2],'&')) do
 		local t=split(v,'=')
@@ -176,12 +173,16 @@ local function processData(szType,content)
 	if szType=='ssr' then
 		local dat=split(content,"/%?")
 		local hostInfo=split(dat[1],':')
-		result.server=hostInfo[1]
-		result.server_port=hostInfo[2]
-		result.protocol=hostInfo[3]
-		result.encrypt_method=hostInfo[4]
-		result.obfs=hostInfo[5]
-		result.password=base64Decode(hostInfo[6])
+		if dat[1]:match('%[(.*)%]') then
+			result.server=dat[1]:match('%[(.*)%]')
+		else
+			result.server=hostInfo[1]
+		end
+		result.server_port=hostInfo[#hostInfo-4]
+		result.protocol=hostInfo[#hostInfo-3]
+		result.encrypt_method=hostInfo[#hostInfo-2]
+		result.obfs=hostInfo[#hostInfo-1]
+		result.password=base64Decode(hostInfo[#hostInfo])
 		local params={}
 		for _,v in pairs(split(dat[2],'&')) do
 			local t=split(v,'=')
@@ -191,7 +192,7 @@ local function processData(szType,content)
 		result.protocol_param=base64Decode(params.protoparam)
 		local group=base64Decode(params.group)
 		result.alias=""
-		if group then result.alias="["..group.."] " end
+		if group~="" then result.alias="["..group.."] " end
 		result.alias=result.alias..base64Decode(params.remarks)
 	elseif szType=="ss" then
 		local idx_sp=0
@@ -201,26 +202,9 @@ local function processData(szType,content)
 			alias=content:sub(idx_sp+1,-1)
 		end
 		local info=content:sub(1,idx_sp-1)
-		local hostInfo=split(base64Decode(info),"@")
-		local hostInfoLen=#hostInfo
-		if hostInfoLen > 2 then
-			host=split(hostInfo[hostInfoLen],":")
-			userinfo={}
-			for i=1,hostInfoLen-1 do
-				tinsert(userinfo,hostInfo[i])
-			end
-			userinfo=table.concat(userinfo,'@')
-		else
-			host=split(hostInfo[2],":")
-			userinfo=base64Decode(hostInfo[1])
-		end
-		local method=userinfo:sub(1,userinfo:find(":")-1)
-		local password=userinfo:sub(userinfo:find(":")+1,#userinfo)
-		result.alias=UrlDecode(alias)
-		result.server=host[1]
-		if host[2]:find("/%?") then
-			local query=split(host[2],"/%?")
-			result.server_port=query[1]
+		if info:find("/%?") then
+			local find_index=info:find("/%?")
+			local query=split(info,"/%?")
 			local params={}
 			for _,v in pairs(split(query[2],'&')) do
 				local t=split(v,'=')
@@ -239,11 +223,39 @@ local function processData(szType,content)
 			if result.plugin=="simple-obfs" then
 				result.plugin="obfs-local"
 			end
-		else
-			result.server_port=host[2]
+			info=info:sub(1,find_index-1)
 		end
-		result.encrypt_method_ss=method
-		result.password=password
+		local hostInfo=split(base64Decode(info),"@")
+		if hostInfo and #hostInfo > 0 then
+			local host_port=hostInfo[#hostInfo]
+			if host_port:find(":") then
+				local sp=split(host_port,":")
+				result.server_port=sp[#sp]
+				if host_port:match('%[(.*)%]') then
+					result.server=host_port:match('%[(.*)%]')
+				else
+					result.server=sp[1]
+				end
+			else
+				result.server_port="1080"
+				result.server=host_port
+			end
+			local userinfo=nil
+			if #hostInfo > 2 then
+				userinfo={}
+				for i=1,#hostInfo-1 do
+					tinsert(userinfo,hostInfo[i])
+				end
+				userinfo=table.concat(userinfo,'@')
+			else
+				userinfo=base64Decode(hostInfo[1])
+			end
+			local method=userinfo:sub(1,userinfo:find(":")-1)
+			local password=userinfo:sub(userinfo:find(":")+1,#userinfo)
+			result.encrypt_method_ss=method
+			result.password=password
+			result.alias=UrlDecode(alias)
+		end
 	elseif szType=="ssd" then
 		result.type="ss"
 		result.server=content.server
@@ -266,23 +278,19 @@ local function processData(szType,content)
 			result.password=UrlDecode(Info[1])
 			local port="443"
 			Info[2]=(Info[2] or ""):gsub("/%?","?")
-			local hostInfo=nil
-			if Info[2]:find(":") then
-				hostInfo=split(Info[2],":")
-				result.server=hostInfo[1]
-				local idx_port=2
-				if hostInfo[2]:find("?") then
-					hostInfo=split(hostInfo[2],"?")
-					idx_port=1
-				end
-				if hostInfo[idx_port] ~= "" then port=hostInfo[idx_port] end
-			else
-				if Info[2]:find("?") then
-					hostInfo=split(Info[2],"?")
-				end
-				result.server=hostInfo and hostInfo[1] or Info[2]
-			end
 			local query=split(Info[2],"?")
+			local host_port=query[1]
+			if host_port:find(":") then
+				local sp=split(host_port,":")
+				port=sp[#sp]
+				if host_port:match('%[(.*)%]') then
+					result.server=host_port:match('%[(.*)%]')
+				else
+					result.server=sp[1]
+				end
+			else
+				result.server=host_port
+			end
 			local params={}
 			for _,v in pairs(split(query[2],'&')) do
 				local t=split(v,'=')
@@ -438,7 +446,7 @@ local function parse_link()
 						log('跳過未知類型: '..szType)
 					end
 					if result then
-						if not result.server or not result.server_port or result.alias=="NULL" or check_filer(result) or result.server:match("[^0-9a-zA-Z%-%.%s]") then
+						if not result.server or not result.server_port or result.alias=="NULL" or check_filer(result) or not luci.cbi.datatypes.host(result.server) then
 							num=num+1
 							log('丟棄無效節點: '..result.type..' 節點: '..result.alias)
 						else
