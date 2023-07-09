@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="民國112年6月9日 By Small_5"
+VERSION="民國112年7月9日 By Small_5"
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in

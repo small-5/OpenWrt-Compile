@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_SOURCE_URL:=https://github.com/OpenVPN/easy-rsa.git
-PKG_SOURCE_VERSION:=27c5973174a6dfaa10c8aee3174b769f62b39777
+PKG_SOURCE_VERSION:=1ebf4a2f9c39939e927066fd450b5ac944d593b2
 PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_NAME:=openvpn-easy-rsa
 PKG_VERSION:=3.15_git-$(PKG_SOURCE_SHORTID)

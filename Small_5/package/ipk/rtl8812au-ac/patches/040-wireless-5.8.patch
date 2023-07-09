@@ -27,7 +27,7 @@
  		roam_info.channel = notify_channel;
  		roam_info.bssid = cur_network->network.MacAddress;
  		#endif
-@@ -1728,7 +1728,7 @@ exit:
+@@ -1738,7 +1738,7 @@ exit:
  }
  
  static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
@@ -36,7 +36,7 @@
  	, int link_id
  #endif
  	, u8 key_index
-@@ -1875,7 +1875,7 @@ addkey_end:
+@@ -1885,7 +1885,7 @@ addkey_end:
  }
  
  static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
@@ -45,7 +45,7 @@
  	, int link_id
  #endif
  	, u8 keyid
-@@ -2043,7 +2043,7 @@ exit:
+@@ -2053,7 +2053,7 @@ exit:
  }
  
  static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
@@ -54,7 +54,7 @@
  	int link_id,
  #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2067,7 +2067,7 @@ static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
+@@ -2077,7 +2077,7 @@ static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
  
  static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  	struct net_device *ndev,
@@ -63,7 +63,7 @@
  	int link_id,
  #endif
  	u8 key_index
-@@ -2119,7 +2119,7 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
+@@ -2129,7 +2129,7 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
  int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
  	struct net_device *ndev,
@@ -72,7 +72,7 @@
  	int link_id,
  #endif
  	u8 key_index)
-@@ -5257,7 +5257,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
+@@ -5267,7 +5267,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
  	return ret;
  }
  
@@ -81,7 +81,7 @@
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
  #else
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -6133,7 +6133,7 @@ static int	cfg80211_rtw_set_channel(struct wiphy *wiphy
+@@ -6143,7 +6143,7 @@ static int	cfg80211_rtw_set_channel(struct wiphy *wiphy
  	return 0;
  }
  
@@ -90,7 +90,7 @@
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy, struct wireless_dev *wdev, unsigned int link_id, struct cfg80211_chan_def *chandef){
  #else
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy, struct wireless_dev *wdev, struct cfg80211_chan_def *chandef){
-@@ -10422,7 +10422,7 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
+@@ -10432,7 +10432,7 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)

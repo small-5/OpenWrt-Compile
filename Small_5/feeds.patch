@@ -287,7 +287,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2461,7 +2461,7 @@ msgstr "不要分段"
+@@ -2496,7 +2496,7 @@ msgstr "不要分段"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -296,7 +296,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3851,18 +3851,6 @@ msgstr "偽造的NX網域覆蓋"
+@@ -3894,18 +3894,6 @@ msgstr "偽造的NX網域覆蓋"
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -315,7 +315,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3950,23 +3938,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
+@@ -3993,23 +3981,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -336,10 +336,10 @@
 -msgid "IPv6"
 -msgstr "IPv6"
 -
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:354
- msgid "IPv6 Firewall"
- msgstr "IPv6防火牆"
-@@ -4690,7 +4661,7 @@ msgstr "語言與主題"
+ #: protocols/luci-proto-qmi/htdocs/luci-static/resources/protocol/qmi.js:81
+ msgid "IPv6 APN"
+ msgstr ""
+@@ -4753,7 +4724,7 @@ msgstr "語言與主題"
  msgid ""
  "Larger weights (of the same prio) are given a proportionately higher "
  "probability of being selected."
@@ -348,7 +348,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:629
  msgid "Last member interval"
-@@ -4846,7 +4817,7 @@ msgstr "監聽連接埠"
+@@ -4909,7 +4880,7 @@ msgstr "監聽連接埠"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:375
  msgid "Listen address"
@@ -357,7 +357,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:410
  msgid "Listen and Relay To IP family must be homogeneous."
-@@ -5893,6 +5864,8 @@ msgid ""
+@@ -5990,6 +5961,8 @@ msgid ""
  "Note: you may also need a DHCP Proxy (currently unavailable) when specifying "
  "a non-standard Relay To port(<code>addr#port</code>)."
  msgstr ""
@@ -366,7 +366,7 @@
  
  #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:142
  msgid "Notes"
-@@ -6178,7 +6151,7 @@ msgstr "選項:"
+@@ -6287,7 +6260,7 @@ msgstr "選項:"
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:660
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:692
  msgid "Ordinal: lower comes first."
@@ -375,7 +375,7 @@
  
  #: protocols/luci-proto-batman-adv/htdocs/luci-static/resources/protocol/batadv.js:55
  msgid "Originator Interval"
-@@ -7114,29 +7087,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
+@@ -7239,29 +7212,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:687
  #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:39
  msgid "Relay"
@@ -411,7 +411,7 @@
  
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6in4.js:50
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6rd.js:49
-@@ -7166,11 +7139,11 @@ msgstr "移除"
+@@ -7291,11 +7264,11 @@ msgstr "移除"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:469
  msgid "Remove IPv4 addresses from the results and only return IPv6 addresses."
@@ -423,9 +423,9 @@
 -msgstr ""
 +msgstr "從結果中刪除 IPv6 地址，只返回 IPv4 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1319
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1326
  msgid "Remove related device settings from the configuration"
-@@ -8452,11 +8425,11 @@ msgstr "與瀏覽器同步時間"
+@@ -8606,11 +8579,11 @@ msgstr "與瀏覽器同步時間"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:298
  msgid "Syntax: <code>/fqdn[/fqdn…]/[ipaddr]</code>."
@@ -439,7 +439,7 @@
  
  #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:26
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js:22
-@@ -9528,7 +9501,7 @@ msgstr "無標題的同行"
+@@ -9686,7 +9659,7 @@ msgstr "無標題的同行"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -448,16 +448,16 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
  msgid "Up Delay"
-@@ -10008,7 +9981,7 @@ msgstr "薄弱"
+@@ -10166,7 +10139,7 @@ msgstr "薄弱"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:665
  msgid "Weight"
 -msgstr ""
 +msgstr "權重"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1046
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1053
  msgid ""
-@@ -10195,15 +10168,15 @@ msgstr ""
+@@ -10353,15 +10326,15 @@ msgstr ""
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:635
  msgid "You may add multiple records for the same Target."
@@ -476,7 +476,7 @@
  
  #: themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/header.ut:78
  #: themes/luci-theme-material/ucode/template/themes/material/header.ut:98
-@@ -10244,6 +10217,8 @@ msgid ""
+@@ -10402,6 +10375,8 @@ msgid ""
  "_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . (Note: while _http is "
  "possible, no browsers support SRV records.)"
  msgstr ""
@@ -560,7 +560,7 @@
  
  						// XXX: is this actually useful?
  						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
-@@ -950,6 +951,7 @@
+@@ -961,6 +962,7 @@
  				ifc.renderFormOptions(s);
  
  				// Common interface options
@@ -568,7 +568,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Flag, 'defaultroute', _('Use default gateway'), _('If unchecked, no default route is configured'));
  				o.default = o.enabled;
  
-@@ -1046,6 +1048,7 @@
+@@ -1057,6 +1059,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Value, 'ip6weight', _('IPv6 preference'), _('When delegating prefixes to multiple downstreams, interfaces with a higher preference value are considered first when allocating subnets.'));
  				o.datatype = 'uinteger';
  				o.placeholder = '0';
@@ -1037,7 +1037,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=ed102cda03c56e9c63040d33d4a391b56491493e
 -PKG_MIRROR_HASH:=366e98b92c3d22844ff5fc52c35f65c3b01e1b92fc9dc14c474823f0cc3ed11a
-+PKG_SOURCE_VERSION:=08567c458bb7770c3052bb87c640c5b377a50ea7
++PKG_SOURCE_VERSION:=6b021946aa09e7bd5d8720101e101d9e50eaa8bb
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1210,18 +1210,18 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=9ba6a064709cbf8a0036df905c3f0e1262bb0355
++PKG_SOURCE_VERSION:=8f105adbcac3b76a97a8e4744cfa31e85d4c51f1
 +
  PKG_NAME:=frp
--PKG_VERSION:=0.48.0
+-PKG_VERSION:=0.51.0
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.48.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.51.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
--PKG_HASH:=efba8ec9fad3369ce62631369f52b78a7248df426b5b54311e96231adac5cc76
+-PKG_HASH:=80ccfa40c4e25309ddb48818f6342bc59f7639be83ab6ef59ffab5caeedc37e8
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
@@ -1437,18 +1437,18 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=e8616c60871187b95fde09bf1c0cccf0ee8b88e5
++PKG_SOURCE_VERSION:=dca57aab2669ffdff5fc87020e41899f548d8308
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.8.1
+-PKG_VERSION:=1.8.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.1_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.8.3_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=477ad92b80700b4742e59ad7848ca4726201841a57339e4c1bf9012e395622e2
+-PKG_HASH:=bdfa65c15cd25f931745d9c70c753503db5d119ff11960ca7b3a2e19c4b0a8d1
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1560,7 +1560,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=9b7d13476f2dd46a32ebbdaf051e92f0ba4c1702
++PKG_SOURCE_VERSION:=008a768f15763aa4b1c73434cdc517b6b4e3f997
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)

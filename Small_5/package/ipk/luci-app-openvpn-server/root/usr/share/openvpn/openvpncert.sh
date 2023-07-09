@@ -26,5 +26,5 @@ gen(){
 touch /var/lock/openvpncert.lock
 rm -rf /tmp/easyrsa3
 gen
-[ $? = 0 ] && echo "OpenVPN Cert renew successfully" || echo "OpenVPN Cert renew failed"
+[ $? = 0 ] && echo "OpenVPN Cert generate successfull" || echo "OpenVPN Cert generate failed"
 rm -rf /tmp/easyrsa3 /var/lock/openvpncert.lock
