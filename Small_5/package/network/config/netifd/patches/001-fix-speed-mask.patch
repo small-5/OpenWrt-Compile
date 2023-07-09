@@ -1,7 +1,7 @@
 Fix https://git.openwrt.org/?p=project/netifd.git;a=commit;h=1eb0fafaa9865b729509a7d47ecf1f05c2c0595c
 --- a/system-linux.c
 +++ b/system-linux.c
-@@ -1692,7 +1692,7 @@ int system_vlandev_del(struct device *vlandev)
+@@ -1703,7 +1703,7 @@ int system_vlandev_del(struct device *vlandev)
  }
  
  static void
@@ -10,7 +10,7 @@ Fix https://git.openwrt.org/?p=project/netifd.git;a=commit;h=1eb0fafaa9865b72950
  {
  	struct ethtool_cmd ecmd = {
  		.cmd = ETHTOOL_GSET,
-@@ -1720,7 +1720,7 @@ system_set_ethtool_settings(struct device *dev, struct device_settings *s)
+@@ -1731,7 +1731,7 @@ system_set_ethtool_settings(struct device *dev, struct device_settings *s)
  	adv = ecmd.supported;
  	for (i = 0; i < ARRAY_SIZE(speed_mask); i++) {
  		if (s->flags & DEV_OPT_DUPLEX) {
@@ -19,7 +19,7 @@ Fix https://git.openwrt.org/?p=project/netifd.git;a=commit;h=1eb0fafaa9865b72950
  			adv &= ~(1 << bit);
  		}
  
-@@ -1742,6 +1742,77 @@ system_set_ethtool_settings(struct device *dev, struct device_settings *s)
+@@ -1753,6 +1753,77 @@ system_set_ethtool_settings(struct device *dev, struct device_settings *s)
  	ioctl(sock_ioctl, SIOCETHTOOL, &ifr);
  }
  
