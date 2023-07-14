@@ -253,8 +253,8 @@ msgstr "伺服器節點訂閱與管理"
 msgid "Auto Update"
 msgstr "自動更新"
 
-msgid "Auto Update CHN route and GFW list"
-msgstr "自動更新CHN路由表和GFW列表"
+msgid "Auto Update Fallen China route and GFW list"
+msgstr "自動更新牆內路由表和GFW列表"
 
 msgid "Auto Update Server subscription"
 msgstr "自動更新伺服器訂閱"

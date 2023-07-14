@@ -13,7 +13,7 @@ s=m:section(TypedSection,"server_subscribe")
 s.anonymous=true
 
 o=s:option(Flag,"auto_update",translate("Auto Update"))
-o.description=translate("Auto Update CHN route and GFW list")
+o.description=translate("Auto Update Fallen China route and GFW list")
 
 o=s:option(Flag,"auto_update_s",translate("Auto Update"))
 o.description=translate("Auto Update Server subscription")
