@@ -287,7 +287,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2496,7 +2496,7 @@ msgstr "不要分段"
+@@ -2556,7 +2556,7 @@ msgstr "不要分段"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -296,7 +296,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3894,18 +3894,6 @@ msgstr "偽造的NX網域覆蓋"
+@@ -3976,18 +3976,6 @@ msgstr "偽造的NX網域覆蓋"
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -315,7 +315,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -3993,23 +3981,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
+@@ -4075,23 +4063,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -339,7 +339,7 @@
  #: protocols/luci-proto-qmi/htdocs/luci-static/resources/protocol/qmi.js:81
  msgid "IPv6 APN"
  msgstr ""
-@@ -4753,7 +4724,7 @@ msgstr "語言與主題"
+@@ -4857,7 +4828,7 @@ msgstr "語言與主題"
  msgid ""
  "Larger weights (of the same prio) are given a proportionately higher "
  "probability of being selected."
@@ -348,16 +348,16 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:629
  msgid "Last member interval"
-@@ -4909,7 +4880,7 @@ msgstr "監聽連接埠"
+@@ -5013,7 +4984,7 @@ msgstr "監聽連接埠"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:375
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:376
  msgid "Listen address"
 -msgstr ""
 +msgstr "監聽位址"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:410
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:411
  msgid "Listen and Relay To IP family must be homogeneous."
-@@ -5990,6 +5961,8 @@ msgid ""
+@@ -6102,6 +6073,8 @@ msgid ""
  "Note: you may also need a DHCP Proxy (currently unavailable) when specifying "
  "a non-standard Relay To port(<code>addr#port</code>)."
  msgstr ""
@@ -366,17 +366,17 @@
  
  #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:142
  msgid "Notes"
-@@ -6287,7 +6260,7 @@ msgstr "選項:"
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:660
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:692
+@@ -6403,7 +6376,7 @@ msgstr "選項:"
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:661
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:693
  msgid "Ordinal: lower comes first."
 -msgstr ""
 +msgstr "序數：較低的優先。"
  
  #: protocols/luci-proto-batman-adv/htdocs/luci-static/resources/protocol/batadv.js:55
  msgid "Originator Interval"
-@@ -7239,29 +7212,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:687
+@@ -7389,29 +7362,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:688
  #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:39
  msgid "Relay"
 -msgstr "延遲"
@@ -388,12 +388,12 @@
 -msgstr "橋接延遲"
 +msgstr "橋接中繼"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:354
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:355
  msgid "Relay DHCP requests elsewhere. OK: v4↔v4, v6↔v6. Not OK: v4↔v6, v6↔v4."
 -msgstr ""
 +msgstr "從別處中繼 DHCP 請求。OK: v4↔v4, v6↔v6. Not OK: v4↔v6, v6↔v4。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:387
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:388
  msgid "Relay To address"
 -msgstr ""
 +msgstr "Relay To 位址"
@@ -411,35 +411,35 @@
  
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6in4.js:50
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6rd.js:49
-@@ -7291,11 +7264,11 @@ msgstr "移除"
+@@ -7441,11 +7414,11 @@ msgstr "移除"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:469
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:470
  msgid "Remove IPv4 addresses from the results and only return IPv6 addresses."
 -msgstr ""
 +msgstr "從結果中刪除 IPv4 地址，只返回 IPv6 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:463
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:464
  msgid "Remove IPv6 addresses from the results and only return IPv4 addresses."
 -msgstr ""
 +msgstr "從結果中刪除 IPv6 地址，只返回 IPv4 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1326
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1330
  msgid "Remove related device settings from the configuration"
-@@ -8606,11 +8579,11 @@ msgstr "與瀏覽器同步時間"
+@@ -8764,11 +8737,11 @@ msgstr "與瀏覽器同步時間"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:298
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:299
  msgid "Syntax: <code>/fqdn[/fqdn…]/[ipaddr]</code>."
 -msgstr ""
 +msgstr "語法：<code>/fqdn[/fqdn…]/[ipaddr]</code>."
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:645
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:646
  msgid "Syntax: <code>_service._proto.example.com</code>."
 -msgstr ""
 +msgstr "語法：<code>_service._proto.example.com</code>."
  
  #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:26
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js:22
-@@ -9686,7 +9659,7 @@ msgstr "無標題的同行"
+@@ -9893,7 +9866,7 @@ msgstr "無標題的同行"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -448,42 +448,42 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
  msgid "Up Delay"
-@@ -10166,7 +10139,7 @@ msgstr "薄弱"
+@@ -10373,7 +10346,7 @@ msgstr "薄弱"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:665
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:666
  msgid "Weight"
 -msgstr ""
 +msgstr "權重"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1053
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:917
  msgid ""
-@@ -10353,15 +10326,15 @@ msgstr ""
+@@ -10566,15 +10539,15 @@ msgstr ""
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:635
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:636
  msgid "You may add multiple records for the same Target."
 -msgstr ""
 +msgstr "你可以為同一目標添加多條記錄。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:672
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:673
  msgid "You may add multiple records for the same domain."
 -msgstr ""
 +msgstr "你可以為同一個域添加多條記錄。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:356
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:357
  msgid "You may add multiple unique Relay To on the same Listen addr."
 -msgstr ""
 +msgstr "你可以在同一個偵聽地址上添加多個不同的 Relay To 地址。"
  
  #: themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/header.ut:78
  #: themes/luci-theme-material/ucode/template/themes/material/header.ut:98
-@@ -10402,6 +10375,8 @@ msgid ""
+@@ -10615,6 +10588,8 @@ msgid ""
  "_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . (Note: while _http is "
  "possible, no browsers support SRV records.)"
  msgstr ""
 +"_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . （注：雖然 _http 有可"
 +"能，但沒有瀏覽器支持 SRV 記錄。）"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:530
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:531
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/routes.js:152
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
@@ -579,7 +579,13 @@
 
 --- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
 +++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-@@ -8,7 +8,7 @@
+@@ -3,13 +3,12 @@
+ 		"description": "Grant access to main status display",
+ 		"read": {
+ 			"file": {
+-				"/etc/board.json": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_count": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_max": [ "read" ],
  				"/www/luci-static/resources/view/status/include": [ "list" ]
  			},
  			"ubus": {
@@ -631,6 +637,370 @@
  		];
  
  		var table = E('table', { 'class': 'table' });
+
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
++++ /dev/null
+@@ -1,360 +0,0 @@
+-'use strict';
+-'require baseclass';
+-'require fs';
+-'require ui';
+-'require uci';
+-'require network';
+-'require firewall';
+-
+-function isString(v)
+-{
+-	return typeof(v) === 'string' && v !== '';
+-}
+-
+-function resolveVLANChain(ifname, bridges, mapping)
+-{
+-	while (!mapping[ifname]) {
+-		var m = ifname.match(/^(.+)\.([^.]+)$/);
+-
+-		if (!m)
+-			break;
+-
+-		if (bridges[m[1]]) {
+-			if (bridges[m[1]].vlan_filtering)
+-				mapping[ifname] = bridges[m[1]].vlans[m[2]];
+-			else
+-				mapping[ifname] = bridges[m[1]].ports;
+-		}
+-		else if (/^[0-9]{1,4}$/.test(m[2]) && m[2] <= 4095) {
+-			mapping[ifname] = [ m[1] ];
+-		}
+-		else {
+-			break;
+-		}
+-
+-		ifname = m[1];
+-	}
+-}
+-
+-function buildVLANMappings(mapping)
+-{
+-	var bridge_vlans = uci.sections('network', 'bridge-vlan'),
+-	    vlan_devices = uci.sections('network', 'device'),
+-	    interfaces = uci.sections('network', 'interface'),
+-	    bridges = {};
+-
+-	/* find bridge VLANs */
+-	for (var i = 0, s; (s = bridge_vlans[i]) != null; i++) {
+-		if (!isString(s.device) || !/^[0-9]{1,4}$/.test(s.vlan) || +s.vlan > 4095)
+-			continue;
+-
+-		var aliases = L.toArray(s.alias),
+-		    ports = L.toArray(s.ports),
+-		    br = bridges[s.device] = (bridges[s.device] || { ports: [], vlans: {}, vlan_filtering: true });
+-
+-		br.vlans[s.vlan] = [];
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			var port = ports[j].replace(/:[ut*]+$/, '');
+-
+-			if (br.ports.indexOf(port) === -1)
+-				br.ports.push(port);
+-
+-			br.vlans[s.vlan].push(port);
+-		}
+-
+-		for (var j = 0; j < aliases.length; j++)
+-			if (aliases[j] != s.vlan)
+-				br.vlans[aliases[j]] = br.vlans[s.vlan];
+-	}
+-
+-	/* find bridges, VLAN devices */
+-	for (var i = 0, s; (s = vlan_devices[i]) != null; i++) {
+-		if (s.type == 'bridge') {
+-			if (!isString(s.name))
+-				continue;
+-
+-			var ports = L.toArray(s.ports),
+-			    br = bridges[s.name] || (bridges[s.name] = { ports: [], vlans: {}, vlan_filtering: false });
+-
+-			if (s.vlan_filtering == '0')
+-				br.vlan_filtering = false;
+-			else if (s.vlan_filtering == '1')
+-				br.vlan_filtering = true;
+-
+-			for (var j = 0; j < ports.length; j++)
+-				if (br.ports.indexOf(ports[j]) === -1)
+-					br.ports.push(ports[j]);
+-
+-			mapping[s.name] = br.ports;
+-		}
+-		else if (s.type == '8021q' || s.type == '8021ad') {
+-			if (!isString(s.name) || !isString(s.vid) || !isString(s.ifname))
+-				continue;
+-
+-			/* parent device is a bridge */
+-			if (bridges[s.ifname]) {
+-				/* parent bridge is VLAN enabled, device refers to VLAN ports */
+-				if (bridges[s.ifname].vlan_filtering)
+-					mapping[s.name] = bridges[s.ifname].vlans[s.vid];
+-
+-				/* parent bridge is not VLAN enabled, device refers to all bridge ports */
+-				else
+-					mapping[s.name] = bridges[s.ifname].ports;
+-			}
+-
+-			/* parent is a simple netdev */
+-			else {
+-				mapping[s.name] = [ s.ifname ];
+-			}
+-
+-			resolveVLANChain(s.ifname, bridges, mapping);
+-		}
+-	}
+-
+-	/* resolve VLAN tagged interfaces in bridge ports */
+-	for (var brname in bridges) {
+-		for (var i = 0; i < bridges[brname].ports.length; i++)
+-			resolveVLANChain(bridges[brname].ports[i], bridges, mapping);
+-
+-		for (var vid in bridges[brname].vlans)
+-			for (var i = 0; i < bridges[brname].vlans[vid].length; i++)
+-				resolveVLANChain(bridges[brname].vlans[vid][i], bridges, mapping);
+-	}
+-
+-	/* find implicit VLAN devices */
+-	for (var i = 0, s; (s = interfaces[i]) != null; i++) {
+-		if (!isString(s.device))
+-			continue;
+-
+-		resolveVLANChain(s.device, bridges, mapping);
+-	}
+-}
+-
+-function resolveVLANPorts(ifname, mapping)
+-{
+-	var ports = [];
+-
+-	if (mapping[ifname])
+-		for (var i = 0; i < mapping[ifname].length; i++)
+-			ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping));
+-	else
+-		ports.push(ifname);
+-
+-	return ports.sort(L.naturalCompare);
+-}
+-
+-function buildInterfaceMapping(zones, networks) {
+-	var vlanmap = {},
+-	    portmap = {},
+-	    netmap = {};
+-
+-	buildVLANMappings(vlanmap);
+-
+-	for (var i = 0; i < networks.length; i++) {
+-		var l3dev = networks[i].getDevice();
+-
+-		if (!l3dev)
+-			continue;
+-
+-		var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			portmap[ports[j]] = portmap[ports[j]] || { networks: [], zones: [] };
+-			portmap[ports[j]].networks.push(networks[i]);
+-		}
+-
+-		netmap[networks[i].getName()] = networks[i];
+-	}
+-
+-	for (var i = 0; i < zones.length; i++) {
+-		var networknames = zones[i].getNetworks();
+-
+-		for (var j = 0; j < networknames.length; j++) {
+-			if (!netmap[networknames[j]])
+-				continue;
+-
+-			var l3dev = netmap[networknames[j]].getDevice();
+-
+-			if (!l3dev)
+-				continue;
+-
+-			var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-			for (var k = 0; k < ports.length; k++) {
+-				portmap[ports[k]] = portmap[ports[k]] || { networks: [], zones: [] };
+-
+-				if (portmap[ports[k]].zones.indexOf(zones[i]) === -1)
+-					portmap[ports[k]].zones.push(zones[i]);
+-			}
+-		}
+-	}
+-
+-	return portmap;
+-}
+-
+-function formatSpeed(speed, duplex) {
+-	if (speed && duplex) {
+-		var d = (duplex == 'half') ? '\u202f(H)' : '',
+-		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
+-
+-		switch (speed) {
+-		case 10:    e.innerText = '10\u202fM' + d;  break;
+-		case 100:   e.innerText = '100\u202fM' + d; break;
+-		case 1000:  e.innerText = '1\u202fGbE' + d; break;
+-		case 2500:  e.innerText = '2.5\u202fGbE';   break;
+-		case 5000:  e.innerText = '5\u202fGbE';     break;
+-		case 10000: e.innerText = '10\u202fGbE';    break;
+-		case 25000: e.innerText = '25\u202fGbE';    break;
+-		case 40000: e.innerText = '40\u202fGbE';    break;
+-		default:    e.innerText = '%d\u202fMbE%s'.format(speed, d);
+-		}
+-
+-		return e;
+-	}
+-
+-	return _('no link');
+-}
+-
+-function formatStats(portdev) {
+-	var stats = portdev._devstate('stats') || {};
+-
+-	return ui.itemlist(E('span'), [
+-		_('Received bytes'), '%1024mB'.format(stats.rx_bytes),
+-		_('Received packets'), '%1000mPkts.'.format(stats.rx_packets),
+-		_('Received multicast'), '%1000mPkts.'.format(stats.multicast),
+-		_('Receive errors'), '%1000mPkts.'.format(stats.rx_errors),
+-		_('Receive dropped'), '%1000mPkts.'.format(stats.rx_dropped),
+-
+-		_('Transmitted bytes'), '%1024mB'.format(stats.tx_bytes),
+-		_('Transmitted packets'), '%1000mPkts.'.format(stats.tx_packets),
+-		_('Transmit errors'), '%1000mPkts.'.format(stats.tx_errors),
+-		_('Transmit dropped'), '%1000mPkts.'.format(stats.tx_dropped),
+-
+-		_('Collisions seen'), stats.collisions
+-	]);
+-}
+-
+-function renderNetworkBadge(network, zonename) {
+-	var l3dev = network.getDevice();
+-	var span = E('span', { 'class': 'ifacebadge', 'style': 'margin:.125em 0' }, [
+-		E('span', {
+-			'class': 'zonebadge',
+-			'title': zonename ? _('Part of zone %q').format(zonename) : _('No zone assigned'),
+-			'style': firewall.getZoneColorStyle(zonename)
+-		}, '\u202f'),
+-		'\u202f', network.getName(), ': '
+-	]);
+-
+-	if (l3dev)
+-		span.appendChild(E('img', {
+-			'title': l3dev.getI18n(),
+-			'src': L.resource('icons/%s%s.png'.format(l3dev.getType(), l3dev.isUp() ? '' : '_disabled'))
+-		}));
+-	else
+-		span.appendChild(E('em', _('(no interfaces attached)')));
+-
+-	return span;
+-}
+-
+-function renderNetworksTooltip(pmap) {
+-	var res = [ null ],
+-	    zmap = {};
+-
+-	for (var i = 0; pmap && i < pmap.zones.length; i++) {
+-		var networknames = pmap.zones[i].getNetworks();
+-
+-		for (var k = 0; k < networknames.length; k++)
+-			zmap[networknames[k]] = pmap.zones[i].getName();
+-	}
+-
+-	for (var i = 0; pmap && i < pmap.networks.length; i++)
+-		res.push(E('br'), renderNetworkBadge(pmap.networks[i], zmap[pmap.networks[i].getName()]));
+-
+-	if (res.length > 1)
+-		res[0] = N_((res.length - 1) / 2, 'Part of network:', 'Part of networks:');
+-	else
+-		res[0] = _('Port is not part of any network');
+-
+-	return E([], res);
+-}
+-
+-return baseclass.extend({
+-	title: _('Port status'),
+-
+-	load: function() {
+-		return Promise.all([
+-			L.resolveDefault(fs.read('/etc/board.json'), '{}'),
+-			firewall.getZones(),
+-			network.getNetworks(),
+-			uci.load('network')
+-		]);
+-	},
+-
+-	render: function(data) {
+-		if (L.hasSystemFeature('swconfig'))
+-			return null;
+-
+-		var board = JSON.parse(data[0]),
+-		    known_ports = [],
+-		    port_map = buildInterfaceMapping(data[1], data[2]);
+-
+-		if (L.isObject(board) && L.isObject(board.network)) {
+-			for (var k = 'lan'; k != null; k = (k == 'lan') ? 'wan' : null) {
+-				if (!L.isObject(board.network[k]))
+-					continue;
+-
+-				if (Array.isArray(board.network[k].ports))
+-					for (let i = 0; i < board.network[k].ports.length; i++)
+-						known_ports.push({
+-							role: k,
+-							device: board.network[k].ports[i],
+-							netdev: network.instantiateDevice(board.network[k].ports[i])
+-						});
+-				else if (typeof(board.network[k].device) == 'string')
+-					known_ports.push({
+-						role: k,
+-						device: board.network[k].device,
+-						netdev: network.instantiateDevice(board.network[k].device)
+-					});
+-			}
+-		}
+-
+-		known_ports.sort(function(a, b) {
+-			return L.naturalCompare(a.device, b.device);
+-		});
+-
+-		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em' }, known_ports.map(function(port) {
+-			var speed = port.netdev.getSpeed(),
+-			    duplex = port.netdev.getDuplex(),
+-			    pmap = port_map[port.netdev.getName()],
+-			    pzones = (pmap && pmap.zones.length) ? pmap.zones.sort(function(a, b) { return L.naturalCompare(a.getName(), b.getName()) }) : [ null ];
+-
+-			return E('div', { 'class': 'ifacebox', 'style': 'margin:.25em;min-width:70px;max-width:100px' }, [
+-				E('div', { 'class': 'ifacebox-head', 'style': 'font-weight:bold' }, [ port.netdev.getName() ]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('img', { 'src': L.resource('icons/port_%s.png').format((speed && duplex) ? 'up' : 'down') }),
+-					E('br'),
+-					formatSpeed(speed, duplex)
+-				]),
+-				E('div', { 'class': 'ifacebox-head cbi-tooltip-container', 'style': 'display:flex' }, [
+-					E([], pzones.map(function(zone) {
+-						return E('div', {
+-							'class': 'zonebadge',
+-							'style': 'cursor:help;flex:1;height:3px;' + firewall.getZoneColorStyle(zone)
+-						});
+-					})),
+-					E('span', { 'class': 'cbi-tooltip left' }, [ renderNetworksTooltip(pmap) ])
+-				]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('div', { 'class': 'cbi-tooltip-container', 'style': 'text-align:left;font-size:80%' }, [
+-						'\u25b2\u202f%1024.1mB'.format(port.netdev.getTXBytes()),
+-						E('br'),
+-						'\u25bc\u202f%1024.1mB'.format(port.netdev.getRXBytes()),
+-						E('span', { 'class': 'cbi-tooltip' }, formatStats(port.netdev))
+-					]),
+-				])
+-			]);
+-		}));
+-	}
+-});
 
 --- a/feeds/packages/net/aria2/files/aria2.conf
 +++ b/feeds/packages/net/aria2/files/aria2.conf
@@ -970,7 +1340,7 @@
  data_ciphers_fallback
  dev
  dev_node
-@@ -198,7 +199,6 @@
+@@ -197,7 +198,6 @@
  '
  
  OPENVPN_LIST='
@@ -981,7 +1351,7 @@
 
 --- a/feeds/packages/net/openvpn/Makefile
 +++ b/feeds/packages/net/openvpn/Makefile
-@@ -91,20 +91,13 @@ define Build/Configure
+@@ -89,20 +89,13 @@ define Build/Configure
  	)
  endef
  
@@ -1002,7 +1372,7 @@
  		$(1)/usr/libexec \
  		$(1)/etc/hotplug.d/openvpn
  
-@@ -130,18 +123,11 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+@@ -128,18 +121,11 @@ define Package/openvpn-$(BUILD_VARIANT)/install
  
  	$(INSTALL_DATA) \
  		files/etc/openvpn.user \
@@ -1029,15 +1399,15 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=smartdns
--PKG_VERSION:=1.2023.42
+-PKG_VERSION:=1.2023.43
 +PKG_VERSION:=1.2099.99
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
--PKG_SOURCE_VERSION:=ed102cda03c56e9c63040d33d4a391b56491493e
--PKG_MIRROR_HASH:=366e98b92c3d22844ff5fc52c35f65c3b01e1b92fc9dc14c474823f0cc3ed11a
-+PKG_SOURCE_VERSION:=6b021946aa09e7bd5d8720101e101d9e50eaa8bb
+-PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
+-PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
++PKG_SOURCE_VERSION:=c19a39a4473755f79cee0e25ddd80f67f7243534
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1210,12 +1580,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=8f105adbcac3b76a97a8e4744cfa31e85d4c51f1
++PKG_SOURCE_VERSION:=f1454e91f56508603e4c2e3c7bf37ccb534458c2
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.0
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.51.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.51.3_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1242,7 +1612,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=432e75c76ad7534a486d30ed6ed35051dba0eb53
++PKG_SOURCE_VERSION:=55e670033ba376e35d20d87fab20efbf76c233fb
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1437,7 +1807,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=dca57aab2669ffdff5fc87020e41899f548d8308
++PKG_SOURCE_VERSION:=f67167bb3bbfcb0f45393f37005a51024e58864b
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.3
@@ -1560,7 +1930,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=008a768f15763aa4b1c73434cdc517b6b4e3f997
++PKG_SOURCE_VERSION:=ead68038a3085072f40a869118725eafec94998a
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
