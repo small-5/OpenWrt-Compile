@@ -8,16 +8,22 @@ rockchip_setup_interfaces()
 
 	case "$board" in
 	ezpro,mrkaio-m68s|\
+	firefly,rk3568-roc-pc|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r2s|\
 	friendlyarm,nanopi-r4s|\
 	friendlyarm,nanopi-r4se|\
 	friendlyarm,nanopi-r4s-enterprise|\
+	friendlyarm,nanopi-r6c|\
+	hinlink,opc-h66k|\
 	radxa,rockpi-e|\
 	xunlong,orangepi-r1-plus|\
 	xunlong,orangepi-r1-plus-lts)
 		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
+		;;
+	friendlyarm,nanopc-t6)
+		ucidef_set_interfaces_lan_wan 'eth1' 'eth2'
 		;;
 	friendlyarm,nanopi-r5c|\
 	lunzn,fastrhino-r66s)
@@ -26,8 +32,12 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r5s)
 		ucidef_set_interfaces_lan_wan 'eth1 eth2' 'eth0'
 		;;
-	friendlyarm,nanopi-r6s)
+	friendlyarm,nanopi-r6s|\
+	hinlink,opc-h69k)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1' 'eth2'
+		;;
+	hinlink,opc-h68k)
+		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
 		;;
 	lunzn,fastrhino-r68s)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth3' 'eth2'
@@ -54,11 +64,16 @@ rockchip_setup_macs()
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
+	friendlyarm,nanopc-t6|\
 	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r4s|\
 	friendlyarm,nanopi-r5c|\
 	friendlyarm,nanopi-r5s|\
-	friendlyarm,nanopi-r6s)
+	friendlyarm,nanopi-r6c|\
+	friendlyarm,nanopi-r6s|\
+	hinlink,opc-h66k|\
+	hinlink,opc-h68k|\
+	hinlink,opc-h69k)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk1)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;

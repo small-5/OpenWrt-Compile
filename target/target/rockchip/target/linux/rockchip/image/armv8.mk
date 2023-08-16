@@ -24,6 +24,40 @@ define Device/firefly_roc-rk3328-cc
 endef
 TARGET_DEVICES += firefly_roc-rk3328-cc
 
+define Device/firefly_roc-rk3568-pc
+  DEVICE_VENDOR := Firefly
+  DEVICE_MODEL := Station P2
+  DEVICE_ALT0_VENDOR := Firefly
+  DEVICE_ALT0_MODEL := ROC-RK3568-PC
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-roc-pc
+  SUPPORTED_DEVICES := firefly,rk3568-roc-pc
+  UBOOT_DEVICE_NAME := roc-pc-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
+endef
+TARGET_DEVICES += firefly_roc-rk3568-pc
+
+define Device/friendlyarm_nanopc-t4
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPC T4
+  SOC := rk3399
+  BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-4356-sdio brcmfmac-nvram-4356-sdio
+endef
+TARGET_DEVICES += friendlyarm_nanopc-t4
+
+define Device/friendlyarm_nanopc-t6
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPC T6
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += friendlyarm_nanopc-t6
+
 define Device/friendlyarm_nanopi-r2c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2C
@@ -96,6 +130,15 @@ define Device/friendlyarm_nanopi-r5s
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r5s
 
+define Device/friendlyarm_nanopi-r6c
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R6C
+  SOC := rk3588s
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r6c
+
 define Device/friendlyarm_nanopi-r6s
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R6S
@@ -104,6 +147,36 @@ define Device/friendlyarm_nanopi-r6s
   DEVICE_PACKAGES := kmod-r8125
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r6s
+
+define Device/hinlink_opc-h66k
+  DEVICE_VENDOR := Hinlink
+  DEVICE_MODEL := OPC-H66K
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7921e \
+	kmod-r8125 wpad-basic-openssl
+endef
+TARGET_DEVICES += hinlink_opc-h66k
+
+define Device/hinlink_opc-h68k
+  DEVICE_VENDOR := Hinlink
+  DEVICE_MODEL := OPC-H68K
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7921e \
+	kmod-r8125 wpad-basic-openssl
+endef
+TARGET_DEVICES += hinlink_opc-h68k
+
+define Device/hinlink_opc-h69k
+  DEVICE_VENDOR := Hinlink
+  DEVICE_MODEL := OPC-H69K
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7916-firmware \
+	kmod-mt7921e kmod-r8125 kmod-usb-serial-option uqmi wpad-basic-openssl
+endef
+TARGET_DEVICES += hinlink_opc-h69k
 
 define Device/huake_guangmiao-g4c
   DEVICE_VENDOR := Huake-Cloud
@@ -141,6 +214,26 @@ define Device/pine64_rockpro64
 endef
 TARGET_DEVICES += pine64_rockpro64
 
+define Device/radxa_rock-5a
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5A
+  SOC := rk3588s
+  UBOOT_DEVICE_NAME := rock5a-rk3588s
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += radxa_rock-5a
+
+define Device/radxa_rock-5b
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5B
+  SOC := rk3588
+  UBOOT_DEVICE_NAME := rock5b-rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += radxa_rock-5b
+
 define Device/radxa_rock-pi-4a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK Pi 4A
@@ -148,6 +241,8 @@ define Device/radxa_rock-pi-4a
   SUPPORTED_DEVICES := radxa,rockpi4a radxa,rockpi4
   UBOOT_DEVICE_NAME := rock-pi-4-rk3399
   BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-43456-sdio brcmfmac-nvram-43456-sdio
 endef
 TARGET_DEVICES += radxa_rock-pi-4a
 

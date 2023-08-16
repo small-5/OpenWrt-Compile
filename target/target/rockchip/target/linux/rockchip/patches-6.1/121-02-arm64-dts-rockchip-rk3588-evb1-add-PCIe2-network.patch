@@ -1,0 +1,74 @@
+From ee48c5b7edb4ff3b8a23e7c32cbf33ae892e7cc1 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Mon, 17 Apr 2023 21:13:03 +0200
+Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add PCIe2 network
+ controller
+
+The RK3588 EVB1 has a second network card, which is connected
+via PCIe2. This adds support for that.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
+@@ -81,12 +81,36 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		vin-supply = <&vcc5v0_usbdcin>;
+ 	};
++
++	pcie20_avdd0v85: pcie20-avdd0v85 {
++		compatible = "regulator-fixed";
++		regulator-name = "pcie20_avdd0v85";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <850000>;
++		regulator-max-microvolt = <850000>;
++		vin-supply = <&avdd_0v85_s0>;
++	};
++
++	pcie20_avdd1v8: pcie20-avdd1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "pcie20_avdd1v8";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&avcc_1v8_s0>;
++	};
+ };
+ 
+ &combphy0_ps {
+ 	status = "okay";
+ };
+ 
++&combphy2_psu {
++	status = "okay";
++};
++
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_big0_s0>;
+ };
+@@ -178,7 +202,20 @@
+ 	};
+ };
+ 
++&pcie2x1l1 {
++	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&rtl8111_isolate>;
++	status = "okay";
++};
++
+ &pinctrl {
++	rtl8111 {
++		rtl8111_isolate: rtl8111-isolate {
++			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
+ 	rtl8211f {
+ 		rtl8211f_rst: rtl8211f-rst {
+ 			rockchip,pins = <4 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
