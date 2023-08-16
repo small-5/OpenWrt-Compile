@@ -1612,7 +1612,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=55e670033ba376e35d20d87fab20efbf76c233fb
++PKG_SOURCE_VERSION:=5ad73ea8eb93e27e19772c78151e69c19e2a42bc
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1930,7 +1930,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=ead68038a3085072f40a869118725eafec94998a
++PKG_SOURCE_VERSION:=826a1ee346975f8c3844b7864ee10842027560f5
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
@@ -2017,3 +2017,143 @@
  
  					if (m) {
  						push(rules, {
+
+--- a/feeds/packages/lang/golang/golang-compiler.mk
++++ b/feeds/packages/lang/golang/golang-compiler.mk
+@@ -60,10 +60,9 @@ define GoCompiler/Default/Install/Bin
+ 
+ 	$(call GoCompiler/Default/Install/install-share-data,$(1),$(2),$(3),api)
+ 
+-	$(INSTALL_DATA) -p "$(1)/go.env" "$(2)/lib/go-$(3)/"
+ 	$(INSTALL_DATA) -p "$(1)/VERSION" "$(2)/lib/go-$(3)/"
+ 
+-	for file in CONTRIBUTING.md LICENSE PATENTS README.md SECURITY.md; do \
++	for file in AUTHORS CONTRIBUTING.md CONTRIBUTORS LICENSE PATENTS README.md SECURITY.md; do \
+ 		if [ -f "$(1)/$$$$file" ]; then \
+ 			$(INSTALL_DATA) -p "$(1)/$$$$file" "$(2)/share/go-$(3)/" ; \
+ 		fi ; \
+
+--- a/feeds/packages/lang/golang/golang-package.mk
++++ b/feeds/packages/lang/golang/golang-package.mk
+@@ -215,8 +215,7 @@ GO_PKG_BUILD_VARS= \
+ 	GOPATH="$(GO_PKG_BUILD_DIR)" \
+ 	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
+ 	GOMODCACHE="$(GO_MOD_CACHE_DIR)" \
+-	GOENV=off \
+-	GOTOOLCHAIN=local
++	GOENV=off
+ 
+ GO_PKG_VARS= \
+ 	$(GO_PKG_TARGET_VARS) \
+
+--- a/feeds/packages/lang/golang/golang-values.mk
++++ b/feeds/packages/lang/golang/golang-values.mk
+@@ -29,7 +29,6 @@ unexport \
+   GOOS \
+   GOPATH \
+   GOROOT \
+-  GOTOOLCHAIN \
+   GOTMPDIR \
+   GOWORK
+ # Unmodified:
+@@ -220,7 +219,7 @@ GO_PIE_SUPPORTED_OS_ARCH:= \
+   \
+   aix_ppc64 \
+   \
+-  linux_loong64 linux_ppc64le linux_riscv64 linux_s390x
++  linux_ppc64le linux_riscv64 linux_s390x
+ 
+ # From https://go.dev/src/cmd/go/internal/work/init.go
+ go_pie_install_suffix=$(if $(filter $(1),aix_ppc64 windows_386 windows_amd64 windows_arm windows_arm64),,shared)
+
+--- a/feeds/packages/lang/golang/golang/Makefile
++++ b/feeds/packages/lang/golang/golang/Makefile
+@@ -7,8 +7,8 @@
+ 
+ include $(TOPDIR)/rules.mk
+ 
+-GO_VERSION_MAJOR_MINOR:=1.21
+-GO_VERSION_PATCH:=0
++GO_VERSION_MAJOR_MINOR:=1.20
++GO_VERSION_PATCH:=7
+ 
+ PKG_NAME:=golang
+ PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
+@@ -20,7 +20,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
+ 
+ PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
+ PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
+-PKG_HASH:=818d46ede85682dd551ad378ef37a4d247006f12ec59b5b755601d2ce114369a
++PKG_HASH:=2c5ee9c9ec1e733b0dbbc2bdfed3f62306e51d8172bf38f4f4e542b27520f597
+ 
+ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
+ PKG_LICENSE:=BSD-3-Clause
+@@ -62,7 +62,6 @@ HOST_GO_VALID_OS_ARCH:= \
+   \
+   aix_ppc64 \
+   js_wasm \
+-  wasip1_wasm \
+   \
+   freebsd_riscv64 \
+   \
+@@ -297,7 +296,7 @@ $(eval $(call GoCompiler/AddProfile,Package,$(PKG_BUILD_DIR),$(PKG_GO_PREFIX),$(
+ PKG_GO_ZBOOTSTRAP_MODS:= \
+ 	s/defaultGO386 = `[^`]*`/defaultGO386 = `$(or $(GO_386),sse2)`/; \
+ 	s/defaultGOAMD64 = `[^`]*`/defaultGOAMD64 = `$(or $(GO_AMD64),v1)`/; \
+-	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),7)`/; \
++	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),5)`/; \
+ 	s/defaultGOMIPS = `[^`]*`/defaultGOMIPS = `$(or $(GO_MIPS),hardfloat)`/; \
+ 	s/defaultGOMIPS64 = `[^`]*`/defaultGOMIPS64 = `$(or $(GO_MIPS64),hardfloat)`/; \
+ 	s/defaultGOPPC64 = `[^`]*`/defaultGOPPC64 = `$(or $(GO_PPC64),power8)`/;
+
+--- /dev/null
++++ b/feeds/packages/lang/golang/golang/patches/001-cmd-link-use-gold-on-ARM-ARM64-only-if-gold-is-available.patch
+@@ -0,0 +1,48 @@
++From 5ccf9f47bf4f5ba53e0ab7338a7fd4626714cfb2 Mon Sep 17 00:00:00 2001
++From: Jeffery To <jeffery.to@gmail.com>
++Date: Tue, 23 Nov 2021 15:05:37 +0800
++Subject: [PATCH] cmd/link: use gold on ARM/ARM64 only if gold is available
++
++COPY relocation handling on ARM/ARM64 has been fixed in recent versions
++of the GNU linker. This switches to gold only if gold is available.
++
++Fixes #22040.
++---
++ src/cmd/link/internal/ld/lib.go | 19 +++++++------------
++ 1 file changed, 7 insertions(+), 12 deletions(-)
++
++--- a/src/cmd/link/internal/ld/lib.go
+++++ b/src/cmd/link/internal/ld/lib.go
++@@ -1548,25 +1548,20 @@ func (ctxt *Link) hostlink() {
++ 		}
++ 
++ 		if ctxt.Arch.InFamily(sys.ARM, sys.ARM64) && buildcfg.GOOS == "linux" {
++-			// On ARM, the GNU linker will generate COPY relocations
++-			// even with -znocopyreloc set.
+++			// On ARM, older versions of the GNU linker will generate
+++			// COPY relocations even with -znocopyreloc set.
++ 			// https://sourceware.org/bugzilla/show_bug.cgi?id=19962
++ 			//
++-			// On ARM64, the GNU linker will fail instead of
++-			// generating COPY relocations.
+++			// On ARM64, older versions of the GNU linker will fail
+++			// instead of generating COPY relocations.
++ 			//
++-			// In both cases, switch to gold.
++-			altLinker = "gold"
++-
++-			// If gold is not installed, gcc will silently switch
++-			// back to ld.bfd. So we parse the version information
++-			// and provide a useful error if gold is missing.
+++			// In both cases, switch to gold if gold is available.
++ 			name, args := flagExtld[0], flagExtld[1:]
++ 			args = append(args, "-fuse-ld=gold", "-Wl,--version")
++ 			cmd := exec.Command(name, args...)
++ 			if out, err := cmd.CombinedOutput(); err == nil {
++-				if !bytes.Contains(out, []byte("GNU gold")) {
++-					log.Fatalf("ARM external linker must be gold (issue #15696), but is not: %s", out)
+++				if bytes.Contains(out, []byte("GNU gold")) {
+++					altLinker = "gold"
++ 				}
++ 			}
++ 		}
