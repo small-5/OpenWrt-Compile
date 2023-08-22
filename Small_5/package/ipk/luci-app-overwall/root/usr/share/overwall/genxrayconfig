@@ -60,7 +60,7 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 						alterId=(server.type=="vmess") and tonumber(server.alter_id or 0) or nil,
 						security=(server.type=="vmess") and server.security or nil,
 						encryption=(server.type=="vless") and server.vless_encryption or nil,
-						flow=(server.xtls=='1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or server.vless_flow_tls or nil
+						flow=server.vless_flow or nil
 					}
 				}
 			}
@@ -68,16 +68,19 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 	},
 	streamSettings={
 		network=server.transport,
-		security=(server.xtls=='1') and "xtls" or (server.tls=='1') and "tls" or nil,
+		security=(server.reality=='1') and "reality" or (server.tls=='1') and "tls" or nil,
 		tlsSettings=(server.tls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
 			fingerprint=server.fingerprint or nil,
 			serverName=tls_host
 		} or nil,
-		xtlsSettings=(server.xtls=='1') and {
+		realitySettings=(server.reality=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
-			fingerprint=server.fingerprint or nil,
-			serverName=tls_host
+			fingerprint=server.finger_real,
+			serverName=tls_host,
+			publicKey=server.publickey,
+			shortId=server.shortid or nil,
+			spiderX=server.spiderx or nil
 		} or nil,
 		tcpSettings=(server.transport=="tcp" and server.tcp_guise=="http") and {
 			header={
@@ -120,7 +123,7 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 			serviceName=server.grpc_serviceName
 		} or nil
 	},
-	mux=(server.mux=="1" and server.xtls~="1") and {
+	mux=(server.mux=="1") and {
 		enabled=true,
 		concurrency=tonumber(server.concurrency)
 	} or nil

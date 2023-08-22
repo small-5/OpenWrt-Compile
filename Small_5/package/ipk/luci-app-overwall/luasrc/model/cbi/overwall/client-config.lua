@@ -70,18 +70,23 @@ local obfs={
 }
 
 local securitys={
-"none",
 "aes-128-gcm",
-"chacha20-poly1305"
+"chacha20-poly1305",
+"none",
+"zero"
 }
 
-local flows={
-"xtls-rprx-splice",
-"xtls-rprx-splice-udp443",
-"xtls-rprx-direct",
-"xtls-rprx-direct-udp443",
-"xtls-rprx-origin",
-"xtls-rprx-origin-udp443"
+local fingers={
+"chrome",
+"firefox",
+"safari",
+"ios",
+"android",
+"edge",
+"360",
+"qq",
+"random",
+"randomized"
 }
 
 m=Map(ov,translate("Edit Overwall Server"))
@@ -331,46 +336,50 @@ o:depends("transport","kcp")
 
 o=s:option(Flag,"tls",translate("TLS"))
 o:depends("type","vmess")
-o:depends({type="vless",xtls=0})
+o:depends({type="vless",reality=0})
 
-o=s:option(Flag,"xtls",translate("XTLS"))
+o=s:option(Flag,"reality",translate("Reality"))
 o:depends({type="vless",tls=0})
 
 o=s:option(Value,"tls_host",translate("TLS Host"))
 o:depends("type","trojan")
 o:depends("tls",1)
-o:depends("xtls",1)
+o:depends("reality",1)
 
 o=s:option(ListValue,"fingerprint",translate("TLS Fingerprint"))
 o:value("",translate("None"))
-o:value("chrome","Chrome")
-o:value("firefox","Firefox")
-o:value("safari","Safari")
-o:value("randomized","Randomized")
+for _,v in ipairs(fingers) do o:value(v) end
 o:depends("tls",1)
-o:depends("xtls",1)
+
+o=s:option(Value,"publickey",translate("PublicKey"))
+o:depends("reality",1)
+
+o=s:option(ListValue,"finger_real",translate("TLS Fingerprint"))
+for _,v in ipairs(fingers) do o:value(v) end
+o:depends("reality",1)
+
+o=s:option(Value,"shortid",translate("ShortId"))
+o:depends("reality",1)
+
+o=s:option(Value,"spiderx",translate("SpiderX"))
+o:depends("reality",1)
 
 o=s:option(ListValue,"vless_flow",translate("Flow"))
-for _,v in ipairs(flows) do o:value(v,v) end
-o.default="xtls-rprx-splice"
-o:depends({type="vless",xtls=1})
-
-o=s:option(ListValue,"vless_flow_tls",translate("Flow"))
 o:value("",translate("None"))
-o:value("xtls-rprx-vision","xtls-rprx-vision")
+o:value("xtls-rprx-vision")
 o:depends({type="vless",tls=1})
+o:depends({type="vless",reality=1})
 
 o=s:option(Flag,"insecure",translate("allowInsecure"))
 o.description=translate("Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host")
 o:depends("type","trojan")
 o:depends("tls",1)
-o:depends("xtls",1)
 
 o=s:option(Flag,"certificate",translate("Self-signed Certificate"))
 o.description=translate("If you have a self-signed certificate,please check the box")
 o:depends({type="trojan",insecure=0})
 o:depends({tls=1,insecure=0})
-o:depends({xtls=1,insecure=0})
+o:depends({reality=1,insecure=0})
 
 o=s:option(DummyValue,"upload",translate("upload"))
 o.template="overwall/certupload"
@@ -415,7 +424,7 @@ o:depends("certificate",1)
 
 o=s:option(Flag,"mux",translate("Mux"))
 o:depends("type","vmess")
-o:depends({type="vless",xtls=0})
+o:depends("type","vless")
 
 o=s:option(Value,"concurrency",translate("Concurrency"))
 o.datatype="uinteger"

@@ -469,8 +469,17 @@ msgstr "混淆密碼（可選）"
 msgid "Congestion"
 msgstr "擁塞控制"
 
+msgid "PublicKey"
+msgstr "公鑰"
+
 msgid "TLS Fingerprint"
 msgstr "TLS指紋"
+
+msgid "ShortId"
+msgstr "短ID"
+
+msgid "SpiderX"
+msgstr "爬蟲參數"
 
 msgid "allowInsecure"
 msgstr "允許不安全連接"
