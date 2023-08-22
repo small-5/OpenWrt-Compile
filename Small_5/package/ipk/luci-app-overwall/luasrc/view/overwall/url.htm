@@ -167,7 +167,6 @@ function buildUrl(btn,urlname,sid){
 		info.add=opt.get("server").value;
 		info.port=opt.get("server_port").value;
 		info.id=opt.get("uuid").value;
-		info.aid=opt.get("alter_id").value || "0";
 		var v_transport=opt.get("transport").value;
 		if (v_transport=="ws"){
 			info.host=opt.get("ws_host").value;
@@ -526,7 +525,6 @@ function fromUrl(btn,urlname,sid){
 		opt.set('alias',ssm.ps);
 		opt.set('server',ssm.add);
 		opt.set('server_port',ssm.port);
-		opt.set('alter_id',ssm.aid || '');
 		opt.set('uuid',ssm.id);
 		opt.set('security',ssm.security=="auto" || ! ssm.security ? "":ssm.security);
 		opt.set('tls',ssm.tls=="tls" ? 1:0);

@@ -26,7 +26,7 @@ local function get_domain_excluded()
 end
 local Xray={
 inbounds={(local_port~="0") and {
-	port=tonumber(local_port),
+	port=local_port,
 	protocol="dokodemo-door",
 	settings={
 		network=proto,
@@ -39,13 +39,18 @@ inbounds={(local_port~="0") and {
 	}
 } or nil,
 (socks_port~="0") and {
-	protocol="socks",
 	port=socks_port,
-		settings={
-			auth="noauth",
-			udp=true,
-			ip=udp_addr
-		}
+	protocol="socks",
+	settings={
+		auth="noauth",
+		udp=true,
+		ip=udp_addr
+	},
+	sniffing={
+		enabled=true,
+		destOverride={"http","tls"},
+		domainsExcluded=get_domain_excluded()
+	}
 } or nil},
 outbound=(server.type=="vmess" or server.type=="vless") and {
 	protocol=server.type,
@@ -57,7 +62,6 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 				users={
 					{
 						id=server.uuid,
-						alterId=(server.type=="vmess") and tonumber(server.alter_id or 0) or nil,
 						security=(server.type=="vmess") and server.security or nil,
 						encryption=(server.type=="vless") and server.vless_encryption or nil,
 						flow=server.vless_flow or nil

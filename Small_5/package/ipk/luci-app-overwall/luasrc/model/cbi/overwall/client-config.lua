@@ -215,11 +215,6 @@ o:depends("type","ssr")
 o=s:option(Value,"obfs_param",translate("Obfs param(optional)"))
 o:depends("type","ssr")
 
-o=s:option(Value,"alter_id",translate("AlterId"))
-o.datatype="port"
-o.placeholder=0
-o:depends("type","vmess")
-
 o=s:option(Value,"uuid",translate("Vmess/VLESS ID (UUID)"))
 o.default=uuid
 o:depends("type","vmess")
