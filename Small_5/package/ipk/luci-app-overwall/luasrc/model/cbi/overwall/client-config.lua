@@ -374,7 +374,6 @@ o=s:option(Flag,"certificate",translate("Self-signed Certificate"))
 o.description=translate("If you have a self-signed certificate,please check the box")
 o:depends({type="trojan",insecure=0})
 o:depends({tls=1,insecure=0})
-o:depends({reality=1,insecure=0})
 
 o=s:option(DummyValue,"upload",translate("upload"))
 o.template="overwall/certupload"
@@ -412,9 +411,9 @@ if luci.http.formvalue("upload") then
 end
 
 o=s:option(Value,"certpath",translate("Current Certificate Path"))
-o.default=cert_dir
+o.default=cert_dir.."ca.pem"
 o.description=translate("Please confirm the current certificate path")
-o:value(cert_dir)
+o:value(cert_dir.."ca.pem")
 o:depends("certificate",1)
 
 o=s:option(Flag,"mux",translate("Mux"))

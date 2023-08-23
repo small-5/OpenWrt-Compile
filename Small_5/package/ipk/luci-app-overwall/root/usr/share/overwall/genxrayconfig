@@ -26,7 +26,7 @@ local function get_domain_excluded()
 end
 local Xray={
 inbounds={(local_port~="0") and {
-	port=local_port,
+	port=tonumber(local_port),
 	protocol="dokodemo-door",
 	settings={
 		network=proto,
@@ -39,7 +39,7 @@ inbounds={(local_port~="0") and {
 	}
 } or nil,
 (socks_port~="0") and {
-	port=socks_port,
+	port=tonumber(socks_port),
 	protocol="socks",
 	settings={
 		auth="noauth",
@@ -55,20 +55,16 @@ inbounds={(local_port~="0") and {
 outbound=(server.type=="vmess" or server.type=="vless") and {
 	protocol=server.type,
 	settings={
-		vnext={
-			{
-				address=ip_addr,
-				port=tonumber(server.server_port),
-				users={
-					{
-						id=server.uuid,
-						security=(server.type=="vmess") and server.security or nil,
-						encryption=(server.type=="vless") and server.vless_encryption or nil,
-						flow=server.vless_flow or nil
-					}
-				}
-			}
-		}
+		vnext={{
+			address=ip_addr,
+			port=tonumber(server.server_port),
+			users={{
+				id=server.uuid,
+				security=(server.type=="vmess") and server.security or nil,
+				encryption=(server.type=="vless") and server.vless_encryption or nil,
+				flow=server.vless_flow or nil
+			}}
+		}}
 	},
 	streamSettings={
 		network=server.transport,
@@ -76,10 +72,13 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 		tlsSettings=(server.tls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
 			fingerprint=server.fingerprint or nil,
-			serverName=tls_host
+			serverName=tls_host,
+			certificates=(server.certificate=="1") and {{
+				usage="verify",
+				certificateFile=server.certpath
+			}} or nil
 		} or nil,
 		realitySettings=(server.reality=='1') and {
-			allowInsecure=(server.insecure=="1") and true or nil,
 			fingerprint=server.finger_real,
 			serverName=tls_host,
 			publicKey=server.publickey,
@@ -134,14 +133,12 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 } or (server.type=="ss") and {
 	protocol="shadowsocks",
 	settings={
-		servers={
-			{
-				address=ip_addr,
-				port=tonumber(server.server_port),
-				method=server.encrypt_method_ss,
-				password=server.password
-			}
-		}
+		servers={{
+			address=ip_addr,
+			port=tonumber(server.server_port),
+			method=server.encrypt_method_ss,
+			password=server.password
+		}}
 	}
 }
 }

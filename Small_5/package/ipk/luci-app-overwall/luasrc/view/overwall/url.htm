@@ -198,6 +198,9 @@ function buildUrl(btn,urlname,sid){
 		if (opt.get("tls").checked){
 			info.tls="tls";
 			info.sni=opt.get("tls_host").value;
+			if (opt.get("insecure").checked){
+				info.allowInsecure="1";
+			}
 		}
 		url=b64EncodeUnicode(JSON.stringify(info));
 		break;
@@ -244,6 +247,9 @@ function buildUrl(btn,urlname,sid){
 				}
 			}else{
 				params+="&security=tls";
+				if (opt.get("insecure").checked){
+					params+="&allowInsecure=1";
+				}
 			}
 			if (opt.get("tls_host").value){
 				params+=opt.query("sni","tls_host");
@@ -466,10 +472,8 @@ function fromUrl(btn,urlname,sid){
 		opt.set('server',m.hostname.replace(/\[|\]/g,""));
 		opt.set('server_port',m.port);
 		opt.set('password',decodeURIComponent(password));
-		if (queryParam.peer || queryParam.sni){
-			opt.set('tls_host',queryParam.peer || queryParam.sni);
-			opt.set('insecure',queryParam.allowinsecure=='1');
-		}
+		opt.set('tls_host',queryParam.peer || queryParam.sni || '');
+		opt.set('insecure',queryParam.allowinsecure=='1');
 		if (m.hash){
 			opt.set('alias',decodeURI(m.hash.substr(1)));
 		}
@@ -510,6 +514,7 @@ function fromUrl(btn,urlname,sid){
 				ssm.key=queryParam.key
 				ssm.seed=queryParam.seed
 				ssm.serviceName=queryParam.serviceName
+				ssm.allowInsecure=queryParam.allowInsecure
 			}else{
 				s.innerHTML='';
 				alert("<%:Not a supported Format%>: "+ssrurl);
@@ -527,8 +532,11 @@ function fromUrl(btn,urlname,sid){
 		opt.set('server_port',ssm.port);
 		opt.set('uuid',ssm.id);
 		opt.set('security',ssm.security=="auto" || ! ssm.security ? "":ssm.security);
-		opt.set('tls',ssm.tls=="tls" ? 1:0);
-		opt.set('tls_host',ssm.sni || '');
+		if (ssm.tls=="tls"){
+			opt.set('tls',1);
+			opt.set('tls_host',ssm.sni || '');
+			opt.set('insecure',ssm.allowInsecure=='1' ? 1:0);
+		}
 		if (ssm.net=="kcp" || ssm.net=="mkcp") ssm.net="kcp"
 		opt.set('transport',ssm.net);
 		opt.get('transport').dispatchEvent(event);
@@ -590,10 +598,10 @@ function fromUrl(btn,urlname,sid){
 				opt.set('spiderx',queryParam.spiderx || '');
 			}else{
 				opt.set('tls',1);
+				opt.set('insecure',queryParam.allowInsecure=='1');
 			}
 			opt.set('vless_flow',queryParam.flow || '');
 			opt.set('tls_host',queryParam.sni || '');
-			opt.set('insecure',queryParam.allowinsecure=='1' ? 1:0);
 		}
 		if (queryParam.type=="kcp" || queryParam.type=="mkcp") queryParam.type="kcp"
 		opt.set('transport',queryParam.type || "tcp");

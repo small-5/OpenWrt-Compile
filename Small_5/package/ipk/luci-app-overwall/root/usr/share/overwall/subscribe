@@ -160,6 +160,7 @@ local function parseNodeUrl(A,B)
 		if params.security=="tls" then
 			result.tls="1"
 			result.fingerprint=params.fingerprint
+			result.insecure=params.allowInsecure=='1' and '1'
 		else
 			result.reality="1"
 			result.publickey=params.publickey
@@ -349,7 +350,7 @@ local function processData(szType,content)
 			if info.tls=="tls" or info.tls=="1" then
 				result.tls="1"
 				result.tls_host=info.sni
-				result.insecure=1
+				result.insecure=info.allowInsecure=='1' and '1'
 			end
 		else
 			if content:find("@")==37 then
