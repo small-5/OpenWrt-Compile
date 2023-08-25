@@ -367,8 +367,8 @@ o:depends({type="vless",reality=1})
 
 o=s:option(Flag,"insecure",translate("allowInsecure"))
 o.description=translate("Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host")
-o:depends("type","trojan")
-o:depends("tls",1)
+o:depends({type="trojan",certificate=0})
+o:depends({tls=1,certificate=0})
 
 o=s:option(Flag,"certificate",translate("Self-signed Certificate"))
 o.description=translate("If you have a self-signed certificate,please check the box")
