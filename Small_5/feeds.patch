@@ -638,370 +638,6 @@
  
  		var table = E('table', { 'class': 'table' });
 
---- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
-+++ /dev/null
-@@ -1,360 +0,0 @@
--'use strict';
--'require baseclass';
--'require fs';
--'require ui';
--'require uci';
--'require network';
--'require firewall';
--
--function isString(v)
--{
--	return typeof(v) === 'string' && v !== '';
--}
--
--function resolveVLANChain(ifname, bridges, mapping)
--{
--	while (!mapping[ifname]) {
--		var m = ifname.match(/^(.+)\.([^.]+)$/);
--
--		if (!m)
--			break;
--
--		if (bridges[m[1]]) {
--			if (bridges[m[1]].vlan_filtering)
--				mapping[ifname] = bridges[m[1]].vlans[m[2]];
--			else
--				mapping[ifname] = bridges[m[1]].ports;
--		}
--		else if (/^[0-9]{1,4}$/.test(m[2]) && m[2] <= 4095) {
--			mapping[ifname] = [ m[1] ];
--		}
--		else {
--			break;
--		}
--
--		ifname = m[1];
--	}
--}
--
--function buildVLANMappings(mapping)
--{
--	var bridge_vlans = uci.sections('network', 'bridge-vlan'),
--	    vlan_devices = uci.sections('network', 'device'),
--	    interfaces = uci.sections('network', 'interface'),
--	    bridges = {};
--
--	/* find bridge VLANs */
--	for (var i = 0, s; (s = bridge_vlans[i]) != null; i++) {
--		if (!isString(s.device) || !/^[0-9]{1,4}$/.test(s.vlan) || +s.vlan > 4095)
--			continue;
--
--		var aliases = L.toArray(s.alias),
--		    ports = L.toArray(s.ports),
--		    br = bridges[s.device] = (bridges[s.device] || { ports: [], vlans: {}, vlan_filtering: true });
--
--		br.vlans[s.vlan] = [];
--
--		for (var j = 0; j < ports.length; j++) {
--			var port = ports[j].replace(/:[ut*]+$/, '');
--
--			if (br.ports.indexOf(port) === -1)
--				br.ports.push(port);
--
--			br.vlans[s.vlan].push(port);
--		}
--
--		for (var j = 0; j < aliases.length; j++)
--			if (aliases[j] != s.vlan)
--				br.vlans[aliases[j]] = br.vlans[s.vlan];
--	}
--
--	/* find bridges, VLAN devices */
--	for (var i = 0, s; (s = vlan_devices[i]) != null; i++) {
--		if (s.type == 'bridge') {
--			if (!isString(s.name))
--				continue;
--
--			var ports = L.toArray(s.ports),
--			    br = bridges[s.name] || (bridges[s.name] = { ports: [], vlans: {}, vlan_filtering: false });
--
--			if (s.vlan_filtering == '0')
--				br.vlan_filtering = false;
--			else if (s.vlan_filtering == '1')
--				br.vlan_filtering = true;
--
--			for (var j = 0; j < ports.length; j++)
--				if (br.ports.indexOf(ports[j]) === -1)
--					br.ports.push(ports[j]);
--
--			mapping[s.name] = br.ports;
--		}
--		else if (s.type == '8021q' || s.type == '8021ad') {
--			if (!isString(s.name) || !isString(s.vid) || !isString(s.ifname))
--				continue;
--
--			/* parent device is a bridge */
--			if (bridges[s.ifname]) {
--				/* parent bridge is VLAN enabled, device refers to VLAN ports */
--				if (bridges[s.ifname].vlan_filtering)
--					mapping[s.name] = bridges[s.ifname].vlans[s.vid];
--
--				/* parent bridge is not VLAN enabled, device refers to all bridge ports */
--				else
--					mapping[s.name] = bridges[s.ifname].ports;
--			}
--
--			/* parent is a simple netdev */
--			else {
--				mapping[s.name] = [ s.ifname ];
--			}
--
--			resolveVLANChain(s.ifname, bridges, mapping);
--		}
--	}
--
--	/* resolve VLAN tagged interfaces in bridge ports */
--	for (var brname in bridges) {
--		for (var i = 0; i < bridges[brname].ports.length; i++)
--			resolveVLANChain(bridges[brname].ports[i], bridges, mapping);
--
--		for (var vid in bridges[brname].vlans)
--			for (var i = 0; i < bridges[brname].vlans[vid].length; i++)
--				resolveVLANChain(bridges[brname].vlans[vid][i], bridges, mapping);
--	}
--
--	/* find implicit VLAN devices */
--	for (var i = 0, s; (s = interfaces[i]) != null; i++) {
--		if (!isString(s.device))
--			continue;
--
--		resolveVLANChain(s.device, bridges, mapping);
--	}
--}
--
--function resolveVLANPorts(ifname, mapping)
--{
--	var ports = [];
--
--	if (mapping[ifname])
--		for (var i = 0; i < mapping[ifname].length; i++)
--			ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping));
--	else
--		ports.push(ifname);
--
--	return ports.sort(L.naturalCompare);
--}
--
--function buildInterfaceMapping(zones, networks) {
--	var vlanmap = {},
--	    portmap = {},
--	    netmap = {};
--
--	buildVLANMappings(vlanmap);
--
--	for (var i = 0; i < networks.length; i++) {
--		var l3dev = networks[i].getDevice();
--
--		if (!l3dev)
--			continue;
--
--		var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
--
--		for (var j = 0; j < ports.length; j++) {
--			portmap[ports[j]] = portmap[ports[j]] || { networks: [], zones: [] };
--			portmap[ports[j]].networks.push(networks[i]);
--		}
--
--		netmap[networks[i].getName()] = networks[i];
--	}
--
--	for (var i = 0; i < zones.length; i++) {
--		var networknames = zones[i].getNetworks();
--
--		for (var j = 0; j < networknames.length; j++) {
--			if (!netmap[networknames[j]])
--				continue;
--
--			var l3dev = netmap[networknames[j]].getDevice();
--
--			if (!l3dev)
--				continue;
--
--			var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
--
--			for (var k = 0; k < ports.length; k++) {
--				portmap[ports[k]] = portmap[ports[k]] || { networks: [], zones: [] };
--
--				if (portmap[ports[k]].zones.indexOf(zones[i]) === -1)
--					portmap[ports[k]].zones.push(zones[i]);
--			}
--		}
--	}
--
--	return portmap;
--}
--
--function formatSpeed(speed, duplex) {
--	if (speed && duplex) {
--		var d = (duplex == 'half') ? '\u202f(H)' : '',
--		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
--
--		switch (speed) {
--		case 10:    e.innerText = '10\u202fM' + d;  break;
--		case 100:   e.innerText = '100\u202fM' + d; break;
--		case 1000:  e.innerText = '1\u202fGbE' + d; break;
--		case 2500:  e.innerText = '2.5\u202fGbE';   break;
--		case 5000:  e.innerText = '5\u202fGbE';     break;
--		case 10000: e.innerText = '10\u202fGbE';    break;
--		case 25000: e.innerText = '25\u202fGbE';    break;
--		case 40000: e.innerText = '40\u202fGbE';    break;
--		default:    e.innerText = '%d\u202fMbE%s'.format(speed, d);
--		}
--
--		return e;
--	}
--
--	return _('no link');
--}
--
--function formatStats(portdev) {
--	var stats = portdev._devstate('stats') || {};
--
--	return ui.itemlist(E('span'), [
--		_('Received bytes'), '%1024mB'.format(stats.rx_bytes),
--		_('Received packets'), '%1000mPkts.'.format(stats.rx_packets),
--		_('Received multicast'), '%1000mPkts.'.format(stats.multicast),
--		_('Receive errors'), '%1000mPkts.'.format(stats.rx_errors),
--		_('Receive dropped'), '%1000mPkts.'.format(stats.rx_dropped),
--
--		_('Transmitted bytes'), '%1024mB'.format(stats.tx_bytes),
--		_('Transmitted packets'), '%1000mPkts.'.format(stats.tx_packets),
--		_('Transmit errors'), '%1000mPkts.'.format(stats.tx_errors),
--		_('Transmit dropped'), '%1000mPkts.'.format(stats.tx_dropped),
--
--		_('Collisions seen'), stats.collisions
--	]);
--}
--
--function renderNetworkBadge(network, zonename) {
--	var l3dev = network.getDevice();
--	var span = E('span', { 'class': 'ifacebadge', 'style': 'margin:.125em 0' }, [
--		E('span', {
--			'class': 'zonebadge',
--			'title': zonename ? _('Part of zone %q').format(zonename) : _('No zone assigned'),
--			'style': firewall.getZoneColorStyle(zonename)
--		}, '\u202f'),
--		'\u202f', network.getName(), ': '
--	]);
--
--	if (l3dev)
--		span.appendChild(E('img', {
--			'title': l3dev.getI18n(),
--			'src': L.resource('icons/%s%s.png'.format(l3dev.getType(), l3dev.isUp() ? '' : '_disabled'))
--		}));
--	else
--		span.appendChild(E('em', _('(no interfaces attached)')));
--
--	return span;
--}
--
--function renderNetworksTooltip(pmap) {
--	var res = [ null ],
--	    zmap = {};
--
--	for (var i = 0; pmap && i < pmap.zones.length; i++) {
--		var networknames = pmap.zones[i].getNetworks();
--
--		for (var k = 0; k < networknames.length; k++)
--			zmap[networknames[k]] = pmap.zones[i].getName();
--	}
--
--	for (var i = 0; pmap && i < pmap.networks.length; i++)
--		res.push(E('br'), renderNetworkBadge(pmap.networks[i], zmap[pmap.networks[i].getName()]));
--
--	if (res.length > 1)
--		res[0] = N_((res.length - 1) / 2, 'Part of network:', 'Part of networks:');
--	else
--		res[0] = _('Port is not part of any network');
--
--	return E([], res);
--}
--
--return baseclass.extend({
--	title: _('Port status'),
--
--	load: function() {
--		return Promise.all([
--			L.resolveDefault(fs.read('/etc/board.json'), '{}'),
--			firewall.getZones(),
--			network.getNetworks(),
--			uci.load('network')
--		]);
--	},
--
--	render: function(data) {
--		if (L.hasSystemFeature('swconfig'))
--			return null;
--
--		var board = JSON.parse(data[0]),
--		    known_ports = [],
--		    port_map = buildInterfaceMapping(data[1], data[2]);
--
--		if (L.isObject(board) && L.isObject(board.network)) {
--			for (var k = 'lan'; k != null; k = (k == 'lan') ? 'wan' : null) {
--				if (!L.isObject(board.network[k]))
--					continue;
--
--				if (Array.isArray(board.network[k].ports))
--					for (let i = 0; i < board.network[k].ports.length; i++)
--						known_ports.push({
--							role: k,
--							device: board.network[k].ports[i],
--							netdev: network.instantiateDevice(board.network[k].ports[i])
--						});
--				else if (typeof(board.network[k].device) == 'string')
--					known_ports.push({
--						role: k,
--						device: board.network[k].device,
--						netdev: network.instantiateDevice(board.network[k].device)
--					});
--			}
--		}
--
--		known_ports.sort(function(a, b) {
--			return L.naturalCompare(a.device, b.device);
--		});
--
--		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em' }, known_ports.map(function(port) {
--			var speed = port.netdev.getSpeed(),
--			    duplex = port.netdev.getDuplex(),
--			    pmap = port_map[port.netdev.getName()],
--			    pzones = (pmap && pmap.zones.length) ? pmap.zones.sort(function(a, b) { return L.naturalCompare(a.getName(), b.getName()) }) : [ null ];
--
--			return E('div', { 'class': 'ifacebox', 'style': 'margin:.25em;min-width:70px;max-width:100px' }, [
--				E('div', { 'class': 'ifacebox-head', 'style': 'font-weight:bold' }, [ port.netdev.getName() ]),
--				E('div', { 'class': 'ifacebox-body' }, [
--					E('img', { 'src': L.resource('icons/port_%s.png').format((speed && duplex) ? 'up' : 'down') }),
--					E('br'),
--					formatSpeed(speed, duplex)
--				]),
--				E('div', { 'class': 'ifacebox-head cbi-tooltip-container', 'style': 'display:flex' }, [
--					E([], pzones.map(function(zone) {
--						return E('div', {
--							'class': 'zonebadge',
--							'style': 'cursor:help;flex:1;height:3px;' + firewall.getZoneColorStyle(zone)
--						});
--					})),
--					E('span', { 'class': 'cbi-tooltip left' }, [ renderNetworksTooltip(pmap) ])
--				]),
--				E('div', { 'class': 'ifacebox-body' }, [
--					E('div', { 'class': 'cbi-tooltip-container', 'style': 'text-align:left;font-size:80%' }, [
--						'\u25b2\u202f%1024.1mB'.format(port.netdev.getTXBytes()),
--						E('br'),
--						'\u25bc\u202f%1024.1mB'.format(port.netdev.getRXBytes()),
--						E('span', { 'class': 'cbi-tooltip' }, formatStats(port.netdev))
--					]),
--				])
--			]);
--		}));
--	}
--});
-
 --- a/feeds/packages/net/aria2/files/aria2.conf
 +++ b/feeds/packages/net/aria2/files/aria2.conf
 @@ -1,12 +1,4 @@
@@ -1407,7 +1043,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
-+PKG_SOURCE_VERSION:=c19a39a4473755f79cee0e25ddd80f67f7243534
++PKG_SOURCE_VERSION:=887ef7b20e416909ed31ee8b37dad23c7cf197d5
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1583,7 +1219,7 @@
 +PKG_SOURCE_VERSION:=f1454e91f56508603e4c2e3c7bf37ccb534458c2
 +
  PKG_NAME:=frp
--PKG_VERSION:=0.51.0
+-PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=0.51.3_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
@@ -1591,7 +1227,7 @@
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
--PKG_HASH:=80ccfa40c4e25309ddb48818f6342bc59f7639be83ab6ef59ffab5caeedc37e8
+-PKG_HASH:=83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
@@ -1612,7 +1248,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=5ad73ea8eb93e27e19772c78151e69c19e2a42bc
++PKG_SOURCE_VERSION:=55e670033ba376e35d20d87fab20efbf76c233fb
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1787,17 +1423,17 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=sqm-scripts
--PKG_SOURCE_VERSION:=7ce734ea191240c85c86b83cbf18701655b0359c
--PKG_VERSION:=1.5.2
-+PKG_SOURCE_VERSION:=75dee1468721b3831b5437f83c8d73bc86520330
+-PKG_SOURCE_VERSION:=33a89d8e7f6c82acc0adced84cf5cd95447e6bb5
+-PKG_VERSION:=1.6.0
++PKG_SOURCE_VERSION:=405aeffa48e6385df4bb267e2a2fac6e254f96f8
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.5.2_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
--PKG_MIRROR_HASH:=62d9a655cd6a89665a7bc8473a771fd8203933989d2276f3d34ccbf6be21661f
-+PKG_MIRROR_HASH:=6934d580e1e516a4494255b36ae09cfc8de87f61700e08163d5e3ce2133caa6c
+-PKG_MIRROR_HASH:=c79be093924e70c4e32c0da5c946c0b7a03a981ba7aa704db42a5e87ae06ee81
++PKG_MIRROR_HASH:=6efe9241f8b767ea8a8b794ffb89d53a3b3df1711500972be3bbca45ca2761d4
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
@@ -1807,13 +1443,14 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=f67167bb3bbfcb0f45393f37005a51024e58864b
++PKG_SOURCE_VERSION:=d616f6160df2e63787673ec9abfe37becc2e1278
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.3
+-PKG_RELEASE:=2
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.8.3_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=1
++PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -1923,6 +1560,246 @@
  $(eval $(call BuildPackage,xray-core))
 -$(eval $(call BuildPackage,xray-example))
 
+--- a/feeds/packages/net/xray-core/patches/00-fix-go1.21-build.patch
++++ /dev/null
+@@ -1,236 +0,0 @@
+---- a/go.mod
+-+++ b/go.mod
+-@@ -5,28 +5,27 @@ go 1.20
+- require (
+- 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344
+- 	github.com/golang/mock v1.6.0
+--	github.com/golang/protobuf v1.5.3
+- 	github.com/google/go-cmp v0.5.9
+- 	github.com/gorilla/websocket v1.5.0
+--	github.com/miekg/dns v1.1.54
+-+	github.com/miekg/dns v1.1.55
+- 	github.com/pelletier/go-toml v1.9.5
+- 	github.com/pires/go-proxyproto v0.7.0
+--	github.com/quic-go/quic-go v0.35.1
+--	github.com/refraction-networking/utls v1.3.2
+--	github.com/sagernet/sing v0.2.5
+-+	github.com/quic-go/quic-go v0.38.0
+-+	github.com/refraction-networking/utls v1.3.3
+-+	github.com/sagernet/sing v0.2.7
+- 	github.com/sagernet/sing-shadowsocks v0.2.2
+- 	github.com/sagernet/wireguard-go v0.0.0-20221116151939-c99467f53f2c
+- 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb
+- 	github.com/stretchr/testify v1.8.4
+- 	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e
+- 	github.com/xtls/reality v0.0.0-20230613075828-e07c3b04b983
+--	golang.org/x/crypto v0.10.0
+--	golang.org/x/net v0.11.0
+-+	golang.org/x/crypto v0.12.0
+-+	golang.org/x/net v0.14.0
+- 	golang.org/x/sync v0.3.0
+--	golang.org/x/sys v0.9.0
+--	google.golang.org/grpc v1.56.0
+--	google.golang.org/protobuf v1.30.0
+--	gvisor.dev/gvisor v0.0.0-20220901235040-6ca97ef2ce1c
+-+	golang.org/x/sys v0.11.0
+-+	google.golang.org/grpc v1.57.0
+-+	google.golang.org/protobuf v1.31.0
+-+	gvisor.dev/gvisor v0.0.0-20230806223740-1b6e502fedca
+- 	h12.io/socks v1.0.3
+- 	lukechampine.com/blake3 v1.2.1
+- )
+-@@ -38,19 +37,19 @@ require (
+- 	github.com/francoispqt/gojay v1.2.13 // indirect
+- 	github.com/gaukas/godicttls v0.0.3 // indirect
+- 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
+-+	github.com/golang/protobuf v1.5.3 // indirect
+- 	github.com/google/btree v1.1.2 // indirect
+- 	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751 // indirect
+- 	github.com/klauspost/compress v1.16.6 // indirect
+- 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
+- 	github.com/onsi/ginkgo/v2 v2.11.0 // indirect
+- 	github.com/pmezard/go-difflib v1.0.0 // indirect
+--	github.com/quic-go/qtls-go1-19 v0.3.2 // indirect
+--	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
+-+	github.com/quic-go/qtls-go1-20 v0.3.2 // indirect
+- 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
+- 	go.uber.org/atomic v1.11.0 // indirect
+--	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+-+	golang.org/x/exp v0.0.0-20230725093048-515e97ebf090 // indirect
+- 	golang.org/x/mod v0.11.0 // indirect
+--	golang.org/x/text v0.10.0 // indirect
+-+	golang.org/x/text v0.12.0 // indirect
+- 	golang.org/x/time v0.3.0 // indirect
+- 	golang.org/x/tools v0.10.0 // indirect
+- 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
+---- a/go.sum
+-+++ b/go.sum
+-@@ -89,8 +89,8 @@ github.com/lunixbochs/vtclean v1.0.0/go.
+- github.com/mailru/easyjson v0.0.0-20190312143242-1de009706dbe/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
+- github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
+- github.com/microcosm-cc/bluemonday v1.0.1/go.mod h1:hsXNsILzKxV+sX77C5b8FSuKF00vh2OMYv+xgHpAMF4=
+--github.com/miekg/dns v1.1.54 h1:5jon9mWcb0sFJGpnI99tOMhCPyJ+RPVz5b63MQG0VWI=
+--github.com/miekg/dns v1.1.54/go.mod h1:uInx36IzPl7FYnDcMeVWxj9byh7DutNykX4G9Sj60FY=
+-+github.com/miekg/dns v1.1.55 h1:GoQ4hpsj0nFLYe+bWiCToyrBEJXkQfOOIvFGFy0lEgo=
+-+github.com/miekg/dns v1.1.55/go.mod h1:uInx36IzPl7FYnDcMeVWxj9byh7DutNykX4G9Sj60FY=
+- github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
+- github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+- github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJEU3ofeGjhHklVoIGuVj85JJwZ6kWPaJwCIxgnFmo=
+-@@ -112,19 +112,17 @@ github.com/prometheus/client_golang v0.8
+- github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
+- github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e/go.mod h1:daVV7qP5qjZbuso7PdcryaAu0sAZbrN9i7WWcTMWvro=
+- github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
+--github.com/quic-go/qtls-go1-19 v0.3.2 h1:tFxjCFcTQzK+oMxG6Zcvp4Dq8dx4yD3dDiIiyc86Z5U=
+--github.com/quic-go/qtls-go1-19 v0.3.2/go.mod h1:ySOI96ew8lnoKPtSqx2BlI5wCpUVPT05RMAlajtnyOI=
+--github.com/quic-go/qtls-go1-20 v0.2.2 h1:WLOPx6OY/hxtTxKV1Zrq20FtXtDEkeY00CGQm8GEa3E=
+--github.com/quic-go/qtls-go1-20 v0.2.2/go.mod h1:JKtK6mjbAVcUTN/9jZpvLbGxvdWIKS8uT7EiStoU1SM=
+--github.com/quic-go/quic-go v0.35.1 h1:b0kzj6b/cQAf05cT0CkQubHM31wiA+xH3IBkxP62poo=
+--github.com/quic-go/quic-go v0.35.1/go.mod h1:+4CVgVppm0FNjpG3UcX8Joi/frKOH7/ciD5yGcwOO1g=
+--github.com/refraction-networking/utls v1.3.2 h1:o+AkWB57mkcoW36ET7uJ002CpBWHu0KPxi6vzxvPnv8=
+--github.com/refraction-networking/utls v1.3.2/go.mod h1:fmoaOww2bxzzEpIKOebIsnBvjQpqP7L2vcm/9KUfm/E=
+-+github.com/quic-go/qtls-go1-20 v0.3.2 h1:rRgN3WfnKbyik4dBV8A6girlJVxGand/d+jVKbQq5GI=
+-+github.com/quic-go/qtls-go1-20 v0.3.2/go.mod h1:X9Nh97ZL80Z+bX/gUXMbipO6OxdiDi58b/fMC9mAL+k=
+-+github.com/quic-go/quic-go v0.38.0 h1:T45lASr5q/TrVwt+jrVccmqHhPL2XuSyoCLVCpfOSLc=
+-+github.com/quic-go/quic-go v0.38.0/go.mod h1:MPCuRq7KBK2hNcfKj/1iD1BGuN3eAYMeNxp3T42LRUg=
+-+github.com/refraction-networking/utls v1.3.3 h1:f/TBLX7KBciRyFH3bwupp+CE4fzoYKCirhdRcC490sw=
+-+github.com/refraction-networking/utls v1.3.3/go.mod h1:DlecWW1LMlMJu+9qpzzQqdHDT/C2LAe03EdpLUz/RL8=
+- github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 h1:f/FNXud6gA3MNr8meMVVGxhp+QBTqY91tM8HjEuMjGg=
+- github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3/go.mod h1:HgjTstvQsPGkxUsCd2KWxErBblirPizecHcpD3ffK+s=
+- github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
+--github.com/sagernet/sing v0.2.5 h1:N8sUluR8GZvR9DqUiH3FA3vBb4m/EDdOVTYUrDzJvmY=
+--github.com/sagernet/sing v0.2.5/go.mod h1:Ta8nHnDLAwqySzKhGoKk4ZIB+vJ3GTKj7UPrWYvM+4w=
+-+github.com/sagernet/sing v0.2.7 h1:cOy0FfPS8q7m0aJ51wS7LRQAGc9wF+fWhHtBDj99wy8=
+-+github.com/sagernet/sing v0.2.7/go.mod h1:Ta8nHnDLAwqySzKhGoKk4ZIB+vJ3GTKj7UPrWYvM+4w=
+- github.com/sagernet/sing-shadowsocks v0.2.2 h1:ezSdVhrmIcwDXmCZF3bOJVMuVtTQWpda+1Op+Ie2TA4=
+- github.com/sagernet/sing-shadowsocks v0.2.2/go.mod h1:JIBWG6a7orB2HxBxYElViQFLUQxFVG7DuqIj8gD7uCQ=
+- github.com/sagernet/wireguard-go v0.0.0-20221116151939-c99467f53f2c h1:vK2wyt9aWYHHvNLWniwijBu/n4pySypiKRhN32u/JGo=
+-@@ -178,11 +176,11 @@ golang.org/x/crypto v0.0.0-2018103010241
+- golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+- golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+- golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
+--golang.org/x/crypto v0.10.0 h1:LKqV2xt9+kDzSTfOhx4FrkEBcMrAgHSYgzywV9zcGmM=
+--golang.org/x/crypto v0.10.0/go.mod h1:o4eNf7Ede1fv+hwOwZsTHl9EsPFO6q6ZvYR8vYfY45I=
+-+golang.org/x/crypto v0.12.0 h1:tFM/ta59kqch6LlvYnPa0yx5a83cL2nHflFhYKvv9Yk=
+-+golang.org/x/crypto v0.12.0/go.mod h1:NF0Gs7EO5K4qLn+Ylc+fih8BSTeIjAP05siRnAh98yw=
+- golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
+--golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 h1:k/i9J1pBpvlfR+9QsetwPyERsqu1GIbi967PQMq3Ivc=
+--golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1/go.mod h1:V1LtkGg67GoY2N1AnLN78QLrzxkLyJw7RJb1gzOOz9w=
+-+golang.org/x/exp v0.0.0-20230725093048-515e97ebf090 h1:Di6/M8l0O2lCLc6VVRWhgCiApHV8MnQurBnFSHsQtNY=
+-+golang.org/x/exp v0.0.0-20230725093048-515e97ebf090/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=
+- golang.org/x/lint v0.0.0-20180702182130-06c8688daad7/go.mod h1:UVdnD1Gm6xHRNCYTkRU2/jEulfH38KcIWyp/GAMgvoE=
+- golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3/go.mod h1:UVdnD1Gm6xHRNCYTkRU2/jEulfH38KcIWyp/GAMgvoE=
+- golang.org/x/lint v0.0.0-20190227174305-5b3e6a55c961/go.mod h1:wehouNa3lNwaWXcvxsM5YxQ5yQlVC4a0KAMCusXpPoU=
+-@@ -200,8 +198,8 @@ golang.org/x/net v0.0.0-20190313220215-9
+- golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
+- golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+- golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4/go.mod h1:p54w0d4576C0XHj96bSt6lcn1PtDYWL6XObtHCRCNQM=
+--golang.org/x/net v0.11.0 h1:Gi2tvZIJyBtO9SDr1q9h5hEQCp/4L2RQ+ar0qjx2oNU=
+--golang.org/x/net v0.11.0/go.mod h1:2L/ixqYpgIVXmeoSA/4Lu7BzTG4KIyPIryS4IsOd1oQ=
+-+golang.org/x/net v0.14.0 h1:BONx9s002vGdD9umnlX1Po8vOZmrgH34qlHcD1MfK14=
+-+golang.org/x/net v0.14.0/go.mod h1:PpSgVXXLK0OxS0F31C1/tv6XNguvCrnXIDrFMspZIUI=
+- golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
+- golang.org/x/oauth2 v0.0.0-20181017192945-9dcd33a902f4/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
+- golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
+-@@ -225,14 +223,14 @@ golang.org/x/sys v0.0.0-20201119102817-f
+- golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+- golang.org/x/sys v0.0.0-20210510120138-977fb7262007/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+- golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+--golang.org/x/sys v0.9.0 h1:KS/R3tvhPqvJvwcKfnBHJwwthS11LRhmM5D59eEXa0s=
+--golang.org/x/sys v0.9.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+-+golang.org/x/sys v0.11.0 h1:eG7RXZHdqOJ1i+0lgLgCpSXAp6M3LYlAo6osgSi0xOM=
+-+golang.org/x/sys v0.11.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+- golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
+- golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
+- golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
+- golang.org/x/text v0.3.3/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
+--golang.org/x/text v0.10.0 h1:UpjohKhiEgNc0CSauXmwYftY1+LlaC75SJwh0SgCX58=
+--golang.org/x/text v0.10.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
+-+golang.org/x/text v0.12.0 h1:k+n5B8goJNdU7hSvEtMUz3d1Q6D/XW4COJSJR6fN0mc=
+-+golang.org/x/text v0.12.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
+- golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
+- golang.org/x/time v0.0.0-20181108054448-85acf8d2951c/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
+- golang.org/x/time v0.3.0 h1:rg5rLMjNzMS1RkNLzCG38eapWhnYLFYXDXj2gOlr8j4=
+-@@ -268,12 +266,12 @@ google.golang.org/grpc v1.14.0/go.mod h1
+- google.golang.org/grpc v1.16.0/go.mod h1:0JHn/cJsOMiMfNA9+DeHDlAU7KAAB5GDlYFpa9MZMio=
+- google.golang.org/grpc v1.17.0/go.mod h1:6QZJwpn2B+Zp71q/5VxRsJ6NXXVCE5NRUHRo+f3cWCs=
+- google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
+--google.golang.org/grpc v1.56.0 h1:+y7Bs8rtMd07LeXmL3NxcTLn7mUkbKZqEpPhMNkwJEE=
+--google.golang.org/grpc v1.56.0/go.mod h1:I9bI3vqKfayGqPUAwGdOSu7kt6oIJLixfffKrpXqQ9s=
+-+google.golang.org/grpc v1.57.0 h1:kfzNeI/klCGD2YPMUlaGNT3pxvYfga7smW3Vth8Zsiw=
+-+google.golang.org/grpc v1.57.0/go.mod h1:Sd+9RMTACXwmub0zcNY2c4arhtrbBYD1AUHI/dt16Mo=
+- google.golang.org/protobuf v1.26.0-rc.1/go.mod h1:jlhhOSvTdKEhbULTjvd4ARK9grFBp09yW+WbY/TyQbw=
+- google.golang.org/protobuf v1.26.0/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
+--google.golang.org/protobuf v1.30.0 h1:kPPoIgf3TsEvrm0PFe15JQ+570QVxYzEvvHqChK+cng=
+--google.golang.org/protobuf v1.30.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
+-+google.golang.org/protobuf v1.31.0 h1:g0LDEJHgrBl9N9r17Ru3sqWhkIx2NB67okBHPwC7hs8=
+-+google.golang.org/protobuf v1.31.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
+- gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+- gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33q108Sa+fhmuc+sWQYwY=
+- gopkg.in/inf.v0 v0.9.1/go.mod h1:cWUDdTG/fYaXco+Dcufb5Vnc6Gp2YChqWtbxRZE0mXw=
+-@@ -286,8 +284,8 @@ gopkg.in/yaml.v3 v3.0.0-20200605160147-a
+- gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+- gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+- grpc.go4.org v0.0.0-20170609214715-11d0a25b4919/go.mod h1:77eQGdRu53HpSqPFJFmuJdjuHRquDANNeA4x7B8WQ9o=
+--gvisor.dev/gvisor v0.0.0-20220901235040-6ca97ef2ce1c h1:m5lcgWnL3OElQNVyp3qcncItJ2c0sQlSGjYK2+nJTA4=
+--gvisor.dev/gvisor v0.0.0-20220901235040-6ca97ef2ce1c/go.mod h1:TIvkJD0sxe8pIob3p6T8IzxXunlp6yfgktvTNp+DGNM=
+-+gvisor.dev/gvisor v0.0.0-20230806223740-1b6e502fedca h1:7ny3LuaRJFcPuCi2mc9/tv0ybe02o7cKA2qI/edjWuE=
+-+gvisor.dev/gvisor v0.0.0-20230806223740-1b6e502fedca/go.mod h1:lYEMhXbxgudVhALYsMQrBaUAjM3NMinh8mKL1CJv7rc=
+- h12.io/socks v1.0.3 h1:Ka3qaQewws4j4/eDQnOdpr4wXsC//dXtWvftlIcCQUo=
+- h12.io/socks v1.0.3/go.mod h1:AIhxy1jOId/XCz9BO+EIgNL2rQiPTBNnOfnVnQ+3Eck=
+- honnef.co/go/tools v0.0.0-20180728063816-88497007e858/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
+---- a/proxy/wireguard/tun.go
+-+++ b/proxy/wireguard/tun.go
+-@@ -14,7 +14,7 @@ import (
+- 
+- 	"github.com/sagernet/wireguard-go/tun"
+- 	"github.com/xtls/xray-core/features/dns"
+--	"gvisor.dev/gvisor/pkg/bufferv2"
+-+	"gvisor.dev/gvisor/pkg/buffer"
+- 	"gvisor.dev/gvisor/pkg/tcpip"
+- 	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
+- 	"gvisor.dev/gvisor/pkg/tcpip/header"
+-@@ -30,7 +30,7 @@ type netTun struct {
+- 	ep             *channel.Endpoint
+- 	stack          *stack.Stack
+- 	events         chan tun.Event
+--	incomingPacket chan *bufferv2.View
+-+	incomingPacket chan *buffer.View
+- 	mtu            int
+- 	dnsClient      dns.Client
+- 	hasV4, hasV6   bool
+-@@ -48,7 +48,7 @@ func CreateNetTUN(localAddresses []netip
+- 		ep:             channel.New(1024, uint32(mtu), ""),
+- 		stack:          stack.New(opts),
+- 		events:         make(chan tun.Event, 10),
+--		incomingPacket: make(chan *bufferv2.View),
+-+		incomingPacket: make(chan *buffer.View),
+- 		dnsClient:      dnsClient,
+- 		mtu:            mtu,
+- 	}
+-@@ -66,7 +66,7 @@ func CreateNetTUN(localAddresses []netip
+- 		}
+- 		protoAddr := tcpip.ProtocolAddress{
+- 			Protocol:          protoNumber,
+--			AddressWithPrefix: tcpip.Address(ip.AsSlice()).WithPrefix(),
+-+			AddressWithPrefix: tcpip.AddrFromSlice(ip.AsSlice()).WithPrefix(),
+- 		}
+- 		tcpipErr := dev.stack.AddProtocolAddress(1, protoAddr, stack.AddressProperties{})
+- 		if tcpipErr != nil {
+-@@ -116,7 +116,7 @@ func (tun *netTun) Write(buf []byte, off
+- 		return 0, nil
+- 	}
+- 
+--	pkb := stack.NewPacketBuffer(stack.PacketBufferOptions{Payload: bufferv2.MakeWithData(packet)})
+-+	pkb := stack.NewPacketBuffer(stack.PacketBufferOptions{Payload: buffer.MakeWithData(packet)})
+- 	switch packet[0] >> 4 {
+- 	case 4:
+- 		tun.ep.InjectInbound(header.IPv4ProtocolNumber, pkb)
+-@@ -172,7 +172,7 @@ func convertToFullAddr(endpoint netip.Ad
+- 	}
+- 	return tcpip.FullAddress{
+- 		NIC:  1,
+--		Addr: tcpip.Address(endpoint.Addr().AsSlice()),
+-+		Addr: tcpip.AddrFromSlice(endpoint.Addr().AsSlice()),
+- 		Port: endpoint.Port(),
+- 	}, protoNumber
+- }
+
 --- a/feeds/packages/net/zerotier/Makefile
 +++ b/feeds/packages/net/zerotier/Makefile
 @@ -5,14 +5,15 @@
@@ -1930,11 +1807,11 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=826a1ee346975f8c3844b7864ee10842027560f5
++PKG_SOURCE_VERSION:=ffb63f3ee5616b069ab453427f4f62701b8ed802
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.10.6_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.12.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
@@ -2062,142 +1939,444 @@
  					if (m) {
  						push(rules, {
 
---- a/feeds/packages/lang/golang/golang-compiler.mk
-+++ b/feeds/packages/lang/golang/golang-compiler.mk
-@@ -60,10 +60,9 @@ define GoCompiler/Default/Install/Bin
+--- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
++++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
+@@ -8,7 +8,7 @@ import { cursor } from 'uci';
  
- 	$(call GoCompiler/Default/Install/install-share-data,$(1),$(2),$(3),api)
+ import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
+ import { revision, branch } from 'luci.version';
+-import { statvfs, uname } from 'luci.core';
++import { statvfs } from 'luci.core';
  
--	$(INSTALL_DATA) -p "$(1)/go.env" "$(2)/lib/go-$(3)/"
- 	$(INSTALL_DATA) -p "$(1)/VERSION" "$(2)/lib/go-$(3)/"
+ import timezones from 'luci.zoneinfo';
  
--	for file in CONTRIBUTING.md LICENSE PATENTS README.md SECURITY.md; do \
-+	for file in AUTHORS CONTRIBUTING.md CONTRIBUTORS LICENSE PATENTS README.md SECURITY.md; do \
- 		if [ -f "$(1)/$$$$file" ]; then \
- 			$(INSTALL_DATA) -p "$(1)/$$$$file" "$(2)/share/go-$(3)/" ; \
- 		fi ; \
+@@ -544,49 +544,6 @@ const methods = {
+ 		call: function() {
+ 			return { result: process_list() };
+ 		}
+-	},
+-
+-	getBuiltinEthernetPorts: {
+-		call: function() {
+-			let fd = open('/etc/board.json', 'r');
+-			let board = fd ? json(fd) : {};
+-			let ports = [];
+-
+-			for (let k in [ 'lan', 'wan' ]) {
+-				if (!board?.network?.[k])
+-					continue;
+-
+-				if (type(board.network[k].ports) == 'array') {
+-					for (let ifname in board.network[k].ports) {
+-						push(ports, { role: k, device: ifname });
+-					}
+-				}
+-				else if (type(board.network[k].device) == 'string') {
+-					push(ports, { role: k, device: board.network[k].device });
+-				}
+-			}
+-
+-			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+-			if (uname().machine in [ 'x86_64' ] &&
+-			    match(ports[0]?.device, /^eth\d+$/)) {
+-				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
+-
+-				for (let netdev in lsdir('/sys/class/net')) {
+-					if (!match(netdev, /^eth\d+$/))
+-						continue;
+-
+-					if (length(filter(ports, port => port.device == netdev)))
+-						continue;
+-
+-					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
+-						continue;
+-
+-					push(ports, { role: 'unknown', device: netdev });
+-				}
+-			}
+-
+-			return { result: ports };
+-		}
+ 	}
+ };
+ 
 
---- a/feeds/packages/lang/golang/golang-package.mk
-+++ b/feeds/packages/lang/golang/golang-package.mk
-@@ -215,8 +215,7 @@ GO_PKG_BUILD_VARS= \
- 	GOPATH="$(GO_PKG_BUILD_DIR)" \
- 	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
- 	GOMODCACHE="$(GO_MOD_CACHE_DIR)" \
--	GOENV=off \
--	GOTOOLCHAIN=local
-+	GOENV=off
- 
- GO_PKG_VARS= \
- 	$(GO_PKG_TARGET_VARS) \
-
---- a/feeds/packages/lang/golang/golang-values.mk
-+++ b/feeds/packages/lang/golang/golang-values.mk
-@@ -29,7 +29,6 @@ unexport \
-   GOOS \
-   GOPATH \
-   GOROOT \
--  GOTOOLCHAIN \
-   GOTMPDIR \
-   GOWORK
- # Unmodified:
-@@ -220,7 +219,7 @@ GO_PIE_SUPPORTED_OS_ARCH:= \
-   \
-   aix_ppc64 \
-   \
--  linux_loong64 linux_ppc64le linux_riscv64 linux_s390x
-+  linux_ppc64le linux_riscv64 linux_s390x
- 
- # From https://go.dev/src/cmd/go/internal/work/init.go
- go_pie_install_suffix=$(if $(filter $(1),aix_ppc64 windows_386 windows_amd64 windows_arm windows_arm64),,shared)
-
---- a/feeds/packages/lang/golang/golang/Makefile
-+++ b/feeds/packages/lang/golang/golang/Makefile
-@@ -7,8 +7,8 @@
- 
- include $(TOPDIR)/rules.mk
- 
--GO_VERSION_MAJOR_MINOR:=1.21
--GO_VERSION_PATCH:=0
-+GO_VERSION_MAJOR_MINOR:=1.20
-+GO_VERSION_PATCH:=7
- 
- PKG_NAME:=golang
- PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
-@@ -20,7 +20,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
- 
- PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
- PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
--PKG_HASH:=818d46ede85682dd551ad378ef37a4d247006f12ec59b5b755601d2ce114369a
-+PKG_HASH:=2c5ee9c9ec1e733b0dbbc2bdfed3f62306e51d8172bf38f4f4e542b27520f597
- 
- PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
- PKG_LICENSE:=BSD-3-Clause
-@@ -62,7 +62,6 @@ HOST_GO_VALID_OS_ARCH:= \
-   \
-   aix_ppc64 \
-   js_wasm \
--  wasip1_wasm \
-   \
-   freebsd_riscv64 \
-   \
-@@ -297,7 +296,7 @@ $(eval $(call GoCompiler/AddProfile,Package,$(PKG_BUILD_DIR),$(PKG_GO_PREFIX),$(
- PKG_GO_ZBOOTSTRAP_MODS:= \
- 	s/defaultGO386 = `[^`]*`/defaultGO386 = `$(or $(GO_386),sse2)`/; \
- 	s/defaultGOAMD64 = `[^`]*`/defaultGOAMD64 = `$(or $(GO_AMD64),v1)`/; \
--	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),7)`/; \
-+	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),5)`/; \
- 	s/defaultGOMIPS = `[^`]*`/defaultGOMIPS = `$(or $(GO_MIPS),hardfloat)`/; \
- 	s/defaultGOMIPS64 = `[^`]*`/defaultGOMIPS64 = `$(or $(GO_MIPS64),hardfloat)`/; \
- 	s/defaultGOPPC64 = `[^`]*`/defaultGOPPC64 = `$(or $(GO_PPC64),power8)`/;
-
---- /dev/null
-+++ b/feeds/packages/lang/golang/golang/patches/001-cmd-link-use-gold-on-ARM-ARM64-only-if-gold-is-available.patch
-@@ -0,0 +1,48 @@
-+From 5ccf9f47bf4f5ba53e0ab7338a7fd4626714cfb2 Mon Sep 17 00:00:00 2001
-+From: Jeffery To <jeffery.to@gmail.com>
-+Date: Tue, 23 Nov 2021 15:05:37 +0800
-+Subject: [PATCH] cmd/link: use gold on ARM/ARM64 only if gold is available
-+
-+COPY relocation handling on ARM/ARM64 has been fixed in recent versions
-+of the GNU linker. This switches to gold only if gold is available.
-+
-+Fixes #22040.
-+---
-+ src/cmd/link/internal/ld/lib.go | 19 +++++++------------
-+ 1 file changed, 7 insertions(+), 12 deletions(-)
-+
-+--- a/src/cmd/link/internal/ld/lib.go
-++++ b/src/cmd/link/internal/ld/lib.go
-+@@ -1548,25 +1548,20 @@ func (ctxt *Link) hostlink() {
-+ 		}
-+ 
-+ 		if ctxt.Arch.InFamily(sys.ARM, sys.ARM64) && buildcfg.GOOS == "linux" {
-+-			// On ARM, the GNU linker will generate COPY relocations
-+-			// even with -znocopyreloc set.
-++			// On ARM, older versions of the GNU linker will generate
-++			// COPY relocations even with -znocopyreloc set.
-+ 			// https://sourceware.org/bugzilla/show_bug.cgi?id=19962
-+ 			//
-+-			// On ARM64, the GNU linker will fail instead of
-+-			// generating COPY relocations.
-++			// On ARM64, older versions of the GNU linker will fail
-++			// instead of generating COPY relocations.
-+ 			//
-+-			// In both cases, switch to gold.
-+-			altLinker = "gold"
-+-
-+-			// If gold is not installed, gcc will silently switch
-+-			// back to ld.bfd. So we parse the version information
-+-			// and provide a useful error if gold is missing.
-++			// In both cases, switch to gold if gold is available.
-+ 			name, args := flagExtld[0], flagExtld[1:]
-+ 			args = append(args, "-fuse-ld=gold", "-Wl,--version")
-+ 			cmd := exec.Command(name, args...)
-+ 			if out, err := cmd.CombinedOutput(); err == nil {
-+-				if !bytes.Contains(out, []byte("GNU gold")) {
-+-					log.Fatalf("ARM external linker must be gold (issue #15696), but is not: %s", out)
-++				if bytes.Contains(out, []byte("GNU gold")) {
-++					altLinker = "gold"
-+ 				}
-+ 			}
-+ 		}
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
++++ /dev/null
+@@ -1,376 +0,0 @@
+-'use strict';
+-'require baseclass';
+-'require fs';
+-'require ui';
+-'require uci';
+-'require rpc';
+-'require network';
+-'require firewall';
+-
+-var callGetBuiltinEthernetPorts = rpc.declare({
+-	object: 'luci',
+-	method: 'getBuiltinEthernetPorts',
+-	expect: { result: [] }
+-});
+-
+-function isString(v)
+-{
+-	return typeof(v) === 'string' && v !== '';
+-}
+-
+-function resolveVLANChain(ifname, bridges, mapping)
+-{
+-	while (!mapping[ifname]) {
+-		var m = ifname.match(/^(.+)\.([^.]+)$/);
+-
+-		if (!m)
+-			break;
+-
+-		if (bridges[m[1]]) {
+-			if (bridges[m[1]].vlan_filtering)
+-				mapping[ifname] = bridges[m[1]].vlans[m[2]];
+-			else
+-				mapping[ifname] = bridges[m[1]].ports;
+-		}
+-		else if (/^[0-9]{1,4}$/.test(m[2]) && m[2] <= 4095) {
+-			mapping[ifname] = [ m[1] ];
+-		}
+-		else {
+-			break;
+-		}
+-
+-		ifname = m[1];
+-	}
+-}
+-
+-function buildVLANMappings(mapping)
+-{
+-	var bridge_vlans = uci.sections('network', 'bridge-vlan'),
+-	    vlan_devices = uci.sections('network', 'device'),
+-	    interfaces = uci.sections('network', 'interface'),
+-	    bridges = {};
+-
+-	/* find bridge VLANs */
+-	for (var i = 0, s; (s = bridge_vlans[i]) != null; i++) {
+-		if (!isString(s.device) || !/^[0-9]{1,4}$/.test(s.vlan) || +s.vlan > 4095)
+-			continue;
+-
+-		var aliases = L.toArray(s.alias),
+-		    ports = L.toArray(s.ports),
+-		    br = bridges[s.device] = (bridges[s.device] || { ports: [], vlans: {}, vlan_filtering: true });
+-
+-		br.vlans[s.vlan] = [];
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			var port = ports[j].replace(/:[ut*]+$/, '');
+-
+-			if (br.ports.indexOf(port) === -1)
+-				br.ports.push(port);
+-
+-			br.vlans[s.vlan].push(port);
+-		}
+-
+-		for (var j = 0; j < aliases.length; j++)
+-			if (aliases[j] != s.vlan)
+-				br.vlans[aliases[j]] = br.vlans[s.vlan];
+-	}
+-
+-	/* find bridges, VLAN devices */
+-	for (var i = 0, s; (s = vlan_devices[i]) != null; i++) {
+-		if (s.type == 'bridge') {
+-			if (!isString(s.name))
+-				continue;
+-
+-			var ports = L.toArray(s.ports),
+-			    br = bridges[s.name] || (bridges[s.name] = { ports: [], vlans: {}, vlan_filtering: false });
+-
+-			if (s.vlan_filtering == '0')
+-				br.vlan_filtering = false;
+-			else if (s.vlan_filtering == '1')
+-				br.vlan_filtering = true;
+-
+-			for (var j = 0; j < ports.length; j++)
+-				if (br.ports.indexOf(ports[j]) === -1)
+-					br.ports.push(ports[j]);
+-
+-			mapping[s.name] = br.ports;
+-		}
+-		else if (s.type == '8021q' || s.type == '8021ad') {
+-			if (!isString(s.name) || !isString(s.vid) || !isString(s.ifname))
+-				continue;
+-
+-			/* parent device is a bridge */
+-			if (bridges[s.ifname]) {
+-				/* parent bridge is VLAN enabled, device refers to VLAN ports */
+-				if (bridges[s.ifname].vlan_filtering)
+-					mapping[s.name] = bridges[s.ifname].vlans[s.vid];
+-
+-				/* parent bridge is not VLAN enabled, device refers to all bridge ports */
+-				else
+-					mapping[s.name] = bridges[s.ifname].ports;
+-			}
+-
+-			/* parent is a simple netdev */
+-			else {
+-				mapping[s.name] = [ s.ifname ];
+-			}
+-
+-			resolveVLANChain(s.ifname, bridges, mapping);
+-		}
+-	}
+-
+-	/* resolve VLAN tagged interfaces in bridge ports */
+-	for (var brname in bridges) {
+-		for (var i = 0; i < bridges[brname].ports.length; i++)
+-			resolveVLANChain(bridges[brname].ports[i], bridges, mapping);
+-
+-		for (var vid in bridges[brname].vlans)
+-			for (var i = 0; i < bridges[brname].vlans[vid].length; i++)
+-				resolveVLANChain(bridges[brname].vlans[vid][i], bridges, mapping);
+-	}
+-
+-	/* find implicit VLAN devices */
+-	for (var i = 0, s; (s = interfaces[i]) != null; i++) {
+-		if (!isString(s.device))
+-			continue;
+-
+-		resolveVLANChain(s.device, bridges, mapping);
+-	}
+-}
+-
+-function resolveVLANPorts(ifname, mapping)
+-{
+-	var ports = [];
+-
+-	if (mapping[ifname])
+-		for (var i = 0; i < mapping[ifname].length; i++)
+-			ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping));
+-	else
+-		ports.push(ifname);
+-
+-	return ports.sort(L.naturalCompare);
+-}
+-
+-function buildInterfaceMapping(zones, networks) {
+-	var vlanmap = {},
+-	    portmap = {},
+-	    netmap = {};
+-
+-	buildVLANMappings(vlanmap);
+-
+-	for (var i = 0; i < networks.length; i++) {
+-		var l3dev = networks[i].getDevice();
+-
+-		if (!l3dev)
+-			continue;
+-
+-		var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			portmap[ports[j]] = portmap[ports[j]] || { networks: [], zones: [] };
+-			portmap[ports[j]].networks.push(networks[i]);
+-		}
+-
+-		netmap[networks[i].getName()] = networks[i];
+-	}
+-
+-	for (var i = 0; i < zones.length; i++) {
+-		var networknames = zones[i].getNetworks();
+-
+-		for (var j = 0; j < networknames.length; j++) {
+-			if (!netmap[networknames[j]])
+-				continue;
+-
+-			var l3dev = netmap[networknames[j]].getDevice();
+-
+-			if (!l3dev)
+-				continue;
+-
+-			var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-			for (var k = 0; k < ports.length; k++) {
+-				portmap[ports[k]] = portmap[ports[k]] || { networks: [], zones: [] };
+-
+-				if (portmap[ports[k]].zones.indexOf(zones[i]) === -1)
+-					portmap[ports[k]].zones.push(zones[i]);
+-			}
+-		}
+-	}
+-
+-	return portmap;
+-}
+-
+-function formatSpeed(speed, duplex) {
+-	if (speed && duplex) {
+-		var d = (duplex == 'half') ? '\u202f(H)' : '',
+-		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
+-
+-		switch (speed) {
+-		case 10:    e.innerText = '10\u202fM' + d;  break;
+-		case 100:   e.innerText = '100\u202fM' + d; break;
+-		case 1000:  e.innerText = '1\u202fGbE' + d; break;
+-		case 2500:  e.innerText = '2.5\u202fGbE';   break;
+-		case 5000:  e.innerText = '5\u202fGbE';     break;
+-		case 10000: e.innerText = '10\u202fGbE';    break;
+-		case 25000: e.innerText = '25\u202fGbE';    break;
+-		case 40000: e.innerText = '40\u202fGbE';    break;
+-		default:    e.innerText = '%d\u202fMbE%s'.format(speed, d);
+-		}
+-
+-		return e;
+-	}
+-
+-	return _('no link');
+-}
+-
+-function formatStats(portdev) {
+-	var stats = portdev._devstate('stats') || {};
+-
+-	return ui.itemlist(E('span'), [
+-		_('Received bytes'), '%1024mB'.format(stats.rx_bytes),
+-		_('Received packets'), '%1000mPkts.'.format(stats.rx_packets),
+-		_('Received multicast'), '%1000mPkts.'.format(stats.multicast),
+-		_('Receive errors'), '%1000mPkts.'.format(stats.rx_errors),
+-		_('Receive dropped'), '%1000mPkts.'.format(stats.rx_dropped),
+-
+-		_('Transmitted bytes'), '%1024mB'.format(stats.tx_bytes),
+-		_('Transmitted packets'), '%1000mPkts.'.format(stats.tx_packets),
+-		_('Transmit errors'), '%1000mPkts.'.format(stats.tx_errors),
+-		_('Transmit dropped'), '%1000mPkts.'.format(stats.tx_dropped),
+-
+-		_('Collisions seen'), stats.collisions
+-	]);
+-}
+-
+-function renderNetworkBadge(network, zonename) {
+-	var l3dev = network.getDevice();
+-	var span = E('span', { 'class': 'ifacebadge', 'style': 'margin:.125em 0' }, [
+-		E('span', {
+-			'class': 'zonebadge',
+-			'title': zonename ? _('Part of zone %q').format(zonename) : _('No zone assigned'),
+-			'style': firewall.getZoneColorStyle(zonename)
+-		}, '\u202f'),
+-		'\u202f', network.getName(), ': '
+-	]);
+-
+-	if (l3dev)
+-		span.appendChild(E('img', {
+-			'title': l3dev.getI18n(),
+-			'src': L.resource('icons/%s%s.png'.format(l3dev.getType(), l3dev.isUp() ? '' : '_disabled'))
+-		}));
+-	else
+-		span.appendChild(E('em', _('(no interfaces attached)')));
+-
+-	return span;
+-}
+-
+-function renderNetworksTooltip(pmap) {
+-	var res = [ null ],
+-	    zmap = {};
+-
+-	for (var i = 0; pmap && i < pmap.zones.length; i++) {
+-		var networknames = pmap.zones[i].getNetworks();
+-
+-		for (var k = 0; k < networknames.length; k++)
+-			zmap[networknames[k]] = pmap.zones[i].getName();
+-	}
+-
+-	for (var i = 0; pmap && i < pmap.networks.length; i++)
+-		res.push(E('br'), renderNetworkBadge(pmap.networks[i], zmap[pmap.networks[i].getName()]));
+-
+-	if (res.length > 1)
+-		res[0] = N_((res.length - 1) / 2, 'Part of network:', 'Part of networks:');
+-	else
+-		res[0] = _('Port is not part of any network');
+-
+-	return E([], res);
+-}
+-
+-return baseclass.extend({
+-	title: _('Port status'),
+-
+-	load: function() {
+-		return Promise.all([
+-			L.resolveDefault(callGetBuiltinEthernetPorts(), []),
+-			L.resolveDefault(fs.read('/etc/board.json'), '{}'),
+-			firewall.getZones(),
+-			network.getNetworks(),
+-			uci.load('network')
+-		]);
+-	},
+-
+-	render: function(data) {
+-		if (L.hasSystemFeature('swconfig'))
+-			return null;
+-
+-		var board = JSON.parse(data[1]),
+-		    known_ports = [],
+-		    port_map = buildInterfaceMapping(data[2], data[3]);
+-
+-		if (Array.isArray(data[0]) && data[0].length > 0) {
+-			known_ports = data[0].map(port => ({
+-				...port,
+-				netdev: network.instantiateDevice(port.device)
+-			}));
+-		}
+-		else {
+-			if (L.isObject(board) && L.isObject(board.network)) {
+-				for (var k = 'lan'; k != null; k = (k == 'lan') ? 'wan' : null) {
+-					if (!L.isObject(board.network[k]))
+-						continue;
+-
+-					if (Array.isArray(board.network[k].ports))
+-						for (let i = 0; i < board.network[k].ports.length; i++)
+-							known_ports.push({
+-								role: k,
+-								device: board.network[k].ports[i],
+-								netdev: network.instantiateDevice(board.network[k].ports[i])
+-							});
+-					else if (typeof(board.network[k].device) == 'string')
+-						known_ports.push({
+-							role: k,
+-							device: board.network[k].device,
+-							netdev: network.instantiateDevice(board.network[k].device)
+-						});
+-				}
+-			}
+-		}
+-
+-		known_ports.sort(function(a, b) {
+-			return L.naturalCompare(a.device, b.device);
+-		});
+-
+-		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em' }, known_ports.map(function(port) {
+-			var speed = port.netdev.getSpeed(),
+-			    duplex = port.netdev.getDuplex(),
+-			    pmap = port_map[port.netdev.getName()],
+-			    pzones = (pmap && pmap.zones.length) ? pmap.zones.sort(function(a, b) { return L.naturalCompare(a.getName(), b.getName()) }) : [ null ];
+-
+-			return E('div', { 'class': 'ifacebox', 'style': 'margin:.25em;min-width:70px;max-width:100px' }, [
+-				E('div', { 'class': 'ifacebox-head', 'style': 'font-weight:bold' }, [ port.netdev.getName() ]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('img', { 'src': L.resource('icons/port_%s.png').format((speed && duplex) ? 'up' : 'down') }),
+-					E('br'),
+-					formatSpeed(speed, duplex)
+-				]),
+-				E('div', { 'class': 'ifacebox-head cbi-tooltip-container', 'style': 'display:flex' }, [
+-					E([], pzones.map(function(zone) {
+-						return E('div', {
+-							'class': 'zonebadge',
+-							'style': 'cursor:help;flex:1;height:3px;' + firewall.getZoneColorStyle(zone)
+-						});
+-					})),
+-					E('span', { 'class': 'cbi-tooltip left' }, [ renderNetworksTooltip(pmap) ])
+-				]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('div', { 'class': 'cbi-tooltip-container', 'style': 'text-align:left;font-size:80%' }, [
+-						'\u25b2\u202f%1024.1mB'.format(port.netdev.getTXBytes()),
+-						E('br'),
+-						'\u25bc\u202f%1024.1mB'.format(port.netdev.getRXBytes()),
+-						E('span', { 'class': 'cbi-tooltip' }, formatStats(port.netdev))
+-					]),
+-				])
+-			]);
+-		}));
+-	}
+-});
