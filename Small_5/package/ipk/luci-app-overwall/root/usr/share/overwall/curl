@@ -68,14 +68,19 @@ qs(){
 C=`uci -q get $N.auth_1`
 C=`export PASS="$B";echo ${C:0:9}${C:16:10}${C:29:5}${C:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:PASS`
 
+r=1
 if [ $1 = 0 ];then
-	[ "$2" -a "$3" -a "$4" ] || exit 1
-	echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $4 $3 -K -
-	exit $?
+	[ "$2" -a "$3" -a "$4" -a "$5" -a "$6" ] || exit 1
+	while ! echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $4 $3 -K -;do
+		[ $r -ge $5 ] && exit 1 || let r++
+		sleep $6
+	done
 elif [ $1 = 1 ];then
-	[ "$2" -a "$3" ] || exit 1
-	echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -
-	exit $?
+	[ "$2" -a "$3" -a "$4" -a "$5" ] || exit 1
+	while ! echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -;do
+		[ $r -ge $4 ] && exit 1 || let r++
+		sleep $5
+	done
 else
 	D=`uci -q get $N.auth_9`
 	D=`export PASS="$B";echo ${D:0:9}${D:16:10}${D:29:5}${D:38} | sed -e 's/^$1/U2/' | openssl aes-256-cbc -md sha256 -a -d --pbkdf2 -pass env:PASS 2>/dev/null`

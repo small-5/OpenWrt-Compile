@@ -19,7 +19,7 @@ O=/tmp/ad.conf
 P=/tmp/adblock
 W=`cat /etc/adblock/white.list`
 H=ad-rules
-I="--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20 -o"
+I="-Lfsm 20 -o"
 
 gen(){
 	for i in $W;do sed -i -e "/\/$i\//d" -e "/\.$i\//d" $O;done
@@ -32,7 +32,7 @@ down(){
 	mkdir -p $G
 	for i in $U;do
 		case $i in
-			adguard|anti-ad|ad-wars)K="/usr/share/overwall/curl 0 $H/$i $F '$I'";;
+			adguard|anti-ad|ad-wars)K="/usr/share/overwall/curl 0 $H/$i $F '$I' 20 2";;
 			*)K="curl $I $F $i";;
 		esac
 		if ! eval $K;then
@@ -100,7 +100,7 @@ esac
 
 if [ `uci -q get adblock.@adblock[0].enable` = 1 ];then
 	echo "`eval $E` [$A]"
-	if /usr/share/overwall/curl 0 $H/dnsmasq.adblock $O "$I";then
+	if /usr/share/overwall/curl 0 $H/dnsmasq.adblock $O "$I" 20 2;then
 		echo "`eval $E` [$A successful]"
 		gen
 		if cmp -s $O $P/adblock.conf;then

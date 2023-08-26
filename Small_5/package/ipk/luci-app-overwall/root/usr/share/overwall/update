@@ -43,7 +43,7 @@ fi
 [ $A = Y ] && mkdir -p $TMP
 
 if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_ips)" ] || [ $C = oversea ];then
-	B=$($DIR/curl 1 $X/IPv4 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20") || clean 1 "Download IPv4 List failed!"
+	B=$($DIR/curl 1 $X/IPv4 "-Lfsm 20" 20 2) || clean 1 "Download IPv4 List failed!"
 	echo "$B" | base64 -d > /tmp/ipv4.txt
 	if cmp -s /tmp/ipv4.txt $TMP/ipv4.txt;then
 		log "IPv4 List is up to date"
@@ -55,7 +55,7 @@ if [ $C = router ] || [ $C = gfw -a "$(uci -q get $N.@access_control[0].lan_gm_i
 fi
 
 if [ $C = router ];then
-	F=$($DIR/curl 1 $X/IPv6 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20") || clean 1 "Download IPv6 List failed!"
+	F=$($DIR/curl 1 $X/IPv6 "-Lfsm 20" 20 2) || clean 1 "Download IPv6 List failed!"
 	echo "$F" | base64 -d > /tmp/ipv6.txt
 	if cmp -s /tmp/ipv6.txt $TMP/ipv6.txt;then
 		log "IPv6 List is up to date"
@@ -67,7 +67,7 @@ if [ $C = router ];then
 fi
 
 if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];then
-	$DIR/curl 0 $X/gfw /tmp/gfw.b64 "--retry 20 --retry-delay 2 --retry-all-errors -Lfsm 20 -o" || clean 1 "Download GFW List failed!"
+	$DIR/curl 0 $X/gfw /tmp/gfw.b64 "-Lfsm 20 -o" 20 2 || clean 1 "Download GFW List failed!"
 	$DIR/gfw
 	if cmp -s /tmp/gfwnew.txt $TMP/gfw.list;then
 		log "GFW List is up to date"

@@ -29,7 +29,7 @@ local set=luci.http.formvalue("set")
 local i=0
 
 if set=="0" then
-	if CALL("/usr/share/overwall/curl 0 ad-rules/dnsmasq.adblock /tmp/ad.conf '-Lfsm 20 -o'")==0 then
+	if CALL("/usr/share/overwall/curl 0 ad-rules/dnsmasq.adblock /tmp/ad.conf '-Lfsm 20 -o' 3 1")==0 then
 		CALL("/usr/share/adblock/adblock gen")
 		i=EXEC("cat /tmp/ad.conf | wc -l")
 		if tonumber(i)>0 then

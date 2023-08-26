@@ -98,7 +98,7 @@ function refresh()
 	local set=http.formvalue("set")
 	local r
 	if set=="0" then
-		if CALL(A..' 0 Overwall/rules/gfw /tmp/gfw.b64 "--retry 3 --retry-all-errors -Lfso"')==0 then
+		if CALL(A..' 0 Overwall/rules/gfw /tmp/gfw.b64 "-Lfso" 3 1')==0 then
 			EXEC("/usr/share/overwall/gfw")
 			if CALL("cmp -s /tmp/gfwnew.txt /tmp/overwall/gfw.list")==0 then
 				r="0"
@@ -111,7 +111,7 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/gfwnew.txt")
 	elseif set=="1" then
-		if CALL(A..' 0 Overwall/rules/IPv4 /tmp/ipv4.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
+		if CALL(A..' 0 Overwall/rules/IPv4 /tmp/ipv4.tmp "-Lfso" 3 1')==0 then
 			EXEC("cat /tmp/ipv4.tmp | base64 -d > /tmp/ipv4.txt")
 			if CALL("cmp -s /tmp/ipv4.txt /tmp/overwall/ipv4.txt")==0 then
 				r="0"
@@ -124,7 +124,7 @@ function refresh()
 		end
 		EXEC("rm -f /tmp/ipv4.txt /tmp/ipv4.tmp")
 	elseif set=="2" then
-		if CALL(A..' 0 Overwall/rules/IPv6 /tmp/ipv6.tmp "--retry 3 --retry-all-errors -Lfso"')==0 then
+		if CALL(A..' 0 Overwall/rules/IPv6 /tmp/ipv6.tmp "-Lfso" 3 1')==0 then
 			EXEC("cat /tmp/ipv6.tmp | base64 -d > /tmp/ipv6.txt")
 			if CALL("cmp -s /tmp/ipv6.txt /tmp/overwall/ipv6.txt")==0 then
 				r="0"

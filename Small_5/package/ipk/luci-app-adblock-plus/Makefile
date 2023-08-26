@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-adblock-plus
 PKG_VERSION:=1.1
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 PKG_MAINTAINER:=Small_5
 
 include $(INCLUDE_DIR)/package.mk

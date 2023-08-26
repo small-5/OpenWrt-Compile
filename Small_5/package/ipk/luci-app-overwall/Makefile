@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-overwall
-PKG_VERSION:=1.1
-PKG_RELEASE:=9
+PKG_VERSION:=1.2
+PKG_RELEASE:=1
 PKG_MAINTAINER:=Small_5
 
 include $(INCLUDE_DIR)/package.mk
