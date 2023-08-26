@@ -987,6 +987,23 @@
 
 --- a/feeds/packages/net/openvpn/Makefile
 +++ b/feeds/packages/net/openvpn/Makefile
+@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=openvpn
+ 
+-PKG_VERSION:=2.6.5
++PKG_VERSION:=2.6.6
+ PKG_RELEASE:=1
+ 
+ PKG_SOURCE_URL:=\
+ 	https://build.openvpn.net/downloads/releases/ \
+ 	https://swupdate.openvpn.net/community/releases/
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_HASH:=e34efdb9a3789a760cfc91d57349dfb1e31da169c98c06cb490c6a8a015638e2
++PKG_HASH:=3b074f392818b31aa529b84f76e8b5e4ad03fca764924f46d906bceaaf421034
+ 
+ PKG_MAINTAINER:=Magnus Kroken <mkroken@gmail.com>
+ 
 @@ -89,20 +89,13 @@ define Build/Configure
  	)
  endef
@@ -1028,6 +1045,18 @@
  endef
  
  $(eval $(call BuildPackage,openvpn-openssl))
+
+--- a/feeds/packages/net/openvpn/patches/101-Fix-EVP_PKEY_CTX_-compilation-with-wolfSSL.patch
++++ b/feeds/packages/net/openvpn/patches/101-Fix-EVP_PKEY_CTX_-compilation-with-wolfSSL.patch
+@@ -9,7 +9,7 @@
+  #include <openssl/kdf.h>
+  #endif
+  #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+-@@ -1419,7 +1419,7 @@ engine_load_key(const char *file, SSL_CT
++@@ -1436,7 +1436,7 @@ engine_load_key(const char *file, SSL_CT
+  #endif /* if HAVE_OPENSSL_ENGINE */
+  }
+  
 
 --- a/feeds/packages/net/smartdns/Makefile
 +++ b/feeds/packages/net/smartdns/Makefile
@@ -1443,7 +1472,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=d616f6160df2e63787673ec9abfe37becc2e1278
++PKG_SOURCE_VERSION:=554f4ef52dee27d5618897cde165ee90ce4bb402
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.3
@@ -1807,11 +1836,11 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=ffb63f3ee5616b069ab453427f4f62701b8ed802
++PKG_SOURCE_VERSION:=54efb62731955ac372a9fde311d3bb9c3303db72
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.10.4
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.12.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.12.1_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
