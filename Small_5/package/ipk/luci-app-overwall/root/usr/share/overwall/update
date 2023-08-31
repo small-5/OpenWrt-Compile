@@ -74,8 +74,20 @@ if [ $C = gfw ] || [ $C = router -a ! $(uci -q get $N.@global[0].gfw_mode) ];the
 	else
 		log "Update GFW List"
 		cp -f /tmp/gfwnew.txt $TMP/gfw.list
-		[ $A = N ] && /etc/init.d/overwall restart
+		[ $A = N ] && R=1
 	fi
 fi
-rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt
+
+B=$($DIR/curl 1 $X/DNS "-Lfsm 20" 20 2) || clean 1 "Download DNS List failed!"
+echo "$B" | base64 -d > /tmp/dns.txt
+if cmp -s /tmp/dns.txt $TMP/dns.txt;then
+	log "DNS List is up to date"
+else
+	log "Update DNS List"
+	cp -f /tmp/dns.txt $TMP/dns.txt
+	[ $A = N ] && R=1
+fi
+
+[ "$R" = 1 ] && /etc/init.d/overwall restart
+rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt
 [ $A = Y ] && /etc/init.d/overwall start &

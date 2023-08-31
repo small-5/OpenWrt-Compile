@@ -275,7 +275,7 @@ rules(){
 	check_net
 	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules  : Check network status successful!";log "Over Rules  : Check IP/GFW files...")
 	mkdir -p /var/run /var/etc
-	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]);then
+	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]) || [ ! -s $K/dns.txt ];then
 		log "Over Rules  : Download IP/GFW files..."
 		firstdown 2;exit
 	fi
@@ -932,7 +932,7 @@ EOF
 	if [ $dns_mode = 0 ];then
 		echo $doh | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group a -exclude-default-group/g' >> $DNS_T
 		for i in $dns;do echo "server-tcp $i -group b -exclude-default-group" >> $DNS_T;done
-		echo -e "nameserver /dnsleaktest.com/b\nnameserver /whrq.net/b\nnameserver /speedtest.net/b\nnameserver /ooklaserver.net/b" >> $DNS_T
+		for i in $(cat $K/dns.txt);do echo "nameserver /$i/b" >> $DNS_T;done
 		doh_t=$(echo $doh | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 		if [ "$doh_t" ];then
 			for i in $doh_t;do
@@ -944,7 +944,7 @@ EOF
 		fi
 	else
 		for i in $dns;do echo "server-tcp $i -group a -exclude-default-group" >> $DNS_T;done
-		echo -e "nameserver /dnsleaktest.com/a\nnameserver /whrq.net/a\nnameserver /speedtest.net/a\nnameserver /ooklaserver.net/a" >> $DNS_T
+		for i in $(cat $K/dns.txt);do echo "nameserver /$i/a" >> $DNS_T;done
 	fi
 
 	if [ "$YB" ];then
@@ -1346,7 +1346,7 @@ stop(){
 	$BIN_DIR/rules -f
 	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE)
 	[ $(ip6tables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while ip6tables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;ip6tables -F OVERWALL-S-RULE && ip6tables -X OVERWALL-S-RULE)
-	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/gfw.b64
+	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt /tmp/gfw.b64
 	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
 	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
 	[ $run_mode = router ] || rm -f $K/ipv6.txt

@@ -10,21 +10,13 @@ Y=Overwall/rules
 
 nf(){
 	[ $(uci -q get overwall.@global[0].nf_ip) ] || return
-	B=1
-	while ! A=$($X 1 $Y/Netflix "-Lfsm 5");do
-		[ $B -ge 20 ] && break || let B++
-		sleep 2
-	done
+	A=$($X 1 $Y/Netflix "-Lfsm 5" 20 2) || return
 	A=$(echo "$A" | base64 -d)
 	for i in $A;do ipset add $1 $i 2>/dev/null;done
 }
 
 tg(){
-	B=1
-	while ! A=$($X 1 $Y/Telegram "-Lfsm 5");do
-		[ $B -ge 20 ] && break || let B++
-		sleep 2
-	done
+	A=$($X 1 $Y/Telegram "-Lfsm 5" 20 2) || return
 	A=$(echo "$A" | base64 -d)
 	for i in $A;do ipset add $1 $i 2>/dev/null;done
 }
