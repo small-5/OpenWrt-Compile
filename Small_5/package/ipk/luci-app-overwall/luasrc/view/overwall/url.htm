@@ -167,6 +167,7 @@ function buildUrl(btn,urlname,sid){
 		info.add=opt.get("server").value;
 		info.port=opt.get("server_port").value;
 		info.id=opt.get("uuid").value;
+		info.aid="0"
 		var v_transport=opt.get("transport").value;
 		if (v_transport=="ws"){
 			info.host=opt.get("ws_host").value;
