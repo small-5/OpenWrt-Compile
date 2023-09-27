@@ -142,5 +142,5 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 	}
 }
 }
-Xray=json.stringify(Xray,1):gsub("%s+null,","")
+Xray=json.stringify(Xray,1):gsub("%s+null,",""):gsub("\\/","/"):gsub("\\\\","\\")
 print(Xray)

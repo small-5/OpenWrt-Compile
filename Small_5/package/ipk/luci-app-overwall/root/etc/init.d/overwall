@@ -528,7 +528,6 @@ start_tcp(){
 				port=0;V2=$CONFIG_FILE
 			fi
 			$BIN_DIR/genxrayconfig $GLOBAL_SERVER $([ $tcp_udp_same = 1 ] && echo tcp,udp || echo tcp) $local_port $port $server $(get_ip) > $V2
-			sed -i 's/\\//g' $V2
 			$cmd -c $V2 >/dev/null 2>&1 &
 			log "Main Node   : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
 			[ $tcp_udp_same = 1 ] && log "UDP Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!"
@@ -536,7 +535,6 @@ start_tcp(){
 		trojan)
 			redir_tcp=$threads
 			$BIN_DIR/gentrojanconfig $GLOBAL_SERVER nat $local_port $server :: > $CONFIG_FILE
-			sed -i 's/\\//g' $CONFIG_FILE
 			for i in $(seq 1 $threads);do
 				$cmd -c $CONFIG_FILE >/dev/null 2>&1 &
 			done
@@ -574,12 +572,10 @@ start_udp(){
 			log "UDP Node    : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $UDP_RELAY_SERVER udp $udp_local_port 0 $udp_server > $CONFIG_UDP_FILE
-			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
 			log "UDP Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER nat $udp_local_port $udp_server 0.0.0.0 > $CONFIG_UDP_FILE
-			sed -i 's/\\//g' $CONFIG_UDP_FILE
 			$cmd -c $CONFIG_UDP_FILE >/dev/null 2>&1 &
 			log "UDP Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
@@ -612,12 +608,10 @@ start_yb(){
 			log "Y2B Node    : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $YB_SERVER tcp $yb_local_port 0 $yb_ip > $CONFIG_YB_FILE
-			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			log "Y2B Node    : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $YB_SERVER nat $yb_local_port $yb_ip :: > $CONFIG_YB_FILE
-			sed -i 's/\\//g' $CONFIG_YB_FILE
 			$cmd -c $CONFIG_YB_FILE >/dev/null 2>&1 &
 			log "Y2B Node    : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
@@ -650,12 +644,10 @@ start_nf(){
 			log "NF Node     : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $NF_SERVER tcp $nf_local_port 0 $nf_ip > $CONFIG_NF_FILE
-			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			log "NF Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $NF_SERVER nat $nf_local_port $nf_ip :: > $CONFIG_NF_FILE
-			sed -i 's/\\//g' $CONFIG_NF_FILE
 			$cmd -c $CONFIG_NF_FILE >/dev/null 2>&1 &
 			log "NF Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
@@ -687,12 +679,10 @@ start_cu(){
 			log "Custom Node : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $CU_SERVER tcp $cu_local_port 0 $cu_ip > $CONFIG_CU_FILE
-			sed -i 's/\\//g' $CONFIG_CU_FILE
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
 			log "Custom Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $CU_SERVER nat $cu_local_port $cu_ip :: > $CONFIG_CU_FILE
-			sed -i 's/\\//g' $CONFIG_CU_FILE
 			$cmd -c $CONFIG_CU_FILE >/dev/null 2>&1 &
 			log "Custom Node : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
@@ -722,12 +712,10 @@ start_tg(){
 			log "TG Node     : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $TG_SERVER tcp $tg_local_port 0 $tg_ip > $CONFIG_TG_FILE
-			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			log "TG Node     : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $TG_SERVER nat $tg_local_port $tg_ip :: > $CONFIG_TG_FILE
-			sed -i 's/\\//g' $CONFIG_TG_FILE
 			$cmd -c $CONFIG_TG_FILE >/dev/null 2>&1 &
 			log "TG Node     : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)
@@ -1174,12 +1162,10 @@ start_local(){
 			log "Socks5 Node : $name Started!";;
 		ss2022|vmess|vless)
 			$BIN_DIR/genxrayconfig $SO_SERVER tcp 0 $socks5_port $socks5_ip $(get_ip) > $CONFIG_SOCK5_FILE
-			sed -i 's/\\//g' $CONFIG_SOCK5_FILE
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			log "Socks5 Node : $($cmd -version | head -1 | awk '{print$1,$2}') Started!";;
 		trojan)
 			$BIN_DIR/gentrojanconfig $SO_SERVER client $socks5_port $socks5_ip :: > $CONFIG_SOCK5_FILE
-			sed -i 's/\\//g' $CONFIG_SOCK5_FILE
 			$cmd -c $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			log "Socks5 Node : Trojan(Ver $($cmd --version 2>&1 | head -1 | awk '{print$3}')) Started!";;
 		naiveproxy)

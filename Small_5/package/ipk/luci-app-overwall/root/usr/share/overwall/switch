@@ -130,11 +130,9 @@ curl_check(){
 			$cmd -c $J >/dev/null 2>&1 &;;
 		ss2022|vmess|vless)
 			$S/genxrayconfig $1 tcp 0 $lport $ip > $J
-			sed -i 's/\\//g' $J
 			$cmd -c $J >/dev/null 2>&1 &;;
 		trojan)
 			$S/gentrojanconfig $1 client $lport $ip :: > $J
-			sed -i 's/\\//g' $J
 			$cmd -c $J >/dev/null 2>&1 &;;
 		naiveproxy)
 			$cmd $J 2>&1 &;;

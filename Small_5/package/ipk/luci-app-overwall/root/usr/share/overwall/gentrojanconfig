@@ -37,4 +37,5 @@ local trojan={
 		fast_open_qlen=20
 	}
 }
-print(json.stringify(trojan,1))
+trojan=json.stringify(trojan,1):gsub("\\/","/"):gsub("\\\\","\\")
+print(trojan)
