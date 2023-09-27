@@ -43,9 +43,9 @@
 +	option max0 '896000'
 +
 
---- a/target/linux/ipq40xx/config-5.15
-+++ b/target/linux/ipq40xx/config-5.15
-@@ -67,14 +67,15 @@
+--- a/target/linux/ipq40xx/config-6.1
++++ b/target/linux/ipq40xx/config-6.1
+@@ -74,14 +74,15 @@
  CONFIG_CPU_CP15=y
  CONFIG_CPU_CP15_MMU=y
  CONFIG_CPU_FREQ=y
@@ -62,7 +62,7 @@
  # CONFIG_CPU_FREQ_GOV_USERSPACE is not set
  CONFIG_CPU_FREQ_STAT=y
  CONFIG_CPU_HAS_ASID=y
-@@ -486,6 +487,7 @@
+@@ -516,6 +517,7 @@
  CONFIG_TREE_RCU=y
  CONFIG_TREE_SRCU=y
  CONFIG_UBIFS_FS=y

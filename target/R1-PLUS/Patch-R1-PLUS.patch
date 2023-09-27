@@ -59,7 +59,7 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-@@ -20,7 +20,7 @@
+@@ -19,7 +19,7 @@
  	radxa,rockpi-e|\
  	xunlong,orangepi-r1-plus|\
  	xunlong,orangepi-r1-plus-lts)

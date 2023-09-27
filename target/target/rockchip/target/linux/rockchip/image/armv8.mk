@@ -153,36 +153,6 @@ define Device/friendlyarm_nanopi-r6s
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r6s
 
-define Device/hinlink_opc-h66k
-  DEVICE_VENDOR := Hinlink
-  DEVICE_MODEL := OPC-H66K
-  SOC := rk3568
-  BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7921e \
-	kmod-r8125 wpad-basic-openssl
-endef
-TARGET_DEVICES += hinlink_opc-h66k
-
-define Device/hinlink_opc-h68k
-  DEVICE_VENDOR := Hinlink
-  DEVICE_MODEL := OPC-H68K
-  SOC := rk3568
-  BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7921e \
-	kmod-r8125 wpad-basic-openssl
-endef
-TARGET_DEVICES += hinlink_opc-h68k
-
-define Device/hinlink_opc-h69k
-  DEVICE_VENDOR := Hinlink
-  DEVICE_MODEL := OPC-H69K
-  SOC := rk3568
-  BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7916-firmware \
-	kmod-mt7921e kmod-r8125 kmod-usb-serial-option uqmi wpad-basic-openssl
-endef
-TARGET_DEVICES += hinlink_opc-h69k
-
 define Device/huake_guangmiao-g4c
   DEVICE_VENDOR := Huake-Cloud
   DEVICE_MODEL := GuangMiao G4C
@@ -211,6 +181,14 @@ define Device/lunzn_fastrhino-r68s
   DEVICE_PACKAGES := kmod-r8125
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
+
+define Device/pine64_rock64
+  DEVICE_VENDOR := Pine64
+  DEVICE_MODEL := Rock64
+  SOC := rk3328
+  BOOT_FLOW := pine64-bin
+endef
+TARGET_DEVICES += pine64_rock64
 
 define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64

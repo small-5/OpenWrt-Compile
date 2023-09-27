@@ -37,7 +37,7 @@
 
 --- a/package/firmware/intel-microcode/Makefile
 +++ b/package/firmware/intel-microcode/Makefile
-@@ -38,14 +38,13 @@
+@@ -39,14 +39,13 @@
  
  define Build/Compile
  	IUCODE_TOOL=$(STAGING_DIR)/../host/bin/iucode_tool $(MAKE) -C $(PKG_BUILD_DIR)
@@ -119,3 +119,16 @@
  }
  menuentry "@TITLE@ (failsafe)" {
  	linux /boot/vmlinuz failsafe=true @ROOTPART@ @CMDLINE@ noinitrd
+
+--- a/target/linux/x86/Makefile
++++ b/target/linux/x86/Makefile
+@@ -10,8 +10,7 @@
+ FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
+ SUBTARGETS:=generic legacy geode 64
+ 
+-KERNEL_PATCHVER:=5.15
+-KERNEL_TESTING_PATCHVER:=6.1
++KERNEL_PATCHVER:=6.1
+ 
+ KERNELNAME:=bzImage
+ 

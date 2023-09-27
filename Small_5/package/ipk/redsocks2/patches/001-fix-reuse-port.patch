@@ -168,7 +168,7 @@
 
 --- a/redsocks.c
 +++ b/redsocks.c
-@@ -998,10 +998,10 @@ static int redsocks_init_instance(redsocks_instance *instance)
+@@ -1019,10 +1019,10 @@ static int redsocks_init_instance(redsocks_instance *instance)
      if (make_socket_transparent(fd))
          log_error(LOG_WARNING, "Continue without TPROXY support");
  
@@ -185,7 +185,7 @@
 
 --- a/redudp.c
 +++ b/redudp.c
-@@ -620,7 +620,7 @@ static int redudp_init_instance(redudp_instance *instance)
+@@ -641,7 +641,7 @@ static int redudp_init_instance(redudp_instance *instance)
      if (apply_reuseport(fd))
          log_error(LOG_WARNING, "Continue without SO_REUSEPORT enabled");
  
