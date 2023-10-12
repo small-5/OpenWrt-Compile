@@ -13,8 +13,8 @@ msgstr "啟用"
 msgid "Enable software flow offloading for connections. (decrease cpu load / increase routing throughput)"
 msgstr "開啟 Flow Offloading 轉發加速. (降低CPU占用 / 增強路由轉發性能，和多WAN或者QOS功能可能會沖突)"
 
-msgid "Enable Hardware NAT (depends on hw capability like MTK 762x)"
-msgstr "啟用硬件HWNAT加速（依賴特定的硬件，例如 MTK 762x 系列）"
+msgid "Enable Hardware NAT (Requires hardware NAT support)"
+msgstr "啟用硬體NAT加速（需要硬體 NAT 支援）"
 
 msgid "Enable BBR"
 msgstr "啟用 BBR"

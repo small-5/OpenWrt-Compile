@@ -217,7 +217,7 @@
 
 --- a/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
 +++ b/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
-@@ -9,23 +9,17 @@ return view.extend({
+@@ -10,23 +10,17 @@ return view.extend({
  		return Promise.all([
  			L.resolveDefault(fs.stat('/sbin/block'), null),
  			L.resolveDefault(fs.stat('/etc/config/fstab'), null),
@@ -287,7 +287,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2560,7 +2560,7 @@ msgstr "不要分段"
+@@ -2570,7 +2570,7 @@ msgstr "不要分段"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -296,7 +296,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3980,18 +3980,6 @@ msgstr "偽造的NX網域覆蓋"
+@@ -3994,18 +3994,6 @@ msgstr "偽造的NX網域覆蓋"
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -315,7 +315,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -4079,23 +4067,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
+@@ -4093,23 +4081,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -339,7 +339,7 @@
  #: protocols/luci-proto-qmi/htdocs/luci-static/resources/protocol/qmi.js:81
  msgid "IPv6 APN"
  msgstr ""
-@@ -4861,7 +4832,7 @@ msgstr "語言與主題"
+@@ -4879,7 +4850,7 @@ msgstr "語言與主題"
  msgid ""
  "Larger weights (of the same prio) are given a proportionately higher "
  "probability of being selected."
@@ -348,7 +348,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:629
  msgid "Last member interval"
-@@ -5017,7 +4988,7 @@ msgstr "監聽連接埠"
+@@ -5035,7 +5006,7 @@ msgstr "監聽連接埠"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:376
  msgid "Listen address"
@@ -357,7 +357,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:411
  msgid "Listen and Relay To IP family must be homogeneous."
-@@ -6107,6 +6078,8 @@ msgid ""
+@@ -6125,6 +6096,8 @@ msgid ""
  "Note: you may also need a DHCP Proxy (currently unavailable) when specifying "
  "a non-standard Relay To port(<code>addr#port</code>)."
  msgstr ""
@@ -366,7 +366,7 @@
  
  #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:142
  msgid "Notes"
-@@ -6408,7 +6381,7 @@ msgstr "選項:"
+@@ -6426,7 +6399,7 @@ msgstr "選項:"
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:661
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:693
  msgid "Ordinal: lower comes first."
@@ -375,7 +375,7 @@
  
  #: protocols/luci-proto-batman-adv/htdocs/luci-static/resources/protocol/batadv.js:55
  msgid "Originator Interval"
-@@ -7398,29 +7371,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
+@@ -7420,29 +7393,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:688
  #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:39
  msgid "Relay"
@@ -411,7 +411,7 @@
  
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6in4.js:50
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6rd.js:49
-@@ -7450,11 +7423,11 @@ msgstr "移除"
+@@ -7472,11 +7445,11 @@ msgstr "移除"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:470
  msgid "Remove IPv4 addresses from the results and only return IPv6 addresses."
@@ -423,9 +423,9 @@
 -msgstr ""
 +msgstr "從結果中刪除 IPv6 地址，只返回 IPv4 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1330
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1342
  msgid "Remove related device settings from the configuration"
-@@ -8781,11 +8754,11 @@ msgstr "與瀏覽器同步時間"
+@@ -8803,11 +8776,11 @@ msgstr "與瀏覽器同步時間"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:299
  msgid "Syntax: <code>/fqdn[/fqdn…]/[ipaddr]</code>."
@@ -439,7 +439,7 @@
  
  #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:26
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js:22
-@@ -9914,7 +9887,7 @@ msgstr "無標題的同行"
+@@ -9936,7 +9909,7 @@ msgstr "無標題的同行"
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -448,7 +448,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
  msgid "Up Delay"
-@@ -10394,7 +10367,7 @@ msgstr "薄弱"
+@@ -10416,7 +10389,7 @@ msgstr "薄弱"
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:666
  msgid "Weight"
@@ -457,7 +457,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:917
  msgid ""
-@@ -10587,15 +10560,15 @@ msgstr ""
+@@ -10609,15 +10582,15 @@ msgstr ""
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:636
  msgid "You may add multiple records for the same Target."
@@ -476,7 +476,7 @@
  
  #: themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/header.ut:78
  #: themes/luci-theme-material/ucode/template/themes/material/header.ut:98
-@@ -10636,6 +10609,8 @@ msgid ""
+@@ -10658,6 +10631,8 @@ msgid ""
  "_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . (Note: while _http is "
  "possible, no browsers support SRV records.)"
  msgstr ""
@@ -1043,7 +1043,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
-+PKG_SOURCE_VERSION:=3916ea570af9c8a92d632d435cb90a651f0dd8bf
++PKG_SOURCE_VERSION:=37a87e864ea8c19f5a7607ee642f46e171f3c2ac
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1216,12 +1216,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=5e70d5bee0e99eeaccd555cc24bd76a3d5bfe045
++PKG_SOURCE_VERSION:=a7ad9672318bc1e0fb059274f34a9e8061aef16e
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.51.3_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.52.1_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1248,7 +1248,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=55e670033ba376e35d20d87fab20efbf76c233fb
++PKG_SOURCE_VERSION:=143991124c2c29f6ae447ebd3e9d804db3000db3
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1443,7 +1443,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=57ed75eb6708b53054e56ae124cd1c471e4f4482
++PKG_SOURCE_VERSION:=aeec8dfe253c4eac98e23a0d78e2e957fb168dac
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.4

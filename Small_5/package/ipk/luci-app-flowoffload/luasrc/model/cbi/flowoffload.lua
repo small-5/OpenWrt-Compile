@@ -11,7 +11,7 @@ o=s:option(Flag,"enabled",translate("Enable"))
 o.description=translate("Enable software flow offloading for connections. (decrease cpu load / increase routing throughput)")
 
 o=s:option(Flag,"hw",translate("HWNAT"))
-o.description=translate("Enable Hardware NAT (depends on hw capability like MTK 762x)")
+o.description=translate("Enable Hardware NAT (Requires hardware NAT support)")
 o:depends("enabled",1)
 
 o=s:option(Flag,"bbr",translate("Enable BBR"))
