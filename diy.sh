@@ -13,6 +13,7 @@ case "$OP_TARGET" in
 	AC58U)path="AC58U";A=2;;
 	ACRH17)path="ACRH17";A=2;;
 	R619AC-128M)path="R619AC-128M";A=2;;
+	MT3000)path="MT3000";A=3;;
 	NANOPI-NEO2)path="NANOPI-NEO2";;
 	*)echo "No adaptation target!";exit 1;;
 esac
@@ -23,6 +24,10 @@ if [ $A = 1 ];then
 	cp -r target/target/rockchip/. Small_5
 elif [ $A = 2 ];then
 	cp -r target/target/ipq40xx/. Small_5
+elif [ $A = 3 ];then
+	rm -rf openwrt/package/boot/{arm-trusted-firmware-mediatek,uboot-mediatek} openwrt/target/linux/mediatek
+	cp -r target/target/mediatek/. Small_5
+	chmod +x Small_5/target/linux/mediatek/base-files/etc/hotplug.d/iface/99-mtk-lro
 fi
 
 cp -r Small_5/. openwrt
