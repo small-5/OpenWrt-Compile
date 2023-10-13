@@ -1248,7 +1248,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=143991124c2c29f6ae447ebd3e9d804db3000db3
++PKG_SOURCE_VERSION:=0440abbc9124db0b67143cd12cc71a3ac2584bea
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207

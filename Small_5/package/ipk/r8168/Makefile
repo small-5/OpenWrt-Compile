@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=r8168
-PKG_VERSION:=8.051.02
+PKG_VERSION:=8.052.01
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk

@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
-PKG_SOURCE_VERSION:=198cca29f752570f9cc53731c94685fc467753c0
+PKG_SOURCE_VERSION:=285e77f9edaa48fa2471ce4710d028eed4653bf7
 PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_NAME:=redsocks2
 PKG_VERSION:=0.68_git-$(PKG_SOURCE_SHORTID)
