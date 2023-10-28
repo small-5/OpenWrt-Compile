@@ -1,0 +1,26 @@
+#!/bin/sh
+uci_get_by_name(){
+	ret=$(uci -q get overwall.$1.$2)
+	echo ${ret:=$3}
+}
+
+a=$(cat /tmp/etc/overwall.include 2>/dev/null | grep cfg | sed 's/.*=//')
+if ! [ "$a" ];then
+	echo -n 2
+	exit
+fi
+b=$(uci_get_by_name $a type)
+n=2
+if [ $b = trojan ];then
+	let n++
+elif [ $b = vmess -o $b = vless ];then
+	c=$(uci_get_by_name $a transport)
+	if [ "$(uci_get_by_name $a mux)" -o $c = grpc -o $c = h2 ];then
+		n=1
+	else
+		[ $c = ws ] && let n++
+		[ "$(uci_get_by_name $a tls)" -o "$(uci_get_by_name $a reality)" ] && let n++
+		[ "$(uci_get_by_name $a vless_flow)" ] && n=$(echo | awk "{print $n+0.5}")
+	fi
+fi
+echo -n $n

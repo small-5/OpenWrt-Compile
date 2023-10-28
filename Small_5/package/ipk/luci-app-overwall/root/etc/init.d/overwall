@@ -477,7 +477,7 @@ rules(){
 
 	r=1
 	while ! $BIN_DIR/rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
-		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$lan_gm_ip" -D "$proxyport" $mode $UDP $YB $NF $CU $TG $P $D;do
+		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$lan_gm_ip" -D "$proxyport" -t "$GLOBAL_SERVER" $mode $UDP $YB $NF $CU $TG $P $D;do
 		[ $r -ge 20 ] && log "Over Rules  : Start iptables rules failed!" && return 1
 		let r++;sleep 1
 	done

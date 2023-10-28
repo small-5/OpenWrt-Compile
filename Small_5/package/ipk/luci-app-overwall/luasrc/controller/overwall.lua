@@ -67,13 +67,15 @@ end
 function check()
 	local r=0
 	local u=http.formvalue("url")
+	local n=2
 	if u=="1" then
 		u="www.taobao.com"
 	else
 		u="www.google.com/generate_204"
+		n=EXEC("/usr/share/overwall/type")
 	end
 	if CALL("curl -m 5 -so /dev/null https://"..u)==0 then
-		r=EXEC("curl -m 5 -o /dev/null -sw %{time_starttransfer} http://"..u.." | awk '{printf ($1*1000/2)}'")
+		r=EXEC("curl -m 5 -o /dev/null -sw %{time_starttransfer} http://"..u.." | awk '{printf ($1*1000/"..n..")}'")
 		if r~="0" then
 			r=EXEC("echo -n "..r.." | sed 's/\\..*//'")
 			if r=="0" then r="1" end

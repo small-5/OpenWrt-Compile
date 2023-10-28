@@ -217,6 +217,7 @@ gen_include(){
 		echo 'COMMIT'
 	}
 	cat <<-EOF >> $FWI
+	cfg=$CFG
 	main_ip=$server
 	$([ $SERVER ] && echo udp_ip=$SERVER)
 	iptables-save -c | grep -v OVERWALL | iptables-restore -c
@@ -236,7 +237,7 @@ EOF
 	fi
 }
 
-while getopts ":s:l:S:L:N:P:Y:Z:H:I:J:K:a:b:w:p:G:D:rczxyf" arg;do
+while getopts ":s:l:S:L:N:P:Y:Z:H:I:J:K:a:b:w:p:G:D:t:rczxyf" arg;do
 	case $arg in
 		s)server=$OPTARG;;
 		l)local_port=$OPTARG;;
@@ -256,6 +257,7 @@ while getopts ":s:l:S:L:N:P:Y:Z:H:I:J:K:a:b:w:p:G:D:rczxyf" arg;do
 		p)LAN_FP_IP=$OPTARG;;
 		G)LAN_GM_IP=$OPTARG;;
 		D)PROXY_PORTS=$OPTARG;;
+		t)CFG=$OPTARG;;
 		r)MODE=router;A=1;;
 		c)MODE=oversea;A=1;;
 		z)MODE=all;;
