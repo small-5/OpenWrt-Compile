@@ -7,7 +7,7 @@ touch $LOCK
 
 A=/tmp/adblock
 B=/tmp/adupdate.log
-C="date +'%Y-%m-%d %H:%M:%S'"
+C="date +'$(date +'%Y' | awk '{print ($1-1911)}')-%m-%d %H:%M:%S'"
 D="Download Adblock Plus Rules"
 
 clean(){

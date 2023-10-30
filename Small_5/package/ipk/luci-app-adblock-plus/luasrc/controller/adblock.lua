@@ -40,7 +40,7 @@ if set=="0" then
 				EXEC("/etc/init.d/dnsmasq restart &")
 				r=tostring(math.ceil(tonumber(i)))
 			end
-			CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
+			CALL("echo `date +'%Y' | awk '{print ($1-1911)}'`-`date +'%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 		else
 			r="-1"
 		end
@@ -59,7 +59,7 @@ else
 			EXEC("/etc/init.d/adblock restart &")
 			r=tostring(math.ceil(tonumber(i)))
 		end
-		CALL("echo `date +'%Y-%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
+		CALL("echo `date +'%Y' | awk '{print ($1-1911)}'`-`date +'%m-%d %H:%M:%S'` > /tmp/adblock/adblock.updated")
 	else
 		r="-1"
 	end
