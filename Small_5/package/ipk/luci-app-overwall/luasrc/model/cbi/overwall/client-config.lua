@@ -256,6 +256,9 @@ o:depends("transport","ws")
 o=s:option(Value,"ws_path",translate("WebSocket Path"))
 o:depends("transport","ws")
 
+o=s:option(Value,"ws_ua",translate("WebSocket UserAgent"))
+o:depends("transport","ws")
+
 o=s:option(Value,"h2_host",translate("HTTP/2 Host"))
 o:depends("transport","h2")
 

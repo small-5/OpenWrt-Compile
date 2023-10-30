@@ -10,7 +10,7 @@ local ip_addr=arg[5]
 local udp_addr=arg[6] or "127.0.0.1"
 local server=ucursor:get_all("overwall",server_section)
 local tls_host=server.tls_host or server.http_host or server.ws_host or server.h2_host or server.server
-if server.tls=='1' then server.security="zero" end
+if server.tls=='1' then server.security="zero" else server.ws_ua=server.ws_ua or "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1" end
 local function get_domain_excluded()
 	local content = fs.readfile("/etc/overwall/excluded.list")
 	if not content then return nil end
@@ -71,7 +71,7 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 		security=(server.reality=='1') and "reality" or (server.tls=='1') and "tls" or nil,
 		tlsSettings=(server.tls=='1') and {
 			allowInsecure=(server.insecure=="1") and true or nil,
-			fingerprint=server.fingerprint or nil,
+			fingerprint=server.fingerprint or "random",
 			serverName=tls_host,
 			certificates=(server.certificate=="1") and {{
 				usage="verify",
@@ -109,7 +109,10 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 		} or nil,
 		wsSettings=(server.transport=="ws") and {
 			path=server.ws_path,
-			headers={Host=server.ws_host or server.server}
+			headers={
+				Host=server.ws_host or server.server,
+				UA=server.ws_ua
+			}
 		} or nil,
 		httpSettings=(server.transport=="h2") and {
 			path=server.h2_path,
@@ -142,5 +145,5 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 	}
 }
 }
-Xray=json.stringify(Xray,1):gsub("%s+null,",""):gsub("\\/","/"):gsub("\\\\","\\")
+Xray=json.stringify(Xray,1):gsub("%s+null,",""):gsub("\\/","/"):gsub("\\\\","\\"):gsub("UA\": ","User-Agent\": ")
 print(Xray)
