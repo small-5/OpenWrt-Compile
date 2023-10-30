@@ -57,7 +57,7 @@ if [ $1 = 2 ];then
 	exit
 elif [ $1 = 3 ];then
 	sed -i '/HardwareCode/d' /tmp/overwall.log 2>/dev/null
-	echo $(date +'%Y-%m-%d %H:%M:%S') HardwareCode: $(hard_code) >> /tmp/overwall.log
+	echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') HardwareCode: $(hard_code) >> /tmp/overwall.log
 	exit
 fi
 
@@ -87,15 +87,15 @@ else
 	E=/tmp/overauth.log
 	F=/tmp/lock/overauth.lock
 	if [ "$D" = "中華民國千秋萬世直到永遠 ROC Forver" ];then
-		[ -f $F ] && echo $(date +'%Y-%m-%d %H:%M:%S') 上一個任務未結束 >> $E && exit
+		[ -f $F ] && echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') 上一個任務未結束 >> $E && exit
 		touch $F
 		case $1 in
-			4)echo $(date +'%Y-%m-%d %H:%M:%S') 當前鏈結: ${C:-空} >> $E;;
+			4)echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') 當前鏈結: ${C:-空} >> $E;;
 			5)A=`export PASS="$B";echo $2 | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -pass env:PASS | sed -e 's/^U2/$1/'`
-			echo $(date +'%Y-%m-%d %H:%M:%S') 加密代碼: ${A:0:9}ROC1911${A:9:10}For${A:19:5}ever${A:24} >> $E;;
+			echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') 加密代碼: ${A:0:9}ROC1911${A:9:10}For${A:19:5}ever${A:24} >> $E;;
 			6)sed -i '/列表起始位/,/列表結束位/d' $E
 			echo --------------------------------------------列表起始位-------------------------------------------- >> $E
-			echo $(date +'%Y-%m-%d %H:%M:%S') >> $E
+			echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') >> $E
 			eval $(uci -q get $N.auth_a) >> $E
 			echo --------------------------------------------列表結束位-------------------------------------------- >> $E;;
 			7)eval $(uci -q get $N.auth_b) >> $E;;
@@ -107,6 +107,6 @@ else
 		rm $F
 	else
 		sed -i '/非授權者不得使用此功能/d' $E 2>/dev/null
-		echo $(date +'%Y-%m-%d %H:%M:%S') 非授權者不得使用此功能 >> $E
+		echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') 非授權者不得使用此功能 >> $E
 	fi
 fi

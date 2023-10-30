@@ -32,7 +32,7 @@ gfw_mode=$(uci_get_by_type global gfw_mode 0)
 [ "$password" != "" ] && password="--key "${password}
 
 log(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') Over Montior: $*" >> /tmp/$NAME.log
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Montior: $*" >> /tmp/$NAME.log
 }
 
 res(){

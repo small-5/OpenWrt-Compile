@@ -14,13 +14,13 @@ E=$($DIR/curl 2)
 X=Overwall/rules
 
 log(){
-	[ $A = N ] && echo "$(date +'%Y-%m-%d %H:%M:%S') Over Update : $*" >> /tmp/overwall.log
+	[ $A = N ] && echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Update : $*" >> /tmp/overwall.log
 }
 
 clean(){
 	local a
 	[ $1 = 0 ] && a="Rules  :" || a="Update :"
-	echo "$(date +'%Y-%m-%d %H:%M:%S') Over $a $2" >> /tmp/overwall.log
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over $a $2" >> /tmp/overwall.log
 	rm -f $LOCK /var/lock/overwall.lock
 	exit 1
 }

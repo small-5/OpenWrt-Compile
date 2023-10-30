@@ -71,7 +71,7 @@ gen_log()(
 )
 
 log(){
-	echo "$(date +'%Y-%m-%d %H:%M:%S') $*" >> $LOG
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') $*" >> $LOG
 }
 
 firstdown(){
