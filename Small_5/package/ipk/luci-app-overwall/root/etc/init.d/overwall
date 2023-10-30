@@ -914,6 +914,7 @@ cache-persist no
 cache-size 0
 log-level fatal
 log-file $LOG
+tcp-idle-time 5
 bind :5335 -group a
 bind :5336 -group i -no-rule-soa
 EOF
