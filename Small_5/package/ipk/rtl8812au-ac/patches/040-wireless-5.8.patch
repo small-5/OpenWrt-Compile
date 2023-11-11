@@ -1,6 +1,6 @@
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -460,7 +460,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -460,7 +460,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset,
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
  	if (started) {
@@ -9,14 +9,14 @@
  		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false);
-@@ -476,7 +476,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -476,7 +476,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset,
  	if (!rtw_cfg80211_allow_ch_switch_notify(adapter))
  		goto exit;
  
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
- #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
 @@ -1155,7 +1155,7 @@ check_bss:
  		#endif
@@ -54,7 +54,7 @@
  	int link_id,
  #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2077,7 +2077,7 @@ static int cfg80211_rtw_del_key(struct w
+@@ -2077,7 +2077,7 @@ static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
  
  static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  	struct net_device *ndev,
@@ -63,7 +63,7 @@
  	int link_id,
  #endif
  	u8 key_index
-@@ -2129,7 +2129,7 @@ static int cfg80211_rtw_set_default_key(
+@@ -2129,7 +2129,7 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
  int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
  	struct net_device *ndev,
@@ -72,16 +72,16 @@
  	int link_id,
  #endif
  	u8 key_index)
-@@ -5267,7 +5267,7 @@ static int cfg80211_rtw_change_beacon(st
+@@ -5267,7 +5267,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
  	return ret;
  }
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
- static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
- #else
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 2))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 2)) && !defined(BUILD_OPENWRT))
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -6143,7 +6143,7 @@ static int	cfg80211_rtw_set_channel(stru
+ #else
+ static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
+@@ -6143,7 +6143,7 @@ static int	cfg80211_rtw_set_channel(struct wiphy *wiphy
  	return 0;
  }
  
@@ -90,12 +90,12 @@
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy, struct wireless_dev *wdev, unsigned int link_id, struct cfg80211_chan_def *chandef){
  #else
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy, struct wireless_dev *wdev, struct cfg80211_chan_def *chandef){
-@@ -10432,9 +10432,9 @@ void rtw_wdev_unregister(struct wireless
+@@ -10435,9 +10435,9 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
--	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
-+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) || defined(BUILD_OPENWRT))
+-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
++	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || defined(BUILD_OPENWRT))
  	if (wdev->links[0].client.current_bss) {
 -	#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
 +	#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
@@ -104,7 +104,7 @@
  	if (wdev->current_bss) {
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -1737,7 +1737,11 @@ int rtw_os_ndev_register(_adapter *adapt
+@@ -1737,7 +1737,11 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
  #else
@@ -117,7 +117,7 @@
  #endif
  #endif /* CONFIG_RTW_NAPI */
  
-@@ -2794,7 +2798,13 @@ static int netdev_vir_if_close(struct ne
+@@ -2794,7 +2798,13 @@ static int netdev_vir_if_close(struct net_device *pnetdev)
  
  #ifdef CONFIG_IOCTL_CFG80211
  	wdev->iftype = NL80211_IFTYPE_MONITOR;

@@ -287,7 +287,7 @@
 
 --- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
 +++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -2570,7 +2570,7 @@ msgstr "不要分段"
+@@ -2586,7 +2586,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:152
  msgid "Down"
@@ -296,7 +296,7 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:403
  msgid "Down Delay"
-@@ -3994,18 +3994,6 @@ msgstr "偽造的NX網域覆蓋"
+@@ -4010,18 +4010,6 @@
  msgid "IPsec XFRM"
  msgstr "IPsec XFRM協定"
  
@@ -315,7 +315,7 @@
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/iptables.js:351
  msgid "IPv4 Firewall"
  msgstr "IPv4防火牆"
-@@ -4093,23 +4081,6 @@ msgstr "IPv4/IPv6 (雙啟 - 預設到IPv4)"
+@@ -4109,23 +4097,6 @@
  msgid "IPv4/IPv6 traffic table \"%h\""
  msgstr "IPv4/IPv6 流量表 \"%h\""
  
@@ -339,7 +339,7 @@
  #: protocols/luci-proto-qmi/htdocs/luci-static/resources/protocol/qmi.js:81
  msgid "IPv6 APN"
  msgstr ""
-@@ -4879,7 +4850,7 @@ msgstr "語言與主題"
+@@ -4894,7 +4865,7 @@
  msgid ""
  "Larger weights (of the same prio) are given a proportionately higher "
  "probability of being selected."
@@ -348,16 +348,7 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:629
  msgid "Last member interval"
-@@ -5035,7 +5006,7 @@ msgstr "監聽連接埠"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:376
- msgid "Listen address"
--msgstr ""
-+msgstr "監聽位址"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:411
- msgid "Listen and Relay To IP family must be homogeneous."
-@@ -6125,6 +6096,8 @@ msgid ""
+@@ -6129,6 +6100,8 @@
  "Note: you may also need a DHCP Proxy (currently unavailable) when specifying "
  "a non-standard Relay To port(<code>addr#port</code>)."
  msgstr ""
@@ -366,17 +357,17 @@
  
  #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:142
  msgid "Notes"
-@@ -6426,7 +6399,7 @@ msgstr "選項:"
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:661
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:693
+@@ -6434,7 +6407,7 @@
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:665
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:697
  msgid "Ordinal: lower comes first."
 -msgstr ""
 +msgstr "序數：較低的優先。"
  
  #: protocols/luci-proto-batman-adv/htdocs/luci-static/resources/protocol/batadv.js:55
  msgid "Originator Interval"
-@@ -7420,29 +7393,29 @@ msgstr "拒絕前綴長度小於或等於指定值的路由決策"
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:688
+@@ -7428,25 +7401,25 @@
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:692
  #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:39
  msgid "Relay"
 -msgstr "延遲"
@@ -393,11 +384,6 @@
 -msgstr ""
 +msgstr "從別處中繼 DHCP 請求。OK: v4↔v4, v6↔v6. Not OK: v4↔v6, v6↔v4。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:388
- msgid "Relay To address"
--msgstr ""
-+msgstr "Relay To 位址"
- 
  #: protocols/luci-proto-relay/htdocs/luci-static/resources/protocol/relay.js:154
  msgid "Relay between networks"
 -msgstr "網路間的延遲"
@@ -409,37 +395,46 @@
 -msgstr "橋接延遲"
 +msgstr "橋接中繼"
  
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:367
+ msgid "Relay from"
+@@ -7454,7 +7427,7 @@
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:387
+ msgid "Relay to address"
+-msgstr ""
++msgstr "Relay To 位址"
+ 
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6in4.js:50
  #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/6rd.js:49
-@@ -7472,11 +7445,11 @@ msgstr "移除"
+@@ -7484,11 +7457,11 @@
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:470
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:474
  msgid "Remove IPv4 addresses from the results and only return IPv6 addresses."
 -msgstr ""
 +msgstr "從結果中刪除 IPv4 地址，只返回 IPv6 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:464
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:468
  msgid "Remove IPv6 addresses from the results and only return IPv4 addresses."
 -msgstr ""
 +msgstr "從結果中刪除 IPv6 地址，只返回 IPv4 地址。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1342
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1365
  msgid "Remove related device settings from the configuration"
-@@ -8803,11 +8776,11 @@ msgstr "與瀏覽器同步時間"
+@@ -8815,11 +8788,11 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:299
  msgid "Syntax: <code>/fqdn[/fqdn…]/[ipaddr]</code>."
 -msgstr ""
 +msgstr "語法：<code>/fqdn[/fqdn…]/[ipaddr]</code>."
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:646
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:650
  msgid "Syntax: <code>_service._proto.example.com</code>."
 -msgstr ""
 +msgstr "語法：<code>_service._proto.example.com</code>."
  
  #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:26
  #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js:22
-@@ -9936,7 +9909,7 @@ msgstr "無標題的同行"
+@@ -9948,7 +9921,7 @@
  
  #: modules/luci-compat/luasrc/view/cbi/tblsection.htm:151
  msgid "Up"
@@ -448,23 +443,23 @@
  
  #: protocols/luci-proto-bonding/htdocs/luci-static/resources/protocol/bonding.js:411
  msgid "Up Delay"
-@@ -10416,7 +10389,7 @@ msgstr "薄弱"
+@@ -10428,7 +10401,7 @@
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:666
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:670
  msgid "Weight"
 -msgstr ""
 +msgstr "權重"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:917
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:921
  msgid ""
-@@ -10609,15 +10582,15 @@ msgstr ""
+@@ -10621,15 +10594,15 @@
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:636
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:640
  msgid "You may add multiple records for the same Target."
 -msgstr ""
 +msgstr "你可以為同一目標添加多條記錄。"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:673
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:677
  msgid "You may add multiple records for the same domain."
 -msgstr ""
 +msgstr "你可以為同一個域添加多條記錄。"
@@ -476,14 +471,14 @@
  
  #: themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/header.ut:78
  #: themes/luci-theme-material/ucode/template/themes/material/header.ut:98
-@@ -10658,6 +10631,8 @@ msgid ""
+@@ -10670,6 +10643,8 @@
  "_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . (Note: while _http is "
  "possible, no browsers support SRV records.)"
  msgstr ""
 +"_service: _sip, _ldap, _imap, _stun, _xmpp-client, … . （注：雖然 _http 有可"
 +"能，但沒有瀏覽器支持 SRV 記錄。）"
  
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:531
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:535
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/routes.js:153
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
@@ -524,7 +519,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -667,9 +667,9 @@ return view.extend({
+@@ -667,9 +667,9 @@
  										uci.set('dhcp', section_id, 'interface', section_id);
  
  										if (protoval == 'static') {
@@ -536,7 +531,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -686,7 +686,7 @@ return view.extend({
+@@ -686,7 +686,7 @@
  						so = ss.taboption('general', form.Value, 'start', _('Start'), _('Lowest leased address as offset from the network address.'));
  						so.optional = true;
  						so.datatype = 'or(uinteger,ip4addr("nomask"))';
@@ -545,7 +540,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -695,12 +695,13 @@ return view.extend({
+@@ -695,12 +695,13 @@
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -560,7 +555,7 @@
  
  						// XXX: is this actually useful?
  						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
-@@ -973,6 +974,7 @@ return view.extend({
+@@ -996,6 +997,7 @@
  				ifc.renderFormOptions(s);
  
  				// Common interface options
@@ -568,7 +563,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Flag, 'defaultroute', _('Use default gateway'), _('If unchecked, no default route is configured'));
  				o.default = o.enabled;
  
-@@ -1069,6 +1071,7 @@ return view.extend({
+@@ -1092,6 +1094,7 @@
  				o = nettools.replaceOption(s, 'advanced', form.Value, 'ip6weight', _('IPv6 preference'), _('When delegating prefixes to multiple downstreams, interfaces with a higher preference value are considered first when allocating subnets.'));
  				o.datatype = 'uinteger';
  				o.placeholder = '0';
@@ -1043,7 +1038,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
-+PKG_SOURCE_VERSION:=37a87e864ea8c19f5a7607ee642f46e171f3c2ac
++PKG_SOURCE_VERSION:=79a49c6bd6f42452b4b20db2b4ea188aabfe8cc9
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1216,12 +1211,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=a7ad9672318bc1e0fb059274f34a9e8061aef16e
++PKG_SOURCE_VERSION:=184223cb2f240b844f90b3390645672d2225da88
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.52.1_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.52.3_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1321,7 +1316,7 @@
 -PKG_VERSION:=3.3.5
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=9
+ PKG_RELEASE:=10
 -
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
@@ -1341,7 +1336,7 @@
  PKG_FIXUP:=autoreconf
  PKG_INSTALL:=1
  PKG_BUILD_FLAGS:=no-mips16 lto
-@@ -33,27 +36,6 @@ PKG_BUILD_DEPENDS:=c-ares pcre
+@@ -33,27 +36,6 @@ PKG_BUILD_DEPENDS:=c-ares pcre2
  
  include $(INCLUDE_DIR)/package.mk
  
@@ -1443,13 +1438,13 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=aeec8dfe253c4eac98e23a0d78e2e957fb168dac
++PKG_SOURCE_VERSION:=ac52a226d16b77c400535feb5eddc395aa1113bd
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.4
 -PKG_RELEASE:=1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.4_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.8.5_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1567,12 +1562,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=9ae8b0b3b60b27cf06d7e74629c17e4a0f248364
++PKG_SOURCE_VERSION:=a477688e5147ee534efb27f02f21f5db75cd47e1
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.12.2
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.12.2_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=1
+ PKG_RELEASE:=2
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -1719,7 +1714,7 @@
 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
 +++ /dev/null
-@@ -1,376 +0,0 @@
+@@ -1,386 +0,0 @@
 -'use strict';
 -'require baseclass';
 -'require fs';
@@ -1860,15 +1855,24 @@
 -	}
 -}
 -
--function resolveVLANPorts(ifname, mapping)
+-function resolveVLANPorts(ifname, mapping, seen)
 -{
 -	var ports = [];
 -
--	if (mapping[ifname])
--		for (var i = 0; i < mapping[ifname].length; i++)
--			ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping));
--	else
+-	if (!seen)
+-		seen = {};
+-
+-	if (mapping[ifname]) {
+-		for (var i = 0; i < mapping[ifname].length; i++) {
+-			if (!seen[mapping[ifname][i]]) {
+-				seen[mapping[ifname][i]] = true;
+-				ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping, seen));
+-			}
+-		}
+-	}
+-	else {
 -		ports.push(ifname);
+-	}
 -
 -	return ports.sort(L.naturalCompare);
 -}
@@ -1922,7 +1926,7 @@
 -	return portmap;
 -}
 -
--function formatSpeed(speed, duplex) {
+-function formatSpeed(carrier, speed, duplex) {
 -	if (speed && duplex) {
 -		var d = (duplex == 'half') ? '\u202f(H)' : '',
 -		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
@@ -1942,7 +1946,7 @@
 -		return e;
 -	}
 -
--	return _('no link');
+-	return carrier ? _('Connected') : _('no link');
 -}
 -
 -function formatStats(portdev) {
@@ -2065,21 +2069,22 @@
 -		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em' }, known_ports.map(function(port) {
 -			var speed = port.netdev.getSpeed(),
 -			    duplex = port.netdev.getDuplex(),
+-			    carrier = port.netdev.getCarrier(),
 -			    pmap = port_map[port.netdev.getName()],
 -			    pzones = (pmap && pmap.zones.length) ? pmap.zones.sort(function(a, b) { return L.naturalCompare(a.getName(), b.getName()) }) : [ null ];
 -
 -			return E('div', { 'class': 'ifacebox', 'style': 'margin:.25em;min-width:70px;max-width:100px' }, [
 -				E('div', { 'class': 'ifacebox-head', 'style': 'font-weight:bold' }, [ port.netdev.getName() ]),
 -				E('div', { 'class': 'ifacebox-body' }, [
--					E('img', { 'src': L.resource('icons/port_%s.png').format((speed && duplex) ? 'up' : 'down') }),
+-					E('img', { 'src': L.resource('icons/port_%s.png').format(carrier ? 'up' : 'down') }),
 -					E('br'),
--					formatSpeed(speed, duplex)
+-					formatSpeed(carrier, speed, duplex)
 -				]),
 -				E('div', { 'class': 'ifacebox-head cbi-tooltip-container', 'style': 'display:flex' }, [
 -					E([], pzones.map(function(zone) {
 -						return E('div', {
 -							'class': 'zonebadge',
--							'style': 'cursor:help;flex:1;height:3px;' + firewall.getZoneColorStyle(zone)
+-							'style': 'cursor:help;flex:1;height:3px;opacity:' + (carrier ? 1 : 0.25) + ';' + firewall.getZoneColorStyle(zone)
 -						});
 -					})),
 -					E('span', { 'class': 'cbi-tooltip left' }, [ renderNetworksTooltip(pmap) ])
