@@ -2,7 +2,7 @@
 
 ddns=`uci get openvpn.myvpn.ddns`
 port=`uci get openvpn.myvpn.port`
-proto=`uci get openvpn.myvpn.proto`
+proto=`uci get openvpn.myvpn.proto | sed 's/6//'`
 ciphers=`uci get openvpn.myvpn.data_ciphers`
 OVPN=`cat /etc/openvpn/ovpnadd/ovpnadd.conf 2>/dev/null`
 RETRY=`uci -q get openvpn.myvpn.retry`
@@ -21,7 +21,6 @@ auth-nocache
 connect-retry $RETRY
 cipher $ciphers
 data-ciphers $ciphers
-windows-driver wintun
 EOF
 uci -q get openvpn.myvpn.remote_cert_tls >/dev/null && echo remote-cert-tls server >> /tmp/my.ovpn
 uci -q get openvpn.myvpn.tls_auth >/dev/null && status=1 && echo key-direction 1 >> /tmp/my.ovpn
