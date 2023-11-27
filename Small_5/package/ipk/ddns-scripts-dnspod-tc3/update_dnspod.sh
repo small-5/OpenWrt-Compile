@@ -70,7 +70,7 @@ JSON(){
 	echo $(ddnsjson -k "$__TMP" -x "$1")
 }
 
-# Dnspod API的通訊函数
+# Dnspod API的通訊函數
 dnspod_transfer(){
 	__CNT=0
 	case $1 in

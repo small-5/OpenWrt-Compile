@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ddns-scripts-cf
-PKG_VERSION:=1.0
-PKG_RELEASE:=2
+PKG_NAME:=ddns-scripts-huawei
+PKG_VERSION:=1.0.1
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Small_5
 
@@ -14,13 +14,13 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=IP Addresses and Names
-	TITLE:=DDNS extension for Cloudflare
+	TITLE:=DDNS extension for HuaweiCloud
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +curl +ddnsjson
+	DEPENDS:=+ddns-scripts +curl +ddnsjson +openssl-util
 endef
 
 define Package/$(PKG_NAME)/description
-	Dynamic DNS Client scripts extension for Cloudflare
+	Dynamic DNS Client scripts extension for HuaweiCloud
 endef
 
 define Build/Configure
@@ -41,9 +41,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/update_cloudflare_com_v4.sh $(1)/usr/lib/ddns
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/*.sh $(1)/usr/lib/ddns
 	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./cloudflare.com-v4.json $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./*.json $(1)/usr/share/ddns/default
 endef
 
 define Package/$(PKG_NAME)/prerm

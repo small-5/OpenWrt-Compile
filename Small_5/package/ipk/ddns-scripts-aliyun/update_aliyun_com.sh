@@ -67,7 +67,7 @@ JSON(){
 	echo $(ddnsjson -k "$__TMP" -x "$1")
 }
 
-# 阿里雲API的通訊函数
+# 阿里雲API的通訊函數
 aliyun_transfer(){
 	__CNT=0;__URLARGS=
 	[ $# = 0 ] && write_log 12 "'aliyun_transfer()' Error - wrong number of parameters"

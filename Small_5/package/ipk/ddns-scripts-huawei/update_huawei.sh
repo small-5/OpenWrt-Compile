@@ -5,11 +5,13 @@
 [ -z "$password" ] && write_log 14 "Configuration error! [Password] cannot be empty"
 
 # 檢查外部調用工具
-[ -n "$CURL_SSL" ] || write_log 13 "Cloudflare communication require cURL with SSL support. Please install"
+[ -n "$CURL_SSL" ] || write_log 13 "Huawei communication require cURL with SSL support. Please install"
 [ -n "$CURL_PROXY" ] || write_log 13 "cURL: libcurl compiled without Proxy support"
+command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is required to use Huawei API, please install first"
 
 # 變量聲明
-local __TMP __I __DOMAIN __TYPE __CMDBASE __ZONEID __POST __POST2 __RECIP __RECID __TTL __CNT __A
+local __TMP __I __N __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __RECIP __RECID __TTL __CNT __A
+__APIHOST=dns.myhuaweicloud.com
 
 # 設定記錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
@@ -46,29 +48,28 @@ build_command(){
 
 # 生成URL
 URL(){
-	local A="$2 -H 'Content-Type: application/json'"
-	if [ "$username" = Bearer ];then
-		A="$A -H 'Authorization: Bearer $password'"
-	else
-		A="$A -H 'X-Auth-Email: $username' -H 'X-Auth-Key: $password'"
-	fi
-	__A="$__CMDBASE $A 'https://api.cloudflare.com/client/v4/zones$1'"
+	local A B C D E
+	A=$(date -u '+%Y%m%dT%H%M%SZ')
+	B="$1\n$2/\n$3\ncontent-type:application/json\nhost:$__APIHOST\nx-sdk-date:$A\n\ncontent-type;host;x-sdk-date\n$(echo -n $4 | sha256sum | awk '{print $1}')"
+	C="SDK-HMAC-SHA256\n$A\n$(echo -en $B | sha256sum | awk '{print $1}')"
+	D="SDK-HMAC-SHA256 Access=$username, SignedHeaders=content-type;host;x-sdk-date, Signature=$(echo -en $C | openssl dgst -sha256 -mac HMAC -macopt key:$password | awk '{print $2}')"
+	E="-H 'Authorization: $D' -H 'X-Sdk-Date: $A' -H 'content-type: application/json' $([ -n "$4" ] && echo -d \'$4\') $([ $1 = PUT ] && echo -X PUT)"
+	__A="$__CMDBASE $E 'https://$__APIHOST$2$([ -n "$3" ] && echo ?$3)'"
 }
 
 # 處理JSON
 JSON(){
-	echo $(ddnsjson -k "$__TMP" -x "$1")
+	echo "$(ddnsjson -k "$__TMP" -x "$1")"
 }
 
-# Cloudflare API的通訊函數
-cloudflare_transfer(){
+# Huawei API的通訊函數
+huawei_transfer(){
 	__CNT=0
 	case $1 in
-		0)URL "?&per_page=50";;
-		1)URL "?name=$__DOMAIN";;
-		2)URL "$__POST?name=$domain&type=$__TYPE";;
-		3)URL "$__POST" "$__POST2:60}'";;
-		4)URL "$__POST/$__RECID" "-X PUT $__POST2:$__TTL,\"comment\":\"$__COMMENT\"}'";;
+		0)URL GET /v2/zones "" "";;
+		1)URL GET /v2/recordsets "name=$domain&search_mode=equal&type=$__TYPE" "";;
+		2)URL POST /v2/zones/$__ZONE_ID/recordsets "" "$__POST}";;
+		3)URL PUT /v2/zones/$__ZONE_ID/recordsets/$__RECID "" "$__POST1";;
 	esac
 
 	while ! __TMP=`eval $__A 2>&1`;do
@@ -85,9 +86,13 @@ cloudflare_transfer(){
 		wait $PID_SLEEP
 		PID_SLEEP=0
 	done
-	__ERR=`JSON @.success`
-	[ $__ERR = true ] && return 0
-	local A="$(date +%H%M%S) ERROR : [$(JSON @.errors[*].message)] - 終止進程"
+	__ERR=`JSON @.error_code`
+	[ $__ERR ] || return 0
+	case $__ERR in
+		APIGW.0301)printf "%s\n" " $(date +%H%M%S)       : AK/SK錯誤,簽名驗證失敗或時戳錯誤,2秒後重試" >> $LOGFILE && return 1;;
+		*)__TMP=`JSON @.error_msg`;;
+	esac
+	local A="$(date +%H%M%S) ERROR : [$__TMP] - 終止進程"
 	logger -p user.err -t ddns-scripts[$$] $SECTION_ID: ${A:15}
 	printf "%s\n" " $A" >> $LOGFILE
 	exit 1
@@ -95,23 +100,25 @@ cloudflare_transfer(){
 
 # 添加解析記錄
 add_domain(){
-	while ! cloudflare_transfer 3;do sleep 2;done
+	while ! huawei_transfer 2;do sleep 2;done
 	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
 	return 0
 }
 
 # 修改解析記錄
 update_domain(){
-	while ! cloudflare_transfer 4;do sleep 2;done
+	while ! huawei_transfer 3;do sleep 2;done
 	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 	return 0
 }
 
 # 獲取域名解析記錄
 describe_domain(){
-	while ! cloudflare_transfer 0;do sleep 2;done
-	for __I in $(JSON @.result[@].name);do
-		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;break;fi
+	while ! huawei_transfer 0;do sleep 2;done
+	__N=0
+	for __I in $(JSON @.zones[@].name | sed 's/\.$//');do
+		if echo $domain | grep -wq $__I;then __DOMAIN=$__I;__ZONE_ID=$(JSON @.zones[$__N].id);break;fi
+		let __N++
 	done
 	if [ ! $__DOMAIN ];then
 		local A="$(date +%H%M%S) ERROR : [無效域名] - 終止進程"
@@ -119,23 +126,18 @@ describe_domain(){
 		printf "%s\n" " $A" >> $LOGFILE
 		exit 1
 	fi
-	while ! cloudflare_transfer 1;do sleep 2;done
-	__ZONEID=$(JSON @.result[@].id)
-	domain=$(echo $domain | sed 's/@/./')
 	ret=0
-	__POST="/$__ZONEID/dns_records"
-	__POST2="-d '{\"type\":\"$__TYPE\",\"name\":\"$domain\",\"content\":\"$__IP\",\"ttl\""
-	while ! cloudflare_transfer 2;do sleep 2;done
-	__TMP=`JSON @.result[@]`
-	__RECIP=`JSON @.content 2>/dev/null`
-	if [ -z "$__RECIP" ];then
+	__POST="{\"name\":\"$domain\",\"type\":\"$__TYPE\",\"records\":[\"$__IP\"]"
+	while ! huawei_transfer 1;do sleep 2;done
+	if [ $(JSON @.metadata.total_count) = 0 ];then
 		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$domain]" >> $LOGFILE
 		ret=1
 	else
+		__RECIP=`JSON @.recordsets[@].records[@]`
 		if [ "$__RECIP" != "$__IP" ];then
-			__RECID=`JSON @.id`
-			__TTL=`JSON @.ttl`
-			__COMMENT=`JSON @.comment`
+			__RECID=`JSON @.recordsets[@].id`
+			__TTL=`JSON @.recordsets[@].ttl`
+			__POST1="$__POST,\"ttl\":\"$__TTL\"}"
 			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=2
 		fi

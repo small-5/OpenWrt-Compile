@@ -1,0 +1,9 @@
+{
+	"name": "huawei",
+	"ipv4": {
+		"url": "update_huawei.sh"
+	},
+	"ipv6": {
+		"url": "update_huawei.sh"
+	}
+}
