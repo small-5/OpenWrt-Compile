@@ -575,7 +575,7 @@ function fromUrl(btn,urlname,sid){
 		opt.set('uuid',password);
 		opt.set('server',m.hostname.replace(/\[|\]/g,""));
 		opt.set('server_port',m.port);
-		opt.set('alias',m.hash.substr(1));
+		opt.set('alias',decodeURI(m.hash.substr(1)));
 		var queryParam={};
 		if (m.search.length > 1){
 			var query=m.search.split('?');
