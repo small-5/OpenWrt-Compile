@@ -24,6 +24,19 @@ local function get_domain_excluded()
 	if #hosts == 0 then hosts = nil end
 	return hosts
 end
+local function get_domain_direct()
+	local content = fs.readfile("/etc/overwall/direct.list")
+	if not content then return nil end
+	local hosts = {}
+	string.gsub(content, '[^' .. "\n" .. ']+', function(w)
+		local s = w:gsub("^%s*(.-)%s*$", "domain:%1") -- Trim
+		if s == "" then return end
+		if s:find("#") and s:find("#") == 1 then return end
+		if not s:find("#") or s:find("#") ~= 1 then table.insert(hosts, s) end
+	end)
+	if #hosts == 0 then hosts = nil end
+	return hosts
+end
 local Xray={
 inbounds={(local_port~="0") and {
 	port=tonumber(local_port),
@@ -52,7 +65,8 @@ inbounds={(local_port~="0") and {
 		domainsExcluded=get_domain_excluded()
 	}
 } or nil},
-outbound=(server.type=="vmess" or server.type=="vless") and {
+outbounds={
+(server.type=="vmess" or server.type=="vless") and {
 	protocol=server.type,
 	settings={
 		vnext={{
@@ -143,7 +157,33 @@ outbound=(server.type=="vmess" or server.type=="vless") and {
 			password=server.password
 		}}
 	}
+},{
+	protocol="freedom",
+	tag="Direct",
+	settings={domainStrategy="UseIPv6v4"},
+	streamSettings={
+		sockopt={mark=1912}
+	}
 }
+},
+routing=(get_domain_direct()~=nil) and {
+	rules={{
+		type="field",
+		inboundTag="dns",
+		outboundTag="Direct",
+	},{
+		type="field",
+		outboundTag="Direct",
+		domain=get_domain_direct()
+}}
+} or nil,
+dns=(get_domain_direct()~=nil) and {
+	servers={{
+		address="127.0.0.1",
+		port=5336
+	}},
+	tag="dns"
+} or nil,
 }
 Xray=json.stringify(Xray,1):gsub("%s+null,",""):gsub("\\/","/"):gsub("\\\\","\\"):gsub("UA\": ","User-Agent\": ")
 print(Xray)

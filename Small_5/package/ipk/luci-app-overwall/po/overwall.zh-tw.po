@@ -652,6 +652,12 @@ msgstr "域名列表"
 msgid "Direct Domain List"
 msgstr "不走代理的域名"
 
+msgid "Direct Domain List(For Vmess/Vless/SS2022)"
+msgstr "直連域名(適用於Vmess/Vless/SS2022)"
+
+msgid "When using Vmess/VLESS/SS2022, this list is used first and clear the Direct Domain List"
+msgstr "當使用Vmess/Vless/SS2022時請使用此列表並清空不走代理的域名列表"
+
 msgid "Main Server Domain List"
 msgstr "主伺服器分流域名列表"
 
@@ -667,8 +673,8 @@ msgstr "自定義伺服器分流域名列表"
 msgid "Oversea Domain List"
 msgstr "回牆模式域名列表"
 
-msgid "Excluded Domain List(For Vmess/Vless)"
-msgstr "排除嗅探域名列表(適用於Vmess/Vless)"
+msgid "Excluded Domain List(For Vmess/Vless/SS2022)"
+msgstr "排除嗅探域名列表(適用於Vmess/Vless/SS2022)"
 
 msgid "Preload Domain List(GFW Only)"
 msgstr "預加載域名列表(僅GFW模式)"
