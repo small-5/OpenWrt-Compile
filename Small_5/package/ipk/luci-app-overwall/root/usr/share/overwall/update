@@ -88,6 +88,18 @@ else
 	[ $A = N ] && R=1
 fi
 
+if [ $C = router ];then
+	B=$($DIR/curl 1 $X/Direct "-Lfsm 20" 20 2) || clean 1 "Download Direct List failed!"
+	echo "$B" | base64 -d > /tmp/direct.txt
+	if cmp -s /tmp/direct.txt $TMP/direct.txt;then
+		log "Direct List is up to date"
+	else
+		log "Update Direct List"
+		cp -f /tmp/direct.txt $TMP/direct.txt
+		[ $A = N ] && R=1
+	fi
+fi
+
 [ "$R" = 1 ] && /etc/init.d/overwall restart
-rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt
+rm -f $LOCK /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt /tmp/direct.txt
 [ $A = Y ] && /etc/init.d/overwall start &

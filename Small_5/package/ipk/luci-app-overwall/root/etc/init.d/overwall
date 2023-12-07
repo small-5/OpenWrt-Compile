@@ -275,7 +275,7 @@ rules(){
 	check_net
 	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (log "Over Rules  : Check network status successful!";log "Over Rules  : Check IP/GFW files...")
 	mkdir -p /var/run /var/etc
-	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]) || [ ! -s $K/dns.txt ];then
+	if ([ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] && [ ! -s $K/ipv4.txt ]) || [ $run_mode = router -a ! -s $K/ipv6.txt ] || ([ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] && [ ! -s $K/gfw.list ]) || [ ! -s $K/dns.txt ] || [ $run_mode = router -a ! -s $K/direct.txt ];then
 		log "Over Rules  : Download IP/GFW files..."
 		firstdown 2;exit
 	fi
@@ -999,7 +999,7 @@ EOF
 		awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5335"'\n",$0)}' $T_FILE/oversea.list > $DNS_DIR/oversea.conf
 		[ "$doh_t" ] && for i in $doh_t;do echo "server=/$i/127.0.0.1#5335" >> $DNS_DIR/oversea.conf;done
 	else
-		[ $run_mode != gfw ] && echo -e "server=/msftconnecttest.com/127.0.0.1#5336\nserver=/msftncsi.com/127.0.0.1#5336" >> $DNS_FILE
+		[ $run_mode = router ] && cat $K/direct.txt | sed -e 's|^|server=/|g' -e 's|$|/127.0.0.1#5336|g' > $DNS_DIR/direct.conf
 		if [ $run_mode != all ];then
 			cp -f $T_FILE/black.list $O
 			awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5335"'\n",$0)}' $O > $DNS_DIR/black.conf
@@ -1087,6 +1087,12 @@ EOF
 			awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5336"'\n",$0)}' $O >> $DNS_DIR/white.conf
 			awk '!/^$/&&!/^#/{printf("ipset /%s/'"over_wan_ac"'\n",$0)}' $O >> $CON_T
 		fi
+	fi
+
+	if [ -s $T_FILE/cname.list ];then
+		cp -f $T_FILE/cname.list $O
+		cat $O | sed 's/^/cname /g' >> $CON_T
+		cat $O | sed -e 's|.*/||g' -e 's|^|nameserver /|g' -e 's|$|/i|g' | sort -u >> $CON_T
 	fi
 	[ -s $CON_T ] && echo "conf-file $CON_T" >> $DNS_T
 	rm -f $O
@@ -1333,10 +1339,10 @@ stop(){
 	$BIN_DIR/rules -f
 	[ $(iptables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while iptables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;iptables -F OVERWALL-S-RULE && iptables -X OVERWALL-S-RULE)
 	[ $(ip6tables -nL | grep OVERWALL-S-RULE | wc -l) = 0 ] || (while ip6tables -D INPUT -j OVERWALL-S-RULE 2>/dev/null;do :;done;ip6tables -F OVERWALL-S-RULE && ip6tables -X OVERWALL-S-RULE)
-	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt /tmp/gfw.b64
+	rm -rf $DNS_DIR $VAR*.json $DNS_FILE $CON_T /var/lock/overwall-update.lock $LOC_UCI /tmp/ipv*.txt /tmp/gfwnew.txt /tmp/dns.txt /tmp/direct.txt /tmp/gfw.b64
 	[ $run_mode = gfw ] || [ $run_mode = router -a $gfw_mode = 0 ] || rm -f $K/gfw.list
 	[ $run_mode = router ] || [ $run_mode = gfw -a "$lan_gm_ip" ] || [ $run_mode = oversea ] || rm -f $K/ipv4.txt
-	[ $run_mode = router ] || rm -f $K/ipv6.txt
+	[ $run_mode = router ] || rm -f $K/ipv6.txt $K/direct.txt
 	[ ! $GLOBAL_SERVER ] && grep -q overwall $CRON_FILE && sed -i '/overwall/d' $CRON_FILE && /etc/init.d/cron restart
 	if [ ! "$R" -o ! $GLOBAL_SERVER ];then
 		rm -rf $K $SDNS $PID $LOC

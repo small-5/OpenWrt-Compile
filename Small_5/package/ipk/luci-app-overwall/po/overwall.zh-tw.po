@@ -679,6 +679,12 @@ msgstr "排除嗅探域名列表(適用於Vmess/Vless/SS2022)"
 msgid "Preload Domain List(GFW Only)"
 msgstr "預加載域名列表(僅GFW模式)"
 
+msgid "CNAME Domain List"
+msgstr "CNAME域名列表"
+
+msgid "Use domestic dns to resolve a domain name to another domain name<br/>For example, point a.com to b.com: /a.com/b.com"
+msgstr "使用牆內DNS解析一個域名到另外一個域名<br/>比如將 a.com 指向 b.com: /a.com/b.com"
+
 msgid "Advanced Settings"
 msgstr "進階設定"
 

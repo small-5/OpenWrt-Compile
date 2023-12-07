@@ -9,6 +9,7 @@ local cu_f=string.format("/etc/overwall/custom.list")
 local ov_f=string.format("/etc/overwall/oversea.list")
 local ex_f=string.format("/etc/overwall/excluded.list")
 local pre_f=string.format("/etc/overwall/preload.list")
+local cname_f=string.format("/etc/overwall/cname.list")
 
 m=Map("overwall",translate("Domain List"))
 s=m:section(TypedSection,"global")
@@ -189,5 +190,14 @@ o.validate=function(self,value)
     end
     return value
 end
+
+s:tab("cname",translate("CNAME Domain List"))
+
+o=s:taboption("cname",TextValue,"cname_f","",translate("Use domestic dns to resolve a domain name to another domain name<br/>For example, point a.com to b.com: /a.com/b.com"))
+o.rows=15
+o.wrap="off"
+o.cfgvalue=function(self,section) return fs.readfile(cname_f) or "" end
+o.write=function(self,section,value) fs.writefile(cname_f,value:gsub("\r\n","\n")) end
+o.remove=function(self,section,value) fs.writefile(cname_f,"") end
 
 return m
