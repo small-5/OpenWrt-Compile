@@ -2,10 +2,11 @@
 
 ddns=`uci get openvpn.myvpn.ddns`
 port=`uci get openvpn.myvpn.port`
-proto=`uci get openvpn.myvpn.proto | sed 's/6//'`
+proto=`uci get openvpn.myvpn.proto`
 ciphers=`uci get openvpn.myvpn.data_ciphers`
 OVPN=`cat /etc/openvpn/ovpnadd/ovpnadd.conf 2>/dev/null`
 RETRY=`uci -q get openvpn.myvpn.retry`
+echo $proto | grep -q 6 && proto=${proto%6} || proto=${proto}4
 
 cat > /tmp/my.ovpn  <<EOF
 client
