@@ -159,14 +159,14 @@ local function parseNodeUrl(A,B)
 	if params.security=="tls" or params.security=="reality" then
 		if params.security=="tls" then
 			result.tls="1"
-			result.fingerprint=params.fingerprint
+			result.fingerprint=params.fp
 			result.insecure=params.allowInsecure=='1' and '1'
 		else
 			result.reality="1"
-			result.publickey=params.publickey
-			result.finger_real=params.fingerprint
-			result.shortid=params.shortid
-			result.spiderx=params.spiderx
+			result.publickey=params.pbk
+			result.finger_real=params.fp
+			result.shortid=params.sid
+			result.spiderx=params.spx
 		end
 		result.vless_flow=params.flow
 		result.tls_host=params.sni
@@ -350,6 +350,7 @@ local function processData(szType,content)
 			if info.tls=="tls" or info.tls=="1" then
 				result.tls="1"
 				result.tls_host=info.sni
+				result.fingerprint=info.fp
 				result.insecure=info.allowInsecure=='1' and '1'
 			end
 		else

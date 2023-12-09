@@ -199,6 +199,11 @@ function buildUrl(btn,urlname,sid){
 		if (opt.get("tls").checked){
 			info.tls="tls";
 			info.sni=opt.get("tls_host").value;
+			if (opt.get("fingerprint").value!=''){
+				info.fp=opt.get("fingerprint").value;
+			}else{
+				info.fp="random";
+			}
 			if (opt.get("insecure").checked){
 				info.allowInsecure="1";
 			}
@@ -238,16 +243,21 @@ function buildUrl(btn,urlname,sid){
 		if (opt.get("tls")?.checked || opt.get("reality")?.checked){
 			if (opt.get("reality")?.checked){
 				params+="&security=reality";
-				params+=opt.query("publickey","publickey");
-				params+=opt.query("fingerprint","finger_real");
+				params+=opt.query("pbk","publickey");
+				params+=opt.query("fp","finger_real");
 				if (opt.get("shortid").value){
-					params+=opt.query("shortid","shortid");
+					params+=opt.query("sid","shortid");
 				}
 				if (opt.get("spiderx").value){
-					params+=opt.query("spiderx","spiderx");
+					params+=opt.query("spx","spiderx");
 				}
 			}else{
 				params+="&security=tls";
+				if (opt.get("fingerprint").value!=''){
+					params+=opt.query("fp","fingerprint");
+				}else{
+					params+="&fp=random";
+				}
 				if (opt.get("insecure").checked){
 					params+="&allowInsecure=1";
 				}
@@ -536,6 +546,9 @@ function fromUrl(btn,urlname,sid){
 		if (ssm.tls=="tls"){
 			opt.set('tls',1);
 			opt.set('tls_host',ssm.sni || '');
+			if (ssm.fp!="random" && ssm.fp!=null){
+				opt.set('fingerprint',ssm.fp);
+			}
 			opt.set('insecure',ssm.allowInsecure=='1' ? 1:0);
 		}
 		if (ssm.net=="kcp" || ssm.net=="mkcp") ssm.net="kcp"
@@ -593,12 +606,15 @@ function fromUrl(btn,urlname,sid){
 		if (queryParam.security=="tls" || queryParam.security=="reality"){
 			if (queryParam.security=="reality"){
 				opt.set('reality',1);
-				opt.set('publickey',queryParam.publickey);
-				opt.set('finger_real',queryParam.fingerprint || "chrome");
-				opt.set('shortid',queryParam.shortid || '');
-				opt.set('spiderx',queryParam.spiderx || '');
+				opt.set('publickey',queryParam.pbk);
+				opt.set('finger_real',queryParam.fp || "random");
+				opt.set('shortid',queryParam.sid || '');
+				opt.set('spiderx',queryParam.spx || '');
 			}else{
 				opt.set('tls',1);
+				if (queryParam.fp!="random" && queryParam.fp!=null){
+					opt.set('fingerprint',queryParam.fp);
+				}
 				opt.set('insecure',queryParam.allowInsecure=='1');
 			}
 			opt.set('vless_flow',queryParam.flow || '');
