@@ -1,5 +1,7 @@
 #!/bin/bash
 VERSION="民國112年11月16日 By Small_5"
+OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
+echo "OP_PASS=$OP_PASS" >> $GITHUB_ENV
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
@@ -79,9 +81,18 @@ cat > version.patch  <<EOF
 +OPENWRT_RELEASE="%D $VERSION"
 EOF
 
-patch -p1 -E < default.patch && patch -p1 -E < feeds.patch && patch -p1 -E < version.patch && rm -f default.patch feeds.patch version.patch
-for i in $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
-	patch -p1 -E < $i
+cat > shadow.patch  <<EOF
+--- a/package/base-files/files/etc/shadow
++++ b/package/base-files/files/etc/shadow
+@@ -1,4 +1,4 @@
+-root:::0:99999:7:::
++root:$(openssl passwd -1 $OP_PASS):$(echo $((($(date +%s)-$(date -d "19700101" +%s))/(24*60*60)))):0:99999:7:::
+ daemon:*:0:0:99999:7:::
+ ftp:*:0:0:99999:7:::
+ network:*:0:0:99999:7:::
+EOF
+
+for i in default.patch feeds.patch version.patch shadow.patch $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
+	patch -p1 -E < $i;rm $i
 done
-rm -f Patch-*.patch
 echo "Model:$OP_TARGET"

@@ -130,15 +130,6 @@
  board_config_flush
  
 
---- a/package/base-files/files/etc/shadow
-+++ b/package/base-files/files/etc/shadow
-@@ -1,4 +1,4 @@
--root:::0:99999:7:::
-+root:$1$HtuJ.yxv$cfj.bwDENMq/yYBqQil2R.:19260:0:99999:7:::
- daemon:*:0:0:99999:7:::
- ftp:*:0:0:99999:7:::
- network:*:0:0:99999:7:::
-
 --- a/package/base-files/image-config.in
 +++ b/package/base-files/image-config.in
 @@ -190,7 +190,7 @@ if VERSIONOPT
