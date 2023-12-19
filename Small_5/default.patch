@@ -498,9 +498,9 @@
 -set dhcp.lan.dhcpv6=$V6MODE
 -set dhcp.lan.ra=$V6MODE
 -set dhcp.lan.ra_slaac=1
-+set dhcp.odhcpd.preferred_lifetime=2h
 +set dhcp.lan.ra=$MODE
 +set dhcp.lan.dhcpv6=$MODE
++set dhcp.lan.ra_useleasetime=1
  add_list dhcp.lan.ra_flags=managed-config
  add_list dhcp.lan.ra_flags=other-config
  commit dhcp

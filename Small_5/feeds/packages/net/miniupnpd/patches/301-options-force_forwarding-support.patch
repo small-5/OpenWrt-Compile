@@ -14,10 +14,11 @@
 
 --- a/miniupnpd.conf
 +++ b/miniupnpd.conf
-@@ -9,6 +9,8 @@
+@@ -11,7 +11,8 @@
  # Setting ext_ip is also useful in double NAT setup, you can declare here
  # the public IP address.
  #ext_ip=
+-
 +#force forwarding enable for upnp: default is no
 +#force_forwarding=yes
  # WAN interface must have public IP address. Otherwise it is behind NAT

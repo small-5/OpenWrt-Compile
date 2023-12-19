@@ -1253,19 +1253,28 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -668,9 +668,9 @@ return view.extend({
+@@ -667,10 +667,12 @@ return view.extend({
+ 										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
- 										if (protoval == 'static') {
+-										if (protoval == 'static') {
 -											uci.set('dhcp', section_id, 'start', 100);
++										if (protoval == 'static' || protoval == 'n2n') {
 +											uci.set('dhcp', section_id, 'start', 10);
  											uci.set('dhcp', section_id, 'limit', 150);
 -											uci.set('dhcp', section_id, 'leasetime', '12h');
 +											uci.set('dhcp', section_id, 'leasetime', '2h');
++											uci.set('dhcp', section_id, 'force', 1);
++											uci.set('dhcp', section_id, 'ra_useleasetime', 1);
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -687,7 +687,7 @@ return view.extend({
+@@ -683,11 +685,11 @@ return view.extend({
+ 
+ 					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
+ 
+-					if (protoval == 'static') {
++					if (protoval == 'static' || protoval == 'n2n') {
  						so = ss.taboption('general', form.Value, 'start', _('Start'), _('Lowest leased address as offset from the network address.'));
  						so.optional = true;
  						so.datatype = 'or(uinteger,ip4addr("nomask"))';
@@ -1274,7 +1283,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -696,12 +696,13 @@ return view.extend({
+@@ -696,7 +698,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -1283,12 +1292,6 @@
  
  						so = ss.taboption('advanced', form.Flag, 'dynamicdhcp', _('Dynamic <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr>'), _('Dynamically allocate DHCP addresses for clients. If disabled, only clients having static leases will be served.'));
  						so.default = so.enabled;
- 
- 						ss.taboption('advanced', form.Flag, 'force', _('Force'), _('Force DHCP on this network even if another server is detected.'));
-+						ss.default = ss.enabled;
- 
- 						// XXX: is this actually useful?
- 						//ss.taboption('advanced', form.Value, 'name', _('Name'), _('Define a name for this network.'));
 
 --- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
 +++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
@@ -1556,7 +1559,37 @@
 
 --- a/feeds/packages/net/miniupnpd/Makefile
 +++ b/feeds/packages/net/miniupnpd/Makefile
-@@ -41,6 +41,7 @@ endef
+@@ -8,12 +8,13 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=miniupnpd
+-PKG_VERSION:=2.3.3
+-PKG_RELEASE:=2
+-
+-PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_HASH:=6fd7019f936ff88c41e7c822f46f10b51bd72d665978f6586483de75b30c36bf
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
++PKG_SOURCE_DATE:=112-11-15
++PKG_SOURCE_VERSION:=a5fd382e9575a89f3ce00b8ce11f7c2e531d21db
++PKG_MIRROR_HASH:=skip
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
++PKG_RELEASE:=1
+ 
+ PKG_MAINTAINER:=
+ PKG_LICENSE:=BSD-3-Clause
+@@ -26,6 +27,9 @@ PKG_BUILD_PARALLEL:=1
+ include $(INCLUDE_DIR)/package.mk
+ include $(INCLUDE_DIR)/version.mk
+ 
++TAR_OPTIONS+= --strip-components 1
++TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
++
+ define Package/miniupnpd/Default
+   SECTION:=net
+   CATEGORY:=Network
+@@ -41,6 +45,7 @@ endef
  
  define Package/miniupnpd-iptables
    $(call Package/miniupnpd/Default)
@@ -1564,7 +1597,7 @@
    DEPENDS+= \
  	+IPV6:ip6tables \
  	+IPV6:libip6tc \
-@@ -57,8 +58,6 @@ define Package/miniupnpd-nftables
+@@ -57,8 +62,6 @@ define Package/miniupnpd-nftables
  	+libnftnl
    TITLE+= (nftables)
    VARIANT:=nftables

@@ -1,7 +1,7 @@
 #!/bin/bash
 VERSION="民國112年12月20日 By Small_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
-echo "OP_PASS=$OP_PASS" >> $GITHUB_ENV
+echo "$OP_PASS" > ~/OP_PASSWORD
 A=0
 [ -n "$OP_TARGET" ] || OP_TARGET="X64"
 case "$OP_TARGET" in
