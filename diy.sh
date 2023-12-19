@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="民國112年11月16日 By Small_5"
+VERSION="民國112年12月20日 By Small_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
 echo "OP_PASS=$OP_PASS" >> $GITHUB_ENV
 A=0
@@ -22,7 +22,7 @@ esac
 cp -r target/$path/. Small_5
 
 if [ $A = 1 ];then
-	rm -rf openwrt/include/u-boot.mk openwrt/package/boot/{arm-trusted-firmware-rockchip,uboot-rockchip} openwrt/package/kernel/linux/modules/video.mk openwrt/target/linux/rockchip
+	rm -rf openwrt/package/boot/{arm-trusted-firmware-rockchip,rkbin,uboot-rockchip} openwrt/package/kernel/linux/modules/video.mk openwrt/target/linux/rockchip
 	cp -r target/target/rockchip/. Small_5
 elif [ $A = 2 ];then
 	cp -r target/target/ipq40xx/. Small_5
