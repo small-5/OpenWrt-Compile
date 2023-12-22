@@ -456,7 +456,7 @@
 
 --- a/package/network/services/odhcpd/files/odhcpd.defaults
 +++ b/package/network/services/odhcpd/files/odhcpd.defaults
-@@ -11,41 +11,21 @@
+@@ -11,41 +11,20 @@
  json_select ..
  json_select ..
  
@@ -500,7 +500,6 @@
 -set dhcp.lan.ra_slaac=1
 +set dhcp.lan.ra=$MODE
 +set dhcp.lan.dhcpv6=$MODE
-+set dhcp.lan.ra_useleasetime=1
  add_list dhcp.lan.ra_flags=managed-config
  add_list dhcp.lan.ra_flags=other-config
  commit dhcp
