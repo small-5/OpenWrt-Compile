@@ -772,11 +772,11 @@ gen_dns(){
 
 	if [ $dns_mode = 0 ];then
 		case $dns in
-			1)doh="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com";dns="162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1";;
-			2)doh="https://8.8.8.8/dns-query -tls-host-verify dns.google -http-host dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google -http-host dns.google";dns="8.8.8.8 8.8.4.4";;
-			3)doh="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net";dns="9.9.9.9 149.112.112.112";;
-			4)doh="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net";dns="9.9.9.11 149.112.112.11";;
-			5)doh="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com -http-host doh.opendns.com";dns="208.67.222.222 208.67.220.220";;
+			1)doh="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns="162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1";;
+			2)doh="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns="8.8.8.8 8.8.4.4";;
+			3)doh="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns="9.9.9.9 149.112.112.112";;
+			4)doh="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns="9.9.9.11 149.112.112.11";;
+			5)doh="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns="146.112.41.2 208.67.222.222 208.67.220.220";;
 			*)doh=$(echo $dns | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns=$(echo $doh | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns" ] && dns="1.1.1.1 1.0.0.1";;
 		esac
 		for i in $dns;do
@@ -785,7 +785,10 @@ gen_dns(){
 				*)ipset del over_wan_ac $i 2>/dev/null || ipset add over_wan_ac $i nomatch 2>/dev/null;;
 			esac
 		done
-		[ "$dns" = "162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1" ] && dns="1.1.1.1 1.0.0.1"
+		case $dns in
+			"162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1")dns="1.1.1.1 1.0.0.1";;
+			"146.112.41.2 208.67.222.222 208.67.220.220")dns="208.67.222.222 208.67.220.220";;
+		esac
 	else
 		case $dns in
 			1)dns="1.1.1.1,1.0.0.1";;
@@ -809,11 +812,11 @@ gen_dns(){
 
 	if [ "$YB" -a $dns_mode_y = 0 ];then
 		case $dns_yb in
-			1)doh_yb="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com";dns_yb="162.159.36.1 162.159.46.1";;
-			2)doh_yb="https://8.8.8.8/dns-query -tls-host-verify dns.google -http-host dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google -http-host dns.google";dns_yb="8.8.8.8 8.8.4.4";;
-			3)doh_yb="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net";dns_yb="9.9.9.9 149.112.112.112";;
-			4)doh_yb="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net";dns_yb="9.9.9.11 149.112.112.11";;
-			5)doh_yb="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com -http-host doh.opendns.com";dns_yb="9.9.9.11 149.112.112.11";;
+			1)doh_yb="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_yb="162.159.36.1 162.159.46.1";;
+			2)doh_yb="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_yb="8.8.8.8 8.8.4.4";;
+			3)doh_yb="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_yb="9.9.9.9 149.112.112.112";;
+			4)doh_yb="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_yb="9.9.9.11 149.112.112.11";;
+			5)doh_yb="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_yb="146.112.41.2";;
 			*)doh_yb=$(echo $dns_yb | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_yb=$(echo $doh_yb | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_yb" ] && dns_yb="8.8.8.8 8.8.4.4";;
 		esac
 		for i in $dns_yb;do ipset add youtube $i 2>/dev/null;done
@@ -835,11 +838,11 @@ gen_dns(){
 
 	if [ "$NF" -a $dns_mode_n = 0 ];then
 		case $dns_nf in
-			1)doh_nf="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com";dns_nf="162.159.36.1 162.159.46.1";;
-			2)doh_nf="https://8.8.8.8/dns-query -tls-host-verify dns.google -http-host dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google -http-host dns.google";dns_nf="8.8.8.8 8.8.4.4";;
-			3)doh_nf="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net";dns_nf="9.9.9.9 149.112.112.112";;
-			4)doh_nf="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net";dns_nf="9.9.9.11 149.112.112.11";;
-			5)doh_nf="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com -http-host doh.opendns.com";dns_nf="9.9.9.11 149.112.112.11";;
+			1)doh_nf="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_nf="162.159.36.1 162.159.46.1";;
+			2)doh_nf="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_nf="8.8.8.8 8.8.4.4";;
+			3)doh_nf="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_nf="9.9.9.9 149.112.112.112";;
+			4)doh_nf="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_nf="9.9.9.11 149.112.112.11";;
+			5)doh_nf="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_nf="146.112.41.2";;
 			*)doh_nf=$(echo $dns_nf | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_nf=$(echo $doh_nf | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_nf" ] && dns_nf="9.9.9.9 149.112.112.112";;
 		esac
 		for i in $dns_nf;do ipset add netflix $i 2>/dev/null;done
@@ -861,11 +864,11 @@ gen_dns(){
 
 	if [ "$CU" -a $dns_mode_c = 0 ];then
 		case $dns_cu in
-			1)doh_cu="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com -http-host cloudflare-dns.com";dns_cu="162.159.36.1 162.159.46.1";;
-			2)doh_cu="https://8.8.8.8/dns-query -tls-host-verify dns.google -http-host dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google -http-host dns.google";dns_cu="8.8.8.8 8.8.4.4";;
-			3)doh_cu="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net -http-host dns.quad9.net";dns_cu="9.9.9.9 149.112.112.112";;
-			4)doh_cu="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net -http-host dns11.quad9.net";dns_cu="9.9.9.11 149.112.112.11";;
-			5)doh_cu="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com -http-host doh.opendns.com";dns_cu="9.9.9.11 149.112.112.11";;
+			1)doh_cu="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_cu="162.159.36.1 162.159.46.1";;
+			2)doh_cu="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_cu="8.8.8.8 8.8.4.4";;
+			3)doh_cu="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_cu="9.9.9.9 149.112.112.112";;
+			4)doh_cu="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_cu="9.9.9.11 149.112.112.11";;
+			5)doh_cu="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_cu="146.112.41.2";;
 			*)doh_cu=$(echo $dns_cu | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_cu=$(echo $doh_cu | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_cu" ] && dns_cu="9.9.9.11 149.112.112.11";;
 		esac
 		for i in $dns_cu;do ipset add custom $i 2>/dev/null;done
