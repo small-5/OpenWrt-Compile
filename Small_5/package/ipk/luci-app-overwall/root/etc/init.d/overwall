@@ -168,29 +168,29 @@ EOF
 start_dns(){
 	service_start $(which smartdns) -f -c $DNS_T
 	case $dns_mode in
-		0)log "SmartDNS    : Main DNS start on DoH mode";;
+		0)log "SmartDNS    : Main DNS start on DoT mode";;
 		1)log "SmartDNS    : Main DNS start on TCP mode";;
 	esac
 	if [ "$YB" ];then
 		case $dns_mode_y in
-			0)log "SmartDNS    : Youtube DNS start on DoH mode";;
+			0)log "SmartDNS    : Youtube DNS start on DoT mode";;
 			1)log "SmartDNS    : Youtube DNS start on TCP mode";;
 		esac
 	fi
 	if [ "$NF" ];then
 		case $dns_mode_n in
-			0)log "SmartDNS    : Netflix DNS start on DoH mode";;
+			0)log "SmartDNS    : Netflix DNS start on DoT mode";;
 			1)log "SmartDNS    : Netflix DNS start on TCP mode";;
 		esac
 	fi
 	if [ "$CU" ];then
 		case $dns_mode_c in
-			0)log "SmartDNS    : Custom DNS start on DoH mode";;
+			0)log "SmartDNS    : Custom DNS start on DoT mode";;
 			1)log "SmartDNS    : Custom DNS start on TCP mode";;
 		esac
 	fi
 	case $dns_mode_l in
-		0)log "SmartDNS    : Local DNS start on DoH mode";;
+		0)log "SmartDNS    : Local DNS start on DoT mode";;
 		1)log "SmartDNS    : Local DNS start on UDP mode";;
 	esac
 	if [ $run_mode = router ];then
@@ -772,12 +772,12 @@ gen_dns(){
 
 	if [ $dns_mode = 0 ];then
 		case $dns in
-			1)doh="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns="162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1";;
-			2)doh="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns="8.8.8.8 8.8.4.4";;
-			3)doh="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns="9.9.9.9 149.112.112.112";;
-			4)doh="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns="9.9.9.11 149.112.112.11";;
-			5)doh="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns="146.112.41.2 208.67.222.222 208.67.220.220";;
-			*)doh=$(echo $dns | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns=$(echo $doh | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns" ] && dns="1.1.1.1 1.0.0.1";;
+			1)doh="1.1.1.1 -tls-host-verify one.one.one.one,1.0.0.1 -tls-host-verify one.one.one.one";dns="1.1.1.1 1.0.0.1";;
+			2)doh="8.8.8.8 -tls-host-verify dns.google,8.8.4.4 -tls-host-verify dns.google";dns="8.8.8.8 8.8.4.4";;
+			3)doh="9.9.9.9 -tls-host-verify *.quad9.net,149.112.112.112 -tls-host-verify *.quad9.net";dns="9.9.9.9 149.112.112.112";;
+			4)doh="9.9.9.11 -tls-host-verify *.quad9.net,149.112.112.11 -tls-host-verify *.quad9.net";dns="9.9.9.11 149.112.112.11";;
+			5)doh="208.67.222.222 -tls-host-verify dns.opendns.com,208.67.220.220 -tls-host-verify dns.opendns.com";dns="208.67.222.222 208.67.220.220";;
+			*)doh=$(echo $dns | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns=$(echo $doh | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns" ] && dns="1.1.1.1 1.0.0.1";;
 		esac
 		for i in $dns;do
 			case $run_mode in
@@ -785,10 +785,6 @@ gen_dns(){
 				*)ipset del over_wan_ac $i 2>/dev/null || ipset add over_wan_ac $i nomatch 2>/dev/null;;
 			esac
 		done
-		case $dns in
-			"162.159.36.1 162.159.46.1 1.1.1.1 1.0.0.1")dns="1.1.1.1 1.0.0.1";;
-			"146.112.41.2 208.67.222.222 208.67.220.220")dns="208.67.222.222 208.67.220.220";;
-		esac
 	else
 		case $dns in
 			1)dns="1.1.1.1,1.0.0.1";;
@@ -812,12 +808,12 @@ gen_dns(){
 
 	if [ "$YB" -a $dns_mode_y = 0 ];then
 		case $dns_yb in
-			1)doh_yb="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_yb="162.159.36.1 162.159.46.1";;
-			2)doh_yb="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_yb="8.8.8.8 8.8.4.4";;
-			3)doh_yb="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_yb="9.9.9.9 149.112.112.112";;
-			4)doh_yb="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_yb="9.9.9.11 149.112.112.11";;
-			5)doh_yb="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_yb="146.112.41.2";;
-			*)doh_yb=$(echo $dns_yb | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_yb=$(echo $doh_yb | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_yb" ] && dns_yb="8.8.8.8 8.8.4.4";;
+			1)doh_yb="1.1.1.1 -tls-host-verify one.one.one.one,1.0.0.1 -tls-host-verify one.one.one.one";dns_yb="1.1.1.1 1.0.0.1";;
+			2)doh_yb="8.8.8.8 -tls-host-verify dns.google,8.8.4.4 -tls-host-verify dns.google";dns_yb="8.8.8.8 8.8.4.4";;
+			3)doh_yb="9.9.9.9 -tls-host-verify *.quad9.net,149.112.112.112 -tls-host-verify *.quad9.net";dns_yb="9.9.9.9 149.112.112.112";;
+			4)doh_yb="9.9.9.11 -tls-host-verify *.quad9.net,149.112.112.11 -tls-host-verify *.quad9.net";dns_yb="9.9.9.11 149.112.112.11";;
+			5)doh_yb="208.67.222.222 -tls-host-verify dns.opendns.com,208.67.220.220 -tls-host-verify dns.opendns.com";dns_yb="208.67.222.222 208.67.220.220";;
+			*)doh_yb=$(echo $dns_yb | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_yb=$(echo $doh_yb | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns_yb" ] && dns_yb="8.8.8.8 8.8.4.4";;
 		esac
 		for i in $dns_yb;do ipset add youtube $i 2>/dev/null;done
 	elif [ "$YB" -a $dns_mode_y = 1 ];then
@@ -838,12 +834,12 @@ gen_dns(){
 
 	if [ "$NF" -a $dns_mode_n = 0 ];then
 		case $dns_nf in
-			1)doh_nf="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_nf="162.159.36.1 162.159.46.1";;
-			2)doh_nf="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_nf="8.8.8.8 8.8.4.4";;
-			3)doh_nf="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_nf="9.9.9.9 149.112.112.112";;
-			4)doh_nf="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_nf="9.9.9.11 149.112.112.11";;
-			5)doh_nf="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_nf="146.112.41.2";;
-			*)doh_nf=$(echo $dns_nf | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_nf=$(echo $doh_nf | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_nf" ] && dns_nf="9.9.9.9 149.112.112.112";;
+			1)doh_nf="1.1.1.1 -tls-host-verify one.one.one.one,1.0.0.1 -tls-host-verify one.one.one.one";dns_nf="1.1.1.1 1.0.0.1";;
+			2)doh_nf="8.8.8.8 -tls-host-verify dns.google,8.8.4.4 -tls-host-verify dns.google";dns_nf="8.8.8.8 8.8.4.4";;
+			3)doh_nf="9.9.9.9 -tls-host-verify *.quad9.net,149.112.112.112 -tls-host-verify *.quad9.net";dns_nf="9.9.9.9 149.112.112.112";;
+			4)doh_nf="9.9.9.11 -tls-host-verify *.quad9.net,149.112.112.11 -tls-host-verify *.quad9.net";dns_nf="9.9.9.11 149.112.112.11";;
+			5)doh_nf="208.67.222.222 -tls-host-verify dns.opendns.com,208.67.220.220 -tls-host-verify dns.opendns.com";dns_nf="208.67.222.222 208.67.220.220";;
+			*)doh_nf=$(echo $dns_nf | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_nf=$(echo $doh_nf | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns_nf" ] && dns_nf="9.9.9.9 149.112.112.112";;
 		esac
 		for i in $dns_nf;do ipset add netflix $i 2>/dev/null;done
 	elif [ "$NF" -a $dns_mode_n = 1 ];then
@@ -864,12 +860,12 @@ gen_dns(){
 
 	if [ "$CU" -a $dns_mode_c = 0 ];then
 		case $dns_cu in
-			1)doh_cu="https://162.159.36.1/dns-query -tls-host-verify cloudflare-dns.com,https://162.159.46.1/dns-query -tls-host-verify cloudflare-dns.com";dns_cu="162.159.36.1 162.159.46.1";;
-			2)doh_cu="https://8.8.8.8/dns-query -tls-host-verify dns.google,https://8.8.4.4/dns-query -tls-host-verify dns.google";dns_cu="8.8.8.8 8.8.4.4";;
-			3)doh_cu="https://9.9.9.9/dns-query -tls-host-verify *.quad9.net,https://149.112.112.112/dns-query -tls-host-verify *.quad9.net";dns_cu="9.9.9.9 149.112.112.112";;
-			4)doh_cu="https://9.9.9.11/dns-query -tls-host-verify *.quad9.net,https://149.112.112.11/dns-query -tls-host-verify *.quad9.net";dns_cu="9.9.9.11 149.112.112.11";;
-			5)doh_cu="https://146.112.41.2/dns-query -tls-host-verify doh.opendns.com";dns_cu="146.112.41.2";;
-			*)doh_cu=$(echo $dns_cu | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_cu=$(echo $doh_cu | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_cu" ] && dns_cu="9.9.9.11 149.112.112.11";;
+			1)doh_cu="1.1.1.1 -tls-host-verify one.one.one.one,1.0.0.1 -tls-host-verify one.one.one.one";dns_cu="1.1.1.1 1.0.0.1";;
+			2)doh_cu="8.8.8.8 -tls-host-verify dns.google,8.8.4.4 -tls-host-verify dns.google";dns_cu="8.8.8.8 8.8.4.4";;
+			3)doh_cu="9.9.9.9 -tls-host-verify *.quad9.net,149.112.112.112 -tls-host-verify *.quad9.net";dns_cu="9.9.9.9 149.112.112.112";;
+			4)doh_cu="9.9.9.11 -tls-host-verify *.quad9.net,149.112.112.11 -tls-host-verify *.quad9.net";dns_cu="9.9.9.11 149.112.112.11";;
+			5)doh_cu="208.67.222.222 -tls-host-verify dns.opendns.com,208.67.220.220 -tls-host-verify dns.opendns.com";dns_cu="208.67.222.222 208.67.220.220";;
+			*)doh_cu=$(echo $dns_cu | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_cu=$(echo $doh_cu | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns_cu" ] && dns_cu="9.9.9.11 149.112.112.11";;
 		esac
 		for i in $dns_cu;do ipset add custom $i 2>/dev/null;done
 	elif [ "$CU" -a $dns_mode_c = 1 ];then
@@ -891,9 +887,9 @@ gen_dns(){
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
-			0)for i in $(get_doh dns.alidns.com);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
-			1)for i in $(get_doh doh.pub);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
-			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali;;
+			0)for i in $(get_doh dns.alidns.com);do ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed 's/^/dns.alidns.com -tls-host-verify dns.alidns.com -host-ip /g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
+			1)for i in $(get_doh dot.pub);do ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed 's/^/dot.pub -tls-host-verify dot.pub -host-ip /g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
+			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_l=$(echo $doh_l | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns_l" ] && dns_l=$Ali;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
 	else
@@ -917,15 +913,14 @@ cache-persist no
 cache-size 0
 log-level fatal
 log-file $LOG
-tcp-idle-time 5
 bind :5335 -group a
 bind :5336 -group i -no-rule-soa
 EOF
 	if [ $dns_mode = 0 ];then
-		echo $doh | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group a -exclude-default-group/g' >> $DNS_T
+		echo $doh | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group a -exclude-default-group/g' >> $DNS_T
 		for i in $dns;do echo "server-tcp $i -group b -exclude-default-group" >> $DNS_T;done
 		for i in $(cat $K/dns.txt);do echo "nameserver /$i/b" >> $DNS_T;done
-		doh_t=$(echo $doh | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+		doh_t=$(echo $doh | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 		if [ "$doh_t" ];then
 			for i in $doh_t;do
 				case $run_mode in
@@ -941,8 +936,8 @@ EOF
 
 	if [ "$YB" ];then
 		if [ $dns_mode_y = 0 ];then
-			echo $doh_yb | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group c -exclude-default-group/g' >> $DNS_T
-			doh_yb_t=$(echo $doh_yb | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+			echo $doh_yb | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group c -exclude-default-group/g' >> $DNS_T
+			doh_yb_t=$(echo $doh_yb | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 			if [ "$doh_yb_t" ];then
 				for i in $dns_yb;do echo "server-tcp $i -group d -exclude-default-group" >> $DNS_T;done
 				for i in $doh_yb_t;do echo "domain-rules /$i/ -nameserver d -ipset youtube" >> $DNS_T;done
@@ -954,8 +949,8 @@ EOF
 
 	if [ "$NF" ];then
 		if [ $dns_mode_n = 0 ];then
-			echo $doh_nf | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group e -exclude-default-group/g' >> $DNS_T
-			doh_nf_t=$(echo $doh_nf | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+			echo $doh_nf | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group e -exclude-default-group/g' >> $DNS_T
+			doh_nf_t=$(echo $doh_nf | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 			if [ "$doh_nf_t" ];then
 				for i in $dns_nf;do echo "server-tcp $i -group f -exclude-default-group" >> $DNS_T;done
 				for i in $doh_nf_t;do echo "domain-rules /$i/ -nameserver f -ipset netflix" >> $DNS_T;done
@@ -967,8 +962,8 @@ EOF
 
 	if [ "$CU" ];then
 		if [ $dns_mode_c = 0 ];then
-			echo $doh_cu | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group g -exclude-default-group/g' >> $DNS_T
-			doh_cu_t=$(echo $doh_cu | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+			echo $doh_cu | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group g -exclude-default-group/g' >> $DNS_T
+			doh_cu_t=$(echo $doh_cu | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 			if [ "$doh_cu_t" ];then
 				for i in $dns_cu;do echo "server-tcp $i -group h -exclude-default-group" >> $DNS_T;done
 				for i in $doh_cu_t;do echo "domain-rules /$i/ -nameserver h -ipset custom" >> $DNS_T;done
@@ -979,9 +974,9 @@ EOF
 	fi
 
 	if [ $dns_mode_l = 0 ];then
-		echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group i -exclude-default-group/g' >> $DNS_T
+		echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group i -exclude-default-group/g' >> $DNS_T
 		for i in $dns_l;do echo "server $i -group j -exclude-default-group" >> $DNS_T;done
-		doh_l_t=$(echo $doh_l | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -v '\[' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+		doh_l_t=$(echo $doh_l | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|dns.alidns.com|dot.pub)$")
 		[ "$doh_l_t" ] && for i in $doh_l_t;do echo "domain-rules /$i/ -nameserver j -ipset over_wan_ac" >> $DNS_T;done
 		echo "nameserver /in-addr.arpa/j" >> $DNS_T
 	else
