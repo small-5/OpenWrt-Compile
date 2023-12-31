@@ -311,7 +311,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -667,10 +667,12 @@ return view.extend({
+@@ -672,10 +672,12 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -327,7 +327,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -683,11 +685,11 @@ return view.extend({
+@@ -688,11 +690,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -341,7 +341,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -696,7 +698,7 @@ return view.extend({
+@@ -701,7 +703,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -534,6 +534,83 @@
  
  $(eval $(call BuildPackage,microsocks))
 
+--- a/feeds/packages/net/miniupnpc/Makefile
++++ b/feeds/packages/net/miniupnpc/Makefile
+@@ -8,13 +8,14 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=miniupnpc
+-PKG_VERSION:=2.2.3
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
++PKG_SOURCE_DATE:=112-12-30
++PKG_SOURCE_VERSION:=5380a086935dc40e6ad51acb12ccb398b643c837
++PKG_MIRROR_HASH:=skip
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
+ PKG_RELEASE:=1
+ 
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
+-PKG_HASH:=dce41b4a4f08521c53a0ab163ad2007d18b5e1aa173ea5803bd47a1be3159c24
+-
+ PKG_MAINTAINER:=
+ PKG_LICENSE:=BSD-3-Clause
+ PKG_LICENSE_FILES:=LICENSE
+@@ -23,6 +24,9 @@ PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnp
+ include $(INCLUDE_DIR)/package.mk
+ include $(INCLUDE_DIR)/cmake.mk
+ 
++TAR_OPTIONS+= --strip-components 1
++TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
++
+ define Package/miniupnpc/Default
+   TITLE:=Lightweight UPnP
+   URL:=https://miniupnp.tuxfamily.org
+
+--- a/feeds/packages/net/miniupnpc/patches/100-no-fPIC.patch
++++ b/feeds/packages/net/miniupnpc/patches/100-no-fPIC.patch
+@@ -1,6 +1,6 @@
+ --- a/CMakeLists.txt
+ +++ b/CMakeLists.txt
+-@@ -41,12 +41,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
++@@ -50,12 +50,6 @@ if (APPLE)
+    target_compile_definitions(miniupnpc-private INTERFACE _DARWIN_C_SOURCE)
+  endif ()
+  
+@@ -12,31 +12,4 @@
+ -
+  # Suppress noise warnings
+  if (MSVC)
+-   target_compile_definitions(miniupnpc-private INTERFACE _CRT_SECURE_NO_WARNINGS)
+-@@ -221,16 +215,16 @@ endif ()
+- 
+- if (NOT UPNPC_NO_INSTALL)
+-   install (FILES
+--    miniupnpc.h
+--    miniwget.h
+--    upnpcommands.h
+--    igd_desc_parse.h
+--    upnpreplyparse.h
+--    upnperrors.h
+--    upnpdev.h
+--    miniupnpctypes.h
+--    portlistingparse.h
+--    miniupnpc_declspec.h
+-+    include/miniupnpc.h
+-+    include/miniwget.h
+-+    include/upnpcommands.h
+-+    include/igd_desc_parse.h
+-+    include/upnpreplyparse.h
+-+    include/upnperrors.h
+-+    include/upnpdev.h
+-+    include/miniupnpctypes.h
+-+    include/portlistingparse.h
+-+    include/miniupnpc_declspec.h
+-     DESTINATION include/miniupnpc
+-   )
+- 
++   target_compile_definitions(miniupnpc-private INTERFACE _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
+
 --- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
 +++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
 @@ -63,6 +63,7 @@
@@ -629,8 +706,8 @@
 -PKG_HASH:=6fd7019f936ff88c41e7c822f46f10b51bd72d665978f6586483de75b30c36bf
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=112-11-15
-+PKG_SOURCE_VERSION:=a5fd382e9575a89f3ce00b8ce11f7c2e531d21db
++PKG_SOURCE_DATE:=112-12-30
++PKG_SOURCE_VERSION:=5380a086935dc40e6ad51acb12ccb398b643c837
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
 +PKG_RELEASE:=1
@@ -682,7 +759,15 @@
 
 --- a/feeds/packages/net/openvpn/files/openvpn.init
 +++ b/feeds/packages/net/openvpn/files/openvpn.init
-@@ -42,9 +42,8 @@
+@@ -10,7 +10,6 @@ STOP=10
+ USE_PROCD=1
+ PROG=/usr/sbin/openvpn
+ 
+-PATH_INSTANCE_DIR="/etc/openvpn"
+ LIST_SEP="
+ "
+ 
+@@ -43,9 +42,8 @@ append_params() {
  		config_get v "$s" "$p"
  		IFS="$LIST_SEP"
  		for v in $v; do
@@ -694,7 +779,7 @@
  		done
  		unset IFS
  	done
-@@ -70,14 +69,6 @@
+@@ -71,14 +69,6 @@ section_enabled() {
  	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
  }
  
@@ -709,7 +794,7 @@
  openvpn_get_dev() {
  	local dev dev_type
  	local name="$1"
-@@ -112,39 +103,10 @@
+@@ -113,39 +103,10 @@ openvpn_get_dev() {
  	echo "--dev-type $dev_type --dev $dev"
  }
  
@@ -750,7 +835,7 @@
  
  	procd_open_instance "$name"
  	procd_set_param command "$PROG"	\
-@@ -154,14 +116,8 @@
+@@ -155,14 +116,8 @@ openvpn_add_instance() {
  		--config "$conf" \
  		--up "/usr/libexec/openvpn-hotplug up $name" \
  		--down "/usr/libexec/openvpn-hotplug down $name" \
@@ -767,7 +852,16 @@
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -182,28 +138,23 @@
+@@ -172,7 +127,7 @@ openvpn_add_instance() {
+ 	procd_close_instance
+ }
+ 
+-start_uci_instance() {
++start_instance() {
+ 	local s="$1"
+ 
+ 	config_get config "$s" config
+@@ -183,65 +138,23 @@ start_uci_instance() {
  		return 1
  	}
  
@@ -797,11 +891,48 @@
 +	sed -i "s/server.crt/server.crt\ncipher $(uci get openvpn.myvpn.data_ciphers)/" /var/etc/openvpn-$s.conf
  
 -	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf" "$script_security" "$up" "$down"
+-}
+-
+-start_path_instances() {
+-	local path name
+-
+-	for path in ${PATH_INSTANCE_DIR}/*.conf; do
+-		[ -f "$path" ] && {
+-			name="${path##*/}"
+-			name="${name%.conf}"
+-			start_path_instance "$name"
+-		}
+-	done
+-}
+-
+-start_path_instance() {
+-	local name="$1"
+-
+-	local path up down
+-
+-	path="${PATH_INSTANCE_DIR}/${name}.conf"
+-
+-	# don't start configs again that are already started by uci
+-	if echo "$UCI_STARTED" | grep -qxF "$path"; then
+-		logger -t openvpn "$name.conf already started"
+-		return
+-	fi
+-
+-	# don't start configs which are set to disabled in uci
+-	if echo "$UCI_DISABLED" | grep -qxF "$path"; then
+-		logger -t openvpn "$name.conf is disabled in /etc/config/openvpn"
+-		return
+-	fi
+-
+-	get_openvpn_option "$path" up up || up=""
+-	get_openvpn_option "$path" down down || down=""
+-
+-	openvpn_add_instance "$name" "${path%/*}" "$path" "" "$up" "$down"
 +	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf"
  }
  
  start_service() {
-@@ -220,7 +171,6 @@
+@@ -258,28 +171,40 @@ start_service() {
  		fi
  	}
  
@@ -809,25 +940,42 @@
  	. /usr/share/openvpn/openvpn.options
  	config_load 'openvpn'
  
-@@ -230,7 +180,7 @@
+ 	if [ -n "$instance" ]; then
+-		if [ "$instance_found" -gt 0 ]; then
+-			start_uci_instance "$instance"
+-		else
+-			start_path_instance "$instance"
+-		fi
++		[ "$instance_found" -gt 0 ] || return
++		start_instance "$instance"
  	else
- 		config_foreach start_instance 'openvpn'
+-		config_foreach start_uci_instance 'openvpn'
++		config_foreach start_instance 'openvpn'
  
--		local path name up down
+-		auto="$(uci_get openvpn globals autostart 1)"
+-		if [ "$auto" = "1" ]; then
+-			start_path_instances
+-		else
+-			logger -t openvpn "Autostart for configs in '$PATH_INSTANCE_DIR/*.conf' disabled"
+-		fi
 +		local path name
- 		for path in /etc/openvpn/*.conf; do
- 			if [ -f "$path" ]; then
- 				name="${path##*/}"; name="${name%.conf}"
-@@ -245,14 +195,16 @@
- 					continue
- 				fi
- 
--				get_openvpn_option "$path" up up || up=""
--				get_openvpn_option "$path" down down || down=""
--				openvpn_add_instance "$name" "${path%/*}" "$path" "" "$up" "$down"
++		for path in /etc/openvpn/*.conf; do
++			if [ -f "$path" ]; then
++				name="${path##*/}"; name="${name%.conf}"
++
++				# don't start configs again that are already started by uci
++				if echo "$UCI_STARTED" | grep -qxF "$path"; then
++					continue
++
++				# don't start configs which are set to disabled in uci
++				elif echo "$UCI_DISABLED" | grep -qxF "$path"; then
++					logger -t openvpn "$name.conf is disabled in /etc/config/openvpn"
++					continue
++				fi
++
 +				openvpn_add_instance "$name" "${path%/*}" "$path"
- 			fi
- 		done
++			fi
++		done
  	fi
  }
  
@@ -916,7 +1064,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
-+PKG_SOURCE_VERSION:=ba2cad4b44ba5ffb085d5e4ba6110f84adeb770c
++PKG_SOURCE_VERSION:=c4660d0f5b92fbb4342063661785d9fee0d95247
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1078,12 +1226,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=2d67e2e0c69e93a2465f7c954675247d7c0e3352
++PKG_SOURCE_VERSION:=d01f4a3ec14e6b011883e8ff5bb4cc5cfb936778
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.53.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.53.2_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1305,7 +1453,7 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=e03b78dcec4468ea7b559b2084f857d22f8daca2
++PKG_SOURCE_VERSION:=44bb83033f238675b2e94024edf001e3720ae53f
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=1.8.6
@@ -1968,3 +2116,132 @@
 -		}));
 -	}
 -});
+
+--- a/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
++++ b/feeds/luci/applications/luci-app-firewall/po/zh_Hant/firewall.po
+@@ -436,7 +436,6 @@ msgid "Firewall configuration migration"
+ msgstr "防火牆設定移轉"
+ 
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:64
+-#: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:147
+ msgid "Forward"
+ msgstr "轉發"
+ 
+@@ -633,6 +632,10 @@ msgstr "內部埠"
+ msgid "Internal zone"
+ msgstr "內部區域"
+ 
++#: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:147
++msgid "Intra zone forward"
++msgstr "區內轉發"
++
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:304
+ msgid "Invalid DSCP mark"
+ msgstr "不正確的差異服務的程式碼點 DSCP標記"
+
+--- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
++++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
+@@ -2198,6 +2198,10 @@ msgstr "預設路由器"
+ msgid "Default state"
+ msgstr "預設狀態"
+ 
++#: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/40_dhcp.js:875
++msgid "Defaults to fw4."
++msgstr "預設為 fw4。"
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:725
+ msgid ""
+ "Define additional DHCP options, for example "
+@@ -2595,7 +2599,6 @@ msgstr "您真的要遞迴刪除目錄 \"%s\" 嗎？"
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:97
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:758
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:784
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:837
+ msgid "Domain"
+ msgstr "網域名稱"
+ 
+@@ -3190,6 +3193,9 @@ msgstr "請輸入有效的 IPv6 位址"
+ msgid "Expecting a valid MAC address, optionally including wildcards"
+ msgstr "需要有效的 MAC 位址，可以包含萬用字元"
+ 
++msgid "; invalid MAC:"
++msgstr "；無效 MAC："
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:29
+ msgid "Expecting two priority values separated by a colon"
+ msgstr "請輸入用冒號分隔的兩個優先順序"
+@@ -3260,6 +3266,10 @@ msgstr "額外的 pppd 選項"
+ msgid "Extra sstpc options"
+ msgstr "額外的 sstpc 選項"
+ 
++#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:870
++msgid "FQDN"
++msgstr ""
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1576
+ msgid "FT over DS"
+ msgstr "FT 透過 DS"
+@@ -4081,10 +4091,6 @@ msgctxt "nft meta l4proto"
+ msgid "IP protocol"
+ msgstr "IP 協議"
+ 
+-#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:833
+-msgid "IP set"
+-msgstr "IP 集"
+-
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:362
+ msgid "IP sets"
+ msgstr "IP 集"
+@@ -5834,6 +5840,10 @@ msgstr "多播規則"
+ msgid "Multicast to unicast"
+ msgstr "多播到單播"
+ 
++#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:833
++msgid "Name of the set"
++msgstr "集合名稱"
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1556
+ msgid "NAS ID"
+ msgstr "網路儲存設備(NAS)ID"
+@@ -5910,6 +5920,10 @@ msgstr "鄰居報告"
+ msgid "Neighbour cache validity"
+ msgstr "鄰近快取有效性"
+ 
++#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:875
++msgid "Netfilter table name"
++msgstr "Netfilter表名稱"
++
+ #: modules/luci-base/root/usr/share/luci/menu.d/luci-base.json:45
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1018
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:2255
+@@ -9088,6 +9102,10 @@ msgstr "TCP:"
+ msgid "TFTP server root"
+ msgstr "TFTP 伺服器根"
+ 
++#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:854
++msgid "The netfilter components below are only regarded when running fw4."
++msgstr "netfilter 元件僅在運行fw4時才被考慮。"
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:50
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:85
+ #: protocols/luci-proto-yggdrasil/htdocs/luci-static/resources/protocol/yggdrasil.js:140
+@@ -9110,6 +9128,19 @@ msgstr "TX 佇列長度"
+ msgid "Table"
+ msgstr "表格"
+ 
++#: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:880
++msgid "Table IP family"
++msgstr "表IP群"
++
++msgid "Defaults to IPv4+6."
++msgstr "預設為 IPv4+6"
++
++msgid "Can be hinted by adding 4 or 6 to the name."
++msgstr "可以透過在名稱中加上 4 或 6 來提示。"
++
++msgid "Adding an IPv6 to an IPv4 set and vice-versa silently fails."
++msgstr "將 IPv6 新增至 IPv4 集（反之亦然）會失敗。"
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:987
+ msgid "Tag"
+ msgstr "標籤"

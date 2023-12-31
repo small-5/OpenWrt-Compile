@@ -24,7 +24,8 @@ shadowsocks/shadowsocks-libev|master|shadowsocks-libev
 tohojo/sqm-scripts|master|sqm-scripts
 XTLS/Xray-core|main|xray
 zerotier/ZeroTierOne|dev|zerotier
-pymumu/smartdns|master|smartdns"
+pymumu/smartdns|master|smartdns
+miniupnp/miniupnp|master|miniupnp"
 rm -f SHA
 for i in $A;do
 	i=$(echo $i | sed 's/|/ /g')
