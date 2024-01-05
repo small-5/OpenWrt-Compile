@@ -77,7 +77,7 @@ msgid "Check Error"
 msgstr "檢查錯誤"
 
 msgid "Records"
-msgstr "條記錄"
+msgstr "條紀錄"
 
 msgid "Refresh..."
 msgstr "正在更新.."
@@ -485,7 +485,7 @@ msgid "allowInsecure"
 msgstr "允許不安全連接"
 
 msgid "Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host"
-msgstr "允許不安全連接將不會檢查遠端主機所提供的 TLS 證書的有效性"
+msgstr "允許不安全連接將不會檢查遠端主機所提供的 TLS 憑證的有效性"
 
 msgid "Flow"
 msgstr "流控 (Flow)"
@@ -494,28 +494,28 @@ msgid "Concurrency"
 msgstr "最大並發連接數"
 
 msgid "Self-signed Certificate"
-msgstr "自簽證書"
+msgstr "自簽憑證"
 
 msgid "If you have a self-signed certificate,please check the box"
-msgstr "如果你使用自簽證書，請選擇"
+msgstr "如果你使用自簽憑證，請選擇"
 
 msgid "upload"
-msgstr "上傳證書"
+msgstr "上傳憑證"
 
 msgid "Upload"
 msgstr "上傳"
 
 msgid "Create upload file error"
-msgstr "創建證書文件失敗"
+msgstr "創建憑證文件失敗"
 
 msgid "No specify upload file"
-msgstr "沒有上傳證書"
+msgstr "沒有上傳憑證"
 
 msgid "Current Certificate Path"
-msgstr "當前證書路徑"
+msgstr "當前憑證路徑"
 
 msgid "Please confirm the current certificate path"
-msgstr "請選擇確認所傳證書，證書不正確將無法執行"
+msgstr "請選擇確認所傳憑證，憑證不正確將無法執行"
 
 msgid "TCP Fast Open"
 msgstr "TCP快速打開"

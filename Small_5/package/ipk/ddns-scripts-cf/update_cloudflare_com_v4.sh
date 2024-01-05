@@ -11,7 +11,7 @@
 # 變量聲明
 local __TMP __I __DOMAIN __TYPE __CMDBASE __ZONEID __POST __POST2 __RECIP __RECID __TTL __CNT __A
 
-# 設定記錄類型
+# 設定紀錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
 
 # 構造基本通訊命令
@@ -28,7 +28,7 @@ build_command(){
 	if [ $force_ipversion = 1 ];then
 		[ $use_ipv6 = 0 ] && __CMDBASE="$__CMDBASE -4" || __CMDBASE="$__CMDBASE -6"
 	fi
-	# 設定CA證書參數
+	# 設定CA憑證參數
 	if [ $use_https = 1 ];then
 		if [ "$cacert" = IGNORE ];then
 			__CMDBASE="$__CMDBASE --insecure"
@@ -93,21 +93,21 @@ cloudflare_transfer(){
 	exit 1
 }
 
-# 添加解析記錄
+# 添加解析紀錄
 add_domain(){
 	while ! cloudflare_transfer 3;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 添加解析紀錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
 	return 0
 }
 
-# 修改解析記錄
+# 修改解析紀錄
 update_domain(){
 	while ! cloudflare_transfer 4;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 修改解析紀錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 	return 0
 }
 
-# 獲取域名解析記錄
+# 獲取域名解析紀錄
 describe_domain(){
 	while ! cloudflare_transfer 0;do sleep 2;done
 	for __I in $(JSON @.result[@].name);do
@@ -129,14 +129,14 @@ describe_domain(){
 	__TMP=`JSON @.result[@]`
 	__RECIP=`JSON @.content 2>/dev/null`
 	if [ -z "$__RECIP" ];then
-		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$domain]" >> $LOGFILE
+		printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不存在: [$domain]" >> $LOGFILE
 		ret=1
 	else
 		if [ "$__RECIP" != "$__IP" ];then
 			__RECID=`JSON @.id`
 			__TTL=`JSON @.ttl`
 			__COMMENT=`JSON @.comment`
-			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析紀錄需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=2
 		fi
 	fi
@@ -151,7 +151,7 @@ elif [ $ret = 2 ];then
 	sleep 3
 	update_domain
 else
-	printf "%s\n" " $(date +%H%M%S)       : 解析記錄不需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 fi
 
 return 0

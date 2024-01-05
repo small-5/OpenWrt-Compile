@@ -14,10 +14,10 @@ msgid "OpenVPN Server NOT RUNNING"
 msgstr "OpenVPN 伺服器未執行"
 
 msgid "Certificate Generated"
-msgstr "證書已生成"
+msgstr "憑證已生成"
 
 msgid "Certificate Not Generated"
-msgstr "證書未生成"
+msgstr "憑證未生成"
 
 msgid "Enable"
 msgstr "啟用"
@@ -83,10 +83,10 @@ msgid "AES-256-GCM is the default encryption method"
 msgstr "默認使用AES-256-GCM加密"
 
 msgid "Remote-cert-tls"
-msgstr "檢查遠程證書"
+msgstr "檢查遠端憑證"
 
 msgid "Check remote certificate to prevent man-in-the-middle attacks<br/>Recommended to enable"
-msgstr "檢查遠程證書防止中間人攻擊<br/>建議啟用"
+msgstr "檢查遠端憑證防止中間人攻擊<br/>建議啟用"
 
 msgid "TLS-Auth"
 msgstr "TLS驗證"
@@ -95,16 +95,16 @@ msgid "Add an additional layer of HMAC authentication on top of the TLS control 
 msgstr "啟用在TLS通道上的HMAC身分驗證,建議啟用"
 
 msgid "Float"
-msgstr "可變IP/端口"
+msgstr "可變IP/連接埠"
 
 msgid "Allow the remote host to change its IP address or port"
-msgstr "允許遠端設備更改IP或者端口"
+msgstr "允許遠端設備更改IP或者連接埠"
 
 msgid "Duplicate-cn"
 msgstr "允許相同用戶登錄"
 
 msgid "Allow multiple clients with the same name or the same client certificate to connect to the server at the same time"
-msgstr "允許使用相同用戶名或者同用戶端證書的多個用戶端同時連接"
+msgstr "允許使用相同用戶名或者同用戶端憑證的多個用戶端同時連接"
 
 msgid "Auth-user-pass-verify"
 msgstr "用戶名/密碼認證"
@@ -116,13 +116,13 @@ msgid "Username-as-common-name"
 msgstr "使用用戶名作為公用名"
 
 msgid "For enable username/password verification,use the authenticated username as the common name, rather than the common name from the client cert"
-msgstr "在啟用用戶名/密碼認證的情況下，使用經過身分驗證的用戶名作為公用名，而不是用戶端證書中的公用名"
+msgstr "在啟用用戶名/密碼認證的情況下，使用經過身分驗證的用戶名作為公用名，而不是用戶端憑證中的公用名"
 
 msgid "Verify Client Cert"
-msgstr "證書認證"
+msgstr "憑證認證"
 
 msgid "If the certificate authentication is disabled,the client authentication only uses the user name/password,and the remote certificate checking function will be invalid"
-msgstr "停用證書認證則用戶端認證只使用用戶名/密碼，並且檢查遠程證書功能將失效"
+msgstr "停用憑證認證則用戶端認證只使用用戶名/密碼，並且檢查遠端憑證功能將失效"
 
 msgid "Tmp dir"
 msgstr "臨時目錄"
@@ -137,10 +137,10 @@ msgid "Set client reconnection interval (seconds)<br/>Need to re-download the .o
 msgstr "設定用戶端重新連接間隔（秒）<br/>修改以後需要重新下載.ovpn文件"
 
 msgid "Log level"
-msgstr "日誌記錄等級"
+msgstr "日誌紀錄等級"
 
 msgid "Set the log level,the larger the number,the more detailed the record content"
-msgstr "設定日誌記錄等級，數字越大，記錄內容越詳細"
+msgstr "設定日誌紀錄等級，數字越大，紀錄內容越詳細"
 
 msgid "Client Push Settings"
 msgstr "用戶端推送配置"
@@ -161,19 +161,19 @@ msgid "Download .ovpn file"
 msgstr "下載.ovpn文件"
 
 msgid "If you are using IOS client, please download this .ovpn file and send it via Telegram or Email to your IOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate"
-msgstr "如果你使用的是iOS設備,你可以使用Telegram或者郵件發送到自己的設備上用 OpenVPN 用戶端打開導入<br/>修改配置以後需要重新下載.ovpn文件<br/>生成證書以後需要重新下載.ovpn文件"
+msgstr "如果你使用的是iOS設備,你可以使用Telegram或者郵件發送到自己的設備上用 OpenVPN 用戶端打開導入<br/>修改配置以後需要重新下載.ovpn文件<br/>生成憑證以後需要重新下載.ovpn文件"
 
 msgid "Generate certificate"
-msgstr "生成證書"
+msgstr "生成憑證"
 
 msgid "<font color=\"red\">Generate certificate before running for the first time<br/>After modifying the certificate option, you need to regenerate the certificate to take effect<br/>The certificate may take a long time to generate<br/>After the certificate is generated, the VPN service needs to be restarted to take effect</font>"
-msgstr "<font color=\"red\">首次執行前需要生成證書<br/>修改證書選項以後需要重新生成證書才會生效<br/>生成證書可能會需要很長時間<br/>生成證書以後需要重啟VPN服務才會生效</font>"
+msgstr "<font color=\"red\">首次執行前需要生成憑證<br/>修改憑證選項以後需要重新生成憑證才會生效<br/>生成憑證可能會需要很長時間<br/>生成憑證以後需要重啟VPN服務才會生效</font>"
 
 msgid "Delete certificate"
-msgstr "刪除證書"
+msgstr "刪除憑證"
 
 msgid "<font color=\"red\">Delete the certificate,proceed with caution!</font>"
-msgstr "<font color=\"red\">刪除證書，謹慎操作！</font>"
+msgstr "<font color=\"red\">刪除憑證，謹慎操作！</font>"
 
 msgid "Client configuration"
 msgstr "用戶端配置"
@@ -188,10 +188,10 @@ msgid "One line is a set of username passwords,username password is separated by
 msgstr "一行為一組用戶名與密碼，用戶名密碼中間用空格隔開"
 
 msgid "Certificate option"
-msgstr "證書選項"
+msgstr "憑證選項"
 
 msgid "Edit certificate generation options,keep the default for normal users"
-msgstr "編輯證書選項，普通用戶請保持默認"
+msgstr "編輯憑證選項，普通用戶請保持默認"
 
 msgid "Log"
 msgstr "日誌"

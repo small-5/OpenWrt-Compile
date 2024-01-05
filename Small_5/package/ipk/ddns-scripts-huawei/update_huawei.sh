@@ -13,7 +13,7 @@ command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is requ
 local __TMP __I __N __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __RECIP __RECID __TTL __CNT __A
 __APIHOST=dns.myhuaweicloud.com
 
-# 設定記錄類型
+# 設定紀錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
 
 # 構造基本通訊命令
@@ -30,7 +30,7 @@ build_command(){
 	if [ $force_ipversion = 1 ];then
 		[ $use_ipv6 = 0 ] && __CMDBASE="$__CMDBASE -4" || __CMDBASE="$__CMDBASE -6"
 	fi
-	# 設定CA證書參數
+	# 設定CA憑證參數
 	if [ $use_https = 1 ];then
 		if [ "$cacert" = IGNORE ];then
 			__CMDBASE="$__CMDBASE --insecure"
@@ -98,21 +98,21 @@ huawei_transfer(){
 	exit 1
 }
 
-# 添加解析記錄
+# 添加解析紀錄
 add_domain(){
 	while ! huawei_transfer 2;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 添加解析紀錄成功: [$domain],[IP:$__IP]" >> $LOGFILE
 	return 0
 }
 
-# 修改解析記錄
+# 修改解析紀錄
 update_domain(){
 	while ! huawei_transfer 3;do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 修改解析紀錄成功: [$domain],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 	return 0
 }
 
-# 獲取域名解析記錄
+# 獲取域名解析紀錄
 describe_domain(){
 	while ! huawei_transfer 0;do sleep 2;done
 	__N=0
@@ -130,7 +130,7 @@ describe_domain(){
 	__POST="{\"name\":\"$domain\",\"type\":\"$__TYPE\",\"records\":[\"$__IP\"]"
 	while ! huawei_transfer 1;do sleep 2;done
 	if [ $(JSON @.metadata.total_count) = 0 ];then
-		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$domain]" >> $LOGFILE
+		printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不存在: [$domain]" >> $LOGFILE
 		ret=1
 	else
 		__RECIP=`JSON @.recordsets[@].records[@]`
@@ -138,7 +138,7 @@ describe_domain(){
 			__RECID=`JSON @.recordsets[@].id`
 			__TTL=`JSON @.recordsets[@].ttl`
 			__POST1="$__POST,\"ttl\":\"$__TTL\"}"
-			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析紀錄需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=2
 		fi
 	fi
@@ -153,7 +153,7 @@ elif [ $ret = 2 ];then
 	sleep 3
 	update_domain
 else
-	printf "%s\n" " $(date +%H%M%S)       : 解析記錄不需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 fi
 
 return 0

@@ -13,7 +13,7 @@ command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is requ
 # 變量聲明
 local __TMP __I __HOST __DOMAIN __TYPE __CMDBASE __RECID __TTL
 
-# 設定記錄類型
+# 設定紀錄類型
 [ $use_ipv6 = 0 ] && __TYPE=A || __TYPE=AAAA
 
 # 構造基本通訊命令
@@ -30,7 +30,7 @@ build_command(){
 	if [ $force_ipversion = 1 ];then
 		[ $use_ipv6 = 0 ] && __CMDBASE="$__CMDBASE -4" || __CMDBASE="$__CMDBASE -6"
 	fi
-	# 設定CA證書參數
+	# 設定CA憑證參數
 	if [ $use_https = 1 ];then
 		if [ "$cacert" = IGNORE ];then
 			__CMDBASE="$__CMDBASE --insecure"
@@ -128,25 +128,25 @@ aliyun_transfer(){
 	exit 1
 }
 
-# 添加解析記錄
+# 添加解析紀錄
 add_domain(){
 	while ! aliyun_transfer "Action=AddDomainRecord" "DomainName=$__DOMAIN" "RR=$__HOST" "Type=$__TYPE" "Value=$__IP";do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 添加解析記錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 添加解析紀錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP]" >> $LOGFILE
 }
 
-# 啟用解析記錄
+# 啟用解析紀錄
 enable_domain(){
 	while ! aliyun_transfer "Action=SetDomainRecordStatus" "RecordId=$__RECID" "Status=Enable";do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 啟用解析記錄成功" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 啟用解析紀錄成功" >> $LOGFILE
 }
 
-# 修改解析記錄
+# 修改解析紀錄
 update_domain(){
 	while ! aliyun_transfer "Action=UpdateDomainRecord" "RecordId=$__RECID" "RR=$__HOST" "Type=$__TYPE" "Value=$__IP" "TTL=$__TTL";do sleep 2;done
-	printf "%s\n" " $(date +%H%M%S)       : 修改解析記錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 修改解析紀錄成功: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN],[IP:$__IP],[TTL:$__TTL]" >> $LOGFILE
 }
 
-# 獲取域名解析記錄
+# 獲取域名解析紀錄
 describe_domain(){
 	while ! aliyun_transfer "Action=DescribeDomains" "PageSize=100";do sleep 2;done
 	for __I in $(JSON @.Domains.Domain[@].PunyCode);do
@@ -164,18 +164,18 @@ describe_domain(){
 	while ! aliyun_transfer "Action=DescribeSubDomainRecords" "SubDomain=$__HOST.$__DOMAIN" "Type=$__TYPE";do sleep 2;done
 	__TMP=`JSON @.DomainRecords.Record[@]`
 	if [ -z "$__TMP" ];then
-		printf "%s\n" " $(date +%H%M%S)       : 解析記錄不存在: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN]" >> $LOGFILE
+		printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不存在: [$([ "$__HOST" = @ ] || echo $__HOST.)$__DOMAIN]" >> $LOGFILE
 		ret=1
 	else
 		__STATUS=`JSON @.Status`
 		__RECIP=`JSON @.Value`
 		if [ "$__STATUS" != ENABLE ];then
-			printf "%s\n" " $(date +%H%M%S)       : 解析記錄被禁用" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析紀錄被禁用" >> $LOGFILE
 			ret=$(( $ret | 2 ))
 		fi
 		if [ "$__RECIP" != "$__IP" ];then
 			__TTL=`JSON @.TTL`
-			printf "%s\n" " $(date +%H%M%S)       : 解析記錄需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+			printf "%s\n" " $(date +%H%M%S)       : 解析紀錄需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 			ret=$(( $ret | 4 ))
 		fi
 	fi
@@ -184,7 +184,7 @@ describe_domain(){
 build_command
 describe_domain
 if [ $ret = 0 ];then
-	printf "%s\n" " $(date +%H%M%S)       : 解析記錄不需要更新: [解析記錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
+	printf "%s\n" " $(date +%H%M%S)       : 解析紀錄不需要更新: [解析紀錄IP:$__RECIP] [本地IP:$__IP]" >> $LOGFILE
 elif [ $ret = 1 ];then
 	sleep 3
 	add_domain

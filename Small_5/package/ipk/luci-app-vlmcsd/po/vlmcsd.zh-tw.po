@@ -56,7 +56,7 @@ msgid "disable"
 msgstr "禁用"
 
 msgid "Local Port"
-msgstr "本地端口"
+msgstr "本地連接埠"
 
 msgid "Config File"
 msgstr "配置文件"

@@ -65,7 +65,7 @@ msgid "Enable LZO(1x) compression for outgoing data packets"
 msgstr "對發出的數據包啟用LZO(1x)壓縮"
 
 msgid "Enable Verbose logging"
-msgstr "啟用詳細記錄"
+msgstr "啟用詳細紀錄"
 
 msgid "Enable PMTU discovery"
 msgstr "啟用PMTU檢測"

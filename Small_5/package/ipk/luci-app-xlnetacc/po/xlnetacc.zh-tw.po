@@ -44,7 +44,7 @@ msgid "Enable UpLink Upgrade"
 msgstr "開啟上行提速"
 
 msgid "Enable Logging"
-msgstr "啟用日誌記錄"
+msgstr "啟用日誌紀錄"
 
 msgid "Enable verbose logging"
 msgstr "啟用詳細日誌"

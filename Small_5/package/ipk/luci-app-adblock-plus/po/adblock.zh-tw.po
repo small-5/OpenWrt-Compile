@@ -29,7 +29,7 @@ msgid "Adblock Plus Data"
 msgstr "Adblock Plus 規則數據庫"
 
 msgid "Records"
-msgstr "條記錄"
+msgstr "條紀錄"
 
 msgid "Refresh..."
 msgstr "正在更新.."
