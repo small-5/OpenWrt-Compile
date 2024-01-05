@@ -1137,6 +1137,57 @@
  #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:165
  msgid "NOT RUNNING"
 
+--- a/feeds/luci/applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js
++++ b/feeds/luci/applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js
+@@ -87,9 +87,8 @@ return view.extend({
+ 		s.anonymous = true;
+ 		s.dynamic = true;
+ 
+-		o = s.option(form.Flag, 'disabled', _('Disabled xfrpc service'));
+-		o.datatype = 'bool';
+-		o.optional = true;
++		o = s.option(form.Flag, 'enabled', _('Enabled'));
++		o.rmempty = false;
+ 
+ 		o = s.option(form.ListValue, 'loglevel', _('Log level'), 
+ 			'%s <br /> %s'.format(_('LogLevel specifies the minimum log level. Valid values are "Debug", "Info", \
+
+--- a/feeds/luci/applications/luci-app-xfrpc/po/zh_Hant/xfrpc.po
++++ b/feeds/luci/applications/luci-app-xfrpc/po/zh_Hant/xfrpc.po
+@@ -57,8 +57,8 @@ msgid "Debug"
+ msgstr "除錯"
+ 
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:90
+-msgid "Disabled xfrpc service"
+-msgstr "禁用xfrpc服務"
++msgid "Enabled"
++msgstr "啟用"
+ 
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:105
+ msgid "Emergency"
+@@ -153,10 +153,6 @@ msgstr "執行中"
+ msgid "Remote port"
+ msgstr "遠端埠號"
+ 
+-#: applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json:3
+-msgid "Reverse proxy"
+-msgstr "反向代理"
+-
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:69
+ msgid "Server address"
+ msgstr "伺服器位址"
+
+--- a/feeds/luci/applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json
++++ b/feeds/luci/applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json
+@@ -1,6 +1,6 @@
+ {
+ 	"admin/services/xfrpc": {
+-		"title": "Reverse proxy",
++		"title": "xfrpc",
+ 		"action": {
+ 			"type": "view",
+ 			"path": "xfrpc"
+
 --- a/feeds/packages/net/frp/files/frpc.config
 +++ b/feeds/packages/net/frp/files/frpc.config
 @@ -1,23 +1,13 @@
@@ -1447,6 +1498,75 @@
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
+
+--- a/feeds/packages/net/xfrpc/Makefile
++++ b/feeds/packages/net/xfrpc/Makefile
+@@ -8,13 +8,13 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=xfrpc
+-PKG_VERSION:=2.9.644
++PKG_VERSION:=2.12.656
+ PKG_RELEASE:=1
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
+ PKG_SOURCE_VERSION:=$(PKG_VERSION)
+-PKG_MIRROR_HASH:=99cda337c641664d94abc3fe4e144c13a7f3191951e917e7a837ab88a7df4515
++PKG_MIRROR_HASH:=f72b5fb205746db033cba0eed1996d9e926540e845dc2b0034b98c1f8be8359b
+ 
+ PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
+ PKG_LICENSE:=GPL-3.0-or-later
+
+--- a/feeds/packages/net/xfrpc/files/xfrpc.conf
++++ b/feeds/packages/net/xfrpc/files/xfrpc.conf
+@@ -1,25 +1,9 @@
++
+ config xfrp 'init'
+-	option disabled 1
+-	option loglevel 7
++	option enabled '0'
++	option loglevel '4'
+ 
+ config xfrpc 'common'
+-	option server_addr frps_ip_address
+-	option server_port 7000
++	option server_addr '0.0.0.0'
++	option server_port '7000'
+ 
+-config xfrpc 'ssh01'
+-	option type tcp
+-	option local_ip 127.0.0.1
+-	option local_port 22
+-	option remote_port 6000
+-	
+-#config xfrpc 'web01'
+-#	option type http
+-#	option local_ip 127.0.0.1
+-#	option local_port 8080
+-#	option custom_domains your_domain_name
+-	
+-#config xfrpc 'web02'
+-#	option type https
+-#	option local_ip 127.0.0.1
+-#	option local_port 8443
+-#	option custom_domains your_domain_name
+
+--- a/feeds/packages/net/xfrpc/files/xfrpc.init
++++ b/feeds/packages/net/xfrpc/files/xfrpc.init
+@@ -66,10 +66,10 @@ start_service() {
+ 	config_load "$NAME"
+ 
+ 	uci_validate_section xfrpc xfrp init \
+-			'disabled:bool:0' \
++			'enabled:bool:0' \
+ 			'loglevel:uinteger:0'
+ 
+-	if [ $disabled = 1 ]; then
++	if [ $enabled = 0 ]; then
+ 		echo "xfrpc service disabled"
+ 		return
+ 	fi
 
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
