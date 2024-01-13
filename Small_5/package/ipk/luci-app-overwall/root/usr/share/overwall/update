@@ -12,15 +12,16 @@ C=$(uci -q get $N.@global[0].run_mode)
 D=$(uci -q get $N.@global[0].auth_3)
 E=$($DIR/curl 2)
 X=Overwall/rules
+LOG=/tmp/overwall.log
 
 log(){
-	[ $A = N ] && echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Update : $*" >> /tmp/overwall.log
+	[ $A = N ] && echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Update : $*" >> $LOG
 }
 
 clean(){
 	local a
 	[ $1 = 0 ] && a="Rules  :" || a="Update :"
-	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over $a $2" >> /tmp/overwall.log
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over $a $2" >> $LOG
 	rm -f $LOCK /var/lock/overwall.lock
 	exit 1
 }
@@ -31,6 +32,7 @@ if ! [ "$D" ];then
 	D=$(uci -q get $N.@global[0].auth_3)
 fi
 
+[ -s $LOG ] && echo '---------------------------------------------------------------------------------------------------------' >> $LOG
 if ! [ "$(uci -q get $N.@global[0].auth_1)" -a "$(uci -q get $N.@global[0].auth_2)" ];then
 	clean 0 "No encrypted code or authorization code"
 elif [ "$D" != "$E" ];then
