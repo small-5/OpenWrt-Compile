@@ -191,35 +191,6 @@
  		o.modalonly = true;
  
 
---- a/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
-+++ b/feeds/luci/applications/luci-app-ksmbd/htdocs/luci-static/resources/view/ksmbd.js
-@@ -10,23 +10,17 @@ return view.extend({
- 		return Promise.all([
- 			L.resolveDefault(fs.stat('/sbin/block'), null),
- 			L.resolveDefault(fs.stat('/etc/config/fstab'), null),
--			L.resolveDefault(fs.exec('/usr/sbin/ksmbd.mountd', ['-V']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version : (\S+)/))[1] }),
--			L.resolveDefault(fs.exec('/sbin/modinfo', ['ksmbd']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version:\t(\S+)/))[1] }),
-+			L.resolveDefault(fs.exec('/usr/sbin/ksmbd.mountd', ['-V']), {}).then(function(res) { return L.toArray((res.stdout || '').match(/version : (\S+)/))[1] })
- 		]);
- 	},
- 	render: function(stats) {
--		var m, s, o, v, v2;
-+		var m, s, o, v;
- 		v = '?';
--		v2 = '?';
- 
- 		m = new form.Map('ksmbd', _('Network Shares'));
- 
- 		if (stats[2])
- 			v = stats[2].trim();
--		if (stats[3])
--			v2 = stats[3].trim();
--		if (v != v2)
--			v = v +'/'+ v2;
- 		s = m.section(form.TypedSection, 'globals', 'Ksmbd/Kmod Version ' + v);
- 		s.anonymous = true;
- 
-
 --- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
 +++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
 @@ -1,6 +1,7 @@
