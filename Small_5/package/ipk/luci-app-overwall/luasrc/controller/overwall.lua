@@ -162,7 +162,7 @@ function checksrv()
 		local ip=EXEC("echo "..s.server.." | grep -E '^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$' || \\\
 		nslookup "..s.server.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p")
 		ip=EXEC("echo -n "..ip)
-		local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null")
+		local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null || ipset add over_wan_ac_v6 "..ip.." 2>/dev/null")
 		local t=EXEC(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",s.server_port,ip))
 		if t~='' then
 			if tonumber(t)<100 then
@@ -176,7 +176,7 @@ function checksrv()
 		else
 			r=r..'<font color="red">['..string.upper(s.type)..'] ['..n..'] ERROR</font><br/>'
 		end
-		if iret==0 then CALL("ipset del over_wan_ac "..ip) end
+		if iret==0 then CALL("ipset del over_wan_ac "..ip.." 2>/dev/null || ipset del over_wan_ac_v6 "..ip.." 2>/dev/null") end
 	end)
 	http.prepare_content("application/json")
 	http.write_json({ret=r})
@@ -189,10 +189,10 @@ function ping()
 	local ip=EXEC("echo "..domain.." | grep -E '^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$|^(([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4})$' || \\\
 	nslookup "..domain.." 127.0.0.1:"..dp.." 2>/dev/null | grep Address | sed 1d | awk -F' ' '{print$NF}' | sed -n 1p")
 	ip=EXEC("echo -n "..ip)
-	local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null")
+	local iret=CALL("ipset add over_wan_ac "..ip.." 2>/dev/null || ipset add over_wan_ac_v6 "..ip.." 2>/dev/null")
 	local e=EXEC(string.format("echo -n $(tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}')",port,ip))
 	if (iret==0) then
-		CALL("ipset del over_wan_ac "..ip)
+		CALL("ipset del over_wan_ac "..ip.." 2>/dev/null || ipset del over_wan_ac_v6 "..ip.." 2>/dev/null")
 	end
 	http.prepare_content("application/json")
 	http.write_json({ping=e})

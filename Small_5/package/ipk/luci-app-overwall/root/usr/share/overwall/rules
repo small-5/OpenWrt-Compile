@@ -19,9 +19,13 @@ flush_r(){
 	flush_iptables nat
 	flush_iptables mangle
 	flush_iptables nat 6
+	flush_iptables mangle 6
 	while ip rule del fwmark 1 lookup 100 2>/dev/null;do :;done
 	ip route del local 0.0.0.0/0 dev lo table 100 2>/dev/null
+	while ip -6 rule del fwmark 1 lookup 100 2>/dev/null;do :;done
+	ip -6 route del local ::/0 dev lo table 100 2>/dev/null
 	ipset -X over_wan_ac 2>/dev/null
+	ipset -X over_wan_ac_v6 2>/dev/null
 	ipset -X over_lan_ac 2>/dev/null
 	ipset -X fplan 2>/dev/null
 	ipset -X gmlan 2>/dev/null
@@ -32,17 +36,11 @@ flush_r(){
 	ipset -X telegram 2>/dev/null
 	ipset -X over_v4 2>/dev/null
 	ipset -X over_v6 2>/dev/null
-	ipset -X over_all 2>/dev/null
 	echo '#!/bin/sh' > $FWI
 }
 
-gen_ipv6(){
-	$IP6T -N OVERWALL_WAN_FW 2>/dev/null && $IP6T -A OVERWALL_WAN_FW -p tcp -j REDIRECT --to-ports $local_port && $IP6T -N OVERWALL_WAN_AC && $IP6T -I OUTPUT 1 -p tcp -m comment --comment $TAG -j OVERWALL_WAN_AC
-	I=1
-}
-
 proxy_rules(){
-	$1 -A OVERWALL_WAN_AC -d $2 -j OVERWALL_WAN_FW
+	$1 -I OUTPUT 1 -p tcp -d $2 -m comment --comment $TAG -j REDIRECT --to-ports $local_port
 }
 
 ipset_r(){
@@ -95,52 +93,48 @@ EOF
 	if [ $YB_SERVER ];then
 		if [ "$(uci -q get overwall.@global[0].yb_proxy)" = 1 ];then
 			if echo $YB_SERVER | grep -q :;then
-				gen_ipv6
 				proxy_rules "$IP6T" $YB_SERVER
 			else
 				proxy_rules "$IPT" $YB_SERVER
 			fi
 		else
-			ipset add over_wan_ac $YB_SERVER 2>/dev/null
+			ipset add over_wan_ac $YB_SERVER 2>/dev/null || YB_V6=1
 		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set youtube dst -j REDIRECT --to-ports $YB_PORT
 	fi
 	if [ $NF_SERVER ];then
 		if [ "$(uci -q get overwall.@global[0].nf_proxy)" = 1 ];then
 			if echo $NF_SERVER | grep -q :;then
-				gen_ipv6
 				proxy_rules "$IP6T" $NF_SERVER
 			else
 				proxy_rules "$IPT" $NF_SERVER
 			fi
 		else
-			ipset add over_wan_ac $NF_SERVER 2>/dev/null
+			ipset add over_wan_ac $NF_SERVER 2>/dev/null || NF_V6=1
 		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports $NF_PORT
 	fi
 	if [ $CU_SERVER ];then
 		if [ "$(uci -q get overwall.@global[0].cu_proxy)" = 1 ];then
 			if echo $CU_SERVER | grep -q :;then
-				gen_ipv6
 				proxy_rules "$IP6T" $CU_SERVER
 			else
 				proxy_rules "$IPT" $CU_SERVER
 			fi
 		else
-			ipset add over_wan_ac $CU_SERVER 2>/dev/null
+			ipset add over_wan_ac $CU_SERVER 2>/dev/null || CU_V6=1
 		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set custom dst -j REDIRECT --to-ports $CU_PORT
 	fi
 	if [ $TG_SERVER ];then
 		if [ "$(uci -q get overwall.@global[0].tg_proxy)" = 1 ];then
 			if echo $TG_SERVER | grep -q :;then
-				gen_ipv6
 				proxy_rules "$IP6T" $TG_SERVER
 			else
 				proxy_rules "$IPT" $TG_SERVER
 			fi
 		else
-			ipset add over_wan_ac $TG_SERVER 2>/dev/null
+			ipset add over_wan_ac $TG_SERVER 2>/dev/null || TG_V6=1
 		fi
 		$IPT -A OVERWALL_WAN_AC -p tcp -m set --match-set telegram dst -j REDIRECT --to-ports $TG_PORT
 	fi
@@ -158,22 +152,71 @@ EOF
 	if [ "$LAN_AC_IP" ];then
 		ipset -! -R <<-EOF || return 1
 		create over_lan_ac hash:net
-		$(for i in ${LAN_AC_IP:1};do echo "add over_lan_ac $i";done)
+		$(for i in ${LAN_AC_IP:1};do echo $i | grep -q : || echo "add over_lan_ac $i";done)
 EOF
 		case "${LAN_AC_IP:0:1}" in
-			w|W)MATCH_SET="-m set --match-set over_lan_ac src";;
-			b|B)MATCH_SET="-m set ! --match-set over_lan_ac src";;
+			w|W)MATCH_SET="-m set --match-set over_lan_ac src";MATCH_SET_V6=1;;
+			b|B)MATCH_SET="-m set ! --match-set over_lan_ac src";MATCH_SET_V6=2;;
 		esac
 	fi
 
 	$IPT -I PREROUTING 1 -p tcp $MATCH_SET -m comment --comment $TAG -j OVERWALL_WAN_AC
+	$IPT -I OUTPUT 1 -p tcp -m mark ! --mark 1912 -m comment --comment $TAG -j OVERWALL_WAN_AC
+
+	if [ $MODE = router ];then
+		cat > $FILE  <<EOF
+::/8
+100::/8
+200::/7
+400::/6
+800::/5
+1000::/4
+4000::/3
+6000::/3
+8000::/3
+a000::/3
+c000::/3
+e000::/4
+f000::/5
+f800::/6
+fc00::/7
+fe00::/9
+fe80::/10
+fec0::/10
+ff00::/8
+EOF
+		sed -i 's/^/add over_wan_ac_v6 /' $FILE
+		sed -i '1i\create over_wan_ac_v6 hash:net family inet6' $FILE
+		ipset -F over_wan_ac_v6 2>/dev/null
+		ipset -R < $FILE 2>/dev/null
+		rm -f $FILE
+		[ $YB_V6 ] && ipset add over_wan_ac_v6 $YB_SERVER 2>/dev/null
+		[ $NF_V6 ] && ipset add over_wan_ac_v6 $NF_SERVER 2>/dev/null
+		[ $CU_V6 ] && ipset add over_wan_ac_v6 $CU_SERVER 2>/dev/null
+		[ $TG_V6 ] && ipset add over_wan_ac_v6 $TG_SERVER 2>/dev/null
+
+		$IP6T -N OVERWALL_WAN_FW 2>/dev/null
+		$IP6T -A OVERWALL_WAN_FW -p tcp $PROXY_PORTS -j REDIRECT --to-ports $local_port
+		$IP6T -N OVERWALL_WAN_AC
+		echo $server | grep -q : && $IP6T -A OVERWALL_WAN_AC -d $server -j RETURN
+		[ "$MATCH_SET_V6" = 2 ] && for i in ${LAN_AC_IP:1};do echo $i | grep -q : && $IP6T -A OVERWALL_WAN_AC -s $i -j RETURN;done
+		$IP6T -A OVERWALL_WAN_AC -m set --match-set over_wan_ac_v6 dst -j RETURN
+		$IP6T -A OVERWALL_WAN_AC -m set ! --match-set over_v6 dst -j OVERWALL_WAN_FW
+		if [ "$MATCH_SET_V6" = 1 ];then
+			for i in ${LAN_AC_IP:1};do echo $i | grep -q : && $IP6T -I PREROUTING 1 -p tcp -s $i -m comment --comment $TAG -j OVERWALL_WAN_AC;done
+		else
+			$IP6T -I PREROUTING 1 -p tcp -m comment --comment $TAG -j OVERWALL_WAN_AC
+		fi
+		$IP6T -I OUTPUT 1 -p tcp -m mark ! --mark 1912 -m comment --comment $TAG -j OVERWALL_WAN_AC
+		I=1
+	fi
+
 	if [ $y ];then
 		$IPT -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
 		$IPT -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
-		$IP6T -t nat -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
-		$IP6T -t nat -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
+		$IP6T -I PREROUTING 1 -p udp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
+		$IP6T -I PREROUTING 2 -p tcp --dport 53 -m comment --comment $TAG -j REDIRECT --to-ports 53
 	fi
-	$IPT -I OUTPUT 1 -p tcp -m mark ! --mark 1912 -m comment --comment $TAG -j OVERWALL_WAN_AC
 }
 
 tp_rule(){
@@ -183,11 +226,10 @@ tp_rule(){
 	ipt="iptables -t mangle"
 	$ipt -N OVERWALL_TPROXY
 	if ipset list over_v4 >/dev/null 2>&1;then
-		[ $MODE = oversea ] && a= || a=!
-		$ipt -A OVERWALL_TPROXY -p udp -m set $a --match-set over_v4 dst --dport 80 -j DROP
+		[ $MODE = oversea ] || a=!
 		$ipt -A OVERWALL_TPROXY -p udp -m set $a --match-set over_v4 dst --dport 443 -j DROP
-	elif ipset list blacklist >/dev/null 2>&1;then
-		$ipt -A OVERWALL_TPROXY -p udp -m set --match-set blacklist dst --dport 80 -j DROP
+	fi
+	if ipset list blacklist >/dev/null 2>&1;then
 		$ipt -A OVERWALL_TPROXY -p udp -m set --match-set blacklist dst --dport 443 -j DROP
 	fi
 	$ipt -A OVERWALL_TPROXY -p udp --dport 53 -j RETURN
@@ -203,11 +245,20 @@ tp_rule(){
 		all)$ipt -A OVERWALL_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1;;
 	esac
 
-	ipset -N over_all hash:net 2>/dev/null
-	for i in $(ip -4 add show | grep -v $(uci -qP /tmp/state get network.wan.ifname || echo 127.0.0.1) | grep inet | grep -v 127.0.0.1 | awk '{print$2}');do
-		ipset -! add over_all $i
-	done
-	$ipt -I PREROUTING 1 -p udp $MATCH_SET -m set --match-set over_all src -m comment --comment $TAG -j OVERWALL_TPROXY
+	$ipt -I PREROUTING 1 -p udp $MATCH_SET -m comment --comment $TAG -j OVERWALL_TPROXY
+
+	if [ $MODE = router ];then
+		ip6t="ip6tables -t mangle"
+		ip -6 rule add fwmark 1 lookup 100
+		ip -6 route add local ::/0 dev lo table 100
+		$ip6t -N OVERWALL_TPROXY
+		$ip6t -A OVERWALL_TPROXY -p udp -m set ! --match-set over_v6 dst --dport 443 -j DROP
+		$ip6t -A OVERWALL_TPROXY -p udp --dport 53 -j RETURN
+		echo $SERVER | grep -q : && $ip6t -A OVERWALL_TPROXY -p udp -d $SERVER -j RETURN
+		$ip6t -A OVERWALL_TPROXY -p udp -m set --match-set over_wan_ac_v6 dst -j RETURN
+		$ip6t -A OVERWALL_TPROXY -p udp $PROXY_PORTS -m set ! --match-set over_v6 dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
+		$ip6t -I PREROUTING 1 -p udp -m comment --comment $TAG -j OVERWALL_TPROXY
+	fi
 }
 
 gen_include(){
@@ -231,6 +282,7 @@ EOF
 	ip6tables-save -c | grep -v OVERWALL | ip6tables-restore -c
 	ip6tables-restore -n <<-EOT
 	$(extract_rules nat 6)
+	$(extract_rules mangle 6)
 	EOT
 EOF
 		[ $y ] && sed -i -e 's/-I PREROUTING 1 -p tcp/-I PREROUTING 3 -p tcp/' -e 's/PREROUTING 3 -p tcp -m tcp --dport 53/PREROUTING 2 -p tcp -m tcp --dport 53/' $FWI || true

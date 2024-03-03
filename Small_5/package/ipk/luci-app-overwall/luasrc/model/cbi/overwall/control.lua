@@ -20,8 +20,8 @@ o:value("b",translate("Allow all except listed"))
 o.rmempty=false
 
 o=s:taboption("lan_ac",DynamicList,"lan_ac_ips",translate("LAN Host List"))
-o.datatype="ipaddr"
-luci.ip.neighbors({family=4},function(entry)
+o.datatype="ipmask"
+luci.ip.neighbors({family=0},function(entry)
 	if entry.reachable then
 		o:value(entry.dest:string())
 	end
