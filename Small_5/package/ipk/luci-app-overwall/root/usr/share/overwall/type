@@ -18,7 +18,7 @@ elif [ $b = vmess -o $b = vless ];then
 	if [ "$(uci_get_by_name $a mux)" -o $c = grpc -o $c = h2 ];then
 		n=1
 	else
-		[ $c = ws ] && let n++
+		[ $c = ws -o $c = httpupgrade ] && let n++
 		[ "$(uci_get_by_name $a tls)" -o "$(uci_get_by_name $a reality)" ] && let n++
 		[ "$(uci_get_by_name $a vless_flow)" ] && n=$(echo | awk "{print $n+0.5}")
 	fi

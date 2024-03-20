@@ -32,7 +32,9 @@ if ! [ "$D" ];then
 	D=$(uci -q get $N.@global[0].auth_3)
 fi
 
-[ -s $LOG ] && echo '---------------------------------------------------------------------------------------------------------' >> $LOG
+if [ -s $LOG ];then
+	cat $LOG | sed -n '$p' | grep -q 'Download IP/GFW files...' || echo '---------------------------------------------------------------------------------------------------------' >> $LOG
+fi
 if ! [ "$(uci -q get $N.@global[0].auth_1)" -a "$(uci -q get $N.@global[0].auth_2)" ];then
 	clean 0 "No encrypted code or authorization code"
 elif [ "$D" != "$E" ];then

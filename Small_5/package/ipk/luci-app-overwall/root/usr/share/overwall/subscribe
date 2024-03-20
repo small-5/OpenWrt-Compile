@@ -150,6 +150,9 @@ local function parseNodeUrl(A,B)
 	elseif params.type=='grpc' then
 		result.grpc_serviceName=params.serviceName
 		result.grpc_authority=params.authority
+	elseif params.type=='httpupgrade' then
+		result.httpupgrade_host=params.host
+		result.httpupgrade_path=params.path
 	end
 	result.transport=params.type
 	if A=="vmess" then
@@ -347,6 +350,9 @@ local function processData(szType,content)
 			elseif info.net=='grpc' then
 				result.grpc_serviceName=info.serviceName
 				result.grpc_authority=info.authority
+			elseif info.net=='httpupgrade' then
+				result.httpupgrade_host=info.host
+				result.httpupgrade_path=info.path
 			end
 			if info.security then result.security=info.security end
 			if info.tls=="tls" or info.tls=="1" then

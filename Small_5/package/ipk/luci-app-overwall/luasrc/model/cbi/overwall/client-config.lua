@@ -236,6 +236,7 @@ o:value("ws","WebSocket")
 o:value("h2","HTTP/2")
 o:value("quic","QUIC")
 o:value("grpc","gRPC")
+o:value("httpupgrade","HttpUpgrade")
 o:depends("type","vmess")
 o:depends("type","vless")
 
@@ -264,6 +265,15 @@ o:depends("transport","h2")
 
 o=s:option(Value,"h2_path",translate("HTTP/2 Path"))
 o:depends("transport","h2")
+
+o=s:option(Value,"httpupgrade_host",translate("HttpUpgrade Host"))
+o:depends("transport","httpupgrade")
+
+o=s:option(Value,"httpupgrade_path",translate("HttpUpgrade Path"))
+o:depends("transport","httpupgrade")
+
+o=s:option(Value,"httpupgrade_ua",translate("HttpUpgrade UserAgent"))
+o:depends("transport","httpupgrade")
 
 o=s:option(ListValue,"quic_security",translate("QUIC Security"))
 o:value("none",translate("None"))
