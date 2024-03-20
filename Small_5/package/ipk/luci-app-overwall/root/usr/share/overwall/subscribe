@@ -149,6 +149,7 @@ local function parseNodeUrl(A,B)
 		result.quic_security=params.quicSecurity or "none"
 	elseif params.type=='grpc' then
 		result.grpc_serviceName=params.serviceName
+		result.grpc_authority=params.authority
 	end
 	result.transport=params.type
 	if A=="vmess" then
@@ -345,6 +346,7 @@ local function processData(szType,content)
 				result.quic_security=info.securty
 			elseif info.net=='grpc' then
 				result.grpc_serviceName=info.serviceName
+				result.grpc_authority=info.authority
 			end
 			if info.security then result.security=info.security end
 			if info.tls=="tls" or info.tls=="1" then

@@ -140,7 +140,8 @@ outbounds={
 			}
 		} or nil,
 		grpcSettings=(server.transport=="grpc") and {
-			serviceName=server.grpc_serviceName
+			serviceName=server.grpc_serviceName,
+			authority=server.grpc_authority
 		} or nil
 	},
 	mux=(server.mux=="1") and {

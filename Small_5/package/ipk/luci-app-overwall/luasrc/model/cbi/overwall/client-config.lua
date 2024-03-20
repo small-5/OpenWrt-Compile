@@ -286,6 +286,9 @@ o:depends("transport","quic")
 o=s:option(Value,"grpc_serviceName","ServiceName")
 o:depends("transport","grpc")
 
+o=s:option(Value,"grpc_authority","Authority")
+o:depends("transport","grpc")
+
 o=s:option(ListValue,"kcp_guise",translate("Camouflage Type"))
 o:value("none",translate("None"))
 o:value("srtp",translate("VideoCall (SRTP)"))
