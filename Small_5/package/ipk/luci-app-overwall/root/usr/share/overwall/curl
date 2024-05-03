@@ -7,11 +7,11 @@ if [ $1 = A ];then
 fi
 
 judge(){
-	echo $* | grep -wqE 'OpenWrt 民國[^ ]* By Small_5' || return 1
+	echo $* | grep -wqE 'OpenWrt 中華民國[^ ]* By Small_5' || return 1
 }
 
 parse(){
-	echo $* | sed 's/ 民國.* /-民國 By /'
+	echo $* | sed 's/ 中華民國.* /-民國 By /'
 }
 
 A=`cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | awk -F "['']" '{print $2}'`
@@ -20,7 +20,8 @@ C=`echo "$B" | grep PRETTY_NAME | awk -F "[\"\"]" '{print $2}'`
 B=`echo "$B" | grep OPENWRT_RELEASE | awk -F "[\"\"]" '{print $2}'`
 for i in "$A" "$B" "$C";do
 	if ! judge $i;then
-		echo Unauthorized
+		sed -i '/Unauthorized/d' /tmp/overwall.log 2>/dev/null
+		echo $(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Unauthorized >> /tmp/overwall.log
 		exit
 	fi
 done
@@ -71,13 +72,13 @@ C=`export PASS="$B";echo ${C:0:9}${C:16:10}${C:29:5}${C:38} | sed -e 's/^$1/U2/'
 r=1
 if [ $1 = 0 ];then
 	[ "$2" -a "$3" -a "$4" -a "$5" -a "$6" ] || exit 1
-	while ! echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $4 $3 -K -;do
+	while ! echo -e "url=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $4 $3 -K -;do
 		[ $r -ge $5 ] && exit 1 || let r++
 		sleep $6
 	done
 elif [ $1 = 1 ];then
 	[ "$2" -a "$3" -a "$4" -a "$5" ] || exit 1
-	while ! echo -e "URL=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -;do
+	while ! echo -e "url=\"$C/$2?$(qs)\"\n-A \"$A\"" | curl $3 -K -;do
 		[ $r -ge $4 ] && exit 1 || let r++
 		sleep $5
 	done
