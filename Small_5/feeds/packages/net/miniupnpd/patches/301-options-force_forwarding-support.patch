@@ -1,6 +1,6 @@
 --- a/miniupnpd.c
 +++ b/miniupnpd.c
-@@ -1256,6 +1256,10 @@
+@@ -1252,6 +1252,10 @@
  			case UPNPEXT_IP:
  				use_ext_ip_addr = ary_options[i].value;
  				break;

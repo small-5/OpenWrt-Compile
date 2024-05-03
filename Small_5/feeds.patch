@@ -206,8 +206,8 @@
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 @@ -130,6 +130,9 @@
- 		s.taboption('general', form.Flag, 'igdv1', _('Enable IGDv1 mode'),
- 			_('Advertise as IGDv1 device instead of IGDv2')).default = '0'
+ 		s.taboption('general', form.Flag, 'igdv1', _('Enable UPnP IGDv1 mode'),
+ 			_('Advertise as UPnP IGDv1 device (no IPv6) instead of IGDv2')).default = '0'
  
 +		s.taboption('general', form.Flag, 'force_forwarding', _('Force forwarding'),
 +			_('Force forwarding for private/reserved IP address'))
@@ -218,19 +218,16 @@
 
 --- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
 +++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
-@@ -229,6 +229,12 @@
+@@ -230,3 +230,9 @@
+ #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:140
  msgid "Value in KByte/s, informational only"
  msgstr "值 (KByte/s) 僅供參考"
- 
++
 +msgid "Force forwarding"
 +msgstr "強制轉發"
 +
 +msgid "Force forwarding for private/reserved IP address"
 +msgstr "爲私有/保留IP位址開啟強制轉發"
-+
- #~ msgid "Collecting data..."
- #~ msgstr "收集資料中..."
- 
 
 --- a/feeds/luci/modules/luci-base/root/etc/config/luci
 +++ b/feeds/luci/modules/luci-base/root/etc/config/luci
@@ -282,7 +279,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -672,10 +672,12 @@ return view.extend({
+@@ -694,10 +694,12 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -298,7 +295,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -688,11 +690,11 @@ return view.extend({
+@@ -710,11 +712,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -312,7 +309,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -701,7 +703,7 @@ return view.extend({
+@@ -723,7 +725,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -449,13 +446,13 @@
 +PKG_SOURCE_VERSION:=8f6cb0911b9b4bcb00dfe1cd368c1cec1137e9e5
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
  PKG_NAME:=microsocks
--PKG_VERSION:=1.0.3
-+PKG_VERSION=1.0_git-$(PKG_SOURCE_SHORTID)
+-PKG_VERSION:=1.0.4
++PKG_VERSION=1.0.4_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/rofl0r/microsocks/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=6801559b6f8e17240ed8eef17a36eea8643412b5a7476980fd4e24b02a021b82
+-PKG_HASH:=130127a87f55870f18fbe47a64d9b9533020e2900802d36a0f6fd2b074313deb
 -
 -PKG_MAINTAINER:=Mateusz Korniak <matkorgithubcom@ant.gliwice.pl>
 -PKG_LICENSE:=MIT
@@ -514,8 +511,8 @@
 -PKG_VERSION:=2.2.3
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=112-12-30
-+PKG_SOURCE_VERSION:=5380a086935dc40e6ad51acb12ccb398b643c837
++PKG_SOURCE_DATE:=113-04-25
++PKG_SOURCE_VERSION:=69638d0100a6659928ec08e53e5a4f838e617c7a
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
@@ -527,7 +524,7 @@
  PKG_MAINTAINER:=
  PKG_LICENSE:=BSD-3-Clause
  PKG_LICENSE_FILES:=LICENSE
-@@ -23,6 +24,9 @@ PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnp
+@@ -23,6 +24,9 @@ PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnpc
  include $(INCLUDE_DIR)/package.mk
  include $(INCLUDE_DIR)/cmake.mk
  
@@ -544,7 +541,7 @@
  --- a/CMakeLists.txt
  +++ b/CMakeLists.txt
 -@@ -41,12 +41,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-+@@ -50,12 +50,6 @@ if (APPLE)
++@@ -51,12 +51,6 @@ if (APPLE)
     target_compile_definitions(miniupnpc-private INTERFACE _DARWIN_C_SOURCE)
   endif ()
   
@@ -677,8 +674,8 @@
 -PKG_HASH:=6fd7019f936ff88c41e7c822f46f10b51bd72d665978f6586483de75b30c36bf
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=112-12-30
-+PKG_SOURCE_VERSION:=5380a086935dc40e6ad51acb12ccb398b643c837
++PKG_SOURCE_DATE:=113-04-25
++PKG_SOURCE_VERSION:=69638d0100a6659928ec08e53e5a4f838e617c7a
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
 +PKG_RELEASE:=1
@@ -730,7 +727,7 @@
 
 --- a/feeds/packages/net/openvpn/files/openvpn.init
 +++ b/feeds/packages/net/openvpn/files/openvpn.init
-@@ -10,7 +10,6 @@ STOP=10
+@@ -10,7 +10,6 @@
  USE_PROCD=1
  PROG=/usr/sbin/openvpn
  
@@ -738,7 +735,7 @@
  LIST_SEP="
  "
  
-@@ -43,9 +42,8 @@ append_params() {
+@@ -43,9 +42,8 @@
  		config_get v "$s" "$p"
  		IFS="$LIST_SEP"
  		for v in $v; do
@@ -750,7 +747,7 @@
  		done
  		unset IFS
  	done
-@@ -71,14 +69,6 @@ section_enabled() {
+@@ -71,14 +69,6 @@
  	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
  }
  
@@ -765,7 +762,7 @@
  openvpn_get_dev() {
  	local dev dev_type
  	local name="$1"
-@@ -113,39 +103,10 @@ openvpn_get_dev() {
+@@ -113,42 +103,10 @@
  	echo "--dev-type $dev_type --dev $dev"
  }
  
@@ -801,12 +798,15 @@
 -	local security="$4"
 -	local up="$5"
 -	local down="$6"
+-	local route_up="$7"
+-	local route_pre_down="$8"
+-	local ipchange="$9"
 -	local client=$(grep -qEx "client|tls-client" "$dir/$conf" && echo 1)
 +	local conf="$3"
  
  	procd_open_instance "$name"
  	procd_set_param command "$PROG"	\
-@@ -155,14 +116,8 @@ openvpn_add_instance() {
+@@ -158,17 +116,8 @@
  		--config "$conf" \
  		--up "/usr/libexec/openvpn-hotplug up $name" \
  		--down "/usr/libexec/openvpn-hotplug down $name" \
@@ -815,6 +815,9 @@
 -		${client:+--ipchange "/usr/libexec/openvpn-hotplug ipchange $name"} \
 -		${up:+--setenv user_up "$up"} \
 -		${down:+--setenv user_down "$down"} \
+-		${route_up:+--setenv user_route_up "$route_up"} \
+-		${route_pre_down:+--setenv user_route_pre_down "$route_pre_down"} \
+-		${client:+${ipchange:+--setenv user_ipchange "$ipchange"}} \
 -		--script-security "${security:-2}" \
 -		$(openvpn_get_dev "$name" "$conf") \
 -		$(openvpn_get_credentials "$name" "$conf")
@@ -823,7 +826,7 @@
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -172,7 +127,7 @@ openvpn_add_instance() {
+@@ -178,7 +127,7 @@
  	procd_close_instance
  }
  
@@ -832,22 +835,29 @@
  	local s="$1"
  
  	config_get config "$s" config
-@@ -183,65 +138,23 @@ start_uci_instance() {
+@@ -189,75 +138,23 @@
  		return 1
  	}
  
--	local up down script_security
+-	local up down route_up route_pre_down ipchange script_security
 -	config_get up "$s" up
 -	config_get down "$s" down
+-	config_get route_up "$s" route_up
+-	config_get route_pre_down "$s" route_pre_down
+-	config_get ipchange "$s" ipchange
 -	config_get script_security "$s" script_security
 -
  	[ ! -d "/var/run" ] && mkdir -p "/var/run"
  
  	if [ ! -z "$config" ]; then
  		append UCI_STARTED "$config" "$LIST_SEP"
+-		[ -n "$script_security" ] || get_openvpn_option "$config" script_security script-security
 -		[ -n "$up" ] || get_openvpn_option "$config" up up
 -		[ -n "$down" ] || get_openvpn_option "$config" down down
--		openvpn_add_instance "$s" "${config%/*}" "$config" "$script_security" "$up" "$down"
+-		[ -n "$route_up" ] || get_openvpn_option "$config" route_up route-up
+-		[ -n "$route_pre_down" ] || get_openvpn_option "$config" route_pre_down route-pre-down
+-		[ -n "$ipchange" ] || get_openvpn_option "$config" ipchange ipchange
+-		openvpn_add_instance "$s" "${config%/*}" "$config" "$script_security" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
 +		openvpn_add_instance "$s" "${config%/*}" "$config"
  		return
  	fi
@@ -861,7 +871,7 @@
  	append_list "$s" $OPENVPN_LIST
 +	sed -i "s/server.crt/server.crt\ncipher $(uci get openvpn.myvpn.data_ciphers)/" /var/etc/openvpn-$s.conf
  
--	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf" "$script_security" "$up" "$down"
+-	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf" "$script_security" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
 -}
 -
 -start_path_instances() {
@@ -879,7 +889,7 @@
 -start_path_instance() {
 -	local name="$1"
 -
--	local path up down
+-	local path name up down route_up route_pre_down ipchange
 -
 -	path="${PATH_INSTANCE_DIR}/${name}.conf"
 -
@@ -897,13 +907,16 @@
 -
 -	get_openvpn_option "$path" up up || up=""
 -	get_openvpn_option "$path" down down || down=""
+-	get_openvpn_option "$path" route_up route-up || route_up=""
+-	get_openvpn_option "$path" route_pre_down route-pre-down || route_pre_down=""
+-	get_openvpn_option "$path" ipchange ipchange || ipchange=""
 -
--	openvpn_add_instance "$name" "${path%/*}" "$path" "" "$up" "$down"
+-	openvpn_add_instance "$name" "${path%/*}" "$path" "" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
 +	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf"
  }
  
  start_service() {
-@@ -258,28 +171,40 @@ start_service() {
+@@ -274,28 +171,40 @@
  		fi
  	}
  
@@ -914,7 +927,7 @@
  	if [ -n "$instance" ]; then
 -		if [ "$instance_found" -gt 0 ]; then
 -			start_uci_instance "$instance"
--		else
+-		elif [ -f "${PATH_INSTANCE_DIR}/${instance}.conf" ]; then
 -			start_path_instance "$instance"
 -		fi
 +		[ "$instance_found" -gt 0 ] || return
@@ -968,7 +981,7 @@
  data_ciphers_fallback
  dev
  dev_node
-@@ -197,7 +198,6 @@
+@@ -198,7 +199,6 @@
  '
  
  OPENVPN_LIST='
@@ -1034,8 +1047,8 @@
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
--PKG_MIRROR_HASH:=a31c1d79ffb253507a1a8e0bb8e6d93fa65efef22a3cdd098400157187bbfe20
-+PKG_SOURCE_VERSION:=c4660d0f5b92fbb4342063661785d9fee0d95247
+-PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
++PKG_SOURCE_VERSION:=2f57d8d7e77b5aa3c73f72bd6989f0618bc49dfc
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1079,7 +1092,7 @@
  
  var commonConf = [
 +	[form.Flag, 'enabled', _('Enable'), {datatype: 'bool'}],
- 	[form.Value, 'server_addr', _('Server address'), _('ServerAddr specifies the address of the server to connect to.<br />By default, this value is "0.0.0.0".'), {datatype: 'host'}],
+ 	[form.Value, 'server_addr', _('Server address'), _('ServerAddr specifies the address of the server to connect to.<br />By default, this value is "127.0.0.1".'), {datatype: 'host'}],
  	[form.Value, 'server_port', _('Server port'), _('ServerPort specifies the port to connect to the server on.<br />By default, this value is 7000.'), {datatype: 'port'}],
  	[form.Value, 'http_proxy', _('HTTP proxy'), _('HttpProxy specifies a proxy address to connect to the server through. If this value is "", the server will be connected to directly.<br />By default, this value is read from the "http_proxy" environment variable.')],
 @@ -32,7 +33,7 @@
@@ -1248,12 +1261,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=d01f4a3ec14e6b011883e8ff5bb4cc5cfb936778
++PKG_SOURCE_VERSION:=e81b36c5ba3ee0b4b88ed8832f4a302ed3289bda
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.53.2_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.57.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1280,7 +1293,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=0440abbc9124db0b67143cd12cc71a3ac2584bea
++PKG_SOURCE_VERSION:=684254323620f95f963c95d8c72eb6738188d477
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1342,7 +1355,7 @@
 
 --- a/feeds/packages/net/shadowsocks-libev/Makefile
 +++ b/feeds/packages/net/shadowsocks-libev/Makefile
-@@ -12,19 +12,22 @@ include $(TOPDIR)/rules.mk
+@@ -12,20 +12,23 @@
  # - update cipher list by checking src/crypto.c:crypto_init()
  # - check if default mode has changed from being tcp_only
  #
@@ -1353,7 +1366,7 @@
 -PKG_VERSION:=3.3.5
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=10
+ PKG_RELEASE:=11
 -
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
@@ -1363,6 +1376,7 @@
 -
  PKG_LICENSE:=GPL-3.0-or-later
  PKG_LICENSE_FILES:=LICENSE
+ PKG_CPE_ID:=cpe:/a:shadowsocks:shadowsocks-libev
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
 +PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
@@ -1373,7 +1387,7 @@
  PKG_FIXUP:=autoreconf
  PKG_INSTALL:=1
  PKG_BUILD_FLAGS:=no-mips16 lto
-@@ -33,27 +36,6 @@ PKG_BUILD_DEPENDS:=c-ares pcre2
+@@ -34,27 +37,6 @@
  
  include $(INCLUDE_DIR)/package.mk
  
@@ -1401,7 +1415,7 @@
  define Package/shadowsocks-libev/Default
    define Package/shadowsocks-libev-$(1)
      SECTION:=net
-@@ -61,7 +43,7 @@ define Package/shadowsocks-libev/Default
+@@ -62,7 +44,7 @@
      SUBMENU:=Web Servers/Proxies
      TITLE:=shadowsocks-libev $(1)
      URL:=https://github.com/shadowsocks/shadowsocks-libev
@@ -1410,7 +1424,7 @@
    endef
  
    define Package/shadowsocks-libev-$(1)/install
-@@ -82,28 +64,6 @@ define shadowsocks-libev/templates
+@@ -83,28 +65,6 @@
  endef
  $(eval $(call shadowsocks-libev/templates))
  
@@ -1439,7 +1453,7 @@
  define Build/Prepare
  	$(call Build/Prepare/Default)
  	$(FIND) $(PKG_BUILD_DIR) \
-@@ -122,8 +82,6 @@ CONFIGURE_ARGS += \
+@@ -123,8 +83,6 @@
  
  TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
  
@@ -1457,15 +1471,15 @@
  PKG_NAME:=sqm-scripts
 -PKG_SOURCE_VERSION:=33a89d8e7f6c82acc0adced84cf5cd95447e6bb5
 -PKG_VERSION:=1.6.0
-+PKG_SOURCE_VERSION:=405aeffa48e6385df4bb267e2a2fac6e254f96f8
++PKG_SOURCE_VERSION:=0325ba47045e82faef9794b9e702dbb673cfe18d
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
--PKG_MIRROR_HASH:=c79be093924e70c4e32c0da5c946c0b7a03a981ba7aa704db42a5e87ae06ee81
-+PKG_MIRROR_HASH:=6efe9241f8b767ea8a8b794ffb89d53a3b3df1711500972be3bbca45ca2761d4
+-PKG_MIRROR_HASH:=abe04270207177fb3ba4df103ffce3db4037d52d601ce1ce4e75206ad4b21377
++PKG_MIRROR_HASH:=skip
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
@@ -1483,8 +1497,8 @@
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
  PKG_SOURCE_VERSION:=$(PKG_VERSION)
--PKG_MIRROR_HASH:=99cda337c641664d94abc3fe4e144c13a7f3191951e917e7a837ab88a7df4515
-+PKG_MIRROR_HASH:=f72b5fb205746db033cba0eed1996d9e926540e845dc2b0034b98c1f8be8359b
+-PKG_MIRROR_HASH:=0040476ce8d2a8f7dffe6162ad2cd94797071bd4ccbdcac9433f518bb60340bd
++PKG_MIRROR_HASH:=6e03cbbfb396b81c6d6325aae85918e6f2ee9810d4413fd1e59a306e20201aa8
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1544,19 +1558,19 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=44bb83033f238675b2e94024edf001e3720ae53f
++PKG_SOURCE_VERSION:=eba2906d3a31c012c9125940be889d2e75635724
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.8.6
+-PKG_VERSION:=1.8.11
 -PKG_RELEASE:=1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.6_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.8.11_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=d828296c9f29f9e59a61ab73d44f072ab2a30fe979679e39aea43b33ddb7d6bf
+-PKG_HASH:=d99ee6008c508abbad6bbb242d058b22efb50fb35867d15447a2b4602ab4b283
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1728,7 +1742,7 @@
      +tini \
 -    +uci-firewall \
 +    +firewall \
-     @!(mips||mipsel)
+     @!(mips||mips64||mipsel)
    USERID:=docker:docker
    MENU:=1
 
@@ -1737,7 +1751,7 @@
 @@ -7,7 +7,7 @@
  					{{ version.luciname }} ({{ version.luciversion }})</a>
  				/
- 				<a href="{{ entityencode(version.disturl ?? '#', true) }}">
+ 				<a href="{{ entityencode(version.disturl ?? '#', true) }}" target="_blank" rel="noreferrer">
 -					{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</a>
 +					{{ version.distname }} {{ version.distversion }}</a>
  				{% if (lua_active): %}

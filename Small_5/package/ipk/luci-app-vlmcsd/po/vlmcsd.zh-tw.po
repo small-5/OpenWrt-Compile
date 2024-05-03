@@ -23,10 +23,10 @@ msgid "Auto activate"
 msgstr "自動激活局域網用戶端"
 
 msgid "Use Config File"
-msgstr "使用配置文件"
+msgstr "使用設定檔案"
 
 msgid "Empty Log File"
-msgstr "清空日誌文件"
+msgstr "清空紀錄檔案"
 
 msgid "Every"
 msgstr "每"
@@ -65,4 +65,4 @@ msgid "This file is /etc/vlmcsd.ini"
 msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"
 
 msgid "Log"
-msgstr "日誌"
+msgstr "紀錄"

@@ -746,16 +746,16 @@ msgid "Check Server"
 msgstr "檢查伺服器"
 
 msgid "Log"
-msgstr "日誌"
+msgstr "紀錄"
 
 msgid "Reverse"
 msgstr "倒序"
 
 msgid "Clear Log"
-msgstr "清空日誌"
+msgstr "清空紀錄"
 
 msgid "Download Log"
-msgstr "下載日誌"
+msgstr "下載紀錄"
 
 msgid "Authorization Code"
 msgstr "授權碼"

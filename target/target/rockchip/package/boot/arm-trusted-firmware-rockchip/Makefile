@@ -8,10 +8,10 @@ PKG_NAME:=rkbin
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://gitlab.com/rk3588_linux/rk/rkbin.git
-PKG_SOURCE_DATE:=2023-08-17
-PKG_SOURCE_VERSION:=1a417bbf7d05c3491ee9613be12a9905fbb8ccb7
-PKG_MIRROR_HASH:=8145efc2463baf4a5777f5f6ae3ecececb98f570dbdc090ad5a1412dda8b2e14
+PKG_SOURCE_URL:=https://github.com/rockchip-linux/rkbin.git
+PKG_SOURCE_DATE:=2024-02-22
+PKG_SOURCE_VERSION:=a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0
+PKG_MIRROR_HASH:=39f15e5f8fac02026065b6747b355b93f4e06202783ae448c43607763211597c
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
@@ -27,32 +27,39 @@ endef
 define Trusted-Firmware-A/rk3328
   BUILD_SUBTARGET:=armv8
   ATF:=rk33/$(RK3328_ATF)
-  DDR:=rk33/$(RK3328_DDR)
+  TPL:=rk33/$(RK3328_TPL)
   LOADER:=rk33/$(RK3328_LOADER)
 endef
 
 define Trusted-Firmware-A/rk3399
   BUILD_SUBTARGET:=armv8
   ATF:=rk33/$(RK3399_ATF)
-  DDR:=rk33/$(RK3399_DDR)
+  TPL:=rk33/$(RK3399_TPL)
   LOADER:=rk33/$(RK3399_LOADER)
+endef
+
+define Trusted-Firmware-A/rk3566
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk35/$(RK3566_ATF)
+  TPL:=rk35/$(RK3566_TPL)
 endef
 
 define Trusted-Firmware-A/rk3568
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3568_ATF)
-  DDR:=rk35/$(RK3568_DDR)
+  TPL:=rk35/$(RK3568_TPL)
 endef
 
 define Trusted-Firmware-A/rk3588
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3588_ATF)
-  DDR:=rk35/$(RK3588_DDR)
+  TPL:=rk35/$(RK3588_TPL)
 endef
 
 TFA_TARGETS:= \
 	rk3328 \
 	rk3399 \
+	rk3566 \
 	rk3568 \
 	rk3588
 
@@ -63,7 +70,7 @@ ifneq ($(LOADER),)
 		pushd $(PKG_BUILD_DIR) ; \
 		$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' trust.ini ; \
 		$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' trust.ini ; \
-		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(DDR) \
+		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(TPL) \
 			$(BUILD_VARIANT)-idbloader.bin ; \
 		cat bin/$(LOADER) >> $(BUILD_VARIANT)-idbloader.bin ; \
 		./tools/trust_merger --replace bl31.elf bin/$(ATF) trust.ini ; \
@@ -81,7 +88,7 @@ ifneq ($(LOADER),)
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-idbloader.bin $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-trust.bin $(STAGING_DIR_IMAGE)/
 else
-	$(CP) $(PKG_BUILD_DIR)/bin/$(DDR) $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/bin/$(TPL) $(STAGING_DIR_IMAGE)/
 endif
 endef
 

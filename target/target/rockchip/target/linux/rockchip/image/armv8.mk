@@ -10,6 +10,17 @@ define Device/IfnameMigration
   DEVICE_COMPAT_MESSAGE := Network interface names have been changed
 endef
 
+define Device/ariaboard_photonicat
+  DEVICE_VENDOR := Ariaboard
+  DEVICE_MODEL := Photonicat
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := pcat-manager kmod-ath10k-sdio \
+	ath10k-firmware-qca9377-sdio wpad-basic-openssl \
+	kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+endef
+TARGET_DEVICES += ariaboard_photonicat
+
 define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
   DEVICE_MODEL := Mrkaio M68S
@@ -112,6 +123,7 @@ define Device/friendlyarm_nanopi-r4s-enterprise
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4S Enterprise Edition
   SOC := rk3399
+  UBOOT_DEVICE_NAME := nanopi-r4s-rk3399
   BOOT_FLOW := pine64-bin
   DEVICE_PACKAGES := kmod-r8168
 endef
@@ -166,7 +178,6 @@ define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R66S
   SOC := rk3568
-  UBOOT_DEVICE_NAME := fastrhino-r66s-rk3568
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-r8125
 endef
@@ -197,6 +208,36 @@ define Device/pine64_rockpro64
   BOOT_FLOW := pine64-bin
 endef
 TARGET_DEVICES += pine64_rockpro64
+
+define Device/radxa_cm3-io
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := CM3 IO
+  SOC := rk3566
+  DEVICE_DTS := rockchip/rk3566-radxa-cm3-io
+  UBOOT_DEVICE_NAME := radxa-cm3-io-rk3566
+  BOOT_FLOW := pine64-img
+endef
+TARGET_DEVICES += radxa_cm3-io
+
+define Device/radxa_e25
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := E25
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-radxa-e25
+  UBOOT_DEVICE_NAME := radxa-e25-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform
+endef
+TARGET_DEVICES += radxa_e25
+
+define Device/radxa_rock-3a
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 3A
+  SOC := rk3568
+  SUPPORTED_DEVICES := radxa,rock3a
+  BOOT_FLOW := pine64-img
+endef
+TARGET_DEVICES += radxa_rock-3a
 
 define Device/radxa_rock-5a
   DEVICE_VENDOR := Radxa
@@ -238,6 +279,23 @@ define Device/radxa_rock-pi-e
   BOOT_FLOW := pine64-bin
 endef
 TARGET_DEVICES += radxa_rock-pi-e
+
+define Device/xunlong_orangepi-5
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi 5
+  SOC := rk3588s
+  BOOT_FLOW := pine64-img
+endef
+TARGET_DEVICES += xunlong_orangepi-5
+
+define Device/xunlong_orangepi-5-plus
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi 5 Plus
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += xunlong_orangepi-5-plus
 
 define Device/xunlong_orangepi-r1-plus
   DEVICE_VENDOR := Xunlong

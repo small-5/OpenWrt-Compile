@@ -5,9 +5,9 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.01-rc5
+PKG_VERSION:=2024.04
 PKG_RELEASE:=1
-PKG_HASH:=5fc8ec286587118ac2a8e9ea12f5e19f8105847052428a551af1be772e17b1cd
+PKG_HASH:=18a853fe39fad7ad03a90cc2d4275aeaed6da69735defac3492b80508843dd4a
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -89,6 +89,7 @@ define U-Boot/rock64-rk3328
     pine64_rock64
 endef
 
+
 # RK3399 boards
 
 define U-Boot/Default/rk3399
@@ -115,7 +116,8 @@ define U-Boot/nanopi-r4s-rk3399
   $(U-Boot/Default/rk3399)
   NAME:=NanoPi R4S
   BUILD_DEVICES:= \
-    friendlyarm_nanopi-r4s
+    friendlyarm_nanopi-r4s \
+    friendlyarm_nanopi-r4s-enterprise
 endef
 
 define U-Boot/nanopi-r4se-rk3399
@@ -123,13 +125,6 @@ define U-Boot/nanopi-r4se-rk3399
   NAME:=NanoPi R4SE
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r4se
-endef
-
-define U-Boot/nanopi-r4s-enterprise-rk3399
-  $(U-Boot/Default/rk3399)
-  NAME:=NanoPi R4S Enterprise Edition
-  BUILD_DEVICES:= \
-    friendlyarm_nanopi-r4s-enterprise
 endef
 
 define U-Boot/rock-pi-4-rk3399
@@ -147,13 +142,30 @@ define U-Boot/rockpro64-rk3399
 endef
 
 
+# RK3566 boards
+
+define U-Boot/Default/rk3566
+  BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3566
+  ATF:=$(RK3566_ATF)
+  TPL:=$(RK3566_TPL)
+endef
+
+define U-Boot/radxa-cm3-io-rk3566
+  $(U-Boot/Default/rk3566)
+  NAME:=CM3 IO
+  BUILD_DEVICES:= \
+    radxa_cm3-io
+endef
+
+
 # RK3568 boards
 
 define U-Boot/Default/rk3568
   BUILD_SUBTARGET:=armv8
   DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568
   ATF:=$(RK3568_ATF)
-  DDR:=$(RK3568_DDR)
+  TPL:=$(RK3568_TPL)
 endef
 
 define U-Boot/fastrhino-r66s-rk3568
@@ -191,6 +203,20 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/photonicat-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Photonicat
+  BUILD_DEVICES:= \
+    ariaboard_photonicat
+endef
+
+define U-Boot/radxa-e25-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=E25
+  BUILD_DEVICES:= \
+    radxa_e25
+endef
+
 define U-Boot/roc-pc-rk3568
   $(U-Boot/Default/rk3568)
   NAME:=Station P2
@@ -198,13 +224,21 @@ define U-Boot/roc-pc-rk3568
     firefly_roc-rk3568-pc
 endef
 
+define U-Boot/rock-3a-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Rock 3A
+  BUILD_DEVICES:= \
+    radxa_rock-3a
+endef
+
+
 # RK3588 boards
 
 define U-Boot/Default/rk3588
   BUILD_SUBTARGET:=armv8
   DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
   ATF:=$(RK3588_ATF)
-  DDR:=$(RK3588_DDR)
+  TPL:=$(RK3588_TPL)
 endef
 
 define U-Boot/nanopc-t6-rk3588
@@ -212,6 +246,13 @@ define U-Boot/nanopc-t6-rk3588
   NAME:=NanoPC T6
   BUILD_DEVICES:= \
     friendlyarm_nanopc-t6
+endef
+
+define U-Boot/orangepi-5-plus-rk3588
+  $(U-Boot/Default/rk3588)
+  NAME:=OrangePi 5 Plus
+  BUILD_DEVICES:= \
+    xunlong_orangepi-5-plus
 endef
 
 define U-Boot/rock5b-rk3588
@@ -238,6 +279,13 @@ define U-Boot/nanopi-r6s-rk3588s
     friendlyarm_nanopi-r6s
 endef
 
+define U-Boot/orangepi-5-rk3588s
+  $(U-Boot/Default/rk3588)
+  NAME:=OrangePi 5
+  BUILD_DEVICES:= \
+    xunlong_orangepi-5
+endef
+
 define U-Boot/rock5a-rk3588s
   $(U-Boot/Default/rk3588)
   NAME:=Rock 5A
@@ -250,7 +298,6 @@ UBOOT_TARGETS := \
   nanopc-t4-rk3399 \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
-  nanopi-r4s-enterprise-rk3399 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
   nanopi-r2c-rk3328 \
@@ -261,16 +308,22 @@ UBOOT_TARGETS := \
   roc-cc-rk3328 \
   rock-pi-e-rk3328 \
   rock64-rk3328 \
+  radxa-cm3-io-rk3566 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  photonicat-rk3568 \
+  radxa-e25-rk3568 \
   roc-pc-rk3568 \
+  rock-3a-rk3568 \
   nanopc-t6-rk3588 \
+  orangepi-5-plus-rk3588 \
   rock5b-rk3588 \
   nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s \
+  orangepi-5-rk3588s \
   rock5a-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
@@ -278,16 +331,23 @@ UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 UBOOT_CUSTOMIZE_CONFIG := \
 	--disable SPL_FIT_SIGNATURE \
 	--disable TOOLS_MKEFICAPSULE \
-	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc
+	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
+	$(if $(TPL),, \
+		--disable CMD_DFU \
+		--disable CMD_EFIDEBUG \
+		--disable CMD_NVEDIT_EFI \
+		--disable DFU_MMC \
+		--disable EFI_CAPSULE_ON_DISK \
+		--disable EFI_CAPSULE_FIRMWARE_RAW \
+	)
 
 UBOOT_MAKE_FLAGS += \
-  PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
-  $(if $(DDR),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(DDR))
+  $(if $(TPL),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(TPL))
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
-ifneq ($(DDR),)
+ifneq ($(TPL),)
 	$(CP) $(PKG_BUILD_DIR)/idbloader.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-idbloader.img
 	$(CP) $(PKG_BUILD_DIR)/u-boot.itb $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-u-boot.itb
 else

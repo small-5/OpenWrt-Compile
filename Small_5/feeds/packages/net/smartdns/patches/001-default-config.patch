@@ -1,29 +1,15 @@
 --- a/src/dns_conf.c
 +++ b/src/dns_conf.c
-@@ -92,7 +92,7 @@ enum response_mode_type dns_conf_response_mode;
- /* cache */
- ssize_t dns_conf_cachesize = -1;
- int dns_conf_prefetch = 0;
--int dns_conf_serve_expired = 1;
-+int dns_conf_serve_expired = 0;
- int dns_conf_serve_expired_ttl = 24 * 3600 * 3; /* 3 days */
- int dns_conf_serve_expired_prefetch_time;
- int dns_conf_serve_expired_reply_ttl = 3;
-@@ -147,7 +147,7 @@ art_tree dns_conf_domain_rule;
- struct dns_conf_address_rule dns_conf_address_rule;
+@@ -602,10 +602,9 @@ static int _config_rule_group_setup_value(struct dns_conf_group_info *group_info
  
- /* dual-stack selection */
--int dns_conf_dualstack_ip_selection = 1;
-+int dns_conf_dualstack_ip_selection = 0;
- int dns_conf_dualstack_ip_allow_force_AAAA;
- int dns_conf_dualstack_ip_selection_threshold = 10;
- 
-@@ -156,7 +156,7 @@ static int dns_conf_expand_ptr_from_address = 0;
- /* TTL */
- int dns_conf_rr_ttl;
- int dns_conf_rr_ttl_reply_max;
--int dns_conf_rr_ttl_min = 600;
-+int dns_conf_rr_ttl_min;
- int dns_conf_rr_ttl_max;
- int dns_conf_local_ttl;
- int dns_conf_force_AAAA_SOA;
+ 	memset(soa_table, 0, soa_talbe_size);
+ 	memcpy(&group_rule->check_orders, &dns_conf_default_check_orders, sizeof(group_rule->check_orders));
+-	group_rule->dualstack_ip_selection = 1;
++	group_rule->dualstack_ip_selection = 0;
+ 	group_rule->dns_dualstack_ip_selection_threshold = 10;
+-	group_rule->dns_rr_ttl_min = 600;
+-	group_rule->dns_serve_expired = 1;
++	group_rule->dns_serve_expired = 0;
+ 	group_rule->dns_serve_expired_ttl = 24 * 3600 * 3;
+ 	group_rule->dns_serve_expired_reply_ttl = 3;
+ 	group_rule->dns_max_reply_ip_num = DNS_MAX_REPLY_IP_NUM;

@@ -1,6 +1,0 @@
-uci batch <<EOF
-	delete ucitrack.@flowoffload[-1]
-	add ucitrack flowoffload
-	set ucitrack.@flowoffload[-1].init=flowoffload
-	commit ucitrack
-EOF

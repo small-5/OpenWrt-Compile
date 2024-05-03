@@ -47,7 +47,7 @@ msgid "Data connection timeout"
 msgstr "數據連接超時"
 
 msgid "Directory message filename"
-msgstr "目錄消息文件名"
+msgstr "目錄消息檔案名"
 
 msgid "Download only"
 msgstr "僅下載"
@@ -74,7 +74,7 @@ msgid "Enable download"
 msgstr "允許下載"
 
 msgid "Enable file log"
-msgstr "啟用文件日誌"
+msgstr "啟用檔案紀錄"
 
 msgid "Enable local user"
 msgstr "啟用本地用戶"
@@ -83,7 +83,7 @@ msgid "Enable other rights"
 msgstr "允許其它權限"
 
 msgid "Enable syslog"
-msgstr "啟用系統日誌"
+msgstr "啟用系統紀錄"
 
 msgid "Enable upload"
 msgstr "允許上傳"
@@ -107,7 +107,7 @@ msgid "FTP Server - General Settings"
 msgstr "FTP 伺服器 - 常規設定"
 
 msgid "FTP Server - Log Settings"
-msgstr "FTP 伺服器 - 日誌設定"
+msgstr "FTP 伺服器 - 紀錄設定"
 
 msgid "FTP Server - Virtual User %q"
 msgstr "FTP 伺服器 - 虛擬用戶 %q"
@@ -119,7 +119,7 @@ msgid "FTP Server - Virtual User Settings"
 msgstr "FTP 伺服器 - 虛擬用戶設定"
 
 msgid "File mode umask"
-msgstr "文件權限掩碼"
+msgstr "檔案權限掩碼"
 
 msgid "General Settings"
 msgstr "常規設定"
@@ -155,10 +155,10 @@ msgid "Local Users"
 msgstr "本地用戶"
 
 msgid "Log Settings"
-msgstr "日誌設定"
+msgstr "紀錄設定"
 
 msgid "Log file"
-msgstr "日誌文件"
+msgstr "紀錄檔案"
 
 msgid "Max clients"
 msgstr "最大連接數"
@@ -179,13 +179,13 @@ msgid "Settings"
 msgstr "設定"
 
 msgid "Show dot files"
-msgstr "顯示以點開頭的文件 (隱藏文件)"
+msgstr "顯示以點開頭的檔案 (隱藏檔案)"
 
 msgid "Upload only"
 msgstr "僅上傳"
 
 msgid "Uploaded file mode will be 666 - &lt;umask&gt;; directory mode will be 777 - &lt;umask&gt;."
-msgstr "上傳的文件權限將被設定為 666 - &lt;掩碼&gt;；目錄權限將被設定為 777 - &lt;掩碼&gt;。"
+msgstr "上傳的檔案權限將被設定為 666 - &lt;掩碼&gt;；目錄權限將被設定為 777 - &lt;掩碼&gt;。"
 
 msgid "User Settings"
 msgstr "用戶設定"

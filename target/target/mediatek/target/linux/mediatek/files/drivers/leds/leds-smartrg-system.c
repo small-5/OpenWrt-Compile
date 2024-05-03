@@ -7,7 +7,6 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/of.h>
-#include <linux/version.h>
 
 /**
  * Driver for SmartRG RGBW LED microcontroller.
@@ -159,7 +158,8 @@ srg_led_init_led(struct srg_led_ctrl *sysled_ctrl, struct device_node *np)
 }
 
 static int
-srg_led_probe(struct i2c_client *client, const struct i2c_device_id *id)
+
+srg_led_probe(struct i2c_client *client)
 {
 	struct device_node *np = client->dev.of_node, *child;
 	struct srg_led_ctrl *sysled_ctrl;
@@ -193,21 +193,13 @@ static void srg_led_disable(struct i2c_client *client)
 		srg_led_i2c_write(sysled_ctrl, i, 0);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,16,0)
 static void
-#else
-static int
-#endif
 srg_led_remove(struct i2c_client *client)
 {
 	struct srg_led_ctrl *sysled_ctrl = i2c_get_clientdata(client);
 
 	srg_led_disable(client);
 	mutex_destroy(&sysled_ctrl->lock);
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
-	return 0;
-#endif
 }
 
 static const struct i2c_device_id srg_led_id[] = {

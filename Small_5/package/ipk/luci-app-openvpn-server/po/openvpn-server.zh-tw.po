@@ -137,10 +137,10 @@ msgid "Set client reconnection interval (seconds)<br/>Need to re-download the .o
 msgstr "設定用戶端重新連接間隔（秒）<br/>修改以後需要重新下載.ovpn文件"
 
 msgid "Log level"
-msgstr "日誌紀錄等級"
+msgstr "紀錄級別"
 
 msgid "Set the log level,the larger the number,the more detailed the record content"
-msgstr "設定日誌紀錄等級，數字越大，紀錄內容越詳細"
+msgstr "設定紀錄級別，數字越大，紀錄內容越詳細"
 
 msgid "Client Push Settings"
 msgstr "用戶端推送配置"
@@ -194,10 +194,10 @@ msgid "Edit certificate generation options,keep the default for normal users"
 msgstr "編輯憑證選項，普通用戶請保持默認"
 
 msgid "Log"
-msgstr "日誌"
+msgstr "紀錄"
 
 msgid "Log Data"
-msgstr "日誌數據"
+msgstr "紀錄數據"
 
 msgid "Loading..."
 msgstr "正在加載..."
@@ -206,7 +206,7 @@ msgid "Refresh every 5 seconds."
 msgstr "每 5 秒刷新。"
 
 msgid "No log data."
-msgstr "無日誌數據。"
+msgstr "無紀錄數據。"
 
 msgid "Error get log data."
-msgstr "獲取日誌數據失敗。"
+msgstr "獲取紀錄數據失敗。"

@@ -37,23 +37,19 @@ define Build/bl31-uboot
 	cat $(STAGING_DIR_IMAGE)/mt7622_$1-u-boot.fip >> $@
 endef
 
-# Append header to a D-Link M32 Kernel 1 partition
-define Build/m32-recovery-header-kernel1
-	echo -en "DLK6E6010001\x00\x00\xCF\x33" > "$@.header"
-	echo -en "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x8D\x57\x30\x0B" >> "$@.header"
-# Byte 0-3: Erase Start 0x002C0000
-# Byte 4-7: Erase Length 0x02D00000
-# Byte 8-11: Data offset: 0x002C0000
-# Byte 12-15: Data Length: 0x02D00000
-	echo -en "\x00\x00\x2C\x00\x00\x00\xD0\x02\x00\x00\x2C\x00\x00\x00\xD0\x02" >> "$@.header"
-# Only zeros
-	echo -en "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" >> "$@.header"
-# Note: The last 2 bytes of the following line are the checksum of the header
-# If any data in the header will be changed, the checksum must be re-calculated
-	echo -en "\x42\x48\x02\x00\x00\x00\x08\x00\x00\x00\x00\x00\x60\x6E\x68\x61" >> "$@.header"
-	cat "$@.header" "$@" > "$@.new"
-	mv "$@.new" "$@"
-	rm "$@.header"
+define Build/uboot-bin
+	cat $(STAGING_DIR_IMAGE)/mt7622_$1-u-boot.bin >> $@
+endef
+
+define Build/uboot-fit
+	$(TOPDIR)/scripts/mkits.sh \
+		-D $(DEVICE_NAME) -o $@.its -k $@ \
+		-C $(word 1,$(1)) \
+		-a 0x41e00000 -e 0x41e00000 \
+		-c "config-1" \
+		-A $(LINUX_KARCH) -v u-boot
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
+	@mv $@.new $@
 endef
 
 define Build/mt7622-gpt
@@ -90,7 +86,7 @@ define Device/bananapi_bpi-r64
   KERNEL_INITRAMFS_SUFFIX := -recovery.itb
   ARTIFACT/emmc-preloader.bin	:= bl2 emmc-2ddr
   ARTIFACT/emmc-bl31-uboot.fip	:= bl31-uboot bananapi_bpi-r64-emmc
-  ARTIFACT/snand-preloader.bin	:= bl2 snand-2ddr
+  ARTIFACT/snand-preloader.bin	:= bl2 snand-ubi-2ddr
   ARTIFACT/snand-bl31-uboot.fip	:= bl31-uboot bananapi_bpi-r64-snand
   ARTIFACT/sdcard.img.gz	:= mt7622-gpt sdmmc |\
 				   pad-to 512k | bl2 sdmmc-2ddr |\
@@ -101,7 +97,7 @@ define Device/bananapi_bpi-r64
 				   pad-to 38912k | mt7622-gpt emmc |\
 				   pad-to 39424k | bl2 emmc-2ddr |\
 				   pad-to 40960k | bl31-uboot bananapi_bpi-r64-emmc |\
-				   pad-to 43008k | bl2 snand-2ddr |\
+				   pad-to 43008k | bl2 snand-ubi-2ddr |\
 				   pad-to 43520k | bl31-uboot bananapi_bpi-r64-snand |\
 				$(if $(CONFIG_TARGET_ROOTFS_SQUASHFS), \
 				   pad-to 46080k | append-image squashfs-sysupgrade.itb | check-size |\
@@ -113,8 +109,8 @@ endif
   KERNEL			:= kernel-bin | gzip
   KERNEL_INITRAMFS		:= kernel-bin | lzma | fit lzma $$(DTS_DIR)/$$(DEVICE_DTS).dtb with-initrd | pad-to 128k
   IMAGE/sysupgrade.itb		:= append-kernel | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb external-static-with-rootfs | append-metadata
-  DEVICE_COMPAT_VERSION := 1.1
-  DEVICE_COMPAT_MESSAGE := Device tree overlay mechanism needs bootloader update
+  DEVICE_COMPAT_VERSION := 1.2
+  DEVICE_COMPAT_MESSAGE := SPI-NAND flash layout changes require bootloader update
 endef
 TARGET_DEVICES += bananapi_bpi-r64
 
@@ -168,12 +164,10 @@ define Device/buffalo_wsr-3200ax4s
 endef
 TARGET_DEVICES += buffalo_wsr-3200ax4s
 
-define Device/dlink_eagle-pro-ai-m32-a1
+define Device/dlink_eagle-pro-ai-ax3200-a1
   IMAGE_SIZE := 46080k
   DEVICE_VENDOR := D-Link
-  DEVICE_MODEL := EAGLE PRO AI M32
   DEVICE_VARIANT := A1
-  DEVICE_DTS := mt7622-dlink-eagle-pro-ai-m32-a1
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7915-firmware
   KERNEL_SIZE := 8192k
@@ -183,9 +177,23 @@ define Device/dlink_eagle-pro-ai-m32-a1
   IMAGES += tftp.bin recovery.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/tftp.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size
-  IMAGE/recovery.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | pad-to $$(IMAGE_SIZE) | m32-recovery-header-kernel1
+endef
+
+define Device/dlink_eagle-pro-ai-m32-a1
+  $(Device/dlink_eagle-pro-ai-ax3200-a1)
+  DEVICE_MODEL := EAGLE PRO AI M32
+  DEVICE_DTS := mt7622-dlink-eagle-pro-ai-m32-a1
+  IMAGE/recovery.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | pad-to $$(IMAGE_SIZE) | dlink-ai-recovery-header DLK6E6010001 \x8D\x57\x30\x0B \x00\x00\x2C\x00 \x00\x00\xD0\x02 \x60\x6E
 endef
 TARGET_DEVICES += dlink_eagle-pro-ai-m32-a1
+
+define Device/dlink_eagle-pro-ai-r32-a1
+  $(Device/dlink_eagle-pro-ai-ax3200-a1)
+  DEVICE_MODEL := EAGLE PRO AI R32
+  DEVICE_DTS := mt7622-dlink-eagle-pro-ai-r32-a1
+  IMAGE/recovery.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | pad-to $$(IMAGE_SIZE) | dlink-ai-recovery-header DLK6E6015001 \x8D\x57\x30\x0B \x00\x00\x2C\x00 \x00\x00\xD0\x02 \x60\x6E
+endef
+TARGET_DEVICES += dlink_eagle-pro-ai-r32-a1
 
 define Device/elecom_wrc-2533gent
   DEVICE_VENDOR := Elecom
@@ -250,8 +258,10 @@ define Device/linksys_e8450-ubi
   IMAGES := sysupgrade.itb
   IMAGE/sysupgrade.itb := append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := preloader.bin bl31-uboot.fip
-  ARTIFACT/preloader.bin := bl2 snand-1ddr
+  ARTIFACT/preloader.bin := bl2 snand-ubi-1ddr
   ARTIFACT/bl31-uboot.fip := bl31-uboot linksys_e8450
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := SPI-NAND flash layout changes require bootloader update. Please run the UBI installer version 1.1.0+ (unsigned) first.
 endef
 TARGET_DEVICES += linksys_e8450-ubi
 
@@ -273,7 +283,7 @@ define Device/mediatek_mt7622-rfb1-ubi
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
-  KERNEL_SIZE := 4194304
+  KERNEL_SIZE := 6291456
   IMAGE_SIZE := 32768k
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
@@ -332,7 +342,7 @@ define Device/totolink_a8000ru
   DEVICE_MODEL := A8000RU
   DEVICE_DTS := mt7622-totolink-a8000ru
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7615-firmware swconfig
+  DEVICE_PACKAGES := kmod-mt7615-firmware kmod-usb3 swconfig
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += totolink_a8000ru
@@ -436,12 +446,20 @@ define Device/xiaomi_redmi-router-ax6s
   BOARD_NAME := xiaomi,redmi-router-ax6s
   DEVICE_PACKAGES := kmod-mt7915-firmware
   UBINIZE_OPTS := -E 5
-  IMAGES += factory.bin
   BLOCKSIZE := 128k
   PAGESIZE := 2048
-  KERNEL_SIZE := 4096k
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   KERNEL_INITRAMFS_SUFFIX := -recovery.itb
-  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGES := sysupgrade.itb
+  IMAGE/sysupgrade.itb := append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  ARTIFACTS := ubi-loader.itb
+  ARTIFACT/ubi-loader.itb := uboot-bin xiaomi_redmi-router-ax6s-ubi-loader | lzma | uboot-fit lzma
+ifneq ($(CONFIG_TARGET_ROOTFS_SQUASHFS),)
+  ARTIFACTS += factory.bin
+  ARTIFACT/factory.bin := uboot-bin xiaomi_redmi-router-ax6s-ubi-loader | lzma | uboot-fit lzma | pad-to 512k | ubinize-image fit squashfs-sysupgrade.itb
+endif
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := Flash layout changes require a manual reinstall using factory.bin.
 endef
 TARGET_DEVICES += xiaomi_redmi-router-ax6s

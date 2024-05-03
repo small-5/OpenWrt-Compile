@@ -8,7 +8,7 @@ msgid "Settings"
 msgstr "設定"
 
 msgid "Log"
-msgstr "日誌"
+msgstr "紀錄"
 
 msgid "Running Status"
 msgstr "執行狀態"
@@ -44,10 +44,10 @@ msgid "Enable UpLink Upgrade"
 msgstr "開啟上行提速"
 
 msgid "Enable Logging"
-msgstr "啟用日誌紀錄"
+msgstr "啟用紀錄"
 
 msgid "Enable verbose logging"
-msgstr "啟用詳細日誌"
+msgstr "啟用詳細紀錄"
 
 msgid "Upgrade interface"
 msgstr "指定提速接口"
@@ -83,7 +83,7 @@ msgid "Auto-generate in accordance with the plaintext password, do not modify it
 msgstr "根據明文密碼自動生成，請勿修改！"
 
 msgid "Log Data"
-msgstr "日誌數據"
+msgstr "紀錄數據"
 
 msgid "Loading..."
 msgstr "正在加載..."
@@ -92,13 +92,13 @@ msgid "Refresh every 5 seconds."
 msgstr "每 5 秒刷新。"
 
 msgid "syslog:"
-msgstr "系統日誌："
+msgstr "系統紀錄："
 
 msgid "log file:"
-msgstr "日誌文件："
+msgstr "紀錄檔案："
 
 msgid "No log data."
-msgstr "無日誌數據。"
+msgstr "無紀錄數據。"
 
 msgid "Error get log data."
-msgstr "獲取日誌數據失敗。"
+msgstr "獲取紀錄數據失敗。"

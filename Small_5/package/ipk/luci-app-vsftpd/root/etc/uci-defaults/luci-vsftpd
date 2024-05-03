@@ -1,6 +1,0 @@
-uci batch <<EOF
-	delete ucitrack.@vsftpd[-1]
-	add ucitrack vsftpd
-	set ucitrack.@vsftpd[-1].init=vsftpd
-	commit ucitrack
-EOF

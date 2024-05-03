@@ -1,6 +1,0 @@
-uci batch <<EOF
-	delete ucitrack.@vlmcsd[-1]
-	add ucitrack vlmcsd
-	set ucitrack.@vlmcsd[-1].init=vlmcsd
-	commit ucitrack
-EOF

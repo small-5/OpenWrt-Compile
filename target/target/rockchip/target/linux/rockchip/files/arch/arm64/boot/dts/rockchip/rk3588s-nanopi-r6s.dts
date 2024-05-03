@@ -24,7 +24,6 @@
 		ethernet0 = &gmac1;
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
-		serial2 = &uart2;
 
 		led-boot = &power_led;
 		led-failsafe = &power_led;
@@ -55,22 +54,28 @@
 		pinctrl-0 = <&lan1_led_pin>, <&lan2_led_pin>, <&power_led_pin>, <&wan_led_pin>;
 
 		led-lan1 {
-			label = "green:lan1";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_LAN;
+			function-enumerator = <1>;
 			gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-lan2 {
-			label = "green:lan2";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_LAN;
+			function-enumerator = <2>;
 			gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;
 		};
 
 		power_led: led-power {
-			label = "red:power";
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_POWER;
 			gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-wan {
-			label = "green:wan";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WAN;
 			gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -340,10 +345,6 @@
 			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-};
-
-&rng {
-	status = "okay";
 };
 
 &saradc {
@@ -796,10 +797,6 @@
 };
 
 &usbdp_phy0 {
-	status = "okay";
-};
-
-&usbdp_phy0_u3 {
 	status = "okay";
 };
 

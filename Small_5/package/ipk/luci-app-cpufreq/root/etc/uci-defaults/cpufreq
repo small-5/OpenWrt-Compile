@@ -1,6 +1,0 @@
-uci batch <<EOF
-	delete ucitrack.@cpufreq[-1]
-	add ucitrack cpufreq
-	set ucitrack.@cpufreq[-1].init=cpufreq
-	commit ucitrack
-EOF
