@@ -86,7 +86,7 @@ cat > shadow.patch  <<EOF
 +++ b/package/base-files/files/etc/shadow
 @@ -1,4 +1,4 @@
 -root:::0:99999:7:::
-+root:$(openssl passwd -1 $OP_PASS):$(echo $((($(date +%s)-$(date -d "19700101" +%s))/(24*60*60)))):0:99999:7:::
++root:$(openssl passwd -5 $OP_PASS):$(echo $((($(date +%s)-$(date -d "19700101" +%s))/(24*60*60)))):0:99999:7:::
  daemon:*:0:0:99999:7:::
  ftp:*:0:0:99999:7:::
  network:*:0:0:99999:7:::
