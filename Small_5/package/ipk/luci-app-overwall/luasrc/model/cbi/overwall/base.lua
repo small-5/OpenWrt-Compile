@@ -105,18 +105,18 @@ o:value("5","208.67.222.222,208.67.220.220 (OpenDNS)")
 o:depends("dns_mode",1)
 
 o=s:option(ListValue,"dns_mode_l",translate("Domestic Resolve Dns Mode"),
-translate("If DoT resolution is not normal,use UDP mode and select ISP DNS"))
-o:value("0",translate("Use SmartDNS DoT query"))
+translate("If DoH resolution is not normal,use UDP mode and select ISP DNS"))
+o:value("0",translate("Use SmartDNS DoH query"))
 o:value("1",translate("Use SmartDNS UDP query"))
 
-o=s:option(Value,"dns_l",translate("Domestic DoT"),
-translate("Custom DNS format:<br/>dns.alidns.com -tls-host-verify dns.alidns.com or dns.alidns.com -tls-host-verify dns.alidns.com -host-ip 223.5.5.5"))
+o=s:option(Value,"dns_l",translate("Domestic DoH"),
+translate("Custom DNS format is https://dns.alidns.com/dns-query or https://223.5.5.5/dns-query"))
 o:value("",translate("Ali"))
 o:value("1","Dnspod")
 o:depends("dns_mode_l",0)
 
 o=s:option(Flag,"isp_dns",translate("ISP"),
-translate("Use ISP DNS to resolve DoT domain"))
+translate("Use ISP DNS to resolve DoH domain"))
 o:depends("dns_mode_l",0)
 
 o=s:option(Value,"udp_dns",translate("Domestic DNS"),

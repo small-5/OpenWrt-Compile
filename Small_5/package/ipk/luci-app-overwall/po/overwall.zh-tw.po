@@ -217,17 +217,20 @@ msgstr "自定義DNS格式為 1.1.1.1:53,1.0.0.1 ,通訊埠可選"
 msgid "Domestic Resolve Dns Mode"
 msgstr "牆內DNS解析方式"
 
+msgid "Use SmartDNS DoH query"
+msgstr "使用SmartDNS DoH查詢"
+
 msgid "Use SmartDNS UDP query"
 msgstr "使用SmartDNS UDP查詢"
 
-msgid "If DoT resolution is not normal,use UDP mode and select ISP DNS"
-msgstr "如果DoT解析不正常則使用UDP模式並選擇ISP的DNS"
+msgid "If DoH resolution is not normal,use UDP mode and select ISP DNS"
+msgstr "如果DoH解析不正常則使用UDP模式並選擇ISP的DNS"
 
-msgid "Domestic DoT"
-msgstr "牆內DoT"
+msgid "Domestic DoH"
+msgstr "牆內DoH"
 
-msgid "Custom DNS format:<br/>dns.alidns.com -tls-host-verify dns.alidns.com or dns.alidns.com -tls-host-verify dns.alidns.com -host-ip 223.5.5.5"
-msgstr "自定義DNS格式:<br/>dns.alidns.com -tls-host-verify dns.alidns.com 或 dns.alidns.com -tls-host-verify dns.alidns.com -host-ip 223.5.5.5"
+msgid "Custom DNS format is https://dns.alidns.com/dns-query or https://223.5.5.5/dns-query"
+msgstr "自定義DNS格式為 https://dns.alidns.com/dns-query 或 https://223.5.5.5/dns-query"
 
 msgid "Ali"
 msgstr "阿里"
@@ -235,8 +238,8 @@ msgstr "阿里"
 msgid "ISP"
 msgstr "運營商DNS"
 
-msgid "Use ISP DNS to resolve DoT domain"
-msgstr "使用運營商DNS解析DoT域名"
+msgid "Use ISP DNS to resolve DoH domain"
+msgstr "使用運營商DNS解析DoH域名"
 
 msgid "Domestic DNS"
 msgstr "牆內DNS"

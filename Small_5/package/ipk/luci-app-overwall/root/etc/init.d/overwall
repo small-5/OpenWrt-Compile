@@ -887,9 +887,9 @@ gen_dns(){
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
-			0)for i in $(get_doh dns.alidns.com);do ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed 's/^/dns.alidns.com -tls-host-verify dns.alidns.com -host-ip /g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
-			1)for i in $(get_doh dot.pub);do ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed 's/^/dot.pub -tls-host-verify dot.pub -host-ip /g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
-			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g');dns_l=$(echo $doh_l | sed 's/,/\n/g' | sort -u | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");[ ! "$dns_l" ] && dns_l=$Ali;;
+			0)for i in $(get_doh dns.alidns.com);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.alidns.com -http-host dns.alidns.com|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l=$Ali;;
+			1)for i in $(get_doh doh.pub);do echo $i | grep -q : && i=[$i] || ipset add over_wan_ac $i 2>/dev/null;doh_l="$doh_l $i";done;doh_l=$(echo $doh_l | sed 's/ /\n/g' | sed -e 's|^|https://|g' -e 's|$|/dns-query -tls-host-verify *.doh.pub -host-name doh.pub -http-host doh.pub|g' | sed ':a;N;$!ba;s/\n/,/g');dns_l="119.29.29.29 2402:4e00::";;
+			*)doh_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g');dns_l=$(echo "$doh_l" | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");[ ! "$dns_l" ] && dns_l=$Ali;;
 		esac
 		[ $(uci_get_by_type global isp_dns 0) = 1 ] && dns_l=isp
 	else
@@ -974,9 +974,9 @@ EOF
 	fi
 
 	if [ $dns_mode_l = 0 ];then
-		echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-tls /g' -e 's/$/ -group i -exclude-default-group/g' >> $DNS_T
+		echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group i -exclude-default-group/g' >> $DNS_T
 		for i in $dns_l;do echo "server $i -group j -exclude-default-group" >> $DNS_T;done
-		doh_l_t=$(echo $doh_l | sed 's/,/\n/g' | awk '{print$1}' | sort -u | grep -v : | grep -Ev "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|dns.alidns.com|dot.pub)$")
+		doh_l_t=$(echo $doh_l | sed 's/,/\n/g' | awk -F[/:] '{print$4}' | grep -v '\[' | grep -Ev "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
 		[ "$doh_l_t" ] && for i in $doh_l_t;do echo "domain-rules /$i/ -nameserver j -ipset over_wan_ac" >> $DNS_T;done
 		echo "nameserver /in-addr.arpa/j" >> $DNS_T
 	else
