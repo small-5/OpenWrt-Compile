@@ -7,8 +7,10 @@ export EASYRSA_BATCH=1
 D=/tmp/easyrsa3/pki
 
 gen(){
+	mkdir -p $D
 	easyrsa init-pki >/dev/null 2>&1 || return 1
 	easyrsa build-ca nopass >/dev/null 2>&1 || return 1
+	export EASYRSA_REQ_CN=ChangeMe
 	easyrsa gen-req server nopass >/dev/null 2>&1 || return 1
 	easyrsa sign server server >/dev/null 2>&1 || return 1
 	easyrsa gen-req client nopass >/dev/null 2>&1 || return 1
