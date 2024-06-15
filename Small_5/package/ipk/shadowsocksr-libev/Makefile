@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=shadowsocksr-libev
 PKG_VERSION:=2.5.6
-PKG_RELEASE:=6
+PKG_RELEASE:=11
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/shadowsocksrr/shadowsocksr-libev
@@ -28,7 +28,7 @@ define Package/shadowsocksr-libev-redir
 	CATEGORY:=Network
 	TITLE:=Lightweight Secured Socks5 Proxy
 	URL:=https://github.com/shadowsocksrr/shadowsocksr-libev
-	DEPENDS:=+libopenssl +libpthread +libpcre +zlib
+	DEPENDS:=+libopenssl +libpthread +libpcre2 +zlib
 endef
 
 Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev-redir)

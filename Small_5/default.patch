@@ -1,6 +1,6 @@
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -83,6 +83,7 @@ menu "Global build settings"
+@@ -87,6 +87,7 @@ menu "Global build settings"
  		bool "Show packages that require graphics support (local or remote)"
  
  	config BUILD_PATENTED
@@ -709,7 +709,7 @@
 
 --- a/include/target.mk
 +++ b/include/target.mk
-@@ -33,11 +33,6 @@
+@@ -48,11 +48,6 @@
  DEFAULT_PACKAGES+=busybox procd
  endif
  
@@ -721,7 +721,7 @@
  # include seccomp ld-preload hooks if kernel supports it
  ifneq ($(CONFIG_SECCOMP),)
  DEFAULT_PACKAGES+=procd-seccomp
-@@ -54,9 +49,10 @@
+@@ -69,9 +64,10 @@
  # For router targets
  DEFAULT_PACKAGES.router:=\
  	dnsmasq \
@@ -1638,10 +1638,11 @@
  	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
  endef
  
-@@ -156,12 +150,6 @@ define Build/InstallDev
+@@ -156,13 +150,6 @@ define Build/InstallDev
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib*.so* $(1)/usr/lib/
  	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib*.a $(1)/usr/lib/
+-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/cmake $(1)/usr/lib/
 -	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 -	$(CP) \
 -		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/mbedcrypto.pc \
@@ -1865,3 +1866,18 @@
  -if (NOT WIN32)
  -    add_subdirectory(fuzz)
  -endif()
+
+--- a/package/libs/mbedtls/patches/100-fix-gcc14-build.patch
++++ /dev/null
+@@ -1,11 +0,0 @@
+---- a/library/common.h
+-+++ b/library/common.h
+-@@ -199,7 +199,7 @@ static inline void mbedtls_xor(unsigned
+-         uint8x16_t x = veorq_u8(v1, v2);
+-         vst1q_u8(r + i, x);
+-     }
+--#if defined(__IAR_SYSTEMS_ICC__)
+-+#if defined(__IAR_SYSTEMS_ICC__) || (defined(MBEDTLS_COMPILER_IS_GCC) && MBEDTLS_GCC_VERSION >= 140100)
+-     /* This if statement helps some compilers (e.g., IAR) optimise out the byte-by-byte tail case
+-      * where n is a constant multiple of 16.
+-      * For other compilers (e.g. recent gcc and clang) it makes no difference if n is a compile-time

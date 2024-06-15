@@ -31,6 +31,9 @@ case "$FIRMWARE" in
 			;;
 		esac
 		;;
+	openwrt,one)
+		caldata_extract "factory" 0x0 0x1000
+		;;
 	ubnt,unifi-6-plus)
 		caldata_extract_mmc "factory" 0x0 0x1000
 		;;
@@ -53,13 +56,6 @@ case "$FIRMWARE" in
 "mediatek/mt7986_eeprom_mt7976.bin")
 	case "$board" in
 	acer,predator-w6)
-		caldata_extract_mmc "factory" 0x0 0x1000
-		;;
-	esac
-	;;
-"mediatek/mt7986_eeprom_mt7976_dual.bin")
-	case "$board" in
-	jdcloud,re-cp-03)
 		caldata_extract_mmc "factory" 0x0 0x1000
 		;;
 	esac

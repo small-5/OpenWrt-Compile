@@ -201,6 +201,11 @@
 	status = "okay";
 };
 
+&gpu {
+	mali-supply = <&vdd_gpu_s0>;
+	status = "okay";
+};
+
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0m2_xfer>;
@@ -262,6 +267,7 @@
 	rgmii_phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
+		realtek,led-data = <0x6d60>;
 	};
 };
 
@@ -275,8 +281,11 @@
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		rtl8125_2: pcie@30,0 {
+		rtl8125_1: pcie@30,0 {
+			compatible = "pci10ec,8125";
 			reg = <0x000000 0 0 0 0>;
+
+			realtek,led-data = <0x0 0x0 0x2b 0x200>;
 			label = "eth2";
 		};
 	};
@@ -292,8 +301,11 @@
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		rtl8125_1: pcie@40,0 {
+		rtl8125_2: pcie@40,0 {
+			compatible = "pci10ec,8125";
 			reg = <0x000000 0 0 0 0>;
+
+			realtek,led-data = <0x0 0x0 0x2b 0x200>;
 			label = "eth1";
 		};
 	};

@@ -443,7 +443,7 @@
 +
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/rofl0r/microsocks.git
-+PKG_SOURCE_VERSION:=8f6cb0911b9b4bcb00dfe1cd368c1cec1137e9e5
++PKG_SOURCE_VERSION:=98421a21c4adc4c77c0cf3a5d650cc28ad3e0107
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
  PKG_NAME:=microsocks
 -PKG_VERSION:=1.0.4
@@ -511,8 +511,8 @@
 -PKG_VERSION:=2.2.3
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-04-25
-+PKG_SOURCE_VERSION:=69638d0100a6659928ec08e53e5a4f838e617c7a
++PKG_SOURCE_DATE:=113-06-12
++PKG_SOURCE_VERSION:=c735d2b39a7931de0c9ec1b59a3ffa0de4366536
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
@@ -674,8 +674,8 @@
 -PKG_HASH:=6fd7019f936ff88c41e7c822f46f10b51bd72d665978f6586483de75b30c36bf
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-04-25
-+PKG_SOURCE_VERSION:=69638d0100a6659928ec08e53e5a4f838e617c7a
++PKG_SOURCE_DATE:=113-06-12
++PKG_SOURCE_VERSION:=c735d2b39a7931de0c9ec1b59a3ffa0de4366536
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
 +PKG_RELEASE:=1
@@ -1048,7 +1048,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
-+PKG_SOURCE_VERSION:=2f57d8d7e77b5aa3c73f72bd6989f0618bc49dfc
++PKG_SOURCE_VERSION:=07c13827bb523519a638214ed7ad76180f71a40a
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1261,12 +1261,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=e81b36c5ba3ee0b4b88ed8832f4a302ed3289bda
++PKG_SOURCE_VERSION:=939c4907689832b6f15f6ff163e15d2b3adad9ff
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.57.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.58.1_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1293,7 +1293,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=684254323620f95f963c95d8c72eb6738188d477
++PKG_SOURCE_VERSION:=f9a42423077af3145a218f263811dcce36117cb1
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1471,7 +1471,7 @@
  PKG_NAME:=sqm-scripts
 -PKG_SOURCE_VERSION:=33a89d8e7f6c82acc0adced84cf5cd95447e6bb5
 -PKG_VERSION:=1.6.0
-+PKG_SOURCE_VERSION:=0325ba47045e82faef9794b9e702dbb673cfe18d
++PKG_SOURCE_VERSION:=95337de67a35b474d493966223f324eb1302adfc
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
@@ -1486,91 +1486,255 @@
 
 --- a/feeds/packages/net/xfrpc/Makefile
 +++ b/feeds/packages/net/xfrpc/Makefile
-@@ -8,13 +8,13 @@
- include $(TOPDIR)/rules.mk
- 
- PKG_NAME:=xfrpc
--PKG_VERSION:=2.9.644
-+PKG_VERSION:=2.12.656
+@@ -11,10 +11,10 @@ PKG_NAME:=xfrpc
+ PKG_VERSION:=3.05.661
  PKG_RELEASE:=1
  
- PKG_SOURCE_PROTO:=git
- PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
- PKG_SOURCE_VERSION:=$(PKG_VERSION)
--PKG_MIRROR_HASH:=0040476ce8d2a8f7dffe6162ad2cd94797071bd4ccbdcac9433f518bb60340bd
-+PKG_MIRROR_HASH:=6e03cbbfb396b81c6d6325aae85918e6f2ee9810d4413fd1e59a306e20201aa8
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/liudf0716/xfrpc/tar.gz/$(PKG_VERSION)?
+-PKG_HASH:=202b5eb6d4ecee5444ac5a55fea462ad106ebfb88f51ca8499553db4f701f28f
+-PKG_BUILD_DIR:=$(BUILD_DIR)/xfrpc-$(PKG_VERSION)
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
++PKG_SOURCE_VERSION:=$(PKG_VERSION)
++PKG_MIRROR_HASH:=2f955520efc8c6078e68646dcf6dff127a3a7724
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
 
 --- a/feeds/packages/net/xfrpc/files/xfrpc.conf
 +++ b/feeds/packages/net/xfrpc/files/xfrpc.conf
-@@ -1,25 +1,9 @@
-+
- config xfrp 'init'
--	option disabled 1
+@@ -1,29 +1,9 @@
+-config xfrpc 'common'
+-	option enabled 0
 -	option loglevel 7
-+	option enabled '0'
-+	option loglevel '4'
- 
- config xfrpc 'common'
--	option server_addr frps_ip_address
+-	option server_addr frps.wifidogx.online
 -	option server_port 7000
-+	option server_addr '0.0.0.0'
-+	option server_port '7000'
  
--config xfrpc 'ssh01'
--	option type tcp
+-config tcp 'ssh01'
 -	option local_ip 127.0.0.1
 -	option local_port 22
 -	option remote_port 6000
 -	
--#config xfrpc 'web01'
--#	option type http
+-#config http 'web01'
 -#	option local_ip 127.0.0.1
 -#	option local_port 8080
 -#	option custom_domains your_domain_name
 -	
--#config xfrpc 'web02'
--#	option type https
+-#config https 'web02'
 -#	option local_ip 127.0.0.1
 -#	option local_port 8443
--#	option custom_domains your_domain_name
+-#	option subdomain your_domain_name
++config xfrp 'init'
++	option enabled '0'
++	option loglevel '4'
+ 
+-#config socks5 'socks01'
+-#   option remote_port 6001
++config xfrpc 'common'
++	option server_addr '0.0.0.0'
++	option server_port '7000'
+ 
+-#config plugin 'plugin01'
+-#	option remote_port 6002
+-#	option plugin_name http
+-#	option plugin_param 'youtube-url'
+-#  	option plugin_action 'download'
 
 --- a/feeds/packages/net/xfrpc/files/xfrpc.init
 +++ b/feeds/packages/net/xfrpc/files/xfrpc.init
-@@ -66,10 +66,10 @@ start_service() {
+@@ -1,5 +1,5 @@
+ #!/bin/sh /etc/rc.common
+-# Copyright (C) 2022 Dengfeng Liu <liudf0716@gmail.com>
++# Copyright (C) 2022 Dengfeng Liu <liu_df@qq.com>
+ #
+ # This is free software, licensed under the GNU General Public License v3.
+ # See /LICENSE for more information.
+@@ -13,107 +13,46 @@ PROG=/usr/bin/$NAME
+ 
+ 
+ handle_xfrpc() {
+-    local section="$1"
+-    local config="$2"
+-
+-    case "$section" in
+-        common)
+-            uci_validate_section xfrpc xfrpc common \
+-                'server_addr:host' \
+-                'server_port:uinteger' \
+-                'token:string:'
+-            ;;
+-    esac
+-
+-    # Write the validated settings to the config file
+-    echo "[${section}]" >> "$config"
+-    [ -z "$server_addr" ] || echo "server_addr = $server_addr" >> "$config"
+-    [ -z "$server_port" ] || echo "server_port = $server_port" >> "$config"
+-    [ -z "$token" ] || echo "token = $token" >> "$config"
+-}
+-
+-handle_tcp() {
+-	local section="$1"
++	local name="$1"
+ 	local config="$2"
+ 
+-	uci_validate_section xfrpc tcp $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'remote_port:uinteger' 
+-	
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = tcp" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$remote_port" ] || echo "remote_port = $remote_port" >> "$config"
+-}
+-
+-handle_http() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc http $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'custom_domains:string' \
+-		'subdomain:string' \
+-
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = http" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
+-	[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
+-}
+-
+-handle_https() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc https $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'custom_domains:string' \
+-		'subdomain:string' 
+-	
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = https" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
+-	[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
+-}
+-
+-handle_socks5() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc socks5 $section \
+-		'enabled:bool:1' \
+-		'remote_port:uinteger' 
+-
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = socks5" >> "$config"
+-	[ -z "$remote_port" ] || echo "remote_port = $remote_port" >> "$config"
++	echo "[$name]" >> "$config"
++
++	handle_type() {
++		uci_validate_section xfrpc xfrpc "$name" \
++				'type:or("tcp", "http", "https")' \
++				'local_ip:ipaddr:127.0.0.1' \
++				'local_port:uinteger'
++
++		echo "type = $type" >> "$config"
++		echo "local_ip = $local_ip" >> "$config"
++		echo "local_port = $local_port" >> "$config"
++		case "$type" in
++		tcp|mstsc|socks5)
++			config_get remote_port "$name" remote_port
++			echo "remote_port = $remote_port" >> "$config"
++			;;
++		http|https)
++			config_get custom_domains "$name" custom_domains
++			[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
++			config_get subdomain "$name" subdomain
++			[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
++			;;
++		esac
++	}
++
++	if [ "$name" = "common" ]; then
++		uci_validate_section xfrpc xfrp "$name" \
++				'server_addr:host' \
++				'server_port:uinteger' \
++				'token:string:'	
++
++		echo "server_addr = $server_addr" >> "$config"
++		echo "server_port = $server_port" >> "$config"
++		[ -z "$token" ] || echo "token = $token" >> "$config"
++	else
++		handle_type
++	fi
+ }
+ 
+ service_triggers() {
+@@ -126,7 +65,7 @@ start_service() {
+ 	> "$conf_file"
  	config_load "$NAME"
  
- 	uci_validate_section xfrpc xfrp init \
--			'disabled:bool:0' \
-+			'enabled:bool:0' \
+-	uci_validate_section xfrpc xfrpc common \
++	uci_validate_section xfrpc xfrp init \
+ 			'enabled:bool:0' \
  			'loglevel:uinteger:0'
  
--	if [ $disabled = 1 ]; then
-+	if [ $enabled = 0 ]; then
- 		echo "xfrpc service disabled"
- 		return
+@@ -136,10 +75,6 @@ start_service() {
  	fi
+ 
+ 	config_foreach handle_xfrpc xfrpc "$conf_file"
+-	config_foreach handle_tcp tcp "$conf_file"
+-	config_foreach handle_http http "$conf_file"
+-	config_foreach handle_https https "$conf_file"
+-	config_foreach handle_socks5 socks5 "$conf_file"
+ 
+ 	procd_open_instance
+ 	procd_set_param command "$PROG" -c "$conf_file" -f -d $loglevel
 
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=eba2906d3a31c012c9125940be889d2e75635724
++PKG_SOURCE_VERSION:=219a7dac2041613b37c9b9196cdb571150f1c3bd
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.8.11
+-PKG_VERSION:=1.8.13
 -PKG_RELEASE:=1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.11_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.8.13_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=d99ee6008c508abbad6bbb242d058b22efb50fb35867d15447a2b4602ab4b283
+-PKG_HASH:=9e63fbeb4667c19e286389c370d30e9e904f4421784adcbe6cf4d6e172a2ac29
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1682,17 +1846,17 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=663ed73768a895a8681b6ec57059109073adf8f9
++PKG_SOURCE_VERSION:=e32fecd16deeab0df65e4aad15ef3e096e35c5a9
  PKG_NAME:=zerotier
--PKG_VERSION:=1.12.2
+-PKG_VERSION:=1.14.0
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.12.2_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=2
++PKG_VERSION:=1.14.0_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=7c6512cfc208374ea9dc9931110e35f71800c34890e0f35991ea485aae66e31c
+-PKG_HASH:=7191623a81b0d1b552b9431e8864dd3420783ee518394ac1376cee6aaf033291
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  
