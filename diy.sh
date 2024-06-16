@@ -27,7 +27,7 @@ if [ $A = 1 ];then
 elif [ $A = 2 ];then
 	cp -r target/target/ipq40xx/. Small_5
 elif [ $A = 3 ];then
-	rm -rf openwrt/package/boot/{arm-trusted-firmware-mediatek,uboot-mediatek} openwrt/target/linux/mediatek
+	rm -rf openwrt/package/boot/{arm-trusted-firmware-mediatek,uboot-mediatek} openwrt/package/boot/uboot-envtools/files/{mediatek_filogic,mediatek_mt7622,mediatek_mt7623,mediatek_mt7629} openwrt/target/linux/mediatek
 	cp -r target/target/mediatek/. Small_5
 	chmod +x Small_5/target/linux/mediatek/base-files/etc/hotplug.d/iface/99-mtk-lro
 fi
