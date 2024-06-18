@@ -190,7 +190,7 @@ start_dns(){
 		esac
 	fi
 	case $dns_mode_l in
-		0)log "SmartDNS    : Local DNS start on DoT mode";;
+		0)log "SmartDNS    : Local DNS start on DoH mode";;
 		1)log "SmartDNS    : Local DNS start on UDP mode";;
 	esac
 	if [ $run_mode = router ];then
