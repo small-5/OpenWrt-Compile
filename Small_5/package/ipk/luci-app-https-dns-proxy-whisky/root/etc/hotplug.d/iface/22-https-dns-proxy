@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ "$ACTION" = ifup -a "$INTERFACE" != wan_6 ];then
+	[ "$(uci -q get https-dns-proxy.@base[0].enabled)" = 1 ] && service https-dns-proxy restart
+fi

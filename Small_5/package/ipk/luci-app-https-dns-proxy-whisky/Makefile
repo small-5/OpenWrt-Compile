@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-https-dns-proxy-whisky
 PKG_VERSION:=1.0
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -23,7 +23,7 @@ define Build/Prepare
 	chmod -R 755 luasrc/* root/*
 	find luasrc -type f -exec chmod 644 {} \;
 	find root -type f -exec chmod 644 {} \;
-	chmod 755 root/etc/init.d/*
+	chmod 755 root/etc/init.d/* root/etc/hotplug.d/iface/*
 	mkdir $(PKG_BUILD_DIR)/i18n
 	$(foreach po,$(wildcard ${CURDIR}/po/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/i18n/$(patsubst %.po,%.lmo,$(notdir $(po)));)
