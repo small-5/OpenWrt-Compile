@@ -237,6 +237,7 @@ o:value("h2","HTTP/2")
 o:value("quic","QUIC")
 o:value("grpc","gRPC")
 o:value("httpupgrade","HttpUpgrade")
+o:value("splithttp","SplitHTTP")
 o:depends("type","vmess")
 o:depends("type","vless")
 
@@ -274,6 +275,24 @@ o:depends("transport","httpupgrade")
 
 o=s:option(Value,"httpupgrade_ua",translate("HttpUpgrade UserAgent"))
 o:depends("transport","httpupgrade")
+
+o=s:option(Value,"splithttp_host",translate("SplitHTTP Host"))
+o:depends("transport","splithttp")
+
+o=s:option(Value,"splithttp_path",translate("SplitHTTP Path"))
+o:depends("transport","splithttp")
+
+o=s:option(Value,"splithttp_ua",translate("SplitHTTP UserAgent"))
+o:depends("transport","splithttp")
+
+o=s:option(Value,"splithttp_maxupload",translate("SplitHTTP MaxUploadSize"))
+o:depends("transport","splithttp")
+
+o=s:option(Value,"splithttp_maxconupload",translate("SplitHTTP MaxConcurrentUploads"))
+o:depends("transport","splithttp")
+
+o=s:option(Value,"splithttp_scmin",translate("SplitHTTP scMinPostsIntervalMs"))
+o:depends("transport","splithttp")
 
 o=s:option(ListValue,"quic_security",translate("QUIC Security"))
 o:value("none",translate("None"))

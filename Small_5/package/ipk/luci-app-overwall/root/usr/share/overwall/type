@@ -15,7 +15,7 @@ if [ $b = trojan ];then
 	let n++
 elif [ $b = vmess -o $b = vless ];then
 	c=$(uci_get_by_name $a transport)
-	if [ "$(uci_get_by_name $a mux)" -o $c = grpc -o $c = h2 ];then
+	if [ "$(uci_get_by_name $a mux)" -o $c = grpc -o $c = h2 -o $c = splithttp ];then
 		n=1
 	else
 		[ $c = ws -o $c = httpupgrade ] && let n++

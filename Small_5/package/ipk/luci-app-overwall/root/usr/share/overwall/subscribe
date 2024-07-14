@@ -153,6 +153,9 @@ local function parseNodeUrl(A,B)
 	elseif params.type=='httpupgrade' then
 		result.httpupgrade_host=params.host
 		result.httpupgrade_path=params.path
+	elseif params.type=='splithttp' then
+		result.splithttp_host=params.host
+		result.splithttp_path=params.path
 	end
 	result.transport=params.type
 	if A=="vmess" then
@@ -353,6 +356,9 @@ local function processData(szType,content)
 			elseif info.net=='httpupgrade' then
 				result.httpupgrade_host=info.host
 				result.httpupgrade_path=info.path
+			elseif info.net=='splithttp' then
+				result.splithttp_host=info.host
+				result.splithttp_path=info.path
 			end
 			if info.security then result.security=info.security end
 			if info.tls=="tls" or info.tls=="1" then

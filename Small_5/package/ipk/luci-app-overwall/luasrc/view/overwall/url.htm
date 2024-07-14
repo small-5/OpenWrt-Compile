@@ -194,6 +194,9 @@ function buildUrl(btn,urlname,sid){
 		}else if (v_transport=="httpupgrade"){
 			info.host=opt.get("httpupgrade_host").value;
 			info.path=opt.get("httpupgrade_path").value;
+		}else if (v_transport=="splithttp"){
+			info.host=opt.get("splithttp_host").value;
+			info.path=opt.get("splithttp_path").value;
 		}
 		if (info.path && info.path!=''){
 			info.path=encodeURI(info.path);
@@ -245,6 +248,9 @@ function buildUrl(btn,urlname,sid){
 		}else if (v_transport=="httpupgrade"){
 			params+=opt.query("host","httpupgrade_host");
 			params+=opt.query("path","httpupgrade_path");
+		}else if (v_transport=="splithttp"){
+			params+=opt.query("host","splithttp_host");
+			params+=opt.query("path","splithttp_path");
 		}
 		params+="&type="+v_transport;
 		params+=opt.query("encryption","vless_encryption");
@@ -586,6 +592,9 @@ function fromUrl(btn,urlname,sid){
 		}else if (ssm.net=="httpupgrade"){
 			opt.set('httpupgrade_host',ssm.host);
 			opt.set('httpupgrade_path',ssm.path);
+		}else if (ssm.net=="splithttp"){
+			opt.set('splithttp_host',ssm.host);
+			opt.set('splithttp_path',ssm.path);
 		}
 		break;
 	case "vless":
@@ -659,6 +668,9 @@ function fromUrl(btn,urlname,sid){
 		}else if (queryParam.type=="httpupgrade"){
 			opt.set('httpupgrade_host',queryParam.host || '');
 			opt.set('httpupgrade_path',queryParam.path || '');
+		}else if (queryParam.type=="splithttp"){
+			opt.set('splithttp_host',queryParam.host || '');
+			opt.set('splithttp_path',queryParam.path || '');
 		}
 	}
 	s.innerHTML="<font color='green'><%:Import Successful%></font>";
