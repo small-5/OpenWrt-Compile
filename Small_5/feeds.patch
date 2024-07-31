@@ -265,18 +265,6 @@
  			<div class="cbi-value-description">
  				<%=self.description%>
 
---- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js
-+++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js
-@@ -198,7 +198,7 @@ var cbiFlagTristate = form.ListValue.extend({
- 			this.vallist[0] = sysdef ? _('automatic (enabled)') : _('automatic (disabled)');
- 		}
- 
--		return this.super('renderWidget', [section_id, option_index, cfgvalue ? cfgvalue + '!' : null]);
-+		return this.super('renderWidget', [section_id, option_index, cfgvalue]);
- 	}
- });
- 
-
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 @@ -694,10 +694,12 @@ return view.extend({
