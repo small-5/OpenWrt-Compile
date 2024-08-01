@@ -1,11 +1,11 @@
 ﻿
 include $(TOPDIR)/rules.mk
 
-PKG_SOURCE_URL:=https://github.com/ntop/n2n.git
-PKG_SOURCE_VERSION:=fff50a7d80728069ca101a262d1543d85ac5313f
+PKG_SOURCE_URL:=https://github.com/n42n/n3n.git
+PKG_SOURCE_VERSION:=bbcab671e5c14e32915b2445a5cd3683b5705002
 PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_NAME:=n2n
-PKG_VERSION:=3.1.1_git-$(PKG_SOURCE_SHORTID)
+PKG_VERSION:=3.4.1_git-$(PKG_SOURCE_SHORTID)
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL3
 
@@ -22,9 +22,8 @@ define Package/n2n/Default
   SECTION:=net
   CATEGORY:=Network
   TITLE:=N2N Peer-to-peer VPN
-  URL:=https://www.ntop.org/n2n
+  URL:=http://github.com/n42n/n3n
   SUBMENU:=VPN
-  DEPENDS+=+libcap
 endef
 
 define Package/n2n-edge
@@ -47,18 +46,19 @@ The supernode for the N2N infrastructure
 endef
 
 define Build/Configure
-	( cd $(PKG_BUILD_DIR); ./autogen.sh )
-	$(call Build/Configure/Default)
+	( cd $(PKG_BUILD_DIR); \
+	./autogen.sh; \
+	./configure --with-rundir=/var/run )
 endef
 
 define Package/n2n-edge/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/edge $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/apps/n3n-edge $(1)/usr/bin/edge
 endef
 
 define Package/n2n-supernode/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/supernode $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/apps/n3n-supernode $(1)/usr/bin/supernode
 endef
 
 $(eval $(call BuildPackage,n2n-edge))

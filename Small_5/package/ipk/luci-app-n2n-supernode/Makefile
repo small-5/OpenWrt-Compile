@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-n2n-supernode
-PKG_VERSION:=1.0
-PKG_RELEASE:=8
+PKG_VERSION:=1.1
+PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 

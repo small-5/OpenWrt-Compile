@@ -20,27 +20,35 @@ proto_n2n_setup() {
 		eval $(ipcalc.sh $ipaddr $netmask)
 		addr=$ipaddr/$PREFIX
 	fi
+	case $cipher_suite in
+		A1)cipher=null;;
+		A2)cipher=Twofish;;
+		A3)cipher=AES;;
+		A4)cipher=ChaCha20;;
+		A5)cipher=Speck;;
+	esac
 	json_for_each_item add_param server SERVER
 	json_for_each_item add_param dns6 DNS6
-	proto_run_command "$cfg" /usr/bin/edge -f \
-		-d "$device" \
+	proto_run_command "$cfg" /usr/bin/edge start $cfg \
+		-Otuntap.name=$device \
 		$SERVER \
-		-c "$community" -$cipher_suite \
+		-c "$community" \
+		-Ocommunity.cipher=$cipher \
 		$([ -n "$key" ] && echo -k $key) \
 		$([ "$mode4" = dhcp ] && echo -a dhcp:0.0.0.0 || ([ "$mode4" != auto ] && echo -a $addr)) \
-		$([ -n "$mac" ] && echo -m $mac) \
-		$([ -n "$mtu_n2n" ] && echo -M $mtu_n2n) \
-		$([ -n "$reg_interval" ] && echo -i $reg_interval) \
-		$([ -n "$reg_ttl" ] && echo -L $reg_ttl) \
-		$([ -n "$bind_addr" ] && echo -p $bind_addr) \
-		$([ -n "$mgmtport" ] && echo -t $mgmtport) \
+		$([ -n "$mac" ] && echo -Otuntap.macaddr=$mac) \
+		$([ -n "$mtu_n2n" ] && echo -Otuntap.mtu=$mtu_n2n) \
+		$([ -n "$reg_interval" ] && echo -Oconnection.register_interval=$reg_interval) \
+		$([ -n "$reg_ttl" ] && echo -Oconnection.register_pkt_ttl=$reg_ttl) \
+		$([ -n "$bind_addr" ] && echo -Oconnection.bind=$bind_addr) \
+		$([ -n "$mgmtport" ] && echo -Omanagement.port=$mgmtport) \
 		$([ "$forwarding" = 0 ] || echo -r) \
-		$([ "$header" = 0 ] || echo -H) \
-		$([ "$comp" = 1 ] && echo -z1) \
+		$([ "$header" = 0 ] || echo -Ocommunity.header_encryption=true) \
+		$([ "$comp" = 1 ] && echo -Ocommunity.compression=lzo) \
 		$([ "$verbose" = 1 ] && echo -v) \
-		$([ "$pmtu" = 1 ] && echo -D) \
-		$([ "$nop2p" = 1 ] && echo -S) \
-		$([ "$multi" = 0 ] || echo -e "\x2d\x45")
+		$([ "$pmtu" = 1 ] && echo -Oconnection.pmtu_discovery=true) \
+		$([ "$nop2p" = 1 ] && echo -Oconnection.allow_p2p=false) \
+		$([ "$multi" = 0 ] || echo -Ofilter.allow_multicast=true)
 
 	proto_init_update "$device" 1 1
 	proto_set_keep 1

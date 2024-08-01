@@ -57,9 +57,9 @@ return network.registerProtocol('n2n', {
 		o.default = 'A4';
 		o.value('A1', _('None'));
 		o.value('A2', _('Twofish'));
-		o.value('A3', _('AES-CBC(deprecated)'));
+		o.value('A3', _('AES'));
 		o.value('A4', _('ChaCha20'));
-		o.value('A5', _('Speck-CTR'));
+		o.value('A5', _('Speck'));
 
 		o = s.taboption('general', form.Value, 'key', _('Key'));
 		o.depends("cipher_suite","A2");

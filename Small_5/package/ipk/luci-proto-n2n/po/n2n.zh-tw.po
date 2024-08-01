@@ -10,9 +10,6 @@ msgstr "網路組名稱"
 msgid "Cipher suite"
 msgstr "加密方式"
 
-msgid "AES-CBC(deprecated)"
-msgstr "AES-CBC(不建議使用)"
-
 msgid "Key"
 msgstr "密碼"
 

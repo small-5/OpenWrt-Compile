@@ -13,17 +13,23 @@ msgstr "N2N 超級節點設定"
 msgid "Port"
 msgstr "通訊埠"
 
-msgid "Subnet Range"
-msgstr "子網範圍"
+msgid "Start of subnet range"
+msgstr "起始子網"
 
-msgid "Subnet range for auto ip address service(optional)<br/>For example: 192.168.0.0-192.168.255.0/24"
-msgstr "設定自動IP的範圍和子網掩碼(可選)<br/>例如: 192.168.0.0-192.168.255.0/24"
+msgid "Start of Subnet range for auto ip address service(optional)<br/>For example: 10.128.255.0/24"
+msgstr "設定自動IP的起始子網(可選)<br/>例如: 10.128.255.0/24"
+
+msgid "End of subnet range"
+msgstr "終止子網"
+
+msgid "End of Subnet range for auto ip address service(optional)<br/>For example: 10.255.255.0/24"
+msgstr "設定自動IP的終止子網(可選)<br/>例如: 10.255.255.0/24"
 
 msgid "Federation Name"
 msgstr "超級節點群組名稱"
 
-msgid "Name of the supernode's federation<br/>Defaults to *Federation"
-msgstr "用於多個超級節點互聯<br/>默認名稱為 *Federation"
+msgid "Name of the supernode's federation<br/>Defaults to Federation"
+msgstr "用於多個超級節點互聯<br/>默認名稱為 Federation"
 
 msgid "Supernode Address"
 msgstr "超級節點位址"
