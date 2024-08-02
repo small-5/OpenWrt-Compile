@@ -8,7 +8,7 @@ llccd/netfilter-full-cone-nat|dev|fullconenat
 aarond10/https_dns_proxy|master|https_dns_proxy
 zfl9/ipt2socks|master|ipt2socks
 rofl0r/microsocks|master|microsocks
-ntop/n2n|dev|n2n
+n42n/n3n|main|n3n
 OpenVPN/easy-rsa|master|openvpn-easy-rsa
 code4craft/pdnsd|master|pdnsd
 semigodking/redsocks|master|redsocks2
@@ -31,4 +31,3 @@ for i in $A;do
 	i=$(echo $i | sed 's/|/ /g')
 	GET $i
 done
-sed -i 's/655c53d27df0bd69e0ecfa8309ce2940797f3362/8f6cb0911b9b4bcb00dfe1cd368c1cec1137e9e5/' SHA #microsocks
