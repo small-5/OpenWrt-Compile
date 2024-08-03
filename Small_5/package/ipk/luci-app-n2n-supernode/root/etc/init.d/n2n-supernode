@@ -18,7 +18,7 @@ start_service(){
 	[ "$community" ] && echo "$community" > /tmp/n2n-supernode.list && param="$param -Osupernode.community_file=/tmp/n2n-supernode.list"
 	[ "$ip_min" ] && param="$param -Osupernode.auto_ip_min=$ip_min"
 	[ "$ip_max" ] && param="$param -Osupernode.auto_ip_max=$ip_max"
-	[ "$name" ] && param="$param -Osupernode.federation=$name"
+	[ "$name" ] && export N3N_FEDERATION=$name
 	for i in $server;do
 		param="$param -Osupernode.peer=$i"
 	done

@@ -29,12 +29,12 @@ proto_n2n_setup() {
 	esac
 	json_for_each_item add_param server SERVER
 	json_for_each_item add_param dns6 DNS6
+	proto_export "N3N_COMMUNITY=$community"
+	[ -n "$key" ] && proto_export "N3N_KEY=$key"
 	proto_run_command "$cfg" /usr/bin/edge start $cfg \
 		-Otuntap.name=$device \
 		$SERVER \
-		-c "$community" \
 		-Ocommunity.cipher=$cipher \
-		$([ -n "$key" ] && echo -k $key) \
 		$([ "$mode4" = dhcp ] && echo -a dhcp:0.0.0.0 || ([ "$mode4" != auto ] && echo -a $addr)) \
 		$([ -n "$mac" ] && echo -Otuntap.macaddr=$mac) \
 		$([ -n "$mtu_n2n" ] && echo -Otuntap.mtu=$mtu_n2n) \
