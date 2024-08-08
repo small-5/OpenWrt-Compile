@@ -5,9 +5,9 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.04
+PKG_VERSION:=2024.07
 PKG_RELEASE:=1
-PKG_HASH:=18a853fe39fad7ad03a90cc2d4275aeaed6da69735defac3492b80508843dd4a
+PKG_HASH:=f591da9ab90ef3d6b3d173766d0ddff90c4ed7330680897486117df390d83c8f
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -22,6 +22,25 @@ define U-Boot/Default
   BUILD_TARGET:=rockchip
   UENV:=default
   HIDDEN:=1
+endef
+
+
+# RK3308 boards
+
+define U-Boot/Default/rk3308
+  BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3308
+  ATF:=$(RK3308_ATF)
+  TPL:=$(RK3308_TPL)
+endef
+
+define U-Boot/rock-pi-s-rk3308
+  $(U-Boot/Default/rk3308)
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3308-rock-pi-s
+  TPL:=$(RK3308_TPL_ROCK_PI_S)
+  NAME:=ROCK Pi S
+  BUILD_DEVICES:= \
+    radxa_rock-pi-s
 endef
 
 
@@ -77,9 +96,16 @@ endef
 
 define U-Boot/rock-pi-e-rk3328
   $(U-Boot/Default/rk3328)
-  NAME:=Rock Pi E
+  NAME:=ROCK Pi E
   BUILD_DEVICES:= \
     radxa_rock-pi-e
+endef
+
+define U-Boot/rock-pi-e-v3-rk3328
+  $(U-Boot/Default/rk3328)
+  NAME:=ROCK Pi E v3.0
+  BUILD_DEVICES:= \
+    radxa_rock-pi-e-v3
 endef
 
 define U-Boot/rock64-rk3328
@@ -129,7 +155,7 @@ endef
 
 define U-Boot/rock-pi-4-rk3399
   $(U-Boot/Default/rk3399)
-  NAME:=Rock Pi 4
+  NAME:=ROCK Pi 4
   BUILD_DEVICES:= \
     radxa_rock-pi-4a
 endef
@@ -219,6 +245,8 @@ endef
 
 define U-Boot/radxa-e25-rk3568
   $(U-Boot/Default/rk3568)
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568-e25
+  TPL:=$(RK3568_TPL_E25)
   NAME:=E25
   BUILD_DEVICES:= \
     radxa_e25
@@ -233,7 +261,7 @@ endef
 
 define U-Boot/rock-3a-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=Rock 3A
+  NAME:=ROCK 3A
   BUILD_DEVICES:= \
     radxa_rock-3a
 endef
@@ -264,9 +292,16 @@ endef
 
 define U-Boot/rock5b-rk3588
   $(U-Boot/Default/rk3588)
-  NAME:=Rock 5B
+  NAME:=ROCK 5B
   BUILD_DEVICES:= \
     radxa_rock-5b
+endef
+
+define U-Boot/sige7-rk3588
+  $(U-Boot/Default/rk3588)
+  NAME:=Sige7
+  BUILD_DEVICES:= \
+    armsom_sige7
 endef
 
 
@@ -295,7 +330,7 @@ endef
 
 define U-Boot/rock5a-rk3588s
   $(U-Boot/Default/rk3588)
-  NAME:=Rock 5A
+  NAME:=ROCK 5A
   BUILD_DEVICES:= \
     radxa_rock-5a
 endef
@@ -307,6 +342,7 @@ UBOOT_TARGETS := \
   nanopi-r4se-rk3399 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
+  rock-pi-s-rk3308 \
   nanopi-r2c-rk3328 \
   nanopi-r2c-plus-rk3328 \
   nanopi-r2s-rk3328 \
@@ -314,6 +350,7 @@ UBOOT_TARGETS := \
   orangepi-r1-plus-lts-rk3328 \
   roc-cc-rk3328 \
   rock-pi-e-rk3328 \
+  rock-pi-e-v3-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
   bpi-r2-pro-rk3568 \
@@ -329,6 +366,7 @@ UBOOT_TARGETS := \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
   rock5b-rk3588 \
+  sige7-rk3588 \
   nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s \
   orangepi-5-rk3588s \
@@ -337,7 +375,6 @@ UBOOT_TARGETS := \
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_CUSTOMIZE_CONFIG := \
-	--disable SPL_FIT_SIGNATURE \
 	--disable TOOLS_MKEFICAPSULE \
 	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
 	$(if $(TPL),, \
@@ -347,6 +384,8 @@ UBOOT_CUSTOMIZE_CONFIG := \
 		--disable DFU_MMC \
 		--disable EFI_CAPSULE_ON_DISK \
 		--disable EFI_CAPSULE_FIRMWARE_RAW \
+		--disable SPL_FIT_SIGNATURE \
+		--disable USB_FUNCTION_FASTBOOT \
 	)
 
 UBOOT_MAKE_FLAGS += \
@@ -356,8 +395,7 @@ UBOOT_MAKE_FLAGS += \
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 ifneq ($(TPL),)
-	$(CP) $(PKG_BUILD_DIR)/idbloader.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-idbloader.img
-	$(CP) $(PKG_BUILD_DIR)/u-boot.itb $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-u-boot.itb
+	$(CP) $(PKG_BUILD_DIR)/u-boot-rockchip.bin $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-u-boot-rockchip.bin
 else
 	$(STAGING_DIR_IMAGE)/loaderimage --pack --uboot $(PKG_BUILD_DIR)/u-boot-dtb.bin $(PKG_BUILD_DIR)/uboot.img 0x200000
 	$(CP) $(PKG_BUILD_DIR)/uboot.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-uboot.img

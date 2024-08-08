@@ -709,19 +709,7 @@
 
 --- a/include/target.mk
 +++ b/include/target.mk
-@@ -48,11 +48,6 @@
- DEFAULT_PACKAGES+=busybox procd
- endif
- 
--# include ujail on systems with enough storage
--ifeq ($(CONFIG_SMALL_FLASH),)
--DEFAULT_PACKAGES+=procd-ujail
--endif
--
- # include seccomp ld-preload hooks if kernel supports it
- ifneq ($(CONFIG_SECCOMP),)
- DEFAULT_PACKAGES+=procd-seccomp
-@@ -69,9 +64,10 @@
+@@ -38,9 +38,10 @@ DEFAULT_PACKAGES.nas:=\
  # For router targets
  DEFAULT_PACKAGES.router:=\
  	dnsmasq \
@@ -735,6 +723,18 @@
  	odhcp6c \
  	odhcpd-ipv6only \
  	ppp \
+@@ -108,11 +109,6 @@ else
+ DEFAULT_PACKAGES+=busybox procd
+ endif
+ 
+-# include ujail on systems with enough storage
+-ifeq ($(CONFIG_SMALL_FLASH),)
+-DEFAULT_PACKAGES+=procd-ujail
+-endif
+-
+ # include seccomp ld-preload hooks if kernel supports it
+ ifneq ($(CONFIG_SECCOMP),)
+ DEFAULT_PACKAGES+=procd-seccomp
 
 --- a/package/network/utils/iptables/Makefile
 +++ b/package/network/utils/iptables/Makefile

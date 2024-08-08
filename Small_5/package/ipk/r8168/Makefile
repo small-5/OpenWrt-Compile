@@ -5,6 +5,8 @@ PKG_NAME:=r8168
 PKG_VERSION:=8.053.00
 PKG_RELEASE:=1
 
+PKG_BUILD_PARALLEL:=1
+
 include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/r8168
@@ -21,7 +23,10 @@ define KernelPackage/r8168/description
 endef
 
 define Build/Compile
-	+$(KERNEL_MAKE) M=$(PKG_BUILD_DIR) modules
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M=$(PKG_BUILD_DIR) \
+		ENABLE_RSS_SUPPORT=y \
+		modules
 endef
 
 $(eval $(call KernelPackage,r8168))

@@ -63,7 +63,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  				   ring->sched_score, ring->name,
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
-@@ -325,8 +325,8 @@ void amdgpu_job_stop_all_jobs_on_sched(s
+@@ -328,8 +328,8 @@ void amdgpu_job_stop_all_jobs_on_sched(s
  	int i;
  
  	/* Signal all jobs not yet scheduled */
@@ -76,7 +76,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  			while ((s_job = to_drm_sched_job(spsc_queue_pop(&s_entity->job_queue)))) {
 --- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
 +++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-@@ -135,6 +135,7 @@ int etnaviv_sched_init(struct etnaviv_gp
+@@ -134,6 +134,7 @@ int etnaviv_sched_init(struct etnaviv_gp
  	int ret;
  
  	ret = drm_sched_init(&gpu->sched, &etnaviv_sched_ops,
@@ -86,7 +86,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  			     dev_name(gpu->dev), gpu->dev);
 --- a/drivers/gpu/drm/lima/lima_sched.c
 +++ b/drivers/gpu/drm/lima/lima_sched.c
-@@ -488,7 +488,9 @@ int lima_sched_pipe_init(struct lima_sch
+@@ -495,7 +495,9 @@ int lima_sched_pipe_init(struct lima_sch
  
  	INIT_WORK(&pipe->recover_work, lima_sched_recover_work);
  

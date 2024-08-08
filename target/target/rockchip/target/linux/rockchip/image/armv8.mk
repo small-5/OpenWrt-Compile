@@ -15,11 +15,23 @@ define Device/ariaboard_photonicat
   DEVICE_MODEL := Photonicat
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := pcat-manager kmod-ath10k-sdio \
-	ath10k-firmware-qca9377-sdio wpad-basic-mbedtls \
+  DEVICE_PACKAGES := kmod-ath10k-sdio ath10k-firmware-qca9377-sdio wpad-basic-mbedtls \
 	kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += ariaboard_photonicat
+
+define Device/armsom_sige7
+  DEVICE_VENDOR := ArmSoM
+  DEVICE_MODEL := Sige7
+  DEVICE_ALT0_VENDOR := Bananapi
+  DEVICE_ALT0_MODEL := BPi-M7
+  SOC := rk3588
+  DEVICE_DTS := rockchip/rk3588-armsom-sige7
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-brcmfmac kmod-r8125 wpad-basic-mbedtls \
+	brcmfmac-firmware-43752-pcie brcmfmac-nvram-43752-pcie
+endef
+TARGET_DEVICES += armsom_sige7
 
 define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
@@ -226,7 +238,8 @@ define Device/radxa_e25
   DEVICE_DTS := rockchip/rk3568-radxa-e25
   UBOOT_DEVICE_NAME := radxa-e25-rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform
+  BOOT_SCRIPT := radxa-e25
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-dwc
 endef
 TARGET_DEVICES += radxa_e25
 
@@ -236,6 +249,7 @@ define Device/radxa_rock-3a
   SOC := rk3568
   SUPPORTED_DEVICES := radxa,rock3a
   BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-usb-net-cdc-ncm kmod-usb-net-rndis
 endef
 TARGET_DEVICES += radxa_rock-3a
 
@@ -280,9 +294,29 @@ define Device/radxa_rock-pi-e
 endef
 TARGET_DEVICES += radxa_rock-pi-e
 
+define Device/radxa_rock-pi-e-v3
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK Pi E v3.0
+  SOC := rk3328
+  DEVICE_DTS := rockchip/rk3328-rock-pi-e
+  BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-rtw88-8723du kmod-usb-net-cdc-ncm kmod-usb-net-rndis wpad-basic-mbedtls
+endef
+TARGET_DEVICES += radxa_rock-pi-e-v3
+
+define Device/radxa_rock-pi-s
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK Pi S
+  SOC := rk3308
+  BOOT_FLOW := pine64-img
+  BOOT_SCRIPT := rock-pi-s
+  DEVICE_PACKAGES := kmod-rtw88-8723ds kmod-usb-net-cdc-ncm kmod-usb-net-rndis wpad-basic-mbedtls
+endef
+TARGET_DEVICES += radxa_rock-pi-s
+
 define Device/sinovoip_bpi-r2-pro
-  DEVICE_VENDOR := Sinovoip
-  DEVICE_MODEL := Bananapi-R2 Pro
+  DEVICE_VENDOR := Bananapi
+  DEVICE_MODEL := BPi-R2 Pro
   SOC := rk3568
   SUPPORTED_DEVICES := sinovoip,rk3568-bpi-r2pro
   BOOT_FLOW := pine64-img

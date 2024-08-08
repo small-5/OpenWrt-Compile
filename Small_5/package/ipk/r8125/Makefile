@@ -5,6 +5,8 @@ PKG_NAME:=r8125
 PKG_VERSION:=9.013.02
 PKG_RELEASE:=1
 
+PKG_BUILD_PARALLEL:=1
+
 include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/r8125
@@ -20,7 +22,11 @@ define KernelPackage/r8125/description
 endef
 
 define Build/Compile
-	+$(KERNEL_MAKE) M=$(PKG_BUILD_DIR) modules
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M=$(PKG_BUILD_DIR) \
+		CONFIG_ASPM=n \
+		ENABLE_RSS_SUPPORT=y \
+		modules
 endef
 
 $(eval $(call KernelPackage,r8125))

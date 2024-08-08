@@ -57,7 +57,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpio = <&pio 12 GPIO_ACTIVE_HIGH>;
+		gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
 	};
@@ -164,7 +164,7 @@
 				block-partition-u-boot-env {
 					partname = "u-boot-env";
 					nvmem-layout {
-						compatible = "u-boot,env-layout";
+						compatible = "u-boot,env";
 					};
 				};
 			};

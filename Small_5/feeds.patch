@@ -496,18 +496,18 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=miniupnpc
--PKG_VERSION:=2.2.3
+-PKG_VERSION:=2.2.8
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-06-12
-+PKG_SOURCE_VERSION:=c735d2b39a7931de0c9ec1b59a3ffa0de4366536
++PKG_SOURCE_DATE:=113-07-27
++PKG_SOURCE_VERSION:=0ef0b9b2386aeaed53a774ae10df10b8e08478a1
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
--PKG_HASH:=dce41b4a4f08521c53a0ab163ad2007d18b5e1aa173ea5803bd47a1be3159c24
+-PKG_HASH:=05b929679091b9921b6b6c1f25e39e4c8d1f4d46c8feb55a412aa697aee03a93
 -
  PKG_MAINTAINER:=
  PKG_LICENSE:=BSD-3-Clause
@@ -522,50 +522,6 @@
  define Package/miniupnpc/Default
    TITLE:=Lightweight UPnP
    URL:=https://miniupnp.tuxfamily.org
-
---- a/feeds/packages/net/miniupnpc/patches/100-no-fPIC.patch
-+++ b/feeds/packages/net/miniupnpc/patches/100-no-fPIC.patch
-@@ -1,6 +1,6 @@
- --- a/CMakeLists.txt
- +++ b/CMakeLists.txt
--@@ -41,12 +41,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-+@@ -51,12 +51,6 @@ if (APPLE)
-    target_compile_definitions(miniupnpc-private INTERFACE _DARWIN_C_SOURCE)
-  endif ()
-  
-@@ -12,31 +12,4 @@
- -
-  # Suppress noise warnings
-  if (MSVC)
--   target_compile_definitions(miniupnpc-private INTERFACE _CRT_SECURE_NO_WARNINGS)
--@@ -221,16 +215,16 @@ endif ()
-- 
-- if (NOT UPNPC_NO_INSTALL)
--   install (FILES
---    miniupnpc.h
---    miniwget.h
---    upnpcommands.h
---    igd_desc_parse.h
---    upnpreplyparse.h
---    upnperrors.h
---    upnpdev.h
---    miniupnpctypes.h
---    portlistingparse.h
---    miniupnpc_declspec.h
--+    include/miniupnpc.h
--+    include/miniwget.h
--+    include/upnpcommands.h
--+    include/igd_desc_parse.h
--+    include/upnpreplyparse.h
--+    include/upnperrors.h
--+    include/upnpdev.h
--+    include/miniupnpctypes.h
--+    include/portlistingparse.h
--+    include/miniupnpc_declspec.h
--     DESTINATION include/miniupnpc
--   )
-- 
-+   target_compile_definitions(miniupnpc-private INTERFACE _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
 
 --- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
 +++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
@@ -654,16 +610,16 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=miniupnpd
--PKG_VERSION:=2.3.3
--PKG_RELEASE:=2
+-PKG_VERSION:=2.3.7
+-PKG_RELEASE:=1
 -
 -PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
--PKG_HASH:=6fd7019f936ff88c41e7c822f46f10b51bd72d665978f6586483de75b30c36bf
+-PKG_HASH:=fbdd5501039730f04a8420ea2f8f54b7df63f9f04cde2dc67fa7371e80477bbe
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-06-12
-+PKG_SOURCE_VERSION:=c735d2b39a7931de0c9ec1b59a3ffa0de4366536
++PKG_SOURCE_DATE:=113-07-27
++PKG_SOURCE_VERSION:=0ef0b9b2386aeaed53a774ae10df10b8e08478a1
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
 +PKG_RELEASE:=1
@@ -715,7 +671,7 @@
 
 --- a/feeds/packages/net/openvpn/files/openvpn.init
 +++ b/feeds/packages/net/openvpn/files/openvpn.init
-@@ -10,7 +10,6 @@
+@@ -10,7 +10,6 @@ STOP=10
  USE_PROCD=1
  PROG=/usr/sbin/openvpn
  
@@ -723,7 +679,7 @@
  LIST_SEP="
  "
  
-@@ -43,9 +42,8 @@
+@@ -43,9 +42,8 @@ append_params() {
  		config_get v "$s" "$p"
  		IFS="$LIST_SEP"
  		for v in $v; do
@@ -735,7 +691,7 @@
  		done
  		unset IFS
  	done
-@@ -71,14 +69,6 @@
+@@ -71,14 +69,6 @@ section_enabled() {
  	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
  }
  
@@ -750,7 +706,7 @@
  openvpn_get_dev() {
  	local dev dev_type
  	local name="$1"
-@@ -113,42 +103,10 @@
+@@ -113,69 +103,21 @@ openvpn_get_dev() {
  	echo "--dev-type $dev_type --dev $dev"
  }
  
@@ -794,27 +750,39 @@
  
  	procd_open_instance "$name"
  	procd_set_param command "$PROG"	\
-@@ -158,17 +116,8 @@
- 		--config "$conf" \
- 		--up "/usr/libexec/openvpn-hotplug up $name" \
- 		--down "/usr/libexec/openvpn-hotplug down $name" \
--		--route-up "/usr/libexec/openvpn-hotplug route-up $name" \
--		--route-pre-down "/usr/libexec/openvpn-hotplug route-pre-down $name" \
--		${client:+--ipchange "/usr/libexec/openvpn-hotplug ipchange $name"} \
--		${up:+--setenv user_up "$up"} \
--		${down:+--setenv user_down "$down"} \
--		${route_up:+--setenv user_route_up "$route_up"} \
--		${route_pre_down:+--setenv user_route_pre_down "$route_pre_down"} \
--		${client:+${ipchange:+--setenv user_ipchange "$ipchange"}} \
+ 		--syslog "openvpn($name)" \
+ 		--status "/var/run/openvpn.$name.status" \
+ 		--cd "$dir" \
+-		--config "$conf"
+-	# external scripts can only be called on script-security 2 or higher
+-	if [ "${security:-2}" -lt 2 ]; then
+-		logger -t "openvpn(${name})" "not adding hotplug scripts due to script-security ${security:-2}"
+-	else
+-		procd_append_param command \
+-			--up "/usr/libexec/openvpn-hotplug up $name" \
+-			--down "/usr/libexec/openvpn-hotplug down $name" \
+-			--route-up "/usr/libexec/openvpn-hotplug route-up $name" \
+-			--route-pre-down "/usr/libexec/openvpn-hotplug route-pre-down $name" \
+-			${client:+--ipchange "/usr/libexec/openvpn-hotplug ipchange $name"} \
+-			${up:+--setenv user_up "$up"} \
+-			${down:+--setenv user_down "$down"} \
+-			${route_up:+--setenv user_route_up "$route_up"} \
+-			${route_pre_down:+--setenv user_route_pre_down "$route_pre_down"} \
+-			${client:+${ipchange:+--setenv user_ipchange "$ipchange"}}
+-	fi
+-	procd_append_param command \
 -		--script-security "${security:-2}" \
 -		$(openvpn_get_dev "$name" "$conf") \
 -		$(openvpn_get_credentials "$name" "$conf")
++		--config "$conf" \
++		--up "/usr/libexec/openvpn-hotplug up $name" \
++		--down "/usr/libexec/openvpn-hotplug down $name" \
 +		--script-security 2 \
 +		$(openvpn_get_dev "$name" "$conf")
  	procd_set_param file "$dir/$conf"
  	procd_set_param term_timeout 15
  	procd_set_param respawn
-@@ -178,7 +127,7 @@
+@@ -185,7 +127,7 @@ openvpn_add_instance() {
  	procd_close_instance
  }
  
@@ -823,7 +791,7 @@
  	local s="$1"
  
  	config_get config "$s" config
-@@ -189,75 +138,23 @@
+@@ -196,75 +138,23 @@ start_uci_instance() {
  		return 1
  	}
  
@@ -904,7 +872,7 @@
  }
  
  start_service() {
-@@ -274,28 +171,40 @@
+@@ -281,28 +171,40 @@ start_service() {
  		fi
  	}
  
@@ -1036,7 +1004,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
-+PKG_SOURCE_VERSION:=07c13827bb523519a638214ed7ad76180f71a40a
++PKG_SOURCE_VERSION:=75649b623519dda99b772342bbbe625a45234864
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1249,12 +1217,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=939c4907689832b6f15f6ff163e15d2b3adad9ff
++PKG_SOURCE_VERSION:=2dcdb24cc4a0792a5e75527d43ccb8fd2e40da92
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.58.1_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.59.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1281,7 +1249,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=f9a42423077af3145a218f263811dcce36117cb1
++PKG_SOURCE_VERSION:=b53f63892a204cb303ac5faae519549017ce00ec
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1340,116 +1308,6 @@
  KCPTUN_COMPONENTS:=server client
  $(foreach component,$(KCPTUN_COMPONENTS), \
    $(eval $(call Package/kcptun/Default,$(component))) \
-
---- a/feeds/packages/net/shadowsocks-libev/Makefile
-+++ b/feeds/packages/net/shadowsocks-libev/Makefile
-@@ -12,20 +12,23 @@
- # - update cipher list by checking src/crypto.c:crypto_init()
- # - check if default mode has changed from being tcp_only
- #
-+PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=d83ace0f0d9c05656c13d66aa4a449bf70143254
-+
- PKG_NAME:=shadowsocks-libev
--PKG_VERSION:=3.3.5
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=3.3.5_git-$(PKG_SOURCE_SHORTID)
- PKG_RELEASE:=11
--
--PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
--PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
--PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
--
--PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
--
- PKG_LICENSE:=GPL-3.0-or-later
- PKG_LICENSE_FILES:=LICENSE
- PKG_CPE_ID:=cpe:/a:shadowsocks:shadowsocks-libev
- 
-+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
-+PKG_SOURCE_PROTO:=git
-+
-+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-+
- PKG_FIXUP:=autoreconf
- PKG_INSTALL:=1
- PKG_BUILD_FLAGS:=no-mips16 lto
-@@ -34,27 +37,6 @@
- 
- include $(INCLUDE_DIR)/package.mk
- 
--
--define Package/shadowsocks-libev-config
--  SECTION:=net
--  CATEGORY:=Network
--  SUBMENU:=Web Servers/Proxies
--  TITLE:=shadowsocks-libev config scripts
--  URL:=https://github.com/shadowsocks/shadowsocks-libev
--endef
--
--define Package/shadowsocks-libev-config/conffiles
--/etc/config/shadowsocks-libev
--endef
--
--define Package/shadowsocks-libev-config/install
--	$(INSTALL_DIR) $(1)/etc/config
--	$(INSTALL_DATA) ./files/shadowsocks-libev.config $(1)/etc/config/shadowsocks-libev
--	$(INSTALL_DIR) $(1)/etc/init.d
--	$(INSTALL_BIN) ./files/shadowsocks-libev.init $(1)/etc/init.d/shadowsocks-libev
--endef
--
--
- define Package/shadowsocks-libev/Default
-   define Package/shadowsocks-libev-$(1)
-     SECTION:=net
-@@ -62,7 +44,7 @@
-     SUBMENU:=Web Servers/Proxies
-     TITLE:=shadowsocks-libev $(1)
-     URL:=https://github.com/shadowsocks/shadowsocks-libev
--    DEPENDS:=+libev +libmbedtls +libpthread +libsodium +shadowsocks-libev-config $(DEPENDS_$(1))
-+    DEPENDS:=+libev +libmbedtls +libpthread +libsodium $(DEPENDS_$(1))
-   endef
- 
-   define Package/shadowsocks-libev-$(1)/install
-@@ -83,28 +65,6 @@
- endef
- $(eval $(call shadowsocks-libev/templates))
- 
--
--define Package/shadowsocks-libev-ss-rules
--  SECTION:=net
--  CATEGORY:=Network
--  SUBMENU:=Web Servers/Proxies
--  TITLE:=shadowsocks-libev ss-rules
--  URL:=https://github.com/shadowsocks/shadowsocks-libev
--  DEPENDS:=+firewall4 \
--	   +ip \
--	   +resolveip \
--	   +ucode \
--	   +ucode-mod-fs \
--	   +shadowsocks-libev-ss-redir \
--	   +shadowsocks-libev-config \
--	   +kmod-nft-tproxy
--endef
--
--define Package/shadowsocks-libev-ss-rules/install
--	$(INSTALL_DIR) $(1)/usr/share/ss-rules
--	$(INSTALL_DATA) ./files/ss-rules/* $(1)/usr/share/ss-rules/
--endef
--
- define Build/Prepare
- 	$(call Build/Prepare/Default)
- 	$(FIND) $(PKG_BUILD_DIR) \
-@@ -123,8 +83,6 @@
- 
- TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
- 
--$(eval $(call BuildPackage,shadowsocks-libev-config))
--$(eval $(call BuildPackage,shadowsocks-libev-ss-rules))
- $(foreach component,$(SHADOWSOCKS_COMPONENTS), \
-   $(eval $(call BuildPackage,shadowsocks-libev-$(component))) \
- )
 
 --- a/feeds/packages/net/sqm-scripts/Makefile
 +++ b/feeds/packages/net/sqm-scripts/Makefile
@@ -1710,19 +1568,19 @@
 @@ -1,18 +1,25 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=219a7dac2041613b37c9b9196cdb571150f1c3bd
++PKG_SOURCE_VERSION:=96e8b8b27923741920fa3db5ab104028d6bdae2e
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.8.13
+-PKG_VERSION:=1.8.23
 -PKG_RELEASE:=1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.13_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.8.23_git-$(PKG_SOURCE_SHORTID)
 +PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=9e63fbeb4667c19e286389c370d30e9e904f4421784adcbe6cf4d6e172a2ac29
+-PKG_HASH:=c3731f11efae32296be75774cb4e86667fbc6e685cae4a891a0bc567b839ac7f
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1834,7 +1692,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=e32fecd16deeab0df65e4aad15ef3e096e35c5a9
++PKG_SOURCE_VERSION:=f176e2539e10e8c0f61eb1d2e1f0e690a267a646
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.14.0
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
@@ -1870,6 +1728,18 @@
  endef
  
  $(eval $(call BuildPackage,zerotier))
+
+--- a/feeds/packages/net/zerotier/patches/0002-remove-PIE-options.patch
++++ b/feeds/packages/net/zerotier/patches/0002-remove-PIE-options.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Moritz Warning <moritzwarning@web.de>
+  	override CFLAGS+=-Wall -Wno-deprecated -pthread $(INCLUDES) -DNDEBUG $(DEFS)
+  	CXXFLAGS?=-O3 -fstack-protector
+  	override CXXFLAGS+=-Wall -Wno-deprecated -std=c++17 -pthread $(INCLUDES) -DNDEBUG $(DEFS)
+--	LDFLAGS=-pie -Wl,-z,relro,-z,now
++-	LDFLAGS?=-pie -Wl,-z,relro,-z,now
+ +	LDFLAGS=-Wl,-z,relro,-z,now
+  	ZT_CARGO_FLAGS=--release
+  endif
 
 --- a/feeds/packages/utils/dockerd/Makefile
 +++ b/feeds/packages/utils/dockerd/Makefile
@@ -2199,7 +2069,7 @@
 -}
 -
 -function formatSpeed(carrier, speed, duplex) {
--	if (speed && duplex) {
+-	if ((speed > 0) && duplex) {
 -		var d = (duplex == 'half') ? '\u202f(H)' : '',
 -		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
 -
@@ -2373,3 +2243,83 @@
 -		}));
 -	}
 -});
+
+--- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
++++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
+@@ -1124,7 +1124,7 @@ msgstr "應用未核取"
+ 
+ #: modules/luci-base/htdocs/luci-static/resources/ui.js:4742
+ msgid "Apply, reverting in case of connectivity loss"
+-msgstr ""
++msgstr "套用，在連線遺失時恢復"
+ 
+ #: modules/luci-base/htdocs/luci-static/resources/ui.js:4683
+ msgid "Applying configuration changes… %ds"
+@@ -1703,7 +1703,7 @@ msgid ""
+ "Changes have been made to the existing connection via \"%h\". This could "
+ "inhibit access to this device. Any IP change requires <strong>connecting to "
+ "the new IP</strong> within %d seconds to retain the changes."
+-msgstr ""
++msgstr "已透過 "%h" 對現有連線進行了變更。這可能會阻止訪問此設備。任何 IP 變更都需要在 %d 秒內 <strong>連接到新的IP</strong> 以保留變更。"
+ 
+ #: modules/luci-base/htdocs/luci-static/resources/ui.js:4808
+ msgid "Changes have been reverted."
+@@ -3200,7 +3200,7 @@ msgstr "已啟用（所有 CPU）"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1849
+ msgid "Enabled (workaround mode)"
+-msgstr ""
++msgstr "已啟用（變通模式）"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:592
+ msgid "Enables IGMP snooping on this bridge"
+@@ -3681,7 +3681,7 @@ msgstr "強制使用CCMP (AES)加密"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1241
+ msgid "Force CCMP-256 (AES)"
+-msgstr ""
++msgstr "強制使用 CCMP-256 (AES)"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:731
+ msgid "Force DHCP on this network even if another server is detected."
+@@ -3689,11 +3689,11 @@ msgstr "即使偵測到另一台伺服器，也要強制使用此網路上的 DH
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1242
+ msgid "Force GCMP (AES)"
+-msgstr ""
++msgstr "強制使用 GCMP (AES)"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1243
+ msgid "Force GCMP-256 (AES)"
+-msgstr ""
++msgstr "強制使用 GCMP-256 (AES)"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:749
+ msgid "Force IGMP version"
+@@ -6614,7 +6614,7 @@ msgstr "注意：某些無線驅動程式並不完全支援 802.11w。例如：m
+ msgid ""
+ "Note: Workaround mode allows a STA that claims OCV capability to connect "
+ "even if the STA doesn't send OCI or negotiate PMF."
+-msgstr ""
++msgstr "注意：變通模式允許聲明具有 OCV 功能的 STA 進行連接，即使 STA 不發送 OCI 或協商 PMF。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1608
+ msgid ""
+@@ -6788,7 +6788,7 @@ msgstr "如存在上游 IPv6 前綴則以<em>中繼模式</em>執行，否則停
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1846
+ msgid "Operating Channel Validation"
+-msgstr ""
++msgstr "工作頻道驗證"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:934
+ msgid "Operating frequency"
+@@ -11298,7 +11298,7 @@ msgstr "無線網路已啟用"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1859
+ msgid "Workaround mode can only be used when acting as an access point."
+-msgstr ""
++msgstr "變通模式只能用於無線存取點(AP)模式。"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:395
+ msgid "Write received DNS queries to syslog."
