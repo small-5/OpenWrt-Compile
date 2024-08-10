@@ -25,7 +25,6 @@ endef
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M=$(PKG_BUILD_DIR) \
-		ENABLE_RSS_SUPPORT=y \
 		modules
 endef
 

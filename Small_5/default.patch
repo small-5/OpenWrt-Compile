@@ -1881,3 +1881,65 @@
 -     /* This if statement helps some compilers (e.g., IAR) optimise out the byte-by-byte tail case
 -      * where n is a constant multiple of 16.
 -      * For other compilers (e.g. recent gcc and clang) it makes no difference if n is a compile-time
+
+--- a/package/kernel/r8126/Makefile
++++ /dev/null
+@@ -1,33 +0,0 @@
+-include $(TOPDIR)/rules.mk
+-
+-PKG_NAME:=r8126
+-PKG_VERSION:=10.013.00
+-PKG_RELEASE:=1
+-
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+-PKG_SOURCE_URL:=https://github.com/Noltari/rtl8126/releases/download/$(PKG_VERSION)
+-PKG_HASH:=b41bda6ff3bbb7d9bc5b81c5c21355f031587d3a3a5862abcd4d766e942272e7
+-
+-PKG_BUILD_PARALLEL:=1
+-PKG_LICENSE:=GPLv2
+-PKG_MAINTAINER:=Alvaro Fernandez Rojas <noltari@gmail.com>
+-
+-include $(INCLUDE_DIR)/kernel.mk
+-include $(INCLUDE_DIR)/package.mk
+-
+-define KernelPackage/r8126
+-  SUBMENU:=Network Devices
+-  TITLE:=Realtek RTL8126 PCI 5 Gigabit Ethernet driver
+-  DEPENDS:=@PCI_SUPPORT
+-  FILES:=$(PKG_BUILD_DIR)/src/r8126.ko
+-  AUTOLOAD:=$(call AutoProbe,r8126)
+-  PROVIDES:=kmod-r8169
+-endef
+-
+-define Build/Compile
+-	+$(KERNEL_MAKE) $(PKG_JOBS) \
+-		M="$(PKG_BUILD_DIR)/src" \
+-		modules
+-endef
+-
+-$(eval $(call KernelPackage,r8126))
+
+--- a/package/kernel/r8126/patches/0001-r8126.h-use-BIT_ULL.patch
++++ /dev/null
+@@ -1,21 +0,0 @@
+-From 9649df50a239d1379cc8d9febd4854a0c7ca0731 Mon Sep 17 00:00:00 2001
+-From: Mieczyslaw Nalewaj <namiltd@poczta.onet.pl>
+-Date: Sat, 10 Aug 2024 17:42:44 +0200
+-Subject: [PATCH] r8126.h: use BIT_ULL
+-
+-Fixes compilation on 32 bit systems.
+----
+- r8126.h | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+---- a/src/r8126.h
+-+++ b/src/r8126.h
+-@@ -678,7 +678,7 @@ This is free software, and you are welco
+- #ifndef ADVERTISED_2500baseX_Full
+- #define ADVERTISED_2500baseX_Full  0x8000
+- #endif
+--#define RTK_ADVERTISED_5000baseX_Full  BIT(48)
+-+#define RTK_ADVERTISED_5000baseX_Full  BIT_ULL(48)
+- 
+- #define RTK_ADVERTISE_2500FULL  0x80
+- #define RTK_ADVERTISE_5000FULL  0x100
