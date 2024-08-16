@@ -534,7 +534,7 @@
 +	option ubus_prefix '/ubus'
 +
 +config cert 'defaults'
-+	option days '730'
++	option days '397'
 +	option key_type 'ec'
 +	option bits '2048'
 +	option ec_curve 'P-256'
@@ -662,7 +662,7 @@
 -config cert defaults
 -
 -	# Validity time
--	option days		730
+-	option days		397
 -
 -	# key type: rsa or ec
 -	option key_type		ec
@@ -1882,14 +1882,64 @@
 -      * where n is a constant multiple of 16.
 -      * For other compilers (e.g. recent gcc and clang) it makes no difference if n is a compile-time
 
+--- a/package/kernel/r8125/Makefile
++++ /dev/null
+@@ -1,46 +0,0 @@
+-include $(TOPDIR)/rules.mk
+-
+-PKG_NAME:=r8125
+-PKG_VERSION:=9.013.02
+-PKG_RELEASE:=2
+-
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+-PKG_SOURCE_URL:=https://github.com/Noltari/rtl8125/releases/download/$(PKG_VERSION)
+-PKG_HASH:=d36410ee99c956f250d9cd08340d8c36567d190f420a8ee128ff6e51225aac0c
+-
+-PKG_BUILD_PARALLEL:=1
+-PKG_LICENSE:=GPLv2
+-PKG_MAINTAINER:=Alvaro Fernandez Rojas <noltari@gmail.com>
+-
+-include $(INCLUDE_DIR)/kernel.mk
+-include $(INCLUDE_DIR)/package.mk
+-
+-define KernelPackage/r8125
+-  SUBMENU:=Network Devices
+-  TITLE:=Realtek RTL8125 PCI 2.5 Gigabit Ethernet driver
+-  DEPENDS:=@PCI_SUPPORT
+-  FILES:=$(PKG_BUILD_DIR)/src/r8125.ko
+-  AUTOLOAD:=$(call AutoProbe,r8125)
+-  PROVIDES:=kmod-r8169
+-  VARIANT:=regular
+-endef
+-
+-define KernelPackage/r8125-rss
+-$(call KernelPackage/r8125)
+-  TITLE+= (RSS)
+-  VARIANT:=rss
+-endef
+-
+-ifeq ($(BUILD_VARIANT),rss)
+-  PKG_MAKE_FLAGS += ENABLE_RSS_SUPPORT=y
+-endif
+-
+-define Build/Compile
+-	+$(KERNEL_MAKE) $(PKG_JOBS) \
+-		$(PKG_MAKE_FLAGS) \
+-		M="$(PKG_BUILD_DIR)/src" \
+-		modules
+-endef
+-
+-$(eval $(call KernelPackage,r8125))
+-$(eval $(call KernelPackage,r8125-rss))
+
 --- a/package/kernel/r8126/Makefile
 +++ /dev/null
-@@ -1,33 +0,0 @@
+@@ -1,46 +0,0 @@
 -include $(TOPDIR)/rules.mk
 -
 -PKG_NAME:=r8126
 -PKG_VERSION:=10.013.00
--PKG_RELEASE:=1
+-PKG_RELEASE:=2
 -
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 -PKG_SOURCE_URL:=https://github.com/Noltari/rtl8126/releases/download/$(PKG_VERSION)
@@ -1909,15 +1959,28 @@
 -  FILES:=$(PKG_BUILD_DIR)/src/r8126.ko
 -  AUTOLOAD:=$(call AutoProbe,r8126)
 -  PROVIDES:=kmod-r8169
+-  VARIANT:=regular
 -endef
+-
+-define KernelPackage/r8126-rss
+-$(call KernelPackage/r8126)
+-  TITLE+= (RSS)
+-  VARIANT:=rss
+-endef
+-
+-ifeq ($(BUILD_VARIANT),rss)
+-  PKG_MAKE_FLAGS += ENABLE_RSS_SUPPORT=y
+-endif
 -
 -define Build/Compile
 -	+$(KERNEL_MAKE) $(PKG_JOBS) \
+-		$(PKG_MAKE_FLAGS) \
 -		M="$(PKG_BUILD_DIR)/src" \
 -		modules
 -endef
 -
 -$(eval $(call KernelPackage,r8126))
+-$(eval $(call KernelPackage,r8126-rss))
 
 --- a/package/kernel/r8126/patches/0001-r8126.h-use-BIT_ULL.patch
 +++ /dev/null
@@ -1943,3 +2006,72 @@
 - 
 - #define RTK_ADVERTISE_2500FULL  0x80
 - #define RTK_ADVERTISE_5000FULL  0x100
+
+--- a/package/kernel/r8168/Makefile
++++ /dev/null
+@@ -1,33 +0,0 @@
+-include $(TOPDIR)/rules.mk
+-
+-PKG_NAME:=r8168
+-PKG_VERSION:=8.053.00
+-PKG_RELEASE:=1
+-
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+-PKG_SOURCE_URL:=https://github.com/Noltari/rtl8168/releases/download/$(PKG_VERSION)
+-PKG_HASH:=52f1e6200672b598a04d4ac21ac92a8a9e128b38208c7b03a464bfa93bbfcc8f
+-
+-PKG_BUILD_PARALLEL:=1
+-PKG_LICENSE:=GPLv2
+-PKG_MAINTAINER:=Alvaro Fernandez Rojas <noltari@gmail.com>
+-
+-include $(INCLUDE_DIR)/kernel.mk
+-include $(INCLUDE_DIR)/package.mk
+-
+-define KernelPackage/r8168
+-  SUBMENU:=Network Devices
+-  TITLE:=Realtek RTL8168 PCI Gigabit Ethernet driver
+-  DEPENDS:=@PCI_SUPPORT
+-  FILES:=$(PKG_BUILD_DIR)/src/r8168.ko
+-  AUTOLOAD:=$(call AutoProbe,r8168)
+-  PROVIDES:=kmod-r8169
+-endef
+-
+-define Build/Compile
+-	+$(KERNEL_MAKE) $(PKG_JOBS) \
+-		M="$(PKG_BUILD_DIR)/src" \
+-		modules
+-endef
+-
+-$(eval $(call KernelPackage,r8168))
+
+--- a/package/kernel/r8168/patches/0001-r8168_n-fix-proc_dump_rx_desc_2-on-32-bits.patch
++++ /dev/null
+@@ -1,28 +0,0 @@
+-From c0e1ae03f564f0e3db492ef2f25357b5da7977d7 Mon Sep 17 00:00:00 2001
+-From: =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= <noltari@gmail.com>
+-Date: Sat, 10 Aug 2024 20:12:40 +0200
+-Subject: [PATCH] r8168_n: fix proc_dump_rx_desc_2 on 32 bits
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
+-
+-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+----
+- src/r8168_n.c | 6 +++---
+- 1 file changed, 3 insertions(+), 3 deletions(-)
+-
+---- a/src/r8168_n.c
+-+++ b/src/r8168_n.c
+-@@ -1655,9 +1655,9 @@ static int proc_dump_rx_desc_2(struct se
+-                                                           j, k);
+-                         for (i=0; i<(tp->RxDescLength/4); i++) {
+-                                 if (!(i % 4))
+--                                        seq_printf(m, "\n%04llx ",
+--                                                   ((u64)pdword + (i * 4) -
+--                                                    (u64)tp->RxDescArray));
+-+                                        seq_printf(m, "\n%04x ",
+-+                                                   (u32) ((uintptr_t)pdword + (i * 4) -
+-+                                                    (uintptr_t)tp->RxDescArray));
+-                                 seq_printf(m, "%08x ", pdword[i]);
+-                         }
+-                 }
