@@ -8,7 +8,7 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -25945,6 +25946,22 @@ rtl8168_setup_mqs_reg(struct rtl8168_private *tp)
+@@ -25945,6 +25946,22 @@ rtl8168_setup_mqs_reg(struct rtl8168_pri
          tp->imr_reg[3] = IntrMask3;
  }
  
