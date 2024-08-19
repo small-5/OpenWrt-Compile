@@ -22,7 +22,7 @@ local filter_mode=ucic:get_first(name,'server_subscribe','filter_mode','0')
 local log=function(...)
 	local file=io.open("/tmp/overwall.log","a")
 	io.output(file)
-	io.write(os.date("%Y-%m-%d %H:%M:%S ").."Subscribe   : "..table.concat({...}," ").."\n")
+	io.write((os.date("%Y")-1911)..os.date("-%m-%d %H:%M:%S ").."Subscribe   : "..table.concat({...}," ").."\n")
 	io.close(file)
 end
 
