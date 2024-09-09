@@ -3,7 +3,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=r8125
 PKG_VERSION:=9.013.02
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_BUILD_PARALLEL:=1
 
@@ -12,7 +12,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/r8125
   TITLE:=Driver for Realtek r8125 chipsets
   SUBMENU:=Network Devices
-  DEPENDS:=@PCI_SUPPORT
+  DEPENDS:=@PCI_SUPPORT +kmod-libphy
   FILES:= $(PKG_BUILD_DIR)/r8125.ko
   AUTOLOAD:=$(call AutoProbe,r8125)
 endef
