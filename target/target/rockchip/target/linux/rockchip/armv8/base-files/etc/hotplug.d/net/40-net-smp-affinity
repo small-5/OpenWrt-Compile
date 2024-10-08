@@ -30,6 +30,7 @@ set_interface_core() {
 
 case "$(board_name)" in
 ariaboard,photonicat|\
+armsom,sige3|\
 armsom,sige7|\
 ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
@@ -41,6 +42,10 @@ sinovoip,rk3568-bpi-r2pro|\
 xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
+	;;
+cyber,cyber3588-aib)
+	set_interface_core 4 "lan1"
+	set_interface_core 8 "wan"
 	;;
 friendlyarm,nanopc-t6)
 	set_interface_core 2 "eth1"
@@ -72,5 +77,11 @@ lunzn,fastrhino-r68s)
 	set_interface_core 2 "eth1"
 	set_interface_core 4 "eth2"
 	set_interface_core 8 "eth3"
+	;;
+lyt,t68m)
+	set_interface_core 1 "lan1"
+	set_interface_core 2 "lan2"
+	set_interface_core 4 "lan3"
+	set_interface_core 8 "lan4"
 	;;
 esac

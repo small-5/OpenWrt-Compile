@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xray-plugin
-PKG_VERSION:=1.8.17
+PKG_VERSION:=1.8.24
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/teddysun/xray-plugin.git
-PKG_SOURCE_VERSION:=84b716a7951a77ed2769dfb08da54783884f3823
+PKG_SOURCE_VERSION:=96a75e491a3400935fa58861ad4342027cddd4e0
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
@@ -24,9 +24,7 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@project-openwrt.eu.org>
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN \
-	CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY \
-	CONFIG_XRAY_PLUGIN_COMPRESS_UPX
+	CONFIG_XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -34,7 +32,6 @@ PKG_USE_MIPS16:=0
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/teddysun/xray-plugin
-GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -43,20 +40,7 @@ define Package/xray-plugin/config
 config XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN
 	bool "Provide v2ray-plugin binary using xray-plugin"
 	default n
-
-config XRAY_PLUGIN_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config XRAY_PLUGIN_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	default y
 endef
-
-ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY),)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.io
-endif
 
 define Package/xray-plugin
 	SECTION:=net
@@ -68,13 +52,6 @@ endef
 
 define Package/xray-plugin/description
 	Yet another SIP003 plugin for Shadowsocks, based on Xray.
-endef
-
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_UPX),)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/xray-plugin
-endif
 endef
 
 define Package/xray-plugin/install

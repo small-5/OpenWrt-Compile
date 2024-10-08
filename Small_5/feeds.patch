@@ -110,7 +110,7 @@
  	},
  
  	poll_status: function(map, data) {
-@@ -481,6 +490,7 @@
+@@ -485,6 +494,7 @@
  					uci.set('ddns', section_id, 'service_name', service_value);
  				}
  				uci.set('ddns', section_id, 'use_ipv6', ipv6_value);
@@ -290,7 +290,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -694,10 +694,12 @@ return view.extend({
+@@ -695,10 +695,12 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -306,7 +306,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -710,11 +712,11 @@ return view.extend({
+@@ -711,11 +713,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -320,7 +320,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -723,7 +725,7 @@ return view.extend({
+@@ -724,7 +726,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -1027,7 +1027,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
-+PKG_SOURCE_VERSION:=75649b623519dda99b772342bbbe625a45234864
++PKG_SOURCE_VERSION:=84f217dbd19f97e30f24af640ddb4cd21ae1e3ec
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1240,12 +1240,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=2dcdb24cc4a0792a5e75527d43ccb8fd2e40da92
++PKG_SOURCE_VERSION:=2855ac71e3fc3fb2859f4c75f97f97e99f131f1b
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.59.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.60.0_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1272,7 +1272,7 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=b53f63892a204cb303ac5faae519549017ce00ec
++PKG_SOURCE_VERSION:=4983587d04d8bb34e5395d42a1f236cae8b1d22a
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
@@ -1588,22 +1588,21 @@
 
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
-@@ -1,18 +1,25 @@
+@@ -1,18 +1,23 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=f650d87083e86296023ec5b6b00f0b8678a5b630
++PKG_SOURCE_VERSION:=af7232d54524bbeed19187835955c6abff7dc643
  
  PKG_NAME:=xray-core
--PKG_VERSION:=1.8.23
--PKG_RELEASE:=1
+-PKG_VERSION:=24.9.30
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.8.23_git-$(PKG_SOURCE_SHORTID)
-+PKG_RELEASE:=1
++PKG_VERSION:=24.9.30_git-$(PKG_SOURCE_SHORTID)
+ PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=c3731f11efae32296be75774cb4e86667fbc6e685cae4a891a0bc567b839ac7f
+-PKG_HASH:=0771120ddbf866fba44f2e8978bcc20f3843663f5726bd8db9e03e1a27e1212a
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1612,14 +1611,12 @@
  
 -PKG_BUILD_DIR:=$(BUILD_DIR)/Xray-core-$(PKG_VERSION)
 +PKG_CONFIG_DEPENDS:= \
-+	CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE \
-+	CONFIG_XRAY_CORE_COMPRESS_GOPROXY \
-+	CONFIG_XRAY_CORE_COMPRESS_UPX \
++	CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE
 +
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
  PKG_BUILD_FLAGS:=no-mips16
-@@ -30,7 +37,7 @@ define Package/xray/template
+@@ -30,7 +35,7 @@ define Package/xray/template
    TITLE:=A platform for building proxies to bypass network restrictions
    SECTION:=net
    CATEGORY:=Network
@@ -1628,7 +1625,7 @@
  endef
  
  define Package/xray-core
-@@ -38,13 +45,6 @@ define Package/xray-core
+@@ -38,13 +43,6 @@ define Package/xray-core
    DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
  endef
  
@@ -1642,7 +1639,7 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -54,36 +54,43 @@ define Package/xray-core/description
+@@ -54,36 +52,23 @@ define Package/xray-core/description
    $(call Package/xray/description)
  endef
  
@@ -1651,35 +1648,17 @@
 +define Package/xray-core/config
 +menu "Xray-core Configuration"
 +	depends on PACKAGE_xray-core
-+
-+config XRAY_CORE_PROVIDE_V2RAY_CORE
-+	bool "Provide V2Ray binary using XRay"
-+	default n
  
 -  This includes example configuration files for xray-core.
-+config XRAY_CORE_COMPRESS_GOPROXY
-+	bool "Compiling with GOPROXY proxy"
-+	default n
-+
-+config XRAY_CORE_COMPRESS_UPX
-+	bool "Compress executable files with UPX"
-+	default y
-+endmenu
- endef
- 
+-endef
+-
 -define Package/xray-core/conffiles
 -/etc/xray/
 -/etc/config/xray
-+ifneq ($(CONFIG_XRAY_CORE_COMPRESS_GOPROXY),)
-+	export GO111MODULE=on
-+	export GOPROXY=https://goproxy.io
-+endif
-+
-+define Build/Compile
-+	$(call GoPackage/Build/Compile)
-+ifneq ($(CONFIG_XRAY_CORE_COMPRESS_UPX),)
-+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/main
-+endif
++config XRAY_CORE_PROVIDE_V2RAY_CORE
++	bool "Provide V2Ray binary using XRay"
++	default n
++endmenu
  endef
  
  define Package/xray-core/install
@@ -1715,23 +1694,23 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=f176e2539e10e8c0f61eb1d2e1f0e690a267a646
++PKG_SOURCE_VERSION:=36b4659f77bc480fdc510304bc53f009fde5d629
  PKG_NAME:=zerotier
--PKG_VERSION:=1.14.0
+-PKG_VERSION:=1.14.1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.14.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.14.1_git-$(PKG_SOURCE_SHORTID)
  PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
--PKG_HASH:=7191623a81b0d1b552b9431e8864dd3420783ee518394ac1376cee6aaf033291
+-PKG_HASH:=4f9f40b27c5a78389ed3f3216c850921f6298749e5819e9f2edabb2672ce9ca0
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
  
  PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
  PKG_LICENSE:=BSL 1.1
-@@ -62,10 +63,6 @@ endef
+@@ -62,22 +63,15 @@ endef
  TARGET_CFLAGS += -Wl,-z,noexecstack
  TARGET_LDFLAGS += -Wl,--as-needed -Wl,-z,noexecstack
  
@@ -1742,7 +1721,10 @@
  define Package/zerotier/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
-@@ -75,8 +72,6 @@ define Package/zerotier/install
+ 	$(LN) zerotier-one $(1)/usr/bin/zerotier-cli
+ 	$(LN) zerotier-one $(1)/usr/bin/zerotier-idtool
+-	$(INSTALL_DIR) $(1)/etc/uci-defaults
+ 
  ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
  endif
@@ -1751,18 +1733,6 @@
  endef
  
  $(eval $(call BuildPackage,zerotier))
-
---- a/feeds/packages/net/zerotier/patches/0002-remove-PIE-options.patch
-+++ b/feeds/packages/net/zerotier/patches/0002-remove-PIE-options.patch
-@@ -14,7 +14,7 @@ Signed-off-by: Moritz Warning <moritzwarning@web.de>
-  	override CFLAGS+=-Wall -Wno-deprecated -pthread $(INCLUDES) -DNDEBUG $(DEFS)
-  	CXXFLAGS?=-O3 -fstack-protector
-  	override CXXFLAGS+=-Wall -Wno-deprecated -std=c++17 -pthread $(INCLUDES) -DNDEBUG $(DEFS)
---	LDFLAGS=-pie -Wl,-z,relro,-z,now
-+-	LDFLAGS?=-pie -Wl,-z,relro,-z,now
- +	LDFLAGS=-Wl,-z,relro,-z,now
-  	ZT_CARGO_FLAGS=--release
-  endif
 
 --- a/feeds/packages/utils/dockerd/Makefile
 +++ b/feeds/packages/utils/dockerd/Makefile

@@ -49,7 +49,7 @@ glinet,gl-xe3000)
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wifi2g" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wifi5g" "phy1-ap0"
 	;;
-imou,lc-hx3001-ubootmod|\
+imou,lc-hx3001|\
 nokia,ea0326gmp)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "br-lan" "link"
@@ -75,6 +75,8 @@ netgear,wax220)
 openembed,som7981)
 	ucidef_set_led_netdev "lanact" "LANACT" "green:lan" "eth1" "rx tx"
 	ucidef_set_led_netdev "lanlink" "LANLINK" "amber:lan" "eth1" "link"
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan-2ghz" "phy0-ap0"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "red:wlan-5ghz" "phy1-ap0"
 	;;
 openwrt,one)
 	ucidef_set_led_netdev "wanact" "WANACT" "mdio-bus:0f:green:wan" "eth0" "rx tx"
@@ -103,6 +105,14 @@ smartrg,sdg-8734)
 	ucidef_set_led_netdev "wan-green" "WAN" "mdio-bus:00:green:wan" "wan" "link_2500 link_5000"
 	ucidef_set_led_netdev "wan-orange" "WAN" "mdio-bus:00:orange:wan" "wan" "link_100 link_1000"
 	ucidef_set_led_netdev "wan-white" "WAN" "mdio-bus:00:white:wan" "wan" "link_10000"
+	;;
+smartrg,sdg-8733a)
+	ucidef_set_led_netdev "lan-green-act" "LAN" "mdio-bus:0f:green:lan" "lan" "link_2500"
+	ucidef_set_led_netdev "lan-amber" "LAN" "amber:lan" "lan" "link_100"
+	ucidef_set_led_netdev "lan-green" "LAN" "green:lan" "lan" "link_1000"
+	ucidef_set_led_netdev "wan-green" "WAN" "mdio-bus:08:green:wan" "wan" "link_2500 link_5000"
+	ucidef_set_led_netdev "wan-orange" "WAN" "mdio-bus:08:orange:wan" "wan" "link_100 link_1000"
+	ucidef_set_led_netdev "wan-white" "WAN" "mdio-bus:08:white:wan" "wan" "link_10000"
 	;;
 wavlink,wl-wn586x3)
 	ucidef_set_led_netdev "lan-1" "lan-1" "blue:lan-1" "lan1" "link tx rx"

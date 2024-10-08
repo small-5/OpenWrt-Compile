@@ -1,7 +1,7 @@
 From 9e1faff1cbc877903d019a7943d37ddc5042704d Mon Sep 17 00:00:00 2001
 From: John Clark <inindev@gmail.com>
 Date: Thu, 28 Dec 2023 17:29:35 +0000
-Subject: arm64: dts: rockchip: nanopc-t6 sdmmc beautification
+Subject: [PATCH] arm64: dts: rockchip: nanopc-t6 sdmmc beautification
 
 drop max-frequency = <200000000> as it is already defined in rk3588s.dtsi
 order no-sdio & no-mmc properties while we are here

@@ -15,7 +15,8 @@ mediatek_setup_interfaces()
 	cmcc,rax3000m|\
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
-	imou,lc-hx3001-ubootmod|\
+	imou,lc-hx3001|\
+	konka,komi-a31|\
 	nokia,ea0326gmp|\
 	zbtlink,zbt-z8103ax)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
@@ -24,9 +25,9 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 game" eth1
 		;;
 	asus,rt-ax59u|\
-	cetron,ct3003-stock|\
+	cetron,ct3003|\
 	cetron,ct3003-ubootmod|\
-	cmcc,a10-ubootmod|\
+	cmcc,a10|\
 	confiabits,mt7981|\
 	cudy,wr3000-v1|\
 	jcg,q30-pro|\
@@ -90,11 +91,12 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" eth1
 		;;
 	mediatek,mt7988a-rfb)
-		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 eth1" eth2
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 eth2" eth1
 		;;
 	mercusys,mr90x-v1)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2" eth1
 		;;
+	cudy,ap3000outdoor-v1|\
 	cudy,re3000-v1|\
 	netgear,wax220|\
 	ubnt,unifi-6-plus|\
@@ -103,6 +105,7 @@ mediatek_setup_interfaces()
 		;;
 	smartrg,sdg-8622|\
 	smartrg,sdg-8632|\
+	smartrg,sdg-8733a|\
 	yuncore,ax835)
 		ucidef_set_interfaces_lan_wan lan wan
 		;;
@@ -145,11 +148,6 @@ mediatek_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		label_mac=$wan_mac
-		;;
-	imou,lc-hx3001-ubootmod)
-		lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
-		[ -n "$lan_mac" ] || lan_mac=$(macaddr_add $(mtd_get_mac_binary Factory 0x4) -1)
-		wan_mac=$(macaddr_add $lan_mac 2)
 		;;
 	mercusys,mr90x-v1|\
 	tplink,re6000xd)

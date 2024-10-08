@@ -45,7 +45,7 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
-@@ -20,8 +20,8 @@
+@@ -17,8 +17,8 @@
  friendlyarm,nanopi-r6c|\
  xunlong,orangepi-r1-plus|\
  xunlong,orangepi-r1-plus-lts)
@@ -66,5 +66,5 @@
 -		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
 +		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
  		;;
- 	friendlyarm,nanopc-t6)
- 		ucidef_set_interfaces_lan_wan 'eth1' 'eth2'
+ 	armsom,sige3|\
+ 	friendlyarm,nanopi-r5c|\

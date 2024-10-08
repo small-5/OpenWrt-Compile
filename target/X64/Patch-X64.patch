@@ -91,10 +91,12 @@
 
 --- a/target/linux/x86/image/grub-efi.cfg
 +++ b/target/linux/x86/image/grub-efi.cfg
-@@ -7,6 +7,7 @@
+@@ -6,7 +6,8 @@ set timeout="@TIMEOUT@"
+ search -l kernel -s root
  
  menuentry "@TITLE@" {
- 	linux /boot/vmlinuz @GPT_ROOTPART@ @CMDLINE@ noinitrd
+-	linux /boot/vmlinuz @GPT_ROOTPART@ @CMDLINE@ noinitrd
++	linux /boot/vmlinuz @GPT_ROOTPART@ @CMDLINE@
 +	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
  menuentry "@TITLE@ (failsafe)" {
@@ -102,19 +104,23 @@
 
 --- a/target/linux/x86/image/grub-iso.cfg
 +++ b/target/linux/x86/image/grub-iso.cfg
-@@ -12,4 +12,5 @@
+@@ -11,5 +11,6 @@ else
+ fi
  
  menuentry "@TITLE@" {
- 	linux /boot/vmlinuz root=/dev/sr0 rootfstype=iso9660 rootwait @CMDLINE@ noinitrd
+-	linux /boot/vmlinuz root=/dev/sr0 rootfstype=iso9660 rootwait @CMDLINE@ noinitrd
++	linux /boot/vmlinuz root=/dev/sr0 rootfstype=iso9660 rootwait @CMDLINE@
 +	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
 
 --- a/target/linux/x86/image/grub-pc.cfg
 +++ b/target/linux/x86/image/grub-pc.cfg
-@@ -7,6 +7,7 @@
+@@ -6,7 +6,8 @@ set timeout="@TIMEOUT@"
+ set root='(hd0,msdos1)'
  
  menuentry "@TITLE@" {
- 	linux /boot/vmlinuz @ROOTPART@ @CMDLINE@ noinitrd
+-	linux /boot/vmlinuz @ROOTPART@ @CMDLINE@ noinitrd
++	linux /boot/vmlinuz @ROOTPART@ @CMDLINE@
 +	initrd /boot/amd-ucode.img /boot/intel-ucode.img
  }
  menuentry "@TITLE@ (failsafe)" {

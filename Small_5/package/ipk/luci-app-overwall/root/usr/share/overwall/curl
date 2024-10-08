@@ -7,7 +7,7 @@ if [ $1 = A ];then
 fi
 
 judge(){
-	echo $* | grep -wqE 'OpenWrt 中華民國[^ ]* By Small_5' || return 1
+	echo $* | grep -wqE 'OpenWrt 中華民國[^ ]* By Maha_5' || return 1
 }
 
 parse(){
