@@ -81,7 +81,7 @@
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='64'
  		set system.@system[-1].urandom_seed='0'
-@@ -320,11 +302,9 @@ generate_static_system() {
+@@ -320,11 +302,11 @@ generate_static_system() {
  		delete system.ntp
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
@@ -91,8 +91,10 @@
 -		add_list system.ntp.server='2.openwrt.pool.ntp.org'
 -		add_list system.ntp.server='3.openwrt.pool.ntp.org'
 +		set system.ntp.enable_server='1'
-+		add_list system.ntp.server='ntp1.aliyun.com'
 +		add_list system.ntp.server='ntp.tencent.com'
++		add_list system.ntp.server='ntp1.aliyun.com'
++		add_list system.ntp.server='ntp.ntsc.ac.cn'
++		add_list system.ntp.server='ntp.neu.edu.cn'
  	EOF
  
  	if json_is_a system object; then
