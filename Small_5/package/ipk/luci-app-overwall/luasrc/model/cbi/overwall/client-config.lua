@@ -371,7 +371,7 @@ o:depends({type="vless",reality=0})
 o=s:option(Flag,"reality",translate("Reality"))
 o:depends({type="vless",tls=0})
 
-o=s:option(Value,"tls_host",translate("TLS Host"))
+o=s:option(Value,"tls_host",translate("SNI"))
 o:depends("type","trojan")
 o:depends("tls",1)
 o:depends("reality",1)
