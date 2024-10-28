@@ -1089,6 +1089,7 @@ EOF
 
 	if [ -s $T_FILE/cname.list ];then
 		cp -f $T_FILE/cname.list $O
+		echo >> $O;sed -i '/^$/d' $O
 		cat $O | sed 's/^/cname /g' >> $CON_T
 		cat $O | sed -e 's|.*/||g' -e 's|^|nameserver /|g' -e 's|$|/i|g' | sort -u >> $CON_T
 	fi
