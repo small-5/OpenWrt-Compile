@@ -1,52 +1,63 @@
-<% css=[[
-	#log_text{
-		padding:10px;
-		text-align:left;
-		height:700px;
-		width:1000px;
-		overflow:auto;
-		overflow-x:scroll;
-		background-color:#F5F5F5;
-	}
-	#log_text pre{
-		border:none;
-		white-space:pre;
-		word-break:break-all;
-		margin:0;
-		background-color:#F5F5F5;
-	}
-	.description{
-		color:#ffffff;
-		background-color:#0099ff;
-	}
-]]
-%>
-
-<%+header%>
-
-<div class="cbi-map">
-	<h2 name="content"><%:OpenVPN Server%> - <%:Log Data%></h2>
-	<fieldset class="cbi-section">
-		<fieldset class="cbi-section-node">
-			<div id="log_text"><img src="<%=resource%>/icons/loading.gif" alt="<%:Loading...%>" style="vertical-align:middle"/><%:Collecting data...%></div>
-			<div style="text-align:right"><small><%:Refresh every 5 seconds.%></small></div>
-		</fieldset>
-	</fieldset>
-</div>
-
-<script type="text/javascript" src="<%=resource%>/cbi.js"></script>
+<%+cbi/valueheader%>
+<input type="checkbox" name="NAME" value="reverse" onclick="reverselog()" style="vertical-align:middle;height:auto;"><%:Reverse%></input>
+<textarea id="cbid.logview.1.conf" class="cbi-input-textarea" style="width: 100%;display:inline" data-update="change" rows="32" cols="60" readonly="readonly" > </textarea>
+<input type="button" class="cbi-button cbi-button-apply" id="apply_update_button" value="<%:Clear Log%>" onclick="del_log()"/>
+<input type="button" class="cbi-button cbi-button-apply" value="<%:Download Log%>" style="display:inline;" onclick="download_log()"/>
 <script type="text/javascript">//<![CDATA[
-	var log_id=document.getElementById('log_text');
-	XHR.poll(5,'<%=luci.dispatcher.build_url("admin","vpn","openvpn-server","logdata")%>',null,function(x,data){
-		if (log_id&&data){
-			log_id.innerHTML=String.format(
-				'<pre>%s</pre>',
-				data.syslog || '<%:No log data.%>'
-			);
-		}else if (log_id){
-			log_id.innerHTML='<strong><%:Error get log data.%></strong>';
-		}
-	});
-//]]></script>
+var islogreverse=false;
+document.getElementById('cbid.logview.1.conf').style.fontFamily="NSimSun";
+document.getElementById("cbid.logview.1.conf").style.fontSize="small";
 
-<%+footer%>
+function createAndDownloadFile(fileName,content){
+	var aTag=document.createElement('a');
+	var blob=new Blob([content]);
+	aTag.download=fileName;
+	aTag.href=URL.createObjectURL(blob);
+	aTag.click();
+	URL.revokeObjectURL(blob);
+}
+
+function download_log(){
+	var lv=document.getElementById('cbid.logview.1.conf');
+	var dt=new Date();
+	var timestamp=(dt.getMonth()+1)+"-"+dt.getDate()+"-"+dt.getHours()+"_"+dt.getMinutes();
+	createAndDownloadFile("openvpn-"+timestamp+".log",lv.innerHTML)
+	return
+}
+
+function del_log(){
+	XHR.get('<%=url([[admin]],[[vpn]],[[openvpn-server]],[[dellog]])%>',null,function(x,data){
+	var lv=document.getElementById('cbid.logview.1.conf');
+		lv.innerHTML="";
+	});
+	return
+}
+
+function reverselog(){
+	var lv=document.getElementById('cbid.logview.1.conf');
+	lv.innerHTML=lv.innerHTML.split('\n').reverse().join('\n')
+	if (islogreverse){
+		islogreverse=false;
+	}else{
+		islogreverse=true;
+	}
+	return
+}
+
+XHR.poll(3,'<%=url([[admin]],[[vpn]],[[openvpn-server]],[[getlog]])%>',null,
+	function(x,data){
+		var lv=document.getElementById('cbid.logview.1.conf');
+		lv.innerHTML=""
+		if (x.responseText && lv){
+			if (islogreverse){
+				lv.innerHTML=x.responseText.split('\n').reverse().join('\n')+lv.innerHTML;
+			}else{
+				lv.innerHTML+=x.responseText;
+			}
+		}
+	}
+)
+
+//]]>
+</script>
+<%+cbi/valuefooter%>

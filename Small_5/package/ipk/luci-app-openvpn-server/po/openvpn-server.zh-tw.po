@@ -196,17 +196,11 @@ msgstr "編輯憑證選項，普通用戶請保持默認"
 msgid "Log"
 msgstr "紀錄"
 
-msgid "Log Data"
-msgstr "紀錄數據"
+msgid "Reverse"
+msgstr "倒序"
 
-msgid "Loading..."
-msgstr "正在加載..."
+msgid "Clear Log"
+msgstr "清空紀錄"
 
-msgid "Refresh every 5 seconds."
-msgstr "每 5 秒刷新。"
-
-msgid "No log data."
-msgstr "無紀錄數據。"
-
-msgid "Error get log data."
-msgstr "獲取紀錄數據失敗。"
+msgid "Download Log"
+msgstr "下載紀錄"
