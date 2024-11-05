@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-vlmcsd
-PKG_VERSION:=1.1
-PKG_RELEASE:=3
+PKG_VERSION:=113-11-05
+PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 

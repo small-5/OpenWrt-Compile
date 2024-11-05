@@ -66,3 +66,12 @@ msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"
 
 msgid "Log"
 msgstr "紀錄"
+
+msgid "Reverse"
+msgstr "倒序"
+
+msgid "Clear Log"
+msgstr "清空紀錄"
+
+msgid "Download Log"
+msgstr "下載紀錄"

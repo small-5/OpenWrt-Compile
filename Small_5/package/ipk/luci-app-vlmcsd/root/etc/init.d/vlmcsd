@@ -9,7 +9,7 @@ D=$($A.conf)
 E=$($A.log)
 F=$($A.port) || F=1688
 G=/usr/bin/vlmcsd
-J=/var/vlmcsd.log
+J=/var/log/vlmcsd
 K=/etc/crontabs/root
 
 entry(){
@@ -80,7 +80,7 @@ start(){
 		P=/etc/vlmcsd.ini
 		sed -i 's/^[ \t]*\(Port.*\)/;\1/' $P
 		sed -i 's/.*\(Listen.*:\)[0-9]*/\1'"$F"'/' $P
-		sed -i 's/.*\(LogFile[ ]*=[ ]*\).*/\1\/var\/vlmcsd\.log/' $P
+		sed -i 's/.*\(LogFile[ ]*=[ ]*\).*/\1\/var\/log\/vlmcsd/' $P
 		$G -i $P >/dev/null 2>&1 &
 	else
 		$G -d -P $F -l $J >/dev/null 2>&1 &
