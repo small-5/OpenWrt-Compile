@@ -199,7 +199,7 @@ function ping()
 end
 
 function getlog()
-	logfile="/tmp/overwall.log"
+	logfile="/var/log/overwall"
 	if not fs.access(logfile) then
 		http.write('')
 		return
@@ -213,7 +213,7 @@ function getlog()
 end
 
 function dellog()
-	fs.writefile("/tmp/overwall.log","")
+	fs.writefile("/var/log/overwall","")
 	http.write('')
 end
 
@@ -223,7 +223,7 @@ function hard_code()
 end
 
 function getlog_auth()
-	logfile="/tmp/overauth.log"
+	logfile="/var/log/overauth"
 	if not fs.access(logfile) then
 		http.write('')
 		return
@@ -237,7 +237,7 @@ function getlog_auth()
 end
 
 function dellog_auth()
-	fs.writefile("/tmp/overauth.log","")
+	fs.writefile("/var/log/overauth","")
 	http.write('')
 end
 

@@ -5,7 +5,7 @@ run_mode=$(uci -q get $NAME.@global[0].run_mode)
 K=/tmp/$NAME
 
 log(){
-	 echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Rules  : $*" >> /tmp/$NAME.log
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Rules  : $*" >> /var/log/$NAME
 }
 
 sleep 2

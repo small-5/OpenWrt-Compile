@@ -12,7 +12,7 @@ C=$(uci -q get $N.@global[0].run_mode)
 D=$(uci -q get $N.@global[0].auth_3)
 E=$($DIR/curl 2)
 X=Overwall/rules
-LOG=/tmp/overwall.log
+LOG=/var/log/$N
 
 log(){
 	[ $A = N ] && echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Update : $*" >> $LOG

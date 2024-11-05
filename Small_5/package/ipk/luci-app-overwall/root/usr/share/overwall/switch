@@ -13,7 +13,7 @@ uci_get_by_type(){
 }
 
 log(){
-	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Switch : $*" >> /tmp/$NAME.log
+	echo "$(date +'%Y' | awk '{print ($1-1911)}')-$(date +'%m-%d %H:%M:%S') Over Switch : $*" >> /var/log/$NAME
 }
 
 get_ip(){
