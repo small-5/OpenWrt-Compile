@@ -1,6 +1,8 @@
 module("luci.controller.adblock",package.seeall)
 CALL=luci.sys.call
 EXEC=luci.sys.exec
+fs=require"nixio.fs"
+http=require"luci.http"
 function index()
 	if not nixio.fs.access("/etc/config/adblock") then
 		return
@@ -15,6 +17,8 @@ function index()
 	entry({"admin","services","adblock","log"},form("adblock/log"),_("Update Log"),5).leaf=true
 	entry({"admin","services","adblock","run"},call("act_status"))
 	entry({"admin","services","adblock","refresh"},call("refresh_data"))
+	entry({"admin","services","adblock","getlog"},call("getlog"))
+	entry({"admin","services","adblock","dellog"},call("dellog"))
 end
 
 function act_status()
@@ -67,4 +71,23 @@ else
 end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json({ret=r,retcount=i})
+end
+
+function getlog()
+	logfile="/var/log/adblock"
+	if not fs.access(logfile) then
+		http.write('')
+		return
+	end
+	local f=io.open(logfile,"r")
+	local a=f:read("*a") or ""
+	f:close()
+	a=string.gsub(a,"\n$","")
+	http.prepare_content("text/plain;charset=utf-8")
+	http.write(a)
+end
+
+function dellog()
+	fs.writefile("/var/log/adblock","")
+	http.write('')
 end

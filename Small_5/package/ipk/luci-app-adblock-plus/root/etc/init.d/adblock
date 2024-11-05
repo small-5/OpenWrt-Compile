@@ -82,7 +82,7 @@ add_cron(){
 	if [ $cron_mode = 1 ];then
 		if ! grep -wq "$time_update \* \* \* .*adblock" $CRON_FILE;then
 			grep -q adblock $CRON_FILE && sed -i '/adblock/d' $CRON_FILE
-			echo "0 $time_update * * * $P/adblock > /tmp/adupdate.log 2>&1" >> $CRON_FILE
+			echo "0 $time_update * * * $P/adblock > /var/log/adblock 2>&1" >> $CRON_FILE
 			/etc/init.d/cron restart
 		fi
 	else
@@ -147,7 +147,7 @@ stop(){
 		rm -rf $T
 		echo "`eval $E` [Revert Dnsmasq]"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
-		rm -f /tmp/adupdate.log
+		rm -f /var/log/adblock
 	fi
 }
 

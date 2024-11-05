@@ -6,7 +6,7 @@ LOCK=/var/lock/adblock.lock
 touch $LOCK
 
 A=/tmp/adblock
-B=/tmp/adupdate.log
+B=/var/log/adblock
 C="date +'$(date +'%Y' | awk '{print ($1-1911)}')-%m-%d %H:%M:%S'"
 D="Download Adblock Plus Rules"
 

@@ -96,3 +96,12 @@ msgstr "攔截黑名單內的IP位址"
 
 msgid "Update Log"
 msgstr "更新日誌"
+
+msgid "Reverse"
+msgstr "倒序"
+
+msgid "Clear Log"
+msgstr "清空紀錄"
+
+msgid "Download Log"
+msgstr "下載紀錄"
