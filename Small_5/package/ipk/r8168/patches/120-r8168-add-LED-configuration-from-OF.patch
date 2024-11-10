@@ -1,5 +1,5 @@
---- a/r8168_n.c
-+++ b/r8168_n.c
+--- a/src/r8168_n.c
++++ b/src/r8168_n.c
 @@ -48,6 +48,7 @@
  #include <linux/etherdevice.h>
  #include <linux/delay.h>

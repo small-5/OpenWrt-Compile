@@ -32,6 +32,7 @@ elif [ $A = 3 ];then
 	chmod +x Small_5/target/linux/mediatek/base-files/etc/hotplug.d/iface/99-mtk-lro
 fi
 
+rm -rf openwrt/package/kernel/{r8125,r8126,r8168}
 cp -r Small_5/. openwrt
 rm -rf Openwrt_Custom Small_5 target SHA README.md
 cd openwrt

@@ -12,12 +12,12 @@ when the interface is up. Formatting output at the same time.
 Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
 Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
 ---
- r8168.h   |  2 ++
- r8168_n.c | 44 +++++++++++++++++++++++++++++++++++++++++---
+ src/r8168.h   |  2 ++
+ src/r8168_n.c | 44 +++++++++++++++++++++++++++++++++++++++++---
  2 files changed, 43 insertions(+), 3 deletions(-)
 
---- a/r8168.h
-+++ b/r8168.h
+--- a/src/r8168.h
++++ b/src/r8168.h
 @@ -1468,6 +1468,8 @@ enum RTL8168_register_content {
          LinkStatus = 0x02,
          FullDup = 0x01,
@@ -27,8 +27,8 @@ Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
          /* DBG_reg */
          Fix_Nak_1 = (1 << 4),
          Fix_Nak_2 = (1 << 3),
---- a/r8168_n.c
-+++ b/r8168_n.c
+--- a/src/r8168_n.c
++++ b/src/r8168_n.c
 @@ -43,6 +43,7 @@
  #include <linux/module.h>
  #include <linux/version.h>
