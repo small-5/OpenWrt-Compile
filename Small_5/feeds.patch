@@ -949,7 +949,7 @@
 +		done
 +	fi
 +	if ! grep -q $LOG $CRON_FILE;then
-+		echo "0 1 * * * rm -f $LOG" >> $CRON_FILE;/etc/init.d/cron restart
++		echo "0 1 * * * : > $LOG" >> $CRON_FILE;/etc/init.d/cron restart
  	fi
  }
  
