@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts-huawei
-PKG_VERSION:=1.0.1
+PKG_VERSION:=113-11-12
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Small_5
@@ -16,7 +16,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=IP Addresses and Names
 	TITLE:=DDNS extension for HuaweiCloud
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +curl +ddnsjson +openssl-util
+	DEPENDS:=+ddns-scripts +curl +jsonfilter +openssl-util
 endef
 
 define Package/$(PKG_NAME)/description

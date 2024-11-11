@@ -64,7 +64,7 @@ percentEncode(){
 
 # 處理JSON
 JSON(){
-	echo $(ddnsjson -k "$__TMP" -x "$1")
+	echo $(jsonfilter -s "$__TMP" -e "$1")
 }
 
 # 阿里雲API的通訊函數

@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts-cf
-PKG_VERSION:=1.0
-PKG_RELEASE:=2
+PKG_VERSION:=113-11-12
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Small_5
 
@@ -16,7 +16,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=IP Addresses and Names
 	TITLE:=DDNS extension for Cloudflare
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +curl +ddnsjson
+	DEPENDS:=+ddns-scripts +curl +jsonfilter
 endef
 
 define Package/$(PKG_NAME)/description
