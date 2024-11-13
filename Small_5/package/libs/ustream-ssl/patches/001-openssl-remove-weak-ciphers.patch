@@ -1,0 +1,43 @@
+--- a/ustream-openssl.c
++++ b/ustream-openssl.c
+@@ -70,38 +70,12 @@
+ 				"DHE-RSA-AES128-GCM-SHA256:"		\
+ 				"DHE-RSA-AES256-GCM-SHA384"
+ 
+-#define ecdhe_ecdsa_cbc_ciphers						\
+-				"ECDHE-ECDSA-AES128-SHA:"		\
+-				"ECDHE-ECDSA-AES256-SHA"
+-
+-#define ecdhe_rsa_cbc_ciphers						\
+-				"ECDHE-RSA-AES128-SHA:"			\
+-				"ECDHE-RSA-AES256-SHA"
+-
+-#define dhe_cbc_ciphers							\
+-				"DHE-RSA-AES128-SHA:"			\
+-				"DHE-RSA-AES256-SHA:"			\
+-				"DHE-DES-CBC3-SHA"
+-
+-#define non_pfs_aes							\
+-				"AES128-GCM-SHA256:"			\
+-				"AES256-GCM-SHA384:"			\
+-				"AES128-SHA:"				\
+-				"AES256-SHA"
+-
+ #define server_cipher_list						\
+-				top_ciphers ":"				\
+-				ecdhe_rsa_cbc_ciphers ":"		\
+-				non_pfs_aes
++				top_ciphers
+ 
+ #define client_cipher_list						\
+ 				top_ciphers ":"				\
+-				dhe_aead_ciphers ":"			\
+-				ecdhe_ecdsa_cbc_ciphers ":"		\
+-				ecdhe_rsa_cbc_ciphers ":"		\
+-				dhe_cbc_ciphers ":"			\
+-				non_pfs_aes ":"				\
+-				"DES-CBC3-SHA"
++				dhe_aead_ciphers
+ 
+ __hidden struct ustream_ssl_ctx *
+ __ustream_ssl_context_new(bool server)
