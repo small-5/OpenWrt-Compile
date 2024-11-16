@@ -22,6 +22,7 @@ auth-nocache
 connect-retry $RETRY
 cipher $ciphers
 data-ciphers $ciphers
+tls-version-min 1.3
 EOF
 uci -q get openvpn.myvpn.remote_cert_tls >/dev/null && echo remote-cert-tls server >> /tmp/my.ovpn
 uci -q get openvpn.myvpn.tls_auth >/dev/null && status=1 && echo key-direction 1 >> /tmp/my.ovpn
