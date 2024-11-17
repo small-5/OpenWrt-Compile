@@ -1,5 +1,4 @@
-set_var EASYRSA_REQ_CN "ROC CA"
-set_var EASYRSA_ALGO "ec"
-set_var EASYRSA_DIGEST "sha384"
-set_var EASYRSA_CA_EXPIRE 365
+set_var EASYRSA_REQ_CN "R.O.China CA"
+set_var EASYRSA_ALGO "ed"
+set_var EASYRSA_CA_EXPIRE 366
 set_var EASYRSA_CERT_EXPIRE 365

@@ -11,7 +11,7 @@ PKG_SOURCE_URL:=https://github.com/OpenVPN/easy-rsa.git
 PKG_SOURCE_VERSION:=fa887bbe1bf08d2e2fecd71067a7963223e73e35
 PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_NAME:=openvpn-easy-rsa
-PKG_VERSION:=113-10-02
+PKG_VERSION:=113-11-18
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0
 
@@ -41,10 +41,8 @@ endef
 define Package/openvpn-easy-rsa-whisky/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/easyrsa3/easyrsa $(1)/usr/bin/
-	$(INSTALL_DIR) $(1)/etc/easy-rsa/x509-types
+	$(INSTALL_DIR) $(1)/etc/easy-rsa
 	$(INSTALL_DATA) ./files/vars $(1)/etc/easy-rsa/vars
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/easyrsa3/openssl-easyrsa.cnf $(1)/etc/easy-rsa/openssl-easyrsa.cnf
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/easyrsa3/x509-types/* $(1)/etc/easy-rsa/x509-types/
 endef
 
 $(eval $(call BuildPackage,openvpn-easy-rsa-whisky))
