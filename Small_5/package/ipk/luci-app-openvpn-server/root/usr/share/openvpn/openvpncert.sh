@@ -15,7 +15,7 @@ gen(){
 	easyrsa sign server server >/dev/null 2>&1 || return 1
 	easyrsa gen-req client nopass >/dev/null 2>&1 || return 1
 	easyrsa sign client client >/dev/null 2>&1 || return 1
-	if [ -n "$(uci -q get openvpn.myvpn.tls_auth)" ];then
+	if [ -n "$(uci -q get openvpn.myvpn.tls_crypt)" ];then
 		openvpn --genkey secret /etc/openvpn/ta.key >/dev/null 2>&1 || return 1
 	fi
 	cp $D/ca.crt /etc/openvpn || return 1

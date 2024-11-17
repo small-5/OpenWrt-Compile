@@ -58,17 +58,17 @@ msgstr "IPV6 位址"
 msgid "Select mode of IPv6 client Network"
 msgstr "選擇IPv6用戶端網段模式"
 
-msgid "For example: 2fff:1080:: or 2fff:1080::/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
-msgstr "例如：2fff:1080:: 或者 2fff:1080::/64<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下不需要設定IPv6位址池"
+msgid "For example: d080::1 or d080::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
+msgstr "例如：d080::1 或者 d080::1/64<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下不需要設定IPv6位址池"
 
-msgid "For example: 2fff:1080:: 2fff:1080::1 or 2fff:1080::/64 2fff:1080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
-msgstr "例如：2fff:1080:: 2fff:1080::1 或者 2fff:1080::/64 2fff:1080::1<br/>這個模式需要設定2個IPv6位址<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下需要設定IPv6位址池"
+msgid "For example: d080::1 d080::1 or d080::1/64 d080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
+msgstr "例如：d080::1 d080::1 或者 d080::1/64 d080::1<br/>這個模式需要設定2個IPv6位址<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下需要設定IPv6位址池"
 
 msgid "IPv6 Pool"
 msgstr "IPv6 位址池"
 
-msgid "If the server IPv6 address is 2fff:1080:: ,it needs to be set to 2fff:1080::1 or higher"
-msgstr "例如服務端IPv6位址設定為2fff:1080:: ，那麽起始位址需要設定為2fff:1080::1或者更高"
+msgid "If the server IPv6 address is d080::1 ,it needs to be set to d080::2 or higher"
+msgstr "例如服務端IPv6位址設定為d080::1 ，那麽起始位址需要設定為d080::2或者更高"
 
 msgid "Max-clients"
 msgstr "最大連接數"
@@ -88,11 +88,11 @@ msgstr "檢查遠端憑證"
 msgid "Check remote certificate to prevent man-in-the-middle attacks<br/>Recommended to enable"
 msgstr "檢查遠端憑證防止中間人攻擊<br/>建議啟用"
 
-msgid "TLS-Auth"
-msgstr "TLS驗證"
+msgid "TLS-Crypt"
+msgstr "TLS控制通道加密"
 
-msgid "Add an additional layer of HMAC authentication on top of the TLS control channel,Recommended to enable"
-msgstr "啟用在TLS通道上的HMAC身分驗證,建議啟用"
+msgid "Encrypt and authenticate all control channel packets"
+msgstr "對所有控制通道封包進行加密和身份驗證"
 
 msgid "Float"
 msgstr "可變IP/連接埠"
@@ -128,13 +128,13 @@ msgid "Tmp dir"
 msgstr "臨時目錄"
 
 msgid "Password verification file temporary directory"
-msgstr "密碼驗證文件臨時目錄"
+msgstr "密碼驗證檔案臨時目錄"
 
 msgid "Connect-retry"
 msgstr "重新連接間隔"
 
 msgid "Set client reconnection interval (seconds)<br/>Need to re-download the .ovpn file after modification"
-msgstr "設定用戶端重新連接間隔（秒）<br/>修改以後需要重新下載.ovpn文件"
+msgstr "設定用戶端重新連接間隔（秒）<br/>修改以後需要重新下載.ovpn檔案"
 
 msgid "Log level"
 msgstr "紀錄級別"
@@ -143,25 +143,31 @@ msgid "Set the log level,the larger the number,the more detailed the record cont
 msgstr "設定紀錄級別，數字越大，紀錄內容越詳細"
 
 msgid "Client Push Settings"
-msgstr "用戶端推送配置"
+msgstr "用戶端推送設定"
 
-msgid "Modify DNS push options and enable IPv6 global routing according to actual conditions"
-msgstr "根據實際情況修改DNS推送選項和啟用IPv6全局路由推送"
+msgid "Choose global routing and modify DNS according to the actual situation<br/>Global routing cannot be selected multiple times"
+msgstr "選擇全局路由與修改DNS推送<br/>全局路由不可多選"
 
 msgid "OpenVPN Client config file"
-msgstr "OpenVPN 用戶端配置文件"
+msgstr "OpenVPN 用戶端設定檔案"
 
-msgid "IPv4 Global Routing"
-msgstr "IPv4全局路由"
+msgid "Only IPv4 Global Routing"
+msgstr "僅IPv4全局路由"
 
-msgid "IPv6 Global Routing"
-msgstr "IPv6全局路由"
+msgid "Only IPv6 Global Routing"
+msgstr "僅IPv6全局路由"
+
+msgid "Both IPv4 and IPv6 Global Routing"
+msgstr "IPv4與IPv6全局路由"
+
+msgid "Block Outside DNS"
+msgstr "封鎖外部DNS"
 
 msgid "Download .ovpn file"
-msgstr "下載.ovpn文件"
+msgstr "下載.ovpn檔案"
 
-msgid "If you are using IOS client, please download this .ovpn file and send it via Telegram or Email to your IOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate"
-msgstr "如果你使用的是iOS設備,你可以使用Telegram或者郵件發送到自己的設備上用 OpenVPN 用戶端打開導入<br/>修改配置以後需要重新下載.ovpn文件<br/>生成憑證以後需要重新下載.ovpn文件"
+msgid "If you are using iOS client, download this .ovpn file and send it via Email to your iOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate"
+msgstr "如果你使用的是iOS設備,你可以使用郵件發送到自己的設備上用 OpenVPN 用戶端打開導入<br/>修改設定以後需要重新下載.ovpn檔案<br/>生成憑證以後需要重新下載.ovpn檔案"
 
 msgid "Generate certificate"
 msgstr "生成憑證"
@@ -176,10 +182,10 @@ msgid "<font color=\"red\">Delete the certificate,proceed with caution!</font>"
 msgstr "<font color=\"red\">刪除憑證，謹慎操作！</font>"
 
 msgid "Client configuration"
-msgstr "用戶端配置"
+msgstr "用戶端設定"
 
 msgid "The code added to .ovpn file"
-msgstr "加入到.ovpn文件里的代碼"
+msgstr "加入到.ovpn檔案里的代碼"
 
 msgid "Username and Password"
 msgstr "用戶名和密碼"

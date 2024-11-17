@@ -23,7 +23,7 @@ function act_status()
 	local e={}
 	e.running=luci.sys.call("pidof openvpn >/dev/null")==0
 	e.cert=luci.sys.call("[ -s /etc/openvpn/ca.crt -a -s /etc/openvpn/client.crt -a -s /etc/openvpn/client.key -a -s /etc/openvpn/server.crt -a -s /etc/openvpn/server.key ] \\\
-&& [ -s /etc/openvpn/ta.key -o -z \"$(uci -q get openvpn.myvpn.tls_auth)\" ] || exit 1")==0
+&& [ -s /etc/openvpn/ta.key -o -z \"$(uci -q get openvpn.myvpn.tls_crypt)\" ] || exit 1")==0
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end

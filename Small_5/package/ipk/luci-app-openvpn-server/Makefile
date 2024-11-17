@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-openvpn-server
-PKG_VERSION:=113-11-05
+PKG_VERSION:=113-11-18
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk

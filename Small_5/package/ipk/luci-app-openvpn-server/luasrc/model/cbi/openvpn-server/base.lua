@@ -41,21 +41,21 @@ o.rmempty=false
 
 o=s:option(Value,"server_ipv6",translate("IPV6 Address"))
 o.datatype="ip6addr"
-o.description=translate("For example: 2fff:1080:: or 2fff:1080::/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
+o.description=translate("For example: d080::1 or d080::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
 o:depends("d_ipv6","0")
-o.placeholder="2fff:1080::"
+o.placeholder="d080::1"
 
 o=s:option(Value,"ifconfig_ipv6",translate("IPV6 Address"))
 o.datatype="string"
-o.description=translate("For example: 2fff:1080:: 2fff:1080::1 or 2fff:1080::/64 2fff:1080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
+o.description=translate("For example: d080::1 d080::1 or d080::1/64 d080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
 o:depends("d_ipv6","1")
-o.placeholder="2fff:1080:: 2fff:1080::1"
+o.placeholder="d080::1 d080::1"
 
 o=s:option(Value,"ifconfig_ipv6_pool",translate("IPv6 Pool"))
 o.datatype="ip6addr"
-o.description=translate("If the server IPv6 address is 2fff:1080:: ,it needs to be set to 2fff:1080::1 or higher")
+o.description=translate("If the server IPv6 address is d080::1 ,it needs to be set to d080::2 or higher")
 o:depends("d_ipv6","1")
-o.placeholder="2fff:1080::1"
+o.placeholder="d080::2"
 
 o=s:option(Value,"max_clients",translate("Max-clients"))
 o.datatype="range(1,255)"
@@ -72,10 +72,10 @@ o.description=translate("Check remote certificate to prevent man-in-the-middle a
 o:value("",translate("Disable"))
 o:value("client",translate("Enable"))
 
-o=s:option(ListValue,"tls_auth",translate("TLS-Auth"))
-o.description=translate("Add an additional layer of HMAC authentication on top of the TLS control channel,Recommended to enable")
+o=s:option(ListValue,"tls_crypt",translate("TLS-Crypt"))
+o.description=translate("Encrypt and authenticate all control channel packets")
 o:value("",translate("Disable"))
-o:value("/etc/openvpn/ta.key 0",translate("Enable"))
+o:value("/etc/openvpn/ta.key",translate("Enable"))
 
 o=s:option(Flag,"float",translate("Float"))
 o.description=translate("Allow the remote host to change its IP address or port")
@@ -121,9 +121,11 @@ o.rmempty=false
 o=s:option(DynamicList,"push")
 o.title=translate("Client Push Settings")
 o.datatype="string"
-o.description=translate("Modify DNS push options and enable IPv6 global routing according to actual conditions")
-o:value("redirect-gateway def1 bypass-dhcp",translate("IPv4 Global Routing"))
-o:value("route-ipv6 ::/0",translate("IPv6 Global Routing"))
+o.description=translate("Choose global routing and modify DNS according to the actual situation<br/>Global routing cannot be selected multiple times")
+o:value("redirect-gateway def1 bypass-dhcp",translate("Only IPv4 Global Routing"))
+o:value("redirect-gateway ipv6 !ipv4 bypass-dhcp",translate("Only IPv6 Global Routing"))
+o:value("redirect-gateway def1 ipv6 bypass-dhcp",translate("Both IPv4 and IPv6 Global Routing"))
+o:value("block-outside-dns",translate("Block Outside DNS"))
 
 function Download()
 	local t,e,z
@@ -147,7 +149,7 @@ end
 
 o=s:option(Button,"certificate",translate("OpenVPN Client config file"))
 o.inputtitle=translate("Download .ovpn file")
-o.description=translate("If you are using IOS client, please download this .ovpn file and send it via Telegram or Email to your IOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate")
+o.description=translate("If you are using iOS client, download this .ovpn file and send it via Email to your iOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate")
 o.inputstyle="reload"
 o.write=function()
 	luci.sys.call("/usr/share/openvpn/genovpn.sh 2>&1 >/dev/null")
