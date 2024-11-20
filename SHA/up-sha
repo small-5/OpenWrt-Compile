@@ -1,6 +1,6 @@
 #!/bin/sh
 GET(){
-	echo $3 $(curl -LfsH "Authorization: Bearer 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" https://api.github.com/repos/$1/git/refs/heads/$2 | grep '"sha"' | awk '{print $2}' | sed -e 's/"//g' -e 's/,//g') >> SHA
+	echo $3 $(curl -LfsH "Authorization: Bearer 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" https://api.github.com/repos/$1/git/refs/heads/$2 | grep '"sha"' | awk '{print $2}' | sed -e 's/"//g' -e 's/,//g') >> SHA
 }
 
 A="zfl9/chinadns-ng|master|chinadns-ng
