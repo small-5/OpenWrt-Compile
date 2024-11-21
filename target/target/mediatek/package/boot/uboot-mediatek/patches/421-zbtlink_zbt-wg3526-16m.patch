@@ -107,9 +107,9 @@
 +loadaddr=0x83000000
 +bootcmd=run boot_nor
 +bootdelay=0
-+bootfile=openwrt-ramips-mt7621-zbtlink_zbt-wg3526-16m-initramfs-kernel.bin
++bootfile=immortalwrt-ramips-mt7621-zbtlink_zbt-wg3526-16m-initramfs-kernel.bin
 +bootfile_uboot=u-boot-mt7621.bin
-+bootfile_upg=openwrt-ramips-mt7621-zbtlink_zbt-wg3526-16m-squashfs-sysupgrade.bin
++bootfile_upg=immortalwrt-ramips-mt7621-zbtlink_zbt-wg3526-16m-squashfs-sysupgrade.bin
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0

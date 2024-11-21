@@ -5,6 +5,7 @@ START=80
 USE_PROCD=1
 STATUS=Y
 LOCK=/var/lock/https-dns-proxy.lock
+DIR=$(uci -q get dhcp.@dnsmasq[0].confdir) || DIR="/tmp/dnsmasq.$(uci show dhcp.@dnsmasq[0] | grep -Eo cfg[a-zA-z0-9]+ | sed -n 1p).d"
 
 uci_get_by_type(){
 	local ret=$(uci -q get https-dns-proxy.@base[0].$1)
@@ -12,7 +13,7 @@ uci_get_by_type(){
 }
 
 start_upstream(){
-	cat > /tmp/dnsmasq.d/https-dns-proxy.conf <<EOF
+	cat > $DIR/https-dns-proxy.conf <<EOF
 no-resolv
 server=$ip#$port
 EOF
@@ -48,8 +49,8 @@ start_service(){
 }
 
 stop_service(){
-	if [ $STATUS = Y ] && [ -f /tmp/dnsmasq.d/https-dns-proxy.conf ];then
-		rm -f /tmp/dnsmasq.d/https-dns-proxy.conf
+	if [ $STATUS = Y ] && [ -f $DIR/https-dns-proxy.conf ];then
+		rm -f $DIR/https-dns-proxy.conf
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
 }
@@ -64,16 +65,16 @@ restart(){
 	stop
 	start
 	if [ $A = 0 ] && [ $(uci_get_by_type mode 1) = 1 ];then
-		if [ "$(cat /tmp/dnsmasq.d/https-dns-proxy.conf 2>/dev/null | grep server= | sed 's/[^#]*#//g')" != $port ];then
+		if [ "$(cat $DIR/https-dns-proxy.conf 2>/dev/null | grep server= | sed 's/[^#]*#//g')" != $port ];then
 			start_upstream
 			A=2
-		elif [ "$(cat /tmp/dnsmasq.d/https-dns-proxy.conf 2>/dev/null | grep server= | sed 's/server=//g' | sed 's/#*[^#]*$//g')" != $ip ];then
+		elif [ "$(cat $DIR/https-dns-proxy.conf 2>/dev/null | grep server= | sed 's/server=//g' | sed 's/#*[^#]*$//g')" != $ip ];then
 			start_upstream
 			A=2
 		fi
 	else
-		if [ -f /tmp/dnsmasq.d/https-dns-proxy.conf ];then
-			rm -f /tmp/dnsmasq.d/https-dns-proxy.conf
+		if [ -f $DIR/https-dns-proxy.conf ];then
+			rm -f $DIR/https-dns-proxy.conf
 			A=2
 		fi
 	fi

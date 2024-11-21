@@ -80,6 +80,7 @@ cat > version.patch  <<EOF
  OPENWRT_DEVICE_REVISION="%h"
 -OPENWRT_RELEASE="%D %V %C"
 +OPENWRT_RELEASE="%D $VERSION"
+ OPENWRT_BUILD_DATE="%B"
 EOF
 
 cat > shadow.patch  <<EOF
@@ -93,7 +94,7 @@ cat > shadow.patch  <<EOF
  network:*:0:0:99999:7:::
 EOF
 
-for i in default.patch feeds.patch version.patch shadow.patch $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
+for i in default.patch feeds.patch version.patch iptables.patch shadow.patch $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
 	patch -p1 -E < $i;rm $i
 done
 echo "Model:$OP_TARGET"

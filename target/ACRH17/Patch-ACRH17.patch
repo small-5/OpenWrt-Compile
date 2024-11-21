@@ -45,7 +45,7 @@
 
 --- a/target/linux/ipq40xx/config-6.6
 +++ b/target/linux/ipq40xx/config-6.6
-@@ -75,13 +75,15 @@
+@@ -73,13 +73,15 @@
  CONFIG_CPU_CP15_MMU=y
  CONFIG_CPU_FREQ=y
  # CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND is not set
@@ -62,7 +62,7 @@
  # CONFIG_CPU_FREQ_GOV_USERSPACE is not set
  CONFIG_CPU_FREQ_STAT=y
  CONFIG_CPU_HAS_ASID=y
-@@ -527,6 +529,7 @@
+@@ -524,6 +526,7 @@
  CONFIG_TIMER_PROBE=y
  CONFIG_TREE_RCU=y
  CONFIG_TREE_SRCU=y

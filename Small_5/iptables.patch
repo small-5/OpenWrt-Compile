@@ -1,0 +1,596 @@
+--- a/include/netfilter.mk
++++ b/include/netfilter.mk
+@@ -183,7 +183,7 @@ $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_NAT, $(P_V6)ip6table
+ $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_TARGET_NPT, $(P_V6)ip6t_NPT),))
+ 
+ # userland only
+-$(eval $(if $(NF_KMOD),,$(call nf_add,IPT_NAT,CONFIG_NF_NAT, ipt_NAT)))
++$(eval $(if $(NF_KMOD),,$(call nf_add,IPT_NAT,CONFIG_NF_NAT, ipt_SNAT ipt_DNAT)))
+ $(eval $(if $(NF_KMOD),,$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_TARGET_NPT, ip6t_DNPT ip6t_SNPT)))
+ 
+ $(eval $(call nf_add,IPT_NAT,CONFIG_NETFILTER_XT_TARGET_MASQUERADE, $(P_XT)xt_MASQUERADE))
+
+--- a/package/network/utils/iptables/Makefile
++++ b/package/network/utils/iptables/Makefile
+@@ -9,21 +9,20 @@ include $(TOPDIR)/rules.mk
+ include $(INCLUDE_DIR)/kernel.mk
+ 
+ PKG_NAME:=iptables
+-PKG_VERSION:=1.8.10
+-PKG_RELEASE:=1
++PKG_VERSION:=1.8.7
++PKG_RELEASE:=7
+ 
+ PKG_SOURCE_URL:=https://netfilter.org/projects/iptables/files
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+-PKG_HASH:=5cc255c189356e317d070755ce9371eb63a1b783c34498fb8c30264f3cc59c9c
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
++PKG_HASH:=c109c96bb04998cd44156622d36f8e04b140701ec60531a10668cfdff5e8d8f0
+ 
+ PKG_FIXUP:=autoreconf
+ PKG_FLAGS:=nonshared
+ 
+ PKG_INSTALL:=1
+-PKG_BUILD_FLAGS:=gc-sections no-lto
+ PKG_BUILD_PARALLEL:=1
+ PKG_LICENSE:=GPL-2.0
+-PKG_CPE_ID:=cpe:/a:netfilter:iptables
++PKG_CPE_ID:=cpe:/a:netfilter_core_team:iptables
+ 
+ include $(INCLUDE_DIR)/package.mk
+ ifeq ($(DUMP),)
+@@ -151,7 +150,7 @@ Extra iptables nftables nft binaries.
+ endef
+ 
+ define Package/iptables-mod-conntrack-extra
+-$(call Package/iptables/Module, +kmod-ipt-conntrack-extra)
++$(call Package/iptables/Module, +kmod-ipt-conntrack-extra +kmod-ipt-raw)
+   TITLE:=Extra connection tracking extensions
+ endef
+ 
+@@ -252,6 +251,19 @@ iptables extensions for extra NAT targets.
+   - NETMAP
+ endef
+ 
++define Package/iptables-mod-ulog
++$(call Package/iptables/Module, +kmod-ipt-ulog)
++  TITLE:=user-space packet logging
++endef
++
++define Package/iptables-mod-ulog/description
++iptables extensions for user-space packet logging.
++
++ Targets:
++  - ULOG
++
++endef
++
+ define Package/iptables-mod-nflog
+ $(call Package/iptables/Module, +kmod-nfnetlink-log +kmod-ipt-nflog)
+   TITLE:=Netfilter NFLOG target
+@@ -355,6 +367,22 @@ iptables extensions for matching cluster.
+  see `iptables -m cluster --help` for more information.
+ endef
+ 
++define Package/iptables-mod-clusterip
++$(call Package/iptables/Module, +kmod-ipt-clusterip)
++  TITLE:=Clusterip extension
++endef
++
++define Package/iptables-mod-clusterip/description
++iptables extensions for CLUSTERIP.
++ The CLUSTERIP target allows you to build load-balancing clusters of
++ network servers without having a dedicated load-balancing
++ router/server/switch.
++
++ If you select it, it enables kmod-ipt-clusterip.
++
++ see `iptables -j CLUSTERIP --help` for more information.
++endef
++
+ define Package/iptables-mod-extra
+ $(call Package/iptables/Module, +kmod-ipt-extra)
+   TITLE:=Other extra iptables extensions
+@@ -576,8 +604,12 @@ TARGET_CPPFLAGS := \
+ TARGET_CFLAGS += \
+ 	-I$(PKG_BUILD_DIR)/include \
+ 	-I$(LINUX_DIR)/user_headers/include \
++	-ffunction-sections -fdata-sections \
+ 	-DNO_LEGACY
+ 
++TARGET_LDFLAGS += \
++	-Wl,--gc-sections
++
+ CONFIGURE_ARGS += \
+ 	--enable-shared \
+ 	--enable-static \
+@@ -618,6 +650,7 @@ define Build/InstallDev
+ 	$(CP) $(PKG_BUILD_DIR)/include/iptables/*.h $(1)/usr/include/iptables/
+ 	$(CP) $(PKG_BUILD_DIR)/include/iptables.h $(1)/usr/include/
+ 	$(CP) $(PKG_BUILD_DIR)/include/ip6tables.h $(1)/usr/include/
++	$(CP) $(PKG_BUILD_DIR)/include/libipulog $(1)/usr/include/
+ 	$(CP) $(PKG_BUILD_DIR)/include/libiptc $(1)/usr/include/
+ 
+ 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+@@ -731,11 +764,11 @@ $(eval $(call BuildPackage,libiptext))
+ $(eval $(call BuildPackage,libiptext6))
+ $(eval $(call BuildPackage,libiptext-nft))
+ $(eval $(call BuildPackage,xtables-legacy))
++$(eval $(call BuildPackage,iptables-zz-legacy))
+ $(eval $(call BuildPackage,xtables-nft))
+ $(eval $(call BuildPackage,arptables-nft))
+ $(eval $(call BuildPackage,ebtables-nft))
+ $(eval $(call BuildPackage,iptables-nft))
+-$(eval $(call BuildPackage,iptables-zz-legacy))
+ $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
+ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m)))
+ $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
+@@ -746,6 +779,8 @@ $(eval $(call BuildPlugin,iptables-mod-ipsec,$(IPT_IPSEC-m)))
+ $(eval $(call BuildPlugin,iptables-mod-nat-extra,$(IPT_NAT_EXTRA-m)))
+ $(eval $(call BuildPlugin,iptables-mod-iprange,$(IPT_IPRANGE-m)))
+ $(eval $(call BuildPlugin,iptables-mod-cluster,$(IPT_CLUSTER-m)))
++$(eval $(call BuildPlugin,iptables-mod-clusterip,$(IPT_CLUSTERIP-m)))
++$(eval $(call BuildPlugin,iptables-mod-ulog,$(IPT_ULOG-m)))
+ $(eval $(call BuildPlugin,iptables-mod-hashlimit,$(IPT_HASHLIMIT-m)))
+ $(eval $(call BuildPlugin,iptables-mod-rpfilter,$(IPT_RPFILTER-m)))
+ $(eval $(call BuildPlugin,iptables-mod-led,$(IPT_LED-m)))
+@@ -757,8 +792,8 @@ $(eval $(call BuildPlugin,iptables-mod-nflog,$(IPT_NFLOG-m)))
+ $(eval $(call BuildPlugin,iptables-mod-trace,$(IPT_DEBUG-m)))
+ $(eval $(call BuildPlugin,iptables-mod-nfqueue,$(IPT_NFQUEUE-m)))
+ $(eval $(call BuildPlugin,iptables-mod-checksum,$(IPT_CHECKSUM-m)))
+-$(eval $(call BuildPackage,ip6tables-nft))
+ $(eval $(call BuildPackage,ip6tables-zz-legacy))
++$(eval $(call BuildPackage,ip6tables-nft))
+ $(eval $(call BuildPlugin,ip6tables-extra,$(IPT_IPV6_EXTRA-m)))
+ $(eval $(call BuildPlugin,ip6tables-mod-nat,$(IPT_NAT6-m)))
+ 
+
+--- /dev/null
++++ b/package/network/utils/iptables/patches/001-xtables-Call-init_extensions6-for-static-builds.patch
+@@ -0,0 +1,68 @@
++From e727ccad036e2cdba3339536c65c7ceef43c0740 Mon Sep 17 00:00:00 2001
++From: Erik Wilson <erik.e.wilson@gmail.com>
++Date: Tue, 13 Jul 2021 16:48:23 -0700
++Subject: [PATCH] xtables: Call init_extensions6() for static builds
++
++Initialize extensions from libext6 for cases where xtables is built statically.
++
++Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1550
++Signed-off-by: Erik Wilson <Erik.E.Wilson@gmail.com>
++Signed-off-by: Florian Westphal <fw@strlen.de>
++---
++ iptables/xtables-monitor.c    | 1 +
++ iptables/xtables-restore.c    | 1 +
++ iptables/xtables-save.c       | 1 +
++ iptables/xtables-standalone.c | 1 +
++ iptables/xtables-translate.c  | 1 +
++ 5 files changed, 5 insertions(+)
++
++--- a/iptables/xtables-monitor.c
+++++ b/iptables/xtables-monitor.c
++@@ -628,6 +628,7 @@ int xtables_monitor_main(int argc, char
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
++ 	init_extensions();
++ 	init_extensions4();
+++	init_extensions6();
++ #endif
++ 
++ 	if (nft_init(&h, AF_INET, xtables_ipv4)) {
++--- a/iptables/xtables-restore.c
+++++ b/iptables/xtables-restore.c
++@@ -364,6 +364,7 @@ xtables_restore_main(int family, const c
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
++ 		init_extensions();
++ 		init_extensions4();
+++		init_extensions6();
++ #endif
++ 		break;
++ 	case NFPROTO_ARP:
++--- a/iptables/xtables-save.c
+++++ b/iptables/xtables-save.c
++@@ -202,6 +202,7 @@ xtables_save_main(int family, int argc,
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
++ 		init_extensions();
++ 		init_extensions4();
+++		init_extensions6();
++ #endif
++ 		tables = xtables_ipv4;
++ 		d.commit = true;
++--- a/iptables/xtables-standalone.c
+++++ b/iptables/xtables-standalone.c
++@@ -57,6 +57,7 @@ xtables_main(int family, const char *pro
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
++ 	init_extensions();
++ 	init_extensions4();
+++	init_extensions6();
++ #endif
++ 
++ 	if (nft_init(&h, family, xtables_ipv4) < 0) {
++--- a/iptables/xtables-translate.c
+++++ b/iptables/xtables-translate.c
++@@ -469,6 +469,7 @@ static int xtables_xlate_main_common(str
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
++ 	init_extensions();
++ 	init_extensions4();
+++	init_extensions6();
++ #endif
++ 		tables = xtables_ipv4;
++ 		break;
+
+--- /dev/null
++++ b/package/network/utils/iptables/patches/002-xtables-Call-init_extensions_a_b.patch
+@@ -0,0 +1,107 @@
++A modified version of this patch was commited upstream
++as part of a fixup series
++https://bugzilla.netfilter.org/show_bug.cgi?id=1593
++https://git.netfilter.org/iptables/commit/?id=0836524f093c0fd9c39604a46a949e43d9b47ef2
++
++--- a/iptables/xtables-monitor.c
+++++ b/iptables/xtables-monitor.c
++@@ -629,6 +629,8 @@ int xtables_monitor_main(int argc, char
++ 	init_extensions();
++ 	init_extensions4();
++ 	init_extensions6();
+++	init_extensionsa();
+++	init_extensionsb();
++ #endif
++ 
++ 	if (nft_init(&h, AF_INET, xtables_ipv4)) {
++--- a/iptables/xtables-restore.c
+++++ b/iptables/xtables-restore.c
++@@ -368,9 +368,17 @@ xtables_restore_main(int family, const c
++ #endif
++ 		break;
++ 	case NFPROTO_ARP:
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsa();
+++#endif
++ 		tables = xtables_arp;
++ 		break;
++ 	case NFPROTO_BRIDGE:
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsb();
+++#endif
++ 		tables = xtables_bridge;
++ 		break;
++ 	default:
++--- a/iptables/xtables-save.c
+++++ b/iptables/xtables-save.c
++@@ -208,9 +208,17 @@ xtables_save_main(int family, int argc,
++ 		d.commit = true;
++ 		break;
++ 	case NFPROTO_ARP:
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsa();
+++#endif
++ 		tables = xtables_arp;
++ 		break;
++ 	case NFPROTO_BRIDGE: {
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsb();
+++#endif
++ 		const char *ctr = getenv("EBTABLES_SAVE_COUNTER");
++ 
++ 		if (!(d.format & FMT_NOCOUNTS)) {
++--- a/iptables/xtables-standalone.c
+++++ b/iptables/xtables-standalone.c
++@@ -58,6 +58,8 @@ xtables_main(int family, const char *pro
++ 	init_extensions();
++ 	init_extensions4();
++ 	init_extensions6();
+++	init_extensionsa();
+++	init_extensionsb();
++ #endif
++ 
++ 	if (nft_init(&h, family, xtables_ipv4) < 0) {
++--- a/iptables/xtables-translate.c
+++++ b/iptables/xtables-translate.c
++@@ -474,9 +474,17 @@ static int xtables_xlate_main_common(str
++ 		tables = xtables_ipv4;
++ 		break;
++ 	case NFPROTO_ARP:
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsa();
+++#endif
++ 		tables = xtables_arp;
++ 		break;
++ 	case NFPROTO_BRIDGE:
+++#if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++		init_extensions();
+++		init_extensionsb();
+++#endif
++ 		tables = xtables_bridge;
++ 		break;
++ 	default:
++--- a/iptables/xtables-arp.c
+++++ b/iptables/xtables-arp.c
++@@ -438,6 +438,7 @@ int nft_init_arp(struct nft_handle *h, c
++ 	}
++ 
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++	init_extensions();
++ 	init_extensionsa();
++ #endif
++ 
++--- a/iptables/xtables-eb.c
+++++ b/iptables/xtables-eb.c
++@@ -685,6 +685,7 @@ int nft_init_eb(struct nft_handle *h, co
++ 	}
++ 
++ #if defined(ALL_INCLUSIVE) || defined(NO_SHARED_LIBS)
+++	init_extensions();
++ 	init_extensionsb();
++ #endif
++ 
+
+--- a/package/network/utils/iptables/patches/010-add-set-dscpmark-support.patch
++++ b/package/network/utils/iptables/patches/010-add-set-dscpmark-support.patch
+@@ -334,7 +334,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+  static int connmark_tg_xlate(struct xt_xlate *xl,
+  			     const struct xt_xlate_tg_params *params)
+  {
+-@@ -644,6 +881,66 @@ static int connmark_tg_xlate_v2(struct x
++@@ -639,6 +876,66 @@ static int connmark_tg_xlate_v2(struct x
+  
+  	return 1;
+  }
+@@ -401,7 +401,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+  static struct xtables_target connmark_tg_reg[] = {
+  	{
+  		.family        = NFPROTO_UNSPEC,
+-@@ -692,6 +989,22 @@ static struct xtables_target connmark_tg
++@@ -687,6 +984,22 @@ static struct xtables_target connmark_tg
+  		.x6_options    = connmark_tg_opts_v2,
+  		.xlate         = connmark_tg_xlate_v2,
+  	},
+
+--- a/package/network/utils/iptables/patches/101-remove-check-already.patch
++++ b/package/network/utils/iptables/patches/101-remove-check-already.patch
+@@ -1,6 +1,6 @@
+ --- a/libxtables/xtables.c
+ +++ b/libxtables/xtables.c
+-@@ -1095,12 +1095,6 @@ void xtables_register_match(struct xtabl
++@@ -968,12 +968,6 @@ void xtables_register_match(struct xtabl
+  	struct xtables_match **pos;
+  	bool seen_myself = false;
+  
+@@ -13,7 +13,7 @@
+  	if (me->version == NULL) {
+  		fprintf(stderr, "%s: match %s<%u> is missing a version\n",
+  		        xt_params->program_name, me->name, me->revision);
+-@@ -1279,12 +1273,6 @@ void xtables_register_target(struct xtab
++@@ -1152,12 +1146,6 @@ void xtables_register_target(struct xtab
+  	struct xtables_target **pos;
+  	bool seen_myself = false;
+  
+
+--- a/package/network/utils/iptables/patches/102-iptables-disable-modprobe.patch
++++ b/package/network/utils/iptables/patches/102-iptables-disable-modprobe.patch
+@@ -1,15 +1,6 @@
+ --- a/libxtables/xtables.c
+ +++ b/libxtables/xtables.c
+-@@ -475,7 +475,7 @@ char *xtables_strdup(const char *s)
+- 	return dup;
+- }
+- 
+--static char *get_modprobe(void)
+-+__attribute__((unused)) static char *get_modprobe(void)
+- {
+- 	int procfile;
+- 	char *ret;
+-@@ -505,6 +505,7 @@ static char *get_modprobe(void)
++@@ -403,6 +403,7 @@ static char *get_modprobe(void)
+  
+  int xtables_insmod(const char *modname, const char *modprobe, bool quiet)
+  {
+@@ -17,7 +8,7 @@
+  	char *buf = NULL;
+  	char *argv[4];
+  	int status;
+-@@ -539,6 +540,7 @@ int xtables_insmod(const char *modname,
++@@ -437,6 +438,7 @@ int xtables_insmod(const char *modname,
+  	free(buf);
+  	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+  		return 0;
+
+--- a/package/network/utils/iptables/patches/103-optional-xml.patch
++++ b/package/network/utils/iptables/patches/103-optional-xml.patch
+@@ -1,6 +1,6 @@
+ --- a/iptables/xtables-legacy-multi.c
+ +++ b/iptables/xtables-legacy-multi.c
+-@@ -28,8 +28,10 @@ static const struct subcommand multi_sub
++@@ -32,8 +32,10 @@ static const struct subcommand multi_sub
+  
+  
+  #endif
+
+--- a/package/network/utils/iptables/patches/200-configurable_builtin.patch
++++ b/package/network/utils/iptables/patches/200-configurable_builtin.patch
+@@ -60,7 +60,7 @@
+  
+  .SECONDARY:
+  
+-@@ -170,11 +190,11 @@ libext4.a: initext4.o ${libext4_objs}
++@@ -161,11 +181,11 @@ libext4.a: initext4.o ${libext4_objs}
+  libext6.a: initext6.o ${libext6_objs}
+  	${AM_VERBOSE_AR} ${AR} crs $@ $^;
+  
+@@ -75,5 +75,5 @@
+ +initext4_func := $(addprefix ipt_,${pf4_build_static})
+ +initext6_func := $(addprefix ip6t_,${pf6_build_static})
+  
+- initexts := ext exta extb ext4 ext6
+- initext_depfiles = $(patsubst %,.init%.dd,${initexts})
++ .initext.dd: FORCE
++ 	@echo "${initext_func}" >$@.tmp; \
+
+--- a/package/network/utils/iptables/patches/600-shared-libext.patch
++++ b/package/network/utils/iptables/patches/600-shared-libext.patch
+@@ -9,7 +9,7 @@
+  targets_install :=
+  libext_objs := ${pfx_objs}
+  libext_ebt_objs := ${pfb_objs}
+-@@ -133,7 +133,7 @@ clean:
++@@ -132,7 +132,7 @@ clean:
+  distclean: clean
+  
+  init%.o: init%.c
+@@ -18,7 +18,7 @@
+  
+  -include .*.d
+  
+-@@ -173,22 +173,22 @@ xt_connlabel_LIBADD = @libnetfilter_conn
++@@ -164,22 +164,22 @@ xt_connlabel_LIBADD = @libnetfilter_conn
+  #	handling code in the Makefiles.
+  #
+  lib%.o: ${srcdir}/lib%.c
+@@ -54,47 +54,49 @@
+  initextb_func := $(addprefix ebt_,${pfb_build_static})
+ --- a/iptables/Makefile.am
+ +++ b/iptables/Makefile.am
+-@@ -7,7 +7,7 @@ AM_LDFLAGS       = ${regular_LDFLAGS}
+- BUILT_SOURCES =
++@@ -7,19 +7,22 @@ BUILT_SOURCES =
+  
+- common_sources = iptables-xml.c xtables-multi.h xshared.c xshared.h
+--common_ldadd   = ../extensions/libext.a ../libxtables/libxtables.la -lm
+-+common_ldadd   = ../libxtables/libxtables.la -lm
+- common_cflags  = ${AM_CFLAGS}
+- if ENABLE_STATIC
+- common_cflags += -DALL_INCLUSIVE
+-@@ -17,15 +17,18 @@ xtables_legacy_multi_SOURCES  = ${common
+- 				iptables-restore.c iptables-save.c
+- xtables_legacy_multi_CFLAGS   = ${common_cflags}
+- xtables_legacy_multi_LDADD    = ${common_ldadd}
++ xtables_legacy_multi_SOURCES  = xtables-legacy-multi.c iptables-xml.c
++ xtables_legacy_multi_CFLAGS   = ${AM_CFLAGS}
++-xtables_legacy_multi_LDADD    = ../extensions/libext.a
+++xtables_legacy_multi_LDADD    =
+ +xtables_legacy_multi_LDFLAGS  = -L../extensions/ -liptext
++ if ENABLE_STATIC
++ xtables_legacy_multi_CFLAGS  += -DALL_INCLUSIVE
++ endif
+  if ENABLE_IPV4
+- xtables_legacy_multi_SOURCES += iptables-standalone.c iptables.c iptables-multi.h
++ xtables_legacy_multi_SOURCES += iptables-standalone.c iptables.c
+  xtables_legacy_multi_CFLAGS  += -DENABLE_IPV4
+ -xtables_legacy_multi_LDADD   += ../libiptc/libip4tc.la ../extensions/libext4.a
+ +xtables_legacy_multi_LDADD   += ../libiptc/libip4tc.la
+ +xtables_legacy_multi_LDFLAGS += -liptext4
+  endif
+  if ENABLE_IPV6
+- xtables_legacy_multi_SOURCES += ip6tables-standalone.c ip6tables.c ip6tables-multi.h
++ xtables_legacy_multi_SOURCES += ip6tables-standalone.c ip6tables.c
+  xtables_legacy_multi_CFLAGS  += -DENABLE_IPV6
+ -xtables_legacy_multi_LDADD   += ../libiptc/libip6tc.la ../extensions/libext6.a
+ +xtables_legacy_multi_LDADD   += ../libiptc/libip6tc.la
+ +xtables_legacy_multi_LDFLAGS += -liptext6
+  endif
+- 
+- # iptables using nf_tables api
+-@@ -33,12 +36,9 @@ if ENABLE_NFTABLES
+- xtables_nft_multi_SOURCES  = ${common_sources} xtables-nft-multi.c
+- xtables_nft_multi_CFLAGS   = ${common_cflags}
+- xtables_nft_multi_LDADD    = ${common_ldadd} \
+--			     ../extensions/libext_arpt.a \
+--			     ../extensions/libext_ebt.a \
+--			     ../extensions/libext4.a \
+--			     ../extensions/libext6.a \
+- 			     ${libmnl_LIBS} ${libnftnl_LIBS} \
+- 			     ${libnetfilter_conntrack_LIBS}
+-+xtables_nft_multi_LDFLAGS  = -L../extensions/ -liptext -liptext_arpt -liptext_ebt -liptext4 -liptext6
+- xtables_nft_multi_CFLAGS  += -DENABLE_NFTABLES -DENABLE_IPV4 -DENABLE_IPV6
+- xtables_nft_multi_SOURCES += nft.c nft.h \
+- 			     nft-arp.c nft-ipv4.c nft-ipv6.c \
++ xtables_legacy_multi_SOURCES += xshared.c iptables-restore.c iptables-save.c
++ xtables_legacy_multi_LDADD   += ../libxtables/libxtables.la -lm
++@@ -28,7 +31,8 @@ xtables_legacy_multi_LDADD   += ../libxt
++ if ENABLE_NFTABLES
++ xtables_nft_multi_SOURCES  = xtables-nft-multi.c iptables-xml.c
++ xtables_nft_multi_CFLAGS   = ${AM_CFLAGS}
++-xtables_nft_multi_LDADD    = ../extensions/libext.a ../extensions/libext_ebt.a
+++xtables_nft_multi_LDADD    =
+++xtables_nft_multi_LDFLAGS  = -L../extensions/ -liptext -liptext_ebt
++ if ENABLE_STATIC
++ xtables_nft_multi_CFLAGS  += -DALL_INCLUSIVE
++ endif
++@@ -42,7 +46,8 @@ xtables_nft_multi_SOURCES += xtables-sav
++ 				xtables-eb-standalone.c xtables-eb.c \
++ 				xtables-eb-translate.c \
++ 				xtables-translate.c
++-xtables_nft_multi_LDADD   += ${libmnl_LIBS} ${libnftnl_LIBS} ${libnetfilter_conntrack_LIBS} ../extensions/libext4.a ../extensions/libext6.a ../extensions/libext_ebt.a ../extensions/libext_arpt.a
+++xtables_nft_multi_LDADD   += ${libmnl_LIBS} ${libnftnl_LIBS} ${libnetfilter_conntrack_LIBS}
+++xtables_nft_multi_LDFLAGS += -liptext4 -liptext6 -liptext_arpt
++ xtables_nft_multi_SOURCES += xshared.c
++ xtables_nft_multi_LDADD   += ../libxtables/libxtables.la -lm
++ endif
+
+--- a/package/network/utils/iptables/patches/700-disable-legacy-revisions.patch
++++ b/package/network/utils/iptables/patches/700-disable-legacy-revisions.patch
+@@ -1,6 +1,6 @@
+ --- a/extensions/libxt_conntrack.c
+ +++ b/extensions/libxt_conntrack.c
+-@@ -1385,6 +1385,7 @@ static int conntrack3_mt6_xlate(struct x
++@@ -1395,6 +1395,7 @@ static int conntrack3_mt6_xlate(struct x
+  }
+  
+  static struct xtables_match conntrack_mt_reg[] = {
+@@ -8,7 +8,7 @@
+  	{
+  		.version       = XTABLES_VERSION,
+  		.name          = "conntrack",
+-@@ -1460,6 +1461,7 @@ static struct xtables_match conntrack_mt
++@@ -1470,6 +1471,7 @@ static struct xtables_match conntrack_mt
+  		.alias	       = conntrack_print_name_alias,
+  		.x6_options    = conntrack2_mt_opts,
+  	},
+@@ -16,7 +16,7 @@
+  	{
+  		.version       = XTABLES_VERSION,
+  		.name          = "conntrack",
+-@@ -1492,6 +1494,7 @@ static struct xtables_match conntrack_mt
++@@ -1502,6 +1504,7 @@ static struct xtables_match conntrack_mt
+  		.x6_options    = conntrack3_mt_opts,
+  		.xlate	       = conntrack3_mt6_xlate,
+  	},
+@@ -24,7 +24,7 @@
+  	{
+  		.family        = NFPROTO_UNSPEC,
+  		.name          = "state",
+-@@ -1522,6 +1525,8 @@ static struct xtables_match conntrack_mt
++@@ -1532,6 +1535,8 @@ static struct xtables_match conntrack_mt
+  		.x6_parse      = state_ct23_parse,
+  		.x6_options    = state_opts,
+  	},
+@@ -33,7 +33,7 @@
+  	{
+  		.family        = NFPROTO_UNSPEC,
+  		.name          = "state",
+-@@ -1551,6 +1556,7 @@ static struct xtables_match conntrack_mt
++@@ -1561,6 +1566,7 @@ static struct xtables_match conntrack_mt
+  		.x6_parse      = state_parse,
+  		.x6_options    = state_opts,
+  	},
+@@ -77,7 +77,7 @@
+  void _init(void)
+ --- a/extensions/libxt_multiport.c
+ +++ b/extensions/libxt_multiport.c
+-@@ -591,6 +591,7 @@ static int multiport_xlate6_v1(struct xt
++@@ -571,6 +571,7 @@ static int multiport_xlate6_v1(struct xt
+  }
+  
+  static struct xtables_match multiport_mt_reg[] = {
+@@ -85,7 +85,7 @@
+  	{
+  		.family        = NFPROTO_IPV4,
+  		.name          = "multiport",
+-@@ -621,6 +622,7 @@ static struct xtables_match multiport_mt
++@@ -601,6 +602,7 @@ static struct xtables_match multiport_mt
+  		.x6_options    = multiport_opts,
+  		.xlate         = multiport_xlate6,
+  	},

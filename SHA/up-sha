@@ -18,6 +18,9 @@ shadowsocks/simple-obfs|master|simple-obfs
 peter-tank/trojan-plus|master|trojan-plus
 Wind4/vlmcsd|master|vlmcsd
 teddysun/xray-plugin|main|xray-plugin
+openwrt/rtl8125|master|rtl8125
+openwrt/rtl8126|master|rtl8126
+openwrt/rtl8168|master|rtl8168
 fatedier/frp|dev|frp
 xtaci/kcptun|master|kcptun
 shadowsocks/shadowsocks-libev|master|shadowsocks-libev

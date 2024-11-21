@@ -1,6 +1,6 @@
 --- a/miniupnpd.c
 +++ b/miniupnpd.c
-@@ -1260,6 +1260,10 @@
+@@ -1274,6 +1274,10 @@
  			case UPNPEXT_IP:
  				use_ext_ip_addr = ary_options[i].value;
  				break;
@@ -97,7 +97,7 @@
 
 --- a/upnpsoap.c
 +++ b/upnpsoap.c
-@@ -346,7 +346,7 @@
+@@ -369,7 +369,7 @@
  			syslog(LOG_ERR, "Failed to get ip address for interface %s",
  				ext_if_name);
  			ext_ip_addr[0] = '\0';

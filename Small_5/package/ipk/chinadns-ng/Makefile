@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=chinadns-ng
-PKG_VERSION:=112-11-13
+PKG_VERSION:=112.11.13
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git

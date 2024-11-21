@@ -202,7 +202,7 @@
 
 --- a/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -171,6 +171,10 @@ return view.extend({
+@@ -177,6 +177,10 @@ return view.extend({
  			return null;
  		};
  
@@ -290,7 +290,7 @@
 
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -695,10 +695,12 @@ return view.extend({
+@@ -648,10 +648,12 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -306,7 +306,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -711,11 +713,11 @@ return view.extend({
+@@ -664,11 +666,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -320,7 +320,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -724,7 +726,7 @@ return view.extend({
+@@ -677,7 +679,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
@@ -458,7 +458,7 @@
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
  PKG_NAME:=microsocks
 -PKG_VERSION:=1.0.4
-+PKG_VERSION=1.0.4_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION=113.5.25
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -522,8 +522,8 @@
 -PKG_VERSION:=2.2.8
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-07-27
-+PKG_SOURCE_VERSION:=0ef0b9b2386aeaed53a774ae10df10b8e08478a1
++PKG_SOURCE_DATE:=113.10.10
++PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
@@ -627,6 +627,66 @@
 +	option comment 'Default deny'
 +
 
+--- a/feeds/packages/net/miniupnpd/patches/200-remove-default-cflags.patch
++++ b/feeds/packages/net/miniupnpd/patches/200-remove-default-cflags.patch
+@@ -1,18 +1,25 @@
+ --- a/Makefile.linux
+ +++ b/Makefile.linux
+-@@ -25,16 +25,16 @@ CONFIG_OPTIONS ?= $(cat .configure.cache
+- CONFIG_OPTIONS += --firewall=iptables
++@@ -28,21 +28,21 @@ endif
++ 
++ # Make sucks, prove me wrong
++ , := ,
++-ifeq ($(filter -D_FORTIFY_SOURCE=% -Wp$(,)-D_FORTIFY_SOURCE=%,$(CPPFLAGS) $(CFLAGS)),)
++-CPPFLAGS += -D_FORTIFY_SOURCE=2
++-endif
+++#ifeq ($(filter -D_FORTIFY_SOURCE=% -Wp$(,)-D_FORTIFY_SOURCE=%,$(CPPFLAGS) $(CFLAGS)),)
+++#CPPFLAGS += -D_FORTIFY_SOURCE=2
+++#endif
++ CPPFLAGS += -D_GNU_SOURCE
++ 
+  #CFLAGS = -O -g -DDEBUG
+  CFLAGS ?= -Os
+ -CFLAGS += -fno-strict-aliasing
+ -CFLAGS += -fno-common
+ -CFLAGS += -fstack-protector -fPIE
+--CFLAGS += -D_FORTIFY_SOURCE=2
+ +#CFLAGS += -fno-strict-aliasing
+ +#CFLAGS += -fno-common
+ +#CFLAGS += -fstack-protector -fPIE
+-+#CFLAGS += -D_FORTIFY_SOURCE=2
+- CPPFLAGS += -D_GNU_SOURCE
+  CFLAGS += -Wall
+  CFLAGS += -Wextra -Wstrict-prototypes -Wdeclaration-after-statement
+  #CFLAGS += -Wno-missing-field-initializers
+
+--- a/feeds/packages/net/miniupnpd/patches/300-macos-compat.patch
++++ /dev/null
+@@ -1,22 +0,0 @@
+---- a/Makefile.linux
+-+++ b/Makefile.linux
+-@@ -96,13 +96,13 @@ endif # ($(TEST),1)
+- endif # ($(TARGET_OPENWRT,)
+- 
+- ifneq ($(shell ldd --version | grep GLIBC),)
+--GLIBC_VERSION := $(shell ldd --version | head -n 1 | sed 's/^.* //')
+--GLIBC_VERSION_MAJOR = $(shell echo $(GLIBC_VERSION) | cut -f 1 -d . )
+--GLIBC_VERSION_MINOR = $(shell echo $(GLIBC_VERSION) | cut -f 2 -d . )
+-+#GLIBC_VERSION := $(shell ldd --version | head -n 1 | sed 's/^.* //')
+-+#GLIBC_VERSION_MAJOR = $(shell echo $(GLIBC_VERSION) | cut -f 1 -d . )
+-+#GLIBC_VERSION_MINOR = $(shell echo $(GLIBC_VERSION) | cut -f 2 -d . )
+- # clock_gettime() needs -lrt when glibc version < 2.17
+--LDLIBS += $(shell if [ $(GLIBC_VERSION_MAJOR) -lt 2 ] \
+--  || [ \( $(GLIBC_VERSION_MAJOR) -eq 2 \) -a \( $(GLIBC_VERSION_MINOR) -lt 17 \) ] ; \
+--  then echo "-lrt" ; fi )
+-+#LDLIBS += $(shell if [ $(GLIBC_VERSION_MAJOR) -lt 2 ] \
+-+#  || [ \( $(GLIBC_VERSION_MAJOR) -eq 2 \) -a \( $(GLIBC_VERSION_MINOR) -lt 17 \) ] ; \
+-+#  then echo "-lrt" ; fi )
+- endif
+- 
+- TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+
 --- a/feeds/packages/net/miniupnpd/Makefile
 +++ b/feeds/packages/net/miniupnpd/Makefile
 @@ -8,12 +8,13 @@
@@ -641,8 +701,8 @@
 -PKG_HASH:=fbdd5501039730f04a8420ea2f8f54b7df63f9f04cde2dc67fa7371e80477bbe
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=113-07-27
-+PKG_SOURCE_VERSION:=0ef0b9b2386aeaed53a774ae10df10b8e08478a1
++PKG_SOURCE_DATE:=113.10.10
++PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
 +PKG_MIRROR_HASH:=skip
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
 +PKG_RELEASE:=1
@@ -1038,7 +1098,7 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
-+PKG_SOURCE_VERSION:=84f217dbd19f97e30f24af640ddb4cd21ae1e3ec
++PKG_SOURCE_VERSION:=fdc1a41967477698c1e320fb55592df3c6213045
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1251,12 +1311,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=2855ac71e3fc3fb2859f4c75f97f97e99f131f1b
++PKG_SOURCE_VERSION:=8593eff752117aaa3775db498eb0e553a251c4f6
 +
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=0.60.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=0.61.0.113.11.20
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1283,12 +1343,12 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=4983587d04d8bb34e5395d42a1f236cae8b1d22a
++PKG_SOURCE_VERSION:=df42df9d20a2a292ad3e36d1beca2890dd393a7f
 +
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=20241119
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -1353,7 +1413,7 @@
 -PKG_VERSION:=1.6.0
 +PKG_SOURCE_VERSION:=95337de67a35b474d493966223f324eb1302adfc
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.6.0_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.6.0.113.6.3
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
@@ -1602,18 +1662,18 @@
 @@ -1,18 +1,23 @@
  include $(TOPDIR)/rules.mk
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=af7232d54524bbeed19187835955c6abff7dc643
++PKG_SOURCE_VERSION:=513f18bf531ef5f92464c2affefed0db4f28280b
  
  PKG_NAME:=xray-core
--PKG_VERSION:=24.9.30
+-PKG_VERSION:=24.11.11
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=24.9.30_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=113.11.21
  PKG_RELEASE:=1
  
 +PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=0771120ddbf866fba44f2e8978bcc20f3843663f5726bd8db9e03e1a27e1212a
+-PKG_HASH:=4ba61bf03096809ef9a7fb27fa7e8232bcc79ae1cc2ac1b601abe0366879111c
 +PKG_SOURCE_PROTO:=git
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
@@ -1705,11 +1765,11 @@
  include $(TOPDIR)/rules.mk
  
 +PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=36b4659f77bc480fdc510304bc53f009fde5d629
++PKG_SOURCE_VERSION:=b12dd19d441649ea159ba8b473e366c7694fdf76
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.14.1
 +PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
-+PKG_VERSION:=1.14.1_git-$(PKG_SOURCE_SHORTID)
++PKG_VERSION:=1.14.2.113.11.14
  PKG_RELEASE:=1
 -
 +PKG_SOURCE_PROTO:=git
@@ -1807,7 +1867,7 @@
  
  import timezones from 'luci.zoneinfo';
  
-@@ -544,49 +544,6 @@ const methods = {
+@@ -545,49 +545,6 @@ const methods = {
  		call: function() {
  			return { result: process_list() };
  		}

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts-huawei
-PKG_VERSION:=113-11-12
+PKG_VERSION:=113.11.12
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Small_5

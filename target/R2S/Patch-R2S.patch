@@ -45,7 +45,7 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
-@@ -17,8 +17,8 @@
+@@ -18,8 +18,8 @@
  friendlyarm,nanopi-r6c|\
  xunlong,orangepi-r1-plus|\
  xunlong,orangepi-r1-plus-lts)
@@ -59,7 +59,7 @@
 
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-@@ -21,7 +21,7 @@
+@@ -22,7 +22,7 @@
  	radxa,rockpi-e|\
  	xunlong,orangepi-r1-plus|\
  	xunlong,orangepi-r1-plus-lts)

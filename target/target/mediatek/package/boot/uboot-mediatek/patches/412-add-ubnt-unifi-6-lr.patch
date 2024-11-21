@@ -739,7 +739,7 @@
 +};
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -1223,6 +1223,8 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
+@@ -1188,6 +1188,8 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
  	mt7623a-unielec-u7623-02-emmc.dtb \
  	mt7622-bananapi-bpi-r64.dtb \
  	mt7622-linksys-e8450-ubi.dtb \
@@ -757,10 +757,10 @@
 +loadaddr=0x48000000
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_nor ; fi
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-preloader.bin
-+bootfile_fip=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v1-ubootmod-squashfs-sysupgrade.itb
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0
@@ -810,10 +810,10 @@
 +loadaddr=0x48000000
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_nor ; fi
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-preloader.bin
-+bootfile_fip=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v2-ubootmod-squashfs-sysupgrade.itb
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0
@@ -863,10 +863,10 @@
 +loadaddr=0x48000000
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_nor ; fi
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-preloader.bin
-+bootfile_fip=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-mt7622-ubnt_unifi-6-lr-v3-ubootmod-squashfs-sysupgrade.itb
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0
@@ -917,7 +917,7 @@
  
  DECLARE_GLOBAL_DATA_PTR;
  
-@@ -397,6 +398,20 @@ static int initr_onenand(void)
+@@ -396,6 +397,20 @@ static int initr_onenand(void)
  }
  #endif
  
@@ -938,7 +938,7 @@
  #ifdef CONFIG_MMC
  static int initr_mmc(void)
  {
-@@ -681,6 +696,9 @@ static init_fnc_t init_sequence_r[] = {
+@@ -680,6 +695,9 @@ static init_fnc_t init_sequence_r[] = {
  #ifdef CONFIG_NMBM_MTD
  	initr_nmbm,
  #endif

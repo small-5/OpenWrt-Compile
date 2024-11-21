@@ -24,8 +24,9 @@ PID=/var/run/smartdns.pid
 K=/tmp/overwall
 LOG=/var/log/$NAME
 BIN_DIR=/usr/share/overwall
-DNS_FILE=/tmp/dnsmasq.d/dnsmasq-overwall.conf
 DNS_DIR=/tmp/dnsmasq.overwall
+DNS_DI=$(uci -q get dhcp.@dnsmasq[0].confdir) || DNS_DI="/tmp/dnsmasq.$(uci show dhcp.@dnsmasq[0] | grep -Eo cfg[a-zA-z0-9]+ | sed -n 1p).d"
+DNS_FILE=$DNS_DI/dnsmasq-overwall.conf
 O=$DNS_DIR/tmp
 Ali="223.5.5.5 223.6.6.6 2400:3200::1 2400:3200:baba::1"
 ref=/tmp/resolv.conf.d/resolv.conf.auto;[ -s $ref ] || ref=/tmp/resolv.conf.auto
@@ -905,7 +906,7 @@ gen_dns(){
 	for i in $dns_tmp;do ipset add over_wan_ac $i 2>/dev/null;done
 
 	smartdns_flag=1
-	mkdir -p /tmp/dnsmasq.d $SDNS $DNS_DIR
+	mkdir -p $DNS_DI $SDNS $DNS_DIR
 	cat > $DNS_T <<EOF
 force-AAAA-SOA yes
 speed-check-mode none

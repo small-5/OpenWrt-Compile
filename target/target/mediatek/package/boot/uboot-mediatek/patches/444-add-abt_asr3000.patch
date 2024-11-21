@@ -298,10 +298,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-abt_asr3000-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-abt_asr3000-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-abt_asr3000-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-abt_asr3000-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-abt_asr3000-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-abt_asr3000-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-abt_asr3000-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-abt_asr3000-squashfs-sysupgrade.itb
 +bootled_pwr=green:mesh
 +bootled_rec=green:mesh
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60

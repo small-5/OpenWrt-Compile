@@ -5,6 +5,7 @@ A=0
 B=0
 CRON_FILE=/etc/crontabs/root
 D=/tmp/dnsmasq.adblock
+DIR=$(uci -q get dhcp.@dnsmasq[0].confdir) || DIR="/tmp/dnsmasq.$(uci show dhcp.@dnsmasq[0] | grep -Eo cfg[a-zA-z0-9]+ | sed -n 1p).d"
 E="date +'$(date +'%Y' | awk '{print ($1-1911)}')-%m-%d %H:%M:%S'"
 L=/etc/adblock
 P=/usr/share/adblock
@@ -22,8 +23,8 @@ get_config(){
 }
 
 add_dns(){
-	mkdir -p /tmp/dnsmasq.d $D
-	echo conf-dir=$D > /tmp/dnsmasq.d/adblock.conf
+	mkdir -p $DIR $D
+	echo conf-dir=$D > $DIR/adblock.conf
 	ln -sf $T/adblock.conf $D/adblock.conf
 	if [ -n "$url" ];then
 		mkdir -p $T/3rd
@@ -136,7 +137,7 @@ stop(){
 	else
 		echo "`eval $E` [Stop Adblock Plus+]"
 	fi
-	rm -rf /tmp/dnsmasq.d/adblock.conf $D /var/lock/adblock.lock
+	rm -rf $DIR/adblock.conf $D /var/lock/adblock.lock
 	if [ "$(echo $url | sed 's/ /\n/g' | sort -u)" != "$(cat $T/3rd/url 2>/dev/null)" ];then
 		rm -rf $T/3rd
 		[ -d $L/3rd ] && rm -rf $L/3rd
