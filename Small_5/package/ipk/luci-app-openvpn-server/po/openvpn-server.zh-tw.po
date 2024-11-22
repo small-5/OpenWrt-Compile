@@ -58,17 +58,17 @@ msgstr "IPV6 位址"
 msgid "Select mode of IPv6 client Network"
 msgstr "選擇IPv6用戶端網段模式"
 
-msgid "For example: d080::1 or d080::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
-msgstr "例如：d080::1 或者 d080::1/64<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下不需要設定IPv6位址池"
+msgid "For example: fd80::1 or fd80::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
+msgstr "例如：fd80::1 或者 fd80::1/64<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下不需要設定IPv6位址池"
 
-msgid "For example: d080::1 d080::1 or d080::1/64 d080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
-msgstr "例如：d080::1 d080::1 或者 d080::1/64 d080::1<br/>這個模式需要設定2個IPv6位址<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下需要設定IPv6位址池"
+msgid "For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
+msgstr "例如：fd80::1 fd80::1 或者 fd80::1/64 fd80::1<br/>這個模式需要設定2個IPv6位址<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下需要設定IPv6位址池"
 
 msgid "IPv6 Pool"
 msgstr "IPv6 位址池"
 
-msgid "If the server IPv6 address is d080::1 ,it needs to be set to d080::2 or higher"
-msgstr "例如服務端IPv6位址設定為d080::1 ，那麽起始位址需要設定為d080::2或者更高"
+msgid "If the server IPv6 address is fd80::1 ,it needs to be set to fd80::2 or higher"
+msgstr "例如服務端IPv6位址設定為fd80::1 ，那麽起始位址需要設定為fd80::2或者更高"
 
 msgid "Max-clients"
 msgstr "最大連接數"

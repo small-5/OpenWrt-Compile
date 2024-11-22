@@ -41,21 +41,21 @@ o.rmempty=false
 
 o=s:option(Value,"server_ipv6",translate("IPV6 Address"))
 o.datatype="ip6addr"
-o.description=translate("For example: d080::1 or d080::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
+o.description=translate("For example: fd80::1 or fd80::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
 o:depends("d_ipv6","0")
-o.placeholder="d080::1"
+o.placeholder="fd80::1"
 
 o=s:option(Value,"ifconfig_ipv6",translate("IPV6 Address"))
 o.datatype="string"
-o.description=translate("For example: d080::1 d080::1 or d080::1/64 d080::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
+o.description=translate("For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
 o:depends("d_ipv6","1")
-o.placeholder="d080::1 d080::1"
+o.placeholder="fd80::1 fd80::1"
 
 o=s:option(Value,"ifconfig_ipv6_pool",translate("IPv6 Pool"))
 o.datatype="ip6addr"
-o.description=translate("If the server IPv6 address is d080::1 ,it needs to be set to d080::2 or higher")
+o.description=translate("If the server IPv6 address is fd80::1 ,it needs to be set to fd80::2 or higher")
 o:depends("d_ipv6","1")
-o.placeholder="d080::2"
+o.placeholder="fd80::2"
 
 o=s:option(Value,"max_clients",translate("Max-clients"))
 o.datatype="range(1,255)"
