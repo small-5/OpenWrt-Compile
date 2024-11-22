@@ -119,73 +119,98 @@
  		};
  
 
---- a/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
-+++ b/feeds/luci/applications/luci-app-ddns/root/usr/libexec/rpcd/luci.ddns
-@@ -70,7 +70,7 @@
- 			local res = {}
- 
- 			uci:foreach("ddns", "service", function (s)
--				local ip, last_update, next_update
-+				local ip, last_update, next_update, converted_last_update, time_diff
- 				local section	= s[".name"]
- 				if fs.access("%s/%s.ip" % { rundir, section }) then
- 					ip = fs.readfile("%s/%s.ip" % { rundir, section })
-@@ -96,7 +96,6 @@
- 				end
- 
- 				local last_update = tonumber(fs.readfile("%s/%s.update" % { rundir, section } ) or 0)
--				local next_update, converted_last_update
- 				local pid  = tonumber(fs.readfile("%s/%s.pid" % { rundir, section } ) or 0)
- 
- 				if pid > 0 and not nixio.kill(pid, 0) then
-@@ -117,16 +116,24 @@
- 					local epoch = os.time() - uptime + last_update
- 					-- use linux date to convert epoch
- 					converted_last_update = epoch2date(epoch,date_format)
--					next_update = epoch2date(epoch + force_seconds + check_seconds)
-+					if force_seconds <= check_seconds then
-+						time_diff = check_seconds
-+					else
-+						time_diff = force_seconds - check_seconds
-+						while time_diff > check_seconds do
-+							time_diff = time_diff - check_seconds
-+						end
-+					end
-+					next_update = epoch2date(epoch + force_seconds + check_seconds - time_diff)
- 				end
- 
--				if pid > 0 and ( last_update + force_seconds + check_seconds - uptime ) <= 0 then
--					next_update = "Verify"
+--- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc
++++ b/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc
+@@ -12,11 +12,6 @@ const ddns_log_path = '/var/log/ddns';
+ const ddns_package_path = '/usr/share/ddns';
+ const ddns_run_path = '/var/run/ddns';
+ const luci_helper = '/usr/lib/ddns/dynamic_dns_lucihelper.sh';
+-const srv_name    = 'ddns-scripts';
+-const opkg_info_path    = '/usr/lib/opkg/info';
 -
- 				-- run once
--				elseif force_seconds == 0 then
-+				if force_seconds == 0 then
- 					next_update = "Run once"
+-
+-
  
-+				elseif pid > 0 and ( last_update + force_seconds + check_seconds - time_diff - uptime ) <= 0 then
-+					next_update = "Verify"
+ function get_dateformat() {
+ 	return uci.get('ddns', 'global', 'ddns_dateformat') || '%F %R';
+@@ -158,19 +153,26 @@ const methods = {
+ 					s['check_unit'] || 'minutes'
+ 				);
+ 
+-				let convertedLastUpdate;
++				let convertedLastUpdate, timegap;
+ 				if (lastUpdate > 0) {
+ 					const epoch = time() - _uptime + lastUpdate;
+ 					convertedLastUpdate = epoch2date(epoch);
+ 					// convertedLastUpdate = get_date(epoch, dateFormat);
+-					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds);
+-					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds, dateFormat);
++					if (forceSeconds <= checkSeconds) {
++						timegap = checkSeconds;
++					} else {
++						timegap = forceSeconds - checkSeconds;
++						while (timegap > checkSeconds)
++							timegap = timegap - checkSeconds;
++					}
++					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds - timegap);
++					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds - timegap, dateFormat);
+ 				}
+ 
+-				if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - _uptime) <= 0) {
+-					nextUpdate = 'Verify';
+-				} else if (forceSeconds === 0) {
++				if (forceSeconds == 0) {
+ 					nextUpdate = 'Run once';
++				} else if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - timegap - _uptime) <= 0) {
++					nextUpdate = 'Verify';
+ 				} else if (pid == 0 && s['enabled'] == '0') {
+ 					nextUpdate = 'Disabled';
+ 				} else if (pid == 0 && s['enabled'] != '0') {
+@@ -197,21 +199,8 @@ const methods = {
+ 			const services_mtime = stat(ddns_package_path + '/list')?.mtime;
+ 			// uci.unload('ddns');
+ 			let res = {};
+-			let ver, control;
+-
+-			if (stat(opkg_info_path + `/${srv_name}.control`)?.type == 'file') {
+-				control = readfile(opkg_info_path + `/${srv_name}.control`);
+-			}
+-
+-			for (let line in split(control, '\n')) {
+-				ver = match(line, /^Version: (.+)$/)?.[1];
+-				if ( ver && length(ver) > 0 )
+-					break;
+-			}
+ 
+-			ver = ver || trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
+-
+-			res['_version'] = ver;
++			res['_version'] = trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
+ 			res['_enabled'] = init_enabled('ddns');
+ 			// res['_curr_dateformat'] = get_date(time(), dateFormat);
+ 			res['_curr_dateformat'] = epoch2date(time());
+@@ -324,6 +313,22 @@ const methods = {
+ 
+ 			return res;
+ 		}
++	},
 +
- 				-- no process running and NOT enabled
- 				elseif pid == 0 and s['enabled'] == '0' then
- 					next_update  = "Disabled"
-@@ -281,6 +288,18 @@
- 
- 			return res
- 		end
++	reload_ddns_rule: {
++		args: { id: 'id' },
++		call: function(request) {
++			const result = system(`${luci_helper} -S ${request.args.id} -- start &`) == 0 ? true: false;
++			return { result: result }; 
++		}
 +	},
-+	reload_ddns_rule = {
-+		args = { id = "" },
-+		call = function(args)
-+			return (sys.call( [[/usr/lib/ddns/dynamic_dns_lucihelper.sh -S ]]..args.id..[[ -- start &]] ) == 0)
-+		end
-+	},
-+	stop_ddns_rule = {
-+		args = { id = "" },
-+		call = function(args)
-+			return (sys.call( [[kill $(cat /tmp/run/ddns/]]..args.id..[[.pid) 2>/dev/null]] ) == 0)
-+		end
++
++	stop_ddns_rule: {
++		args: { id: 'id' },
++		call: function(request) {
++			const result = system(`kill $(cat /tmp/run/ddns/${request.args.id}.pid) 2>/dev/null`) == 0 ? true: false;
++			return { result: result }; 
++		}
  	}
- }
+ };
  
 
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
