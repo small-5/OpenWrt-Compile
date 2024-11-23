@@ -1,0 +1,37 @@
+--- a/iptables/xshared.c
++++ b/iptables/xshared.c
+@@ -1083,10 +1083,10 @@ void print_rule_details(unsigned int linenum, const struct xt_counters *ctrs,
+ 
+ 	fputc(invflags & XT_INV_PROTO ? '!' : ' ', stdout);
+ 
+-	if (((format & (FMT_NUMERIC | FMT_NOTABLE)) == FMT_NUMERIC) || !pname)
+-		printf(FMT("%-4hu ", "%hu "), proto);
+-	else
++	if (pname)
+ 		printf(FMT("%-4s ", "%s "), pname);
++	else
++		printf(FMT("%-4hu ", "%hu "), proto);
+ }
+ 
+ void save_rule_details(const char *iniface, unsigned const char *iniface_mask,
+@@ -1103,7 +1103,7 @@ void save_rule_details(const char *iniface, unsigned const char *iniface_mask,
+ 	}
+ 
+ 	if (proto > 0) {
+-		const char *pname = proto_to_name(proto, 0);
++		const char *pname = proto_to_name(proto, true);
+ 
+ 		if (invflags & XT_INV_PROTO)
+ 			printf(" !");
+
+--- a/libxtables/xtables.c
++++ b/libxtables/xtables.c
+@@ -2175,6 +2175,8 @@ const struct xtables_pprot xtables_chain_protos[] = {
+ 	{"mobility-header", IPPROTO_MH},
+ 	{"ipv6-mh",   IPPROTO_MH},
+ 	{"mh",        IPPROTO_MH},
++	{"dccp",      IPPROTO_DCCP},
++	{"ipcomp",    IPPROTO_COMP},
+ 	{"all",       0},
+ 	{NULL},
+ };

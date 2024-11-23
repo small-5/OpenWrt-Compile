@@ -1,0 +1,68 @@
+--- a/libxtables/xtables.c
++++ b/libxtables/xtables.c
+@@ -770,8 +770,6 @@ xtables_find_match(const char *name, enum xtables_tryload tryload,
+ 	struct xtables_match **dptr;
+ 	struct xtables_match *ptr;
+ 	const char *icmp6 = "icmp6";
+-	bool found = false;
+-	bool seen = false;
+ 
+ 	if (strlen(name) >= XT_EXTENSION_MAXNAMELEN)
+ 		xtables_error(PARAMETER_PROBLEM,
+@@ -790,10 +788,7 @@ xtables_find_match(const char *name, enum xtables_tryload tryload,
+ 		if (extension_cmp(name, (*dptr)->name, (*dptr)->family)) {
+ 			ptr = *dptr;
+ 			*dptr = (*dptr)->next;
+-			seen = true;
+-			if (!found &&
+-			    xtables_fully_register_pending_match(ptr, prev)) {
+-				found = true;
++			if (xtables_fully_register_pending_match(ptr, prev)) {
+ 				prev = ptr;
+ 				continue;
+ 			} else if (prev) {
+@@ -804,11 +799,6 @@ xtables_find_match(const char *name, enum xtables_tryload tryload,
+ 		dptr = &((*dptr)->next);
+ 	}
+ 
+-	if (seen && !found)
+-		fprintf(stderr,
+-			"Warning: Extension %s is not supported, missing kernel module?\n",
+-			name);
+-
+ 	for (ptr = xtables_matches; ptr; ptr = ptr->next) {
+ 		if (extension_cmp(name, ptr->name, ptr->family)) {
+ 			struct xtables_match *clone;
+@@ -900,8 +890,6 @@ xtables_find_target(const char *name, enum xtables_tryload tryload)
+ 	struct xtables_target *prev = NULL;
+ 	struct xtables_target **dptr;
+ 	struct xtables_target *ptr;
+-	bool found = false;
+-	bool seen = false;
+ 
+ 	/* Standard target? */
+ 	if (strcmp(name, "") == 0
+@@ -920,10 +908,7 @@ xtables_find_target(const char *name, enum xtables_tryload tryload)
+ 		if (extension_cmp(name, (*dptr)->name, (*dptr)->family)) {
+ 			ptr = *dptr;
+ 			*dptr = (*dptr)->next;
+-			seen = true;
+-			if (!found &&
+-			    xtables_fully_register_pending_target(ptr, prev)) {
+-				found = true;
++			if (xtables_fully_register_pending_target(ptr, prev)) {
+ 				prev = ptr;
+ 				continue;
+ 			} else if (prev) {
+@@ -934,11 +919,6 @@ xtables_find_target(const char *name, enum xtables_tryload tryload)
+ 		dptr = &((*dptr)->next);
+ 	}
+ 
+-	if (seen && !found)
+-		fprintf(stderr,
+-			"Warning: Extension %s is not supported, missing kernel module?\n",
+-			name);
+-
+ 	for (ptr = xtables_targets; ptr; ptr = ptr->next) {
+ 		if (extension_cmp(name, ptr->name, ptr->family)) {
+ 			struct xtables_target *clone;
