@@ -131,7 +131,7 @@ gen_device_sign(){
 # 快鳥帳號通用參數
 swjsq_json(){
 	let sequence_xl++
-	# 生成POST數據
+	# 生成POST資料
 	json_init
 	json_add_string protocolVersion "$protocolVersion"
 	json_add_string sequenceNo "$sequence_xl"
@@ -320,7 +320,7 @@ isp_bandwidth(){
 	json_get_var lasterr "errno"
 
 	case ${lasterr:=-1} in
-		# 獲取帶寬數據
+		# 獲取帶寬資訊
 		0)local can_upgrade bind_dial_account dial_account stream cur_bandwidth max_bandwidth;[ $1 = 1 ] && stream="downstream" || stream="upstream";json_get_var can_upgrade "can_upgrade"
 			json_get_var bind_dial_account "bind_dial_account";json_get_var dial_account "dial_account";json_select;json_select "bandwidth" >/dev/null 2>&1;json_get_var cur_bandwidth "$stream"
 			json_select;json_select "max_bandwidth" >/dev/null 2>&1;json_get_var max_bandwidth "$stream";json_select;cur_bandwidth=$(( ${cur_bandwidth:-0} / 1024 ));max_bandwidth=$(( ${max_bandwidth:-0} / 1024 ))
@@ -343,7 +343,7 @@ isp_bandwidth(){
 			fi;;
 		# 724 賬號存在異常
 		724)lasterr=-2;local outmsg="獲取${link_cn}網路帶寬資訊失敗。原因: 您的賬號存在異常，請聯系迅雷客服反饋";_log "$outmsg" $(( 1 | $1 * 8 | 32 ));;
-		# 3103 線路暫不支持
+		# 3103 線路暫不支援
 		3103)lasterr=0;local province sp;json_get_var province "province_name";json_get_var sp "sp_name";local outmsg="${link_cn}無法提速。原因: ${province}${sp}線路暫不支持";_log "$outmsg" $(( 1 | $1 * 8 | 32 ))
 			[ $1 = 1 ] && down_acc=0 || up_acc=0;;
 		-1)local outmsg="獲取${link_cn}網路帶寬資訊失敗。運營商伺服器未響應，請稍候";_log "$outmsg";;

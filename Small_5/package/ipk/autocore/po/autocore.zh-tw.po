@@ -23,7 +23,7 @@ msgid "Received bytes"
 msgstr "已接收字節"
 
 msgid "Received packets"
-msgstr "已接收數據包"
+msgstr "已接收封包"
 
 msgid "Received multicast"
 msgstr "已接收多播包"
@@ -38,7 +38,7 @@ msgid "Transmitted bytes"
 msgstr "已發送字節"
 
 msgid "Transmitted packets"
-msgstr "已發送數據包"
+msgstr "已發送封包"
 
 msgid "Transmit errors"
 msgstr "發送錯誤"
@@ -47,4 +47,4 @@ msgid "Transmit dropped"
 msgstr "發送丟棄"
 
 msgid "Collisions seen"
-msgstr "衝突數據包"
+msgstr "衝突封包"

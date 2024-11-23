@@ -26,7 +26,7 @@ msgid "Use Config File"
 msgstr "使用設定檔案"
 
 msgid "Empty Log File"
-msgstr "清空紀錄檔案"
+msgstr "清空日誌檔案"
 
 msgid "Every"
 msgstr "每"
@@ -65,13 +65,13 @@ msgid "This file is /etc/vlmcsd.ini"
 msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"
 
 msgid "Log"
-msgstr "紀錄"
+msgstr "日誌"
 
 msgid "Reverse"
 msgstr "倒序"
 
 msgid "Clear Log"
-msgstr "清空紀錄"
+msgstr "清空日誌"
 
 msgid "Download Log"
-msgstr "下載紀錄"
+msgstr "下載日誌"

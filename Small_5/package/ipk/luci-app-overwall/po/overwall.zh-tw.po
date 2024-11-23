@@ -437,13 +437,7 @@ msgid "BitTorrent (uTP)"
 msgstr "BT下載 (uTP)"
 
 msgid "WechatVideo"
-msgstr "微信視頻通話"
-
-msgid "DTLS 1.2"
-msgstr "DTLS 1.2 數據包"
-
-msgid "WireGuard"
-msgstr "WireGuard 數據包"
+msgstr "微信視訊通話"
 
 msgid "Camouflage Type"
 msgstr "偽裝類型"
@@ -749,16 +743,16 @@ msgid "Check Server"
 msgstr "檢查伺服器"
 
 msgid "Log"
-msgstr "紀錄"
+msgstr "日誌"
 
 msgid "Reverse"
 msgstr "倒序"
 
 msgid "Clear Log"
-msgstr "清空紀錄"
+msgstr "清空日誌"
 
 msgid "Download Log"
-msgstr "下載紀錄"
+msgstr "下載日誌"
 
 msgid "Authorization Code"
 msgstr "授權碼"

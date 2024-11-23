@@ -32,7 +32,7 @@ msgid "For NAT hole punching (default 20 seconds)"
 msgstr "設定NAT打孔間隔(默認20秒)"
 
 msgid "For registration packet when UDP NAT hole punching through supernode (default 0 for not set)"
-msgstr "設定NAT通過超級節點打孔的數據包的TTL值(默認為0，不設定)"
+msgstr "設定NAT通過超級節點打孔的封包的TTL值(默認為0，不設定)"
 
 msgid "Bind UDP port and IP"
 msgstr "綁定UDP通訊埠和IP"
@@ -47,7 +47,7 @@ msgid "For multiple edges on a machine"
 msgstr "用於同一個設備上使用多個邊緣節點"
 
 msgid "Enable packet forwarding through n2n community"
-msgstr "啟用數據包轉發"
+msgstr "啟用封包轉發"
 
 msgid "Enable full header encryption"
 msgstr "啟用完整頭加密"
@@ -59,10 +59,10 @@ msgid "Enable compression"
 msgstr "啟用壓縮"
 
 msgid "Enable LZO(1x) compression for outgoing data packets"
-msgstr "對發出的數據包啟用LZO(1x)壓縮"
+msgstr "對發出的封包啟用LZO(1x)壓縮"
 
 msgid "Enable Verbose logging"
-msgstr "啟用詳細紀錄"
+msgstr "啟用詳細日誌"
 
 msgid "Enable PMTU discovery"
 msgstr "啟用PMTU檢測"

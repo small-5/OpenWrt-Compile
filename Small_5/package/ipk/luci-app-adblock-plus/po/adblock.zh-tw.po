@@ -26,7 +26,7 @@ msgid "Update time"
 msgstr "更新時間"
 
 msgid "Adblock Plus Data"
-msgstr "Adblock Plus 規則數據庫"
+msgstr "Adblock Plus 規則資料庫"
 
 msgid "Records"
 msgstr "條紀錄"
@@ -35,7 +35,7 @@ msgid "Refresh..."
 msgstr "正在更新.."
 
 msgid "No new data!"
-msgstr "已經是最新數據，無需更新！"
+msgstr "已經是最新資料，無需更新！"
 
 msgid "Refresh Error!"
 msgstr "更新失敗！"
@@ -47,7 +47,7 @@ msgid "Total Records:"
 msgstr "新的總紀錄數："
 
 msgid "Refresh Data"
-msgstr "更新數據庫"
+msgstr "更新資料庫"
 
 msgid "Last Update Checked"
 msgstr "上一次檢查規則更新"
@@ -101,7 +101,7 @@ msgid "Reverse"
 msgstr "倒序"
 
 msgid "Clear Log"
-msgstr "清空紀錄"
+msgstr "清空日誌"
 
 msgid "Download Log"
-msgstr "下載紀錄"
+msgstr "下載日誌"

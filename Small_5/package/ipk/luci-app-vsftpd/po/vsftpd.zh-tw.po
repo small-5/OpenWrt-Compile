@@ -41,10 +41,10 @@ msgid "Connection timeout"
 msgstr "連接超時"
 
 msgid "Data Port"
-msgstr "數據通訊埠"
+msgstr "資料庫連接埠"
 
 msgid "Data connection timeout"
-msgstr "數據連接超時"
+msgstr "資料庫連接超時"
 
 msgid "Directory message filename"
 msgstr "目錄消息檔案名"
@@ -74,7 +74,7 @@ msgid "Enable download"
 msgstr "允許下載"
 
 msgid "Enable file log"
-msgstr "啟用檔案紀錄"
+msgstr "啟用檔案日誌"
 
 msgid "Enable local user"
 msgstr "啟用本地用戶"
@@ -83,7 +83,7 @@ msgid "Enable other rights"
 msgstr "允許其它權限"
 
 msgid "Enable syslog"
-msgstr "啟用系統紀錄"
+msgstr "啟用系統日誌"
 
 msgid "Enable upload"
 msgstr "允許上傳"
@@ -107,7 +107,7 @@ msgid "FTP Server - General Settings"
 msgstr "FTP 伺服器 - 常規設定"
 
 msgid "FTP Server - Log Settings"
-msgstr "FTP 伺服器 - 紀錄設定"
+msgstr "FTP 伺服器 - 日誌設定"
 
 msgid "FTP Server - Virtual User %q"
 msgstr "FTP 伺服器 - 虛擬用戶 %q"
@@ -155,10 +155,10 @@ msgid "Local Users"
 msgstr "本地用戶"
 
 msgid "Log Settings"
-msgstr "紀錄設定"
+msgstr "日誌設定"
 
 msgid "Log file"
-msgstr "紀錄檔案"
+msgstr "日誌檔案"
 
 msgid "Max clients"
 msgstr "最大連接數"
