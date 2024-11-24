@@ -1,35 +1,13 @@
-From aa3b56e289fba7425e649a608c333622ffd9c367 Mon Sep 17 00:00:00 2001
-From: Syrone Wong <wong.syrone@gmail.com>
-Date: Sat, 9 Apr 2022 13:24:19 +0800
-Subject: [PATCH] firewall4: add fullcone support
-
-fullcone is drop-in replacement of masq for non-udp traffic
-
-add runtime fullcone rule check, disable it globally if fullcone expr is
-invalid
-
-defaults.fullcone and defaults.fullcone6 are switches for IPv4 and IPv6
-respectively, most IPv6 traffic do NOT need this FullCone NAT functionality.
-
-Renew: ZiMing Mo <msylgj@immortalwrt.org>
----
- root/etc/config/firewall                      |  2 ++
- root/usr/share/firewall4/templates/ruleset.uc | 16 ++++++++++++++--
- .../firewall4/templates/zone-fullcone.uc      |  4 ++++
- root/usr/share/ucode/fw4.uc                   | 69 ++++++++++++++++++-
- 4 files changed, 89 insertions(+), 4 deletions(-)
- create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
-
 --- a/root/usr/share/firewall4/templates/ruleset.uc
 +++ b/root/usr/share/firewall4/templates/ruleset.uc
 @@ -327,6 +327,12 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
  		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
  {%   endfor %}
-+{%   if (zone.masq && fw4.default_option("fullcone")): %}
++{%   if (zone.masq && zone.fullcone): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
 +{%   endif %}
-+{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && zone.fullcone6): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
 +{%   endif %}
  {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
@@ -40,7 +18,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
  {%   endfor %}
 -{%   if (zone.masq): %}
-+{%   if (zone.masq && !fw4.default_option("fullcone")): %}
++{%   if (zone.masq && !zone.fullcone): %}
  {%    for (let saddrs in zone.masq4_src_subnets): %}
  {%     for (let daddrs in zone.masq4_dest_subnets): %}
  		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
@@ -48,17 +26,17 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  {%    endfor %}
  {%   endif %}
 -{%   if (zone.masq6): %}
-+{%   if (zone.masq6 && !fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && !zone.fullcone6): %}
  {%    for (let saddrs in zone.masq6_src_subnets): %}
  {%     for (let daddrs in zone.masq6_dest_subnets): %}
  		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
  {%     endfor %}
  {%    endfor %}
  {%   endif %}
-+{%   if (zone.masq && fw4.default_option("fullcone")): %}
++{%   if (zone.masq && zone.fullcone): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
 +{%   endif %}
-+{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && zone.fullcone6): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
 +{%   endif %}
  {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
@@ -66,20 +44,13 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  
 --- /dev/null
 +++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
-@@ -0,0 +1,4 @@
-+{# /usr/share/firewall4/templates/zone-fullcone.uc #}
+@@ -0,0 +1,3 @@
 +		meta nfproto {{ fw4.nfproto(family) }} fullcone comment "!fw4: Handle {{
 +		zone.name
 +}} {{ fw4.nfproto(family, true) }} fullcone NAT {{ direction }} traffic"
 --- a/root/usr/share/ucode/fw4.uc
 +++ b/root/usr/share/ucode/fw4.uc
-@@ -1,3 +1,5 @@
-+// /usr/share/ucode/fw4.uc
-+
- const fs = require("fs");
- const uci = require("uci");
- const ubus = require("ubus");
-@@ -489,6 +491,25 @@ function nft_try_hw_offload(devices) {
+@@ -489,6 +489,24 @@ function nft_try_hw_offload(devices) {
  	return (rc == 0);
  }
  
@@ -101,11 +72,10 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
 +	}
 +	return ok;
 +}
-+
  
  return {
  	read_kernel_version: function() {
-@@ -855,6 +876,18 @@ return {
+@@ -855,6 +873,18 @@ return {
  			warn(`[!] ${msg}\n`);
  	},
  
@@ -124,7 +94,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	get: function(sid, opt) {
  		return this.cursor.get("firewall", sid, opt);
  	},
-@@ -1036,6 +1069,21 @@ return {
+@@ -1036,6 +1066,21 @@ return {
  		}
  	},
  
@@ -146,7 +116,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	parse_policy: function(val) {
  		return this.parse_enum(val, [
  			"accept",
-@@ -1475,6 +1523,7 @@ return {
+@@ -1475,6 +1520,7 @@ return {
  			"dnat",
  			"snat",
  			"masquerade",
@@ -154,35 +124,30 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  			"accept",
  			"reject",
  			"drop"
-@@ -1946,6 +1995,8 @@ return {
- 		}
+@@ -2005,6 +2051,9 @@ return {
  
- 		let defs = this.parse_options(data, {
+ 			masq6: [ "bool" ],
+ 
 +			fullcone: [ "bool", "0" ],
 +			fullcone6: [ "bool", "0" ],
- 			input: [ "policy", "drop" ],
- 			output: [ "policy", "drop" ],
- 			forward: [ "policy", "drop" ],
-@@ -1980,6 +2031,11 @@ return {
- 
- 		delete defs.syn_flood;
- 
-+		if (!nft_try_fullcone()) {
-+			delete defs.fullcone;
-+			warn("nft_try_fullcone failed, disable fullcone globally\n");
-+		}
 +
- 		this.state.defaults = defs;
- 	},
- 
-@@ -2205,10 +2261,23 @@ return {
+ 			extra: [ "string", null, UNSUPPORTED ],
+ 			extra_src: [ "string", null, UNSUPPORTED ],
+ 			extra_dest: [ "string", null, UNSUPPORTED ],
+@@ -2205,10 +2254,29 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
 -		if (zone.masq || zone.masq6)
++		if (!nft_try_fullcone()) {
++			delete zone.fullcone;
++			delete zone.fullcone6;
++			warn("nft_try_fullcone failed, disable fullcone globally\n");
++		}
++
 +		if (zone.masq) {
  			zone.dflags.snat = true;
-+			if (this.state.defaults.fullcone) {
++			if (zone.fullcone) {
 +				zone.dflags.dnat = true;
 +				this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
 +			}
@@ -190,14 +155,14 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
 +
 +		if (zone.masq6) {
 +			zone.dflags.snat = true;
-+			if (this.state.defaults.fullcone6) {
++			if (zone.fullcone6) {
 +				zone.dflags.dnat = true;
 +				this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
 +			}
 +		}
  
 -		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
-+		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
++		if ((zone.auto_helper && !(zone.masq || zone.masq6 || zone.fullcone || zone.fullcone6)) || length(zone.helper)) {
  			zone.dflags.helper = true;
  
  			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
