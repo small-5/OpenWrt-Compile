@@ -1,8 +1,6 @@
-uci batch <<EOF
-	delete firewall.adblock
+uci -q get firewall.adblock >/dev/null || uci batch <<EOF
 	set firewall.adblock=include
 	set firewall.adblock.type=script
 	set firewall.adblock.path=/var/etc/adblock.include
-	set firewall.adblock.reload=1
 	commit firewall
 EOF

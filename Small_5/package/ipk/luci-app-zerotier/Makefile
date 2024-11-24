@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-zerotier
-PKG_VERSION:=1.0
+PKG_VERSION:=113.11.26
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Small_5
 
@@ -12,7 +12,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI for Zerotier
-  DEPENDS:=+zerotier +luci-compat
+  DEPENDS:=+zerotier +iptables +kmod-ipt-nat +luci-compat
   PKGARCH:=all
 endef
 

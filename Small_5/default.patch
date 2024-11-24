@@ -131,7 +131,7 @@
 
 --- a/package/network/config/firewall/files/firewall.config
 +++ b/package/network/config/firewall/files/firewall.config
-@@ -1,206 +1,51 @@
+@@ -1,206 +1,52 @@
 +
  config defaults
 -	option syn_flood	1
@@ -144,6 +144,7 @@
 +	option input 'DROP'
 +	option output 'ACCEPT'
 +	option forward 'DROP'
++	option flow_offloading '1'
  
  config zone
 -	option name		lan
@@ -690,29 +691,12 @@
 -#	option username user
 -#	option password 'plaintext_or_md5_or_$p$user_for_system_user'
 
---- a/include/target.mk
-+++ b/include/target.mk
-@@ -51,9 +51,10 @@ DEFAULT_PACKAGES.nas:=\
- ##
- DEFAULT_PACKAGES.router:=\
- 	dnsmasq \
--	firewall4 \
--	nftables \
--	kmod-nft-offload \
-+	firewall \
-+	ip6tables \
-+	iptables \
-+	kmod-ipt-offload \
- 	odhcp6c \
- 	odhcpd-ipv6only \
- 	ppp \
-
 --- a/package/base-files/Makefile
 +++ b/package/base-files/Makefile
 @@ -43,7 +43,7 @@ define Package/base-files
  	+netifd +libc +jsonfilter +SIGNED_PACKAGES:usign +SIGNED_PACKAGES:openwrt-keyring \
  	+NAND_SUPPORT:ubi-utils +fstools +fwtool \
- 	+SELINUX:procd-selinux +!SELINUX:procd +SECCOMP:procd-seccomp \
+ 	+SELINUX:procd-selinux +!SELINUX:procd +USE_SECCOMP:procd-seccomp \
 -	+SELINUX:busybox-selinux +!SELINUX:busybox +!SMALL_FLASH:procd-ujail
 +	+SELINUX:busybox-selinux +!SELINUX:busybox
    TITLE:=Base filesystem for OpenWrt

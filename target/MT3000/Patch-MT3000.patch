@@ -33,11 +33,21 @@
  
  		var table = E('table', { 'class': 'table' });
 
---- a/package/ipk/luci-app-flowoffload/root/etc/config/flowoffload
-+++ b/package/ipk/luci-app-flowoffload/root/etc/config/flowoffload
-@@ -1,4 +1,5 @@
- 
- config flowoffload
- 	option enabled '1'
-+	option hw '1'
- 
+--- a/package/network/config/firewall4/patches/001-firewall4-add-support-for-fullcone-nat.patch
++++ b/package/network/config/firewall4/patches/001-firewall4-add-support-for-fullcone-nat.patch
+@@ -1,6 +1,6 @@
+ --- a/root/etc/config/firewall
+ +++ b/root/etc/config/firewall
+-@@ -1,189 +1,49 @@
++@@ -1,189 +1,50 @@
+ +
+  config defaults
+ -	option syn_flood	1
+@@ -14,6 +14,7 @@
+ +	option output 'ACCEPT'
+ +	option forward 'DROP'
+ +	option flow_offloading '1'
+++	option flow_offloading_hw '1'
+  
+  config zone
+ -	option name		lan

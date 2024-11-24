@@ -1,8 +1,6 @@
-uci batch <<EOF
-	delete firewall.overwall
+uci -q get firewall.overwall >/dev/null || uci batch <<EOF
 	set firewall.overwall=include
 	set firewall.overwall.type=script
 	set firewall.overwall.path=/var/etc/overwall.include
-	set firewall.overwall.reload=1
 	commit firewall
 EOF

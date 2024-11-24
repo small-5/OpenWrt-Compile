@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-overwall
-PKG_VERSION:=113.11.22
+PKG_VERSION:=113.11.26
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Small_5
 
@@ -61,7 +61,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=SS/SSR/Trojan/Socks5/Tun/NaiveProxy/XRay LuCI interface
 	PKGARCH:=all
-	DEPENDS:=+openssl-util +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +smartdns +coreutils +coreutils-base64 +curl +tcping +chinadns-ng +lua +luci-compat \
+	DEPENDS:=+openssl-util +ipset +ip-full +iptables +IPV6:ip6tables +iptables-mod-tproxy +kmod-ipt-nat +IPV6:kmod-ipt-nat6 +dnsmasq-full +smartdns +coreutils +coreutils-base64 +curl +tcping +chinadns-ng +lua +luci-compat \
 	+shadowsocks-libev-ss-redir +shadowsocks-libev-ss-local +shadowsocksr-libev-redir +shadowsocksr-libev-local +TARGET_x86:dmidecode \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server:shadowsocks-libev-ss-server \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
