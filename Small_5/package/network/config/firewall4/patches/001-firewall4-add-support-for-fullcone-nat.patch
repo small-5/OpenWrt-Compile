@@ -1,0 +1,433 @@
+From aa3b56e289fba7425e649a608c333622ffd9c367 Mon Sep 17 00:00:00 2001
+From: Syrone Wong <wong.syrone@gmail.com>
+Date: Sat, 9 Apr 2022 13:24:19 +0800
+Subject: [PATCH] firewall4: add fullcone support
+
+fullcone is drop-in replacement of masq for non-udp traffic
+
+add runtime fullcone rule check, disable it globally if fullcone expr is
+invalid
+
+defaults.fullcone and defaults.fullcone6 are switches for IPv4 and IPv6
+respectively, most IPv6 traffic do NOT need this FullCone NAT functionality.
+
+Renew: ZiMing Mo <msylgj@immortalwrt.org>
+---
+ root/etc/config/firewall                      |  2 ++
+ root/usr/share/firewall4/templates/ruleset.uc | 16 ++++++++++++++--
+ .../firewall4/templates/zone-fullcone.uc      |  4 ++++
+ root/usr/share/ucode/fw4.uc                   | 69 ++++++++++++++++++-
+ 4 files changed, 89 insertions(+), 4 deletions(-)
+ create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
+
+--- a/root/usr/share/firewall4/templates/ruleset.uc
++++ b/root/usr/share/firewall4/templates/ruleset.uc
+@@ -327,6 +327,12 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
+ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
+ {%   endfor %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
++{%   endif %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
++{%   endif %}
+ {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
+ 	}
+ 
+@@ -337,20 +343,26 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
+ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
+ {%   endfor %}
+-{%   if (zone.masq): %}
++{%   if (zone.masq && !fw4.default_option("fullcone")): %}
+ {%    for (let saddrs in zone.masq4_src_subnets): %}
+ {%     for (let daddrs in zone.masq4_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
+-{%   if (zone.masq6): %}
++{%   if (zone.masq6 && !fw4.default_option("fullcone6")): %}
+ {%    for (let saddrs in zone.masq6_src_subnets): %}
+ {%     for (let daddrs in zone.masq6_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
++{%   endif %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
++{%   endif %}
+ {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
+ 	}
+ 
+--- /dev/null
++++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
+@@ -0,0 +1,4 @@
++{# /usr/share/firewall4/templates/zone-fullcone.uc #}
++		meta nfproto {{ fw4.nfproto(family) }} fullcone comment "!fw4: Handle {{
++		zone.name
++}} {{ fw4.nfproto(family, true) }} fullcone NAT {{ direction }} traffic"
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -1,3 +1,5 @@
++// /usr/share/ucode/fw4.uc
++
+ const fs = require("fs");
+ const uci = require("uci");
+ const ubus = require("ubus");
+@@ -489,6 +491,25 @@ function nft_try_hw_offload(devices) {
+ 	return (rc == 0);
+ }
+ 
++function nft_try_fullcone() {
++	let nft_test =
++		'add table inet fw4-fullcone-test; ' +
++		'add chain inet fw4-fullcone-test dstnat { ' +
++			'type nat hook prerouting priority -100; policy accept; ' +
++			'fullcone; ' +
++		'}; ' +
++		'add chain inet fw4-fullcone-test srcnat { ' +
++			'type nat hook postrouting priority -100; policy accept; ' +
++			'fullcone; ' +
++		'}; ';
++	let cmd = sprintf("/usr/sbin/nft -c '%s' 2>/dev/null", replace(nft_test, "'", "'\\''"));
++	let ok = system(cmd) == 0;
++	if (!ok) {
++		warn("nft_try_fullcone: cmd "+ cmd + "\n");
++	}
++	return ok;
++}
++
+ 
+ return {
+ 	read_kernel_version: function() {
+@@ -855,6 +876,18 @@ return {
+ 			warn(`[!] ${msg}\n`);
+ 	},
+ 
++	myinfo: function(fmt, ...args) {
++		if (getenv("QUIET"))
++			return;
++
++		let msg = sprintf(fmt, ...args);
++
++		if (getenv("TTY"))
++			warn(`\033[32m${msg}\033[m\n`);
++		else
++			warn(`[I] ${msg}\n`);
++	},
++
+ 	get: function(sid, opt) {
+ 		return this.cursor.get("firewall", sid, opt);
+ 	},
+@@ -1036,6 +1069,21 @@ return {
+ 		}
+ 	},
+ 
++	myinfo_section: function(s, msg) {
++		if (s[".name"]) {
++			if (s.name)
++				this.myinfo("Section %s (%s) %s", this.section_id(s[".name"]), s.name, msg);
++			else
++				this.myinfo("Section %s %s", this.section_id(s[".name"]), msg);
++		}
++		else {
++			if (s.name)
++				this.myinfo("ubus %s (%s) %s", s.type || "rule", s.name, msg);
++			else
++				this.myinfo("ubus %s %s", s.type || "rule", msg);
++		}
++	},
++
+ 	parse_policy: function(val) {
+ 		return this.parse_enum(val, [
+ 			"accept",
+@@ -1475,6 +1523,7 @@ return {
+ 			"dnat",
+ 			"snat",
+ 			"masquerade",
++			"fullcone",
+ 			"accept",
+ 			"reject",
+ 			"drop"
+@@ -1946,6 +1995,8 @@ return {
+ 		}
+ 
+ 		let defs = this.parse_options(data, {
++			fullcone: [ "bool", "0" ],
++			fullcone6: [ "bool", "0" ],
+ 			input: [ "policy", "drop" ],
+ 			output: [ "policy", "drop" ],
+ 			forward: [ "policy", "drop" ],
+@@ -1980,6 +2031,11 @@ return {
+ 
+ 		delete defs.syn_flood;
+ 
++		if (!nft_try_fullcone()) {
++			delete defs.fullcone;
++			warn("nft_try_fullcone failed, disable fullcone globally\n");
++		}
++
+ 		this.state.defaults = defs;
+ 	},
+ 
+@@ -2205,10 +2261,23 @@ return {
+ 		zone.related_subnets = related_subnets;
+ 		zone.related_physdevs = related_physdevs;
+ 
+-		if (zone.masq || zone.masq6)
++		if (zone.masq) {
+ 			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone) {
++				zone.dflags.dnat = true;
++				this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
++			}
++		}
++
++		if (zone.masq6) {
++			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone6) {
++				zone.dflags.dnat = true;
++				this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
++			}
++		}
+ 
+-		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
++		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
+ 			zone.dflags.helper = true;
+ 
+ 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
+--- a/root/etc/config/firewall
++++ b/root/etc/config/firewall
+@@ -1,189 +1,51 @@
++
+ config defaults
+-	option syn_flood	1
+-	option input		REJECT
+-	option output		ACCEPT
+-	option forward		REJECT
+-# Uncomment this line to disable ipv6 rules
+-#	option disable_ipv6	1
++	option synflood_protect '1'
++	option input 'DROP'
++	option output 'ACCEPT'
++	option forward 'DROP'
+ 
+ config zone
+-	option name		lan
+-	list   network		'lan'
+-	option input		ACCEPT
+-	option output		ACCEPT
+-	option forward		ACCEPT
++	option name 'lan'
++	option input 'ACCEPT'
++	option output 'ACCEPT'
++	option forward 'ACCEPT'
++	list network 'lan'
+ 
+ config zone
+-	option name		wan
+-	list   network		'wan'
+-	list   network		'wan6'
+-	option input		REJECT
+-	option output		ACCEPT
+-	option forward		REJECT
+-	option masq		1
+-	option mtu_fix		1
++	option name 'wan'
++	option input 'DROP'
++	option output 'ACCEPT'
++	option forward 'DROP'
++	option masq '1'
++	option mtu_fix '1'
++	option fullcone '1'
++	list network 'wan'
+ 
+ config forwarding
+-	option src		lan
+-	option dest		wan
+-
+-# We need to accept udp packets on port 68,
+-# see https://dev.openwrt.org/ticket/4108
+-config rule
+-	option name		Allow-DHCP-Renew
+-	option src		wan
+-	option proto		udp
+-	option dest_port	68
+-	option target		ACCEPT
+-	option family		ipv4
++	option src 'lan'
++	option dest 'wan'
+ 
+-# Allow IPv4 ping
+-config rule
+-	option name		Allow-Ping
+-	option src		wan
+-	option proto		icmp
+-	option icmp_type	echo-request
+-	option family		ipv4
+-	option target		ACCEPT
+-
+-config rule
+-	option name		Allow-IGMP
+-	option src		wan
+-	option proto		igmp
+-	option family		ipv4
+-	option target		ACCEPT
++config include
++	option path '/etc/firewall.user'
+ 
+-# Allow DHCPv6 replies
+-# see https://github.com/openwrt/openwrt/issues/5066
+ config rule
+-	option name		Allow-DHCPv6
+-	option src		wan
+-	option proto		udp
+-	option dest_port	546
+-	option family		ipv6
+-	option target		ACCEPT
++	option name 'Allow-DHCPv6'
++	option family 'ipv6'
++	list proto 'udp'
++	option src 'wan'
++	list dest_ip 'fc00::/6'
++	option dest_port '546'
++	option target 'ACCEPT'
+ 
+ config rule
+-	option name		Allow-MLD
+-	option src		wan
+-	option proto		icmp
+-	option src_ip		fe80::/10
+-	list icmp_type		'130/0'
+-	list icmp_type		'131/0'
+-	list icmp_type		'132/0'
+-	list icmp_type		'143/0'
+-	option family		ipv6
+-	option target		ACCEPT
+-
+-# Allow essential incoming IPv6 ICMP traffic
+-config rule
+-	option name		Allow-ICMPv6-Input
+-	option src		wan
+-	option proto	icmp
+-	list icmp_type		echo-request
+-	list icmp_type		echo-reply
+-	list icmp_type		destination-unreachable
+-	list icmp_type		packet-too-big
+-	list icmp_type		time-exceeded
+-	list icmp_type		bad-header
+-	list icmp_type		unknown-header-type
+-	list icmp_type		router-solicitation
+-	list icmp_type		neighbour-solicitation
+-	list icmp_type		router-advertisement
+-	list icmp_type		neighbour-advertisement
+-	option limit		1000/sec
+-	option family		ipv6
+-	option target		ACCEPT
+-
+-# Allow essential forwarded IPv6 ICMP traffic
+-config rule
+-	option name		Allow-ICMPv6-Forward
+-	option src		wan
+-	option dest		*
+-	option proto		icmp
+-	list icmp_type		echo-request
+-	list icmp_type		echo-reply
+-	list icmp_type		destination-unreachable
+-	list icmp_type		packet-too-big
+-	list icmp_type		time-exceeded
+-	list icmp_type		bad-header
+-	list icmp_type		unknown-header-type
+-	option limit		1000/sec
+-	option family		ipv6
+-	option target		ACCEPT
+-
+-config rule
+-	option name		Allow-IPSec-ESP
+-	option src		wan
+-	option dest		lan
+-	option proto		esp
+-	option target		ACCEPT
+-
+-config rule
+-	option name		Allow-ISAKMP
+-	option src		wan
+-	option dest		lan
+-	option dest_port	500
+-	option proto		udp
+-	option target		ACCEPT
+-
+-
+-### EXAMPLE CONFIG SECTIONS
+-# do not allow a specific ip to access wan
+-#config rule
+-#	option src		lan
+-#	option src_ip	192.168.45.2
+-#	option dest		wan
+-#	option proto	tcp
+-#	option target	REJECT
+-
+-# block a specific mac on wan
+-#config rule
+-#	option dest		wan
+-#	option src_mac	00:11:22:33:44:66
+-#	option target	REJECT
+-
+-# block incoming ICMP traffic on a zone
+-#config rule
+-#	option src		lan
+-#	option proto	ICMP
+-#	option target	DROP
+-
+-# port redirect port coming in on wan to lan
+-#config redirect
+-#	option src			wan
+-#	option src_dport	80
+-#	option dest			lan
+-#	option dest_ip		192.168.16.235
+-#	option dest_port	80
+-#	option proto		tcp
+-
+-# port redirect of remapped ssh port (22001) on wan
+-#config redirect
+-#	option src		wan
+-#	option src_dport	22001
+-#	option dest		lan
+-#	option dest_port	22
+-#	option proto		tcp
+-
+-### FULL CONFIG SECTIONS
+-#config rule
+-#	option src		lan
+-#	option src_ip	192.168.45.2
+-#	option src_mac	00:11:22:33:44:55
+-#	option src_port	80
+-#	option dest		wan
+-#	option dest_ip	194.25.2.129
+-#	option dest_port	120
+-#	option proto	tcp
+-#	option target	REJECT
++	option name 'Allow-NDP'
++	option family 'ipv6'
++	list proto 'icmp'
++	option src 'wan'
++	list icmp_type 'neighbour-advertisement'
++	list icmp_type 'neighbour-solicitation'
++	list icmp_type 'redirect'
++	list icmp_type 'router-advertisement'
++	option target 'ACCEPT'
+ 
+-#config redirect
+-#	option src		lan
+-#	option src_ip	192.168.45.2
+-#	option src_mac	00:11:22:33:44:55
+-#	option src_port		1024
+-#	option src_dport	80
+-#	option dest_ip	194.25.2.129
+-#	option dest_port	120
+-#	option proto	tcp

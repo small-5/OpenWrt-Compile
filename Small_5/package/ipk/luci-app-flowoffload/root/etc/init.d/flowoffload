@@ -5,7 +5,7 @@ A="flowoffload.@flowoffload[0]"
 B="firewall.@defaults[0]"
 C="$B.flow_offloading"
 D="$B.flow_offloading_hw"
-E="uci commit firewall;/etc/init.d/firewall restart >/dev/null 2>&1"
+E="uci commit firewall;/etc/init.d/firewall reload >/dev/null 2>&1"
 G="sysctl -w net.ipv4.tcp_congestion_control"
 
 flow(){

@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-flowoffload
-PKG_VERSION:=1.1
-PKG_RELEASE:=2
+PKG_VERSION:=113.11.25
+PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
