@@ -227,13 +227,15 @@
 
 --- a/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -177,6 +177,10 @@ return view.extend({
+@@ -177,6 +177,12 @@ return view.extend({
  			return null;
  		};
  
-+		o = s.taboption('general', form.Flag, 'fullcone', _('Full Cone'));
-+		o.editable = true;
-+		o.depends('masq', '1');
++		if (L.hasSystemFeature('fullcone')) {
++			o = s.taboption('general', form.Flag, 'fullcone', _('Full Cone NAT'));
++			if (fw4)
++				o = s.taboption('general', form.Flag, 'fullcone6', _('Full Cone NAT6'));
++		}
 +
  		o = s.taboption('general', form.Flag, 'mtu_fix', _('MSS clamping'));
  		o.modalonly = true;
@@ -302,6 +304,14 @@
  	setLocaltime: {
  		args: { localtime: 0 },
  		call: function(request) {
+@@ -197,6 +203,7 @@ const methods = {
+ 				firewall4:  access('/sbin/fw4') == true,
+ 				opkg:       access('/bin/opkg') == true,
+ 				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
++				fullcone:   access('/sys/module/xt_FULLCONENAT/refcnt') == true || access('/sys/module/nft_fullcone/refcnt') == true,
+ 				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
+ 				swconfig:   access('/sbin/swconfig') == true,
+ 				odhcpd:     access('/usr/sbin/odhcpd') == true,
 
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
@@ -1892,7 +1902,7 @@
  
  import timezones from 'luci.zoneinfo';
  
-@@ -545,49 +545,6 @@ const methods = {
+@@ -546,49 +546,6 @@ const methods = {
  		call: function() {
  			return { result: process_list() };
  		}
