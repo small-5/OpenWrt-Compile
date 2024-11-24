@@ -1,55 +1,20 @@
 #!/bin/sh /etc/rc.common
 START=60
 STOP=10
-A="flowoffload.@flowoffload[0]"
-B="firewall.@defaults[0]"
-C="$B.flow_offloading"
-D="$B.flow_offloading_hw"
-E="uci commit firewall;/etc/init.d/firewall reload >/dev/null 2>&1"
-G="sysctl -w net.ipv4.tcp_congestion_control"
-
-flow(){
-	if [ "$(uci -q get $A.enabled)" = 1 ];then
-		if [ "$(uci -q get $C)" != 1 ];then
-			uci set $C=1
-			F=1
-		fi
-		if [ "$(uci -q get $A.hw)" = 1 -a "$(uci -q get $D)" != 1 ];then
-			uci set $D=1
-			F=1
-		fi
-		if [ -z "$(uci -q get $A.hw)" -a "$(uci -q get $D)" = 1 ];then
-			uci del $D
-			F=1
-		fi
-		[ "$F" = 1 ] && eval $E
-	else
-		if [ "$(uci -q get $C)" = 1 ];then
-			uci del $C
-			F=1
-		fi
-		if [ "$(uci -q get $D)" = 1 ];then
-			uci del $D
-			F=1
-		fi
-		[ "$F" = 1 ] && eval $E
-	fi
-}
+A="sysctl -w net.ipv4.tcp_congestion_control"
 
 bbr(){
-	if [ "$(uci -q get $A.bbr)" = 1 ];then
-		$G=bbr
+	if [ "$(uci -q get flowoffload.@flowoffload[0].bbr)" = 1 ];then
+		$A=bbr
 	else
-		$G=cubic
+		$A=cubic
 	fi
 }
 
 start(){
-	flow
 	bbr
 }
 
 stop(){
-	flow
 	bbr
 }

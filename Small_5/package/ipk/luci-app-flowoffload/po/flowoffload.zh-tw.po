@@ -4,17 +4,8 @@ msgstr "Turbo ACC 網路加速"
 msgid "Turbo ACC Acceleration Settings"
 msgstr "Turbo ACC 網路加速設定"
 
-msgid "Opensource Linux Flow Offload driver (Fast Path or HWNAT)<br/>FULLCONE NAT needs to be set on the firewall page"
-msgstr "開源 Linux Flow Offload 驅動 (支持 Fast Path 或者 HWNAT)<br/>FULLCONE NAT需要在防火墻頁面設定"
-
-msgid "Enable"
-msgstr "啟用"
-
-msgid "Enable software flow offloading for connections. (decrease cpu load / increase routing throughput)"
-msgstr "開啟 Flow Offloading 轉發加速. (降低CPU占用 / 增強路由轉發性能，和多WAN或者QOS功能可能會沖突)"
-
-msgid "Enable Hardware NAT (Requires hardware NAT support)"
-msgstr "啟用硬體NAT加速（需要硬體 NAT 支援）"
+msgid "Opensource Linux Flow Offload driver (Fast Path or HWNAT)"
+msgstr "開源 Linux Flow Offload 驅動 (支持 Fast Path 或者 HWNAT)"
 
 msgid "Enable BBR"
 msgstr "啟用 BBR"
