@@ -4,7 +4,7 @@ PKG_NAME:=luci-app-arpbind
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
 PKG_LICENSE:=GPLv2
-PKG_MAINTAINER:=Small_5
+PKG_MAINTAINER:=Maha_5
 
 include $(INCLUDE_DIR)/package.mk
 
