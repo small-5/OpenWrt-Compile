@@ -728,14 +728,17 @@
 -#	option prefix /protected/url/path
 -#	option username user
 -#	option password 'plaintext_or_md5_or_$p$user_for_system_user'
---- a/package/base-files/Makefile
-+++ b/package/base-files/Makefile
-@@ -43,7 +43,7 @@ define Package/base-files
- 	+netifd +libc +jsonfilter +SIGNED_PACKAGES:usign +SIGNED_PACKAGES:openwrt-keyring \
- 	+NAND_SUPPORT:ubi-utils +fstools +fwtool \
- 	+SELINUX:procd-selinux +!SELINUX:procd +USE_SECCOMP:procd-seccomp \
--	+SELINUX:busybox-selinux +!SELINUX:busybox +!SMALL_FLASH:procd-ujail
-+	+SELINUX:busybox-selinux +!SELINUX:busybox
-   TITLE:=Base filesystem for OpenWrt
-   URL:=http://openwrt.org/
-   VERSION:=$(PKG_RELEASE)~$(lastword $(subst -, ,$(REVISION)))
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -90,11 +90,6 @@ else
+   endif
+ endif
+ 
+-# include ujail on systems with enough storage
+-ifeq ($(filter small_flash,$(FEATURES)),)
+-  DEFAULT_PACKAGES+=procd-ujail
+-endif
+-
+ # Add device specific packages (here below to allow device type set from subtarget)
+ DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
+ 
