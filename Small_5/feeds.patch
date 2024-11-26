@@ -613,7 +613,7 @@
 
 --- a/feeds/packages/net/miniupnpd/files/upnpd.config
 +++ b/feeds/packages/net/miniupnpd/files/upnpd.config
-@@ -1,28 +1,26 @@
+@@ -1,28 +1,23 @@
 -config upnpd config
 -	option enabled		0
 -	option enable_natpmp	1
@@ -630,14 +630,11 @@
 -	option igdv1		1
 +
 +config upnpd 'config'
-+	option enabled '1'
-+	option igdv1 '1'
++	option enabled '0'
 +	option download '1024'
 +	option upload '512'
 +	option internal_iface 'lan'
 +	option port '5000'
-+	option clean_ruleset_threshold '20'
-+	option clean_ruleset_interval '600'
 +	option upnp_lease_file '/var/run/miniupnpd.leases'
  
  config perm_rule
@@ -646,11 +643,11 @@
 -	option int_addr		0.0.0.0/0	# Does not override secure_mode
 -	option int_ports	1024-65535
 -	option comment		"Allow high ports"
-+	option action 'allow'
++	option comment 'Allow high ports'
 +	option ext_ports '1024-65535'
 +	option int_addr '0.0.0.0/0'
 +	option int_ports '1024-65535'
-+	option comment 'Allow high ports'
++	option action 'allow'
  
  config perm_rule
 -	option action		deny
@@ -658,11 +655,11 @@
 -	option int_addr		0.0.0.0/0
 -	option int_ports	0-65535
 -	option comment		"Default deny"
-+	option action 'deny'
++	option comment 'Default deny'
 +	option ext_ports '0-65535'
 +	option int_addr '0.0.0.0/0'
 +	option int_ports '0-65535'
-+	option comment 'Default deny'
++	option action 'deny'
 +
 
 --- a/feeds/packages/net/miniupnpd/patches/200-remove-default-cflags.patch
