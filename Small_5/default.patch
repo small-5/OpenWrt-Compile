@@ -8,7 +8,6 @@
  		bool "Compile with support for patented functionality"
  		help
  		  When this option is disabled, software which provides patented functionality
-
 --- a/config/Config-images.in
 +++ b/config/Config-images.in
 @@ -240,7 +240,7 @@ menu "Target Images"
@@ -20,7 +19,6 @@
  		help
  		  If you don't know, 5 seconds is a reasonable default.
  
-
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
 @@ -49,7 +49,7 @@ generate_static_network() {
@@ -107,7 +105,6 @@
  	EOF
  
  	if json_is_a system object; then
-
 --- a/package/base-files/files/etc/board.d/99-default_network
 +++ b/package/base-files/files/etc/board.d/99-default_network
 @@ -8,8 +8,15 @@
@@ -128,7 +125,6 @@
  
  board_config_flush
  
-
 --- a/package/network/config/firewall/files/firewall.config
 +++ b/package/network/config/firewall/files/firewall.config
 @@ -1,206 +1,52 @@
@@ -377,7 +373,6 @@
 -#	option dest_ip	194.25.2.129
 -#	option dest_port	120
 -#	option proto	tcp
-
 --- a/package/network/config/firewall4/Makefile
 +++ b/package/network/config/firewall4/Makefile
 @@ -9,9 +9,9 @@ PKG_RELEASE:=1
@@ -393,7 +388,6 @@
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=ISC
  
-
 --- a/package/network/services/dnsmasq/files/dhcp.conf
 +++ b/package/network/services/dnsmasq/files/dhcp.conf
 @@ -1,37 +1,25 @@
@@ -456,7 +450,6 @@
 -config dhcp wan
 -	option interface	wan
 -	option ignore	1
-
 --- a/package/network/services/odhcpd/files/odhcpd.defaults
 +++ b/package/network/services/odhcpd/files/odhcpd.defaults
 @@ -11,41 +11,20 @@
@@ -506,7 +499,52 @@
  add_list dhcp.lan.ra_flags=managed-config
  add_list dhcp.lan.ra_flags=other-config
  commit dhcp
-
+--- a/package/network/services/ppp/files/lib/netifd/ppp6-up
++++ b/package/network/services/ppp/files/lib/netifd/ppp6-up
+@@ -26,6 +26,7 @@ if [ -n "$AUTOIPV6" ]; then
+ 	[ -n "$ZONE" ] && json_add_string zone "$ZONE"
+ 	[ -n "$EXTENDPREFIX" ] && json_add_string extendprefix 1
+ 	[ -n "$IP6TABLE" ] && json_add_string ip6table $IP6TABLE
++	[ -n "$REQPREFIX" ] && json_add_string reqprefix $REQPREFIX
+ 	[ -n "$PEERDNS" ] && json_add_boolean peerdns $PEERDNS
+ 	[ "$NOSOURCEFILTER" = "1" ] && json_add_boolean sourcefilter "0"
+ 	[ "$DELEGATE" = "0" ] && json_add_boolean delegate "0"
+--- a/package/network/services/ppp/files/ppp.sh
++++ b/package/network/services/ppp/files/ppp.sh
+@@ -79,6 +79,7 @@ ppp_generic_init_config() {
+ 	proto_config_add_int mtu
+ 	proto_config_add_string pppname
+ 	proto_config_add_string unnumbered
++	proto_config_add_string reqprefix
+ 	proto_config_add_boolean persist
+ 	proto_config_add_int maxfail
+ 	proto_config_add_int holdoff
+@@ -90,7 +91,7 @@ ppp_generic_setup() {
+ 	local config="$1"; shift
+ 	local localip
+ 
+-	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered persist maxfail holdoff peerdns sourcefilter delegate
++	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered reqprefix persist maxfail holdoff peerdns sourcefilter delegate
+ 
+ 	[ ! -e /proc/sys/net/ipv6 ] && ipv6=0 || json_get_var ipv6 ipv6
+ 
+@@ -101,6 +102,8 @@ ppp_generic_setup() {
+ 		autoipv6=1
+ 	fi
+ 
++	[ "$autoipv6" = 1 ] || reqprefix=""
++
+ 	if [ "${demand:-0}" -gt 0 ]; then
+ 		demand="precompiled-active-filter /etc/ppp/filter demand idle $demand"
+ 	else
+@@ -145,6 +148,7 @@ ppp_generic_setup() {
+ 		${lcp_failure:+lcp-echo-interval $lcp_interval lcp-echo-failure $lcp_failure $lcp_adaptive} \
+ 		${ipv6:++ipv6} \
+ 		${autoipv6:+set AUTOIPV6=1} \
++		${reqprefix:+set REQPREFIX=$reqprefix} \
+ 		${ip6table:+set IP6TABLE=$ip6table} \
+ 		${peerdns:+set PEERDNS=$peerdns} \
+ 		${sourcefilter:+set NOSOURCEFILTER=1} \
 --- a/package/network/services/uhttpd/files/uhttpd.config
 +++ b/package/network/services/uhttpd/files/uhttpd.config
 @@ -1,151 +1,31 @@
@@ -690,7 +728,6 @@
 -#	option prefix /protected/url/path
 -#	option username user
 -#	option password 'plaintext_or_md5_or_$p$user_for_system_user'
-
 --- a/package/base-files/Makefile
 +++ b/package/base-files/Makefile
 @@ -43,7 +43,7 @@ define Package/base-files
