@@ -37,9 +37,11 @@
 
 --- a/package/firmware/intel-microcode/Makefile
 +++ b/package/firmware/intel-microcode/Makefile
-@@ -39,14 +39,13 @@
+@@ -38,15 +38,15 @@
+ endef
  
  define Build/Compile
++	rm -f $(PKG_BUILD_DIR)/intel-ucode.cpio
  	IUCODE_TOOL=$(STAGING_DIR)/../host/bin/iucode_tool $(MAKE) -C $(PKG_BUILD_DIR)
 -	mkdir $(PKG_BUILD_DIR)/intel-ucode-ipkg
 -	$(STAGING_DIR)/../host/bin/iucode_tool -q \
