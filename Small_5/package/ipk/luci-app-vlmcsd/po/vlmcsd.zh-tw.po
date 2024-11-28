@@ -1,8 +1,8 @@
 msgid "KMS RUNNING"
-msgstr "KMS 執行中"
+msgstr "KMS執行中"
 
 msgid "KMS NOT RUNNING"
-msgstr "KMS 未執行"
+msgstr "KMS未執行"
 
 msgid "KMS Server"
 msgstr "KMS 伺服器"
@@ -11,7 +11,7 @@ msgid "Base Setting"
 msgstr "基本設定"
 
 msgid "KMS Server Settings"
-msgstr "KMS 伺服器設定"
+msgstr "KMS伺服器設定"
 
 msgid "A KMS Serever Emulator to active your Windows or Office<br/>Current Version"
 msgstr "用於激活Windows或Office的KMS模擬伺服器<br/>當前版本"
@@ -20,13 +20,13 @@ msgid "Enable"
 msgstr "啟用"
 
 msgid "Auto activate"
-msgstr "自動激活局域網用戶端"
+msgstr "自動激活區域網路用戶端"
 
 msgid "Use Config File"
-msgstr "使用設定檔案"
+msgstr "使用設定檔"
 
 msgid "Empty Log File"
-msgstr "清空日誌檔案"
+msgstr "清空日誌檔"
 
 msgid "Every"
 msgstr "每"
@@ -59,7 +59,7 @@ msgid "Local Port"
 msgstr "本地連接埠"
 
 msgid "Config File"
-msgstr "配置文件"
+msgstr "設定檔"
 
 msgid "This file is /etc/vlmcsd.ini"
 msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"

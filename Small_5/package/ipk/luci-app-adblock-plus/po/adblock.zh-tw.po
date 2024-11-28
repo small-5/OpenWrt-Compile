@@ -2,7 +2,7 @@ msgid "Base Setting"
 msgstr "基本設定"
 
 msgid "Support AdGuardHome/Host/DNSMASQ Rules"
-msgstr "支持 AdGuardHome/Host/DNSMASQ 規則"
+msgstr "支援AdGuardHome/Host/DNSMASQ規則"
 
 msgid "RUNNING"
 msgstr "執行中"
@@ -14,10 +14,10 @@ msgid "Enable"
 msgstr "啟用"
 
 msgid "Block Apple iOS OTA update"
-msgstr "攔截 Apple iOS 的OTA更新"
+msgstr "封鎖Apple iOS的OTA更新"
 
 msgid "Block CNshort APP and Website"
-msgstr "攔截 短視頻 APP 和網站"
+msgstr "封鎖短影音APP和網站"
 
 msgid "Enable automatic update rules"
 msgstr "啟用規則自動更新"
@@ -26,7 +26,7 @@ msgid "Update time"
 msgstr "更新時間"
 
 msgid "Adblock Plus Data"
-msgstr "Adblock Plus 規則資料庫"
+msgstr "Adblock Plus規則資料庫"
 
 msgid "Records"
 msgstr "條紀錄"
@@ -55,8 +55,8 @@ msgstr "上一次檢查規則更新"
 msgid "Subscribe 3rd Rules Data"
 msgstr "訂閱第三方去廣告規則"
 
-msgid "AdGuardHome / Host / DNSMASQ rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)"
-msgstr "AdGuardHome / Host / DNSMASQ 規則自動識別<br/>自動去除重覆的規則(包括Adblock Plus規則)"
+msgid "AdGuardHome/Host/DNSMASQ rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)"
+msgstr "AdGuardHome/Host/DNSMASQ規則自動識別<br/>自動去除重覆的規則(包括Adblock Plus規則)"
 
 msgid "Save 3rd rules to flash"
 msgstr "儲存第三方規則到閃存"
@@ -77,22 +77,22 @@ msgid "Anti-AD Rules Subscribe"
 msgstr "廣告過濾規則訂閱URL"
 
 msgid "White Domain List"
-msgstr "域名白名單"
+msgstr "網域白名單"
 
 msgid "Will Never filter these Domain"
-msgstr "永不過濾白名單內的域名"
+msgstr "永不篩選白名單內的網域"
 
 msgid "Block Domain List"
-msgstr "域名黑名單"
+msgstr "網域黑名單"
 
 msgid "Will Always block these Domain"
-msgstr "攔截黑名單內的域名"
+msgstr "封鎖黑名單內的網域"
 
 msgid "Block IP List"
 msgstr "IP黑名單"
 
 msgid "Will Always block these IP"
-msgstr "攔截黑名單內的IP位址"
+msgstr "封鎖黑名單內的IP位址"
 
 msgid "Update Log"
 msgstr "更新日誌"

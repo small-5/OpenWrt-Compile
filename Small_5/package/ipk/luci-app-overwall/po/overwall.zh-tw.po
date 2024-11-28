@@ -2,10 +2,10 @@ msgid "Base Setting"
 msgstr "基本設定"
 
 msgid "Overwall Settings"
-msgstr "Overwall 設定"
+msgstr "Overwall設定"
 
 msgid "<h3>Support SS/SSR/VMESS/VLESS/TROJAN/NAIVEPROXY/SOCKS5/TUN</h3>"
-msgstr "<h3>支持 SS/SSR/VMESS/VLESS/TROJAN/NAIVEPROXY/SOCKS5/TUN</h3>"
+msgstr "<h3>支援SS/SSR/VMESS/VLESS/TROJAN/NAIVEPROXY/SOCKS5/TUN</h3>"
 
 msgid "Main Server"
 msgstr "主伺服器"
@@ -14,19 +14,19 @@ msgid "UDP Server"
 msgstr "UDP伺服器"
 
 msgid "Youtube Server"
-msgstr "Youtube 伺服器"
+msgstr "Youtube伺服器"
 
 msgid "Netflix Server"
-msgstr "Netflix 伺服器"
+msgstr "Netflix伺服器"
 
 msgid "Custom Server"
 msgstr "自定義伺服器"
 
 msgid "TG Server"
-msgstr "TG 伺服器"
+msgstr "TG伺服器"
 
 msgid "Socks5 Server"
-msgstr "Socks5 服務端"
+msgstr "Socks5服務端"
 
 msgid "Local Servers"
 msgstr "本機服務端"
@@ -113,25 +113,25 @@ msgid "1 Thread"
 msgstr "單線程"
 
 msgid "2 Threads"
-msgstr "2 線程"
+msgstr "2線程"
 
 msgid "4 Threads"
-msgstr "4 線程"
+msgstr "4線程"
 
 msgid "8 Threads"
-msgstr "8 線程"
+msgstr "8線程"
 
 msgid "16 Threads"
-msgstr "16 線程"
+msgstr "16線程"
 
 msgid "32 Threads"
-msgstr "32 線程"
+msgstr "32線程"
 
 msgid "64 Threads"
-msgstr "64 線程"
+msgstr "64線程"
 
 msgid "128 Threads"
-msgstr "128 線程"
+msgstr "128線程"
 
 msgid "Running Mode"
 msgstr "執行模式"
@@ -167,22 +167,22 @@ msgid "Preload Google and Telegram IP segments (GFW mode only)"
 msgstr "預加載谷歌與Telegram IP段(僅GFW模式生效)"
 
 msgid "Preload Domain"
-msgstr "預加載域名"
+msgstr "預加載網域"
 
 msgid "Preload the domain name (GFW mode only,Solve the problem that the terminal fails to access the website in the list after Overwall restart or switch node)"
-msgstr "預加載域名(僅GFW模式生效，有效解決重啟Overwall或者切換節點以後訪問預加載名單內的網站失敗)"
+msgstr "預加載網域(僅GFW模式生效，有效解決重啟Overwall或者切換節點以後訪問預加載名單內的網站失敗)"
 
 msgid "All Ports"
-msgstr "所有通訊埠（默認）"
+msgstr "所有連接埠（默認）"
 
 msgid "Only Common Ports"
-msgstr "僅常用通訊埠（不走P2P流量到代理）"
+msgstr "僅常用連接埠（不走P2P流量到代理）"
 
 msgid "Proxy Ports"
-msgstr "需要代理的通訊埠"
+msgstr "需要代理的連接埠"
 
 msgid "Custom format is 22,53,80,143,443,465,587,853,993,995,9418"
-msgstr "自定義通訊埠格式為 22,53,80,143,443,465,587,853,993,995,9418"
+msgstr "自定義連接埠格式為22,53,80,143,443,465,587,853,993,995,9418"
 
 msgid "Take over LAN DNS"
 msgstr "接管局域網DNS"
@@ -212,7 +212,7 @@ msgid "Foreign DNS"
 msgstr "牆外DNS"
 
 msgid "Custom DNS format is 1.1.1.1:53,1.0.0.1 ,Port optional"
-msgstr "自定義DNS格式為 1.1.1.1:53,1.0.0.1 ,通訊埠可選"
+msgstr "自定義DNS格式為1.1.1.1:53,1.0.0.1，連接埠可選"
 
 msgid "Domestic Resolve Dns Mode"
 msgstr "牆內DNS解析方式"
@@ -230,7 +230,7 @@ msgid "Domestic DoH"
 msgstr "牆內DoH"
 
 msgid "Custom DNS format is https://dns.alidns.com/dns-query or https://223.5.5.5/dns-query"
-msgstr "自定義DNS格式為 https://dns.alidns.com/dns-query 或 https://223.5.5.5/dns-query"
+msgstr "自定義DNS格式為https://dns.alidns.com/dns-query或https://223.5.5.5/dns-query"
 
 msgid "Ali"
 msgstr "阿里"
@@ -239,13 +239,13 @@ msgid "ISP"
 msgstr "運營商DNS"
 
 msgid "Use ISP DNS to resolve DoH domain"
-msgstr "使用運營商DNS解析DoH域名"
+msgstr "使用運營商DNS解析DoH網域"
 
 msgid "Domestic DNS"
 msgstr "牆內DNS"
 
 msgid "Custom DNS format is 223.5.5.5:53,223.6.6.6 ,Port optional"
-msgstr "自定義DNS格式為 223.5.5.5:53,223.6.6.6 ,通訊埠可選"
+msgstr "自定義DNS格式為223.5.5.5:53,223.6.6.6 ,連接埠可選"
 
 msgid "Severs Nodes"
 msgstr "伺服器節點"
@@ -263,19 +263,19 @@ msgid "Auto Update Server subscription"
 msgstr "自動更新伺服器訂閱"
 
 msgid "Update time (every day)"
-msgstr "更新時間 (每天)"
+msgstr "更新時間（每天）"
 
 msgid "Subscribe URL"
 msgstr "訂閱URL"
 
 msgid "Support SS/SSR/VMESS/VLESS/TROJAN"
-msgstr "支持SS/SSR/VMESS/VLESS/TROJAN"
+msgstr "支援SS/SSR/VMESS/VLESS/TROJAN"
 
 msgid "Subscribe Filter Words"
 msgstr "訂閱節點關鍵字過濾"
 
 msgid "Filter Words splited by /"
-msgstr "命中關鍵字的節點將被丟棄或保留。多個關鍵字用 / 分隔"
+msgstr "命中關鍵字的節點將被丟棄或保留。多個關鍵字用/分隔"
 
 msgid "Filter Words Mode"
 msgstr "節點關鍵字過濾模式"
@@ -323,7 +323,7 @@ msgid "None"
 msgstr "無"
 
 msgid "Server Port"
-msgstr "通訊埠"
+msgstr "連接埠"
 
 msgid "TCPing Latency"
 msgstr "TCPing延遲"
@@ -356,7 +356,7 @@ msgid "Edit Overwall Server"
 msgstr "編輯伺服器配置"
 
 msgid "Fatal on get option,please help in debug"
-msgstr "代碼錯誤,請協助處理"
+msgstr "代碼錯誤，請協助處理"
 
 msgid "URL to clipboard successful"
 msgstr "覆制鏈接到剪貼板成功"
@@ -365,7 +365,7 @@ msgid "URL to clipboard failed"
 msgstr "覆制鏈接到剪貼板失敗"
 
 msgid "Not a supported Format"
-msgstr "不支持此種格式"
+msgstr "不支援此種格式"
 
 msgid "Paste URL Here"
 msgstr "在此處粘貼鏈接"
@@ -425,16 +425,16 @@ msgid "Obfs param(optional)"
 msgstr "混淆參數（可選）"
 
 msgid "VLESS Encryption"
-msgstr "VLESS 加密"
+msgstr "VLESS加密"
 
 msgid "Transport"
 msgstr "傳輸協議"
 
 msgid "VideoCall (SRTP)"
-msgstr "視頻通話 (SRTP)"
+msgstr "視頻通話(SRTP)"
 
 msgid "BitTorrent (uTP)"
-msgstr "BT下載 (uTP)"
+msgstr "BT下載(uTP)"
 
 msgid "WechatVideo"
 msgstr "微信視訊通話"
@@ -482,10 +482,10 @@ msgid "allowInsecure"
 msgstr "允許不安全連接"
 
 msgid "Allowing insecure connection will not check the validity of the TLS certificate provided by the remote host"
-msgstr "允許不安全連接將不會檢查遠端主機所提供的 TLS 憑證的有效性"
+msgstr "允許不安全連接將不會檢查遠端主機所提供的TLS憑證的有效性"
 
 msgid "Flow"
-msgstr "流控 (Flow)"
+msgstr "流控(Flow)"
 
 msgid "Concurrency"
 msgstr "最大並發連接數"
@@ -521,19 +521,19 @@ msgid "Enable Auto Switch"
 msgstr "啟用自動切換"
 
 msgid "Local Port"
-msgstr "本地通訊埠"
+msgstr "本地連接埠"
 
 msgid "KcpTun Enable"
-msgstr "KcpTun 啟用"
+msgstr "KcpTun啟用"
 
 msgid "KcpTun Port"
-msgstr "KcpTun 通訊埠"
+msgstr "KcpTun連接埠"
 
 msgid "KcpTun Password"
-msgstr "KcpTun 密碼"
+msgstr "KcpTun密碼"
 
 msgid "KcpTun Param"
-msgstr "KcpTun 參數"
+msgstr "KcpTun參數"
 
 msgid "Shunt Setting"
 msgstr "分流設定"
@@ -575,7 +575,7 @@ msgid "Do not use the same DNS server as the Foreign DNS or Youtube/Netflix DNS"
 msgstr "不要使用與牆外DNS或者Youtube/Netflix DNS相同的DNS"
 
 msgid "Telegram Server"
-msgstr "Telegram 伺服器"
+msgstr "Telegram伺服器"
 
 msgid "Forward Telegram Proxy through Main Proxy"
 msgstr "Telegram伺服器流量通過主服務節點中轉代理轉發"
@@ -629,7 +629,7 @@ msgid "Proxy IP by Netflix Server"
 msgstr "通過Netflix伺服器代理的IP"
 
 msgid "Custom IP AC"
-msgstr "自定義伺服器 IP訪問控制"
+msgstr "自定義伺服器IP訪問控制"
 
 msgid "Proxy IP by Custom Server"
 msgstr "通過自定義伺服器代理的IP"
@@ -644,43 +644,43 @@ msgid "Telegram IP ranges has been proxied by default,No need to add"
 msgstr "默認已代理Telegram IP段,無需加入"
 
 msgid "Domain List"
-msgstr "域名列表"
+msgstr "網域列表"
 
 msgid "Direct Domain List"
-msgstr "不走代理的域名"
+msgstr "不走代理的網域"
 
 msgid "Direct Domain List(For Vmess/Vless/SS2022)"
-msgstr "直連域名(適用於Vmess/Vless/SS2022)"
+msgstr "直連網域(適用於Vmess/Vless/SS2022)"
 
 msgid "When using Vmess/VLESS/SS2022, this list is used first and clear the Direct Domain List"
-msgstr "當使用Vmess/Vless/SS2022時請使用此列表並清空不走代理的域名列表"
+msgstr "當使用Vmess/Vless/SS2022時請使用此列表並清空不走代理的網域列表"
 
 msgid "Main Server Domain List"
-msgstr "主伺服器分流域名列表"
+msgstr "主伺服器分流網域列表"
 
 msgid "Youtube Domain List"
-msgstr "Youtube 分流域名列表"
+msgstr "Youtube分流網域列表"
 
 msgid "Netflix Domain List"
-msgstr "Netflix 分流域名列表"
+msgstr "Netflix分流網域列表"
 
 msgid "Custom Domain List"
-msgstr "自定義伺服器分流域名列表"
+msgstr "自定義伺服器分流網域列表"
 
 msgid "Oversea Domain List"
-msgstr "回牆模式域名列表"
+msgstr "回牆模式網域列表"
 
 msgid "Excluded Domain List(For Vmess/Vless/SS2022)"
-msgstr "排除嗅探域名列表(適用於Vmess/Vless/SS2022)"
+msgstr "排除嗅探網域列表(適用於Vmess/Vless/SS2022)"
 
 msgid "Preload Domain List(GFW Only)"
-msgstr "預加載域名列表(僅GFW模式)"
+msgstr "預加載網域列表(僅GFW模式)"
 
 msgid "CNAME Domain List"
-msgstr "CNAME域名列表"
+msgstr "CNAME網域列表"
 
 msgid "Use domestic dns to resolve a domain name to another domain name<br/>For example, point a.com to b.com: /a.com/b.com"
-msgstr "使用牆內DNS解析一個域名到另外一個域名<br/>比如將 a.com 指向 b.com: /a.com/b.com"
+msgstr "使用牆內DNS解析一個網域到另外一個網域<br/>比如將a.com指向b.com:/a.com/b.com"
 
 msgid "Advanced Settings"
 msgstr "進階設定"
@@ -722,13 +722,13 @@ msgid "Server Type"
 msgstr "服務端類型"
 
 msgid "Encrypt Method (SS)"
-msgstr "加密方式 (SS)"
+msgstr "加密方式(SS)"
 
 msgid "Plugin (SS)"
-msgstr "插件 (SS)"
+msgstr "插件(SS)"
 
 msgid "Warning! Please do not reuse the port!"
-msgstr "警告！請不要重覆使用通訊埠！"
+msgstr "警告！請不要重覆使用連接埠！"
 
 msgid "Enable Once Auth Mode"
 msgstr "啟用一次性認證"
