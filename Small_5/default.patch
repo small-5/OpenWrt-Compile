@@ -501,7 +501,7 @@
  commit dhcp
 --- a/package/network/services/ppp/files/lib/netifd/ppp6-up
 +++ b/package/network/services/ppp/files/lib/netifd/ppp6-up
-@@ -26,6 +26,7 @@ if [ -n "$AUTOIPV6" ]; then
+@@ -26,9 +26,11 @@ if [ -n "$AUTOIPV6" ]; then
  	[ -n "$ZONE" ] && json_add_string zone "$ZONE"
  	[ -n "$EXTENDPREFIX" ] && json_add_string extendprefix 1
  	[ -n "$IP6TABLE" ] && json_add_string ip6table $IP6TABLE
@@ -509,9 +509,13 @@
  	[ -n "$PEERDNS" ] && json_add_boolean peerdns $PEERDNS
  	[ "$NOSOURCEFILTER" = "1" ] && json_add_boolean sourcefilter "0"
  	[ "$DELEGATE" = "0" ] && json_add_boolean delegate "0"
++	[ -n "$NORELEASE" ] && json_add_string norelease 1
+ 	json_close_object
+ 	ubus call network add_dynamic "$(json_dump)"
+ fi
 --- a/package/network/services/ppp/files/ppp.sh
 +++ b/package/network/services/ppp/files/ppp.sh
-@@ -79,6 +79,7 @@ ppp_generic_init_config() {
+@@ -79,18 +79,20 @@ ppp_generic_init_config() {
  	proto_config_add_int mtu
  	proto_config_add_string pppname
  	proto_config_add_string unnumbered
@@ -519,29 +523,38 @@
  	proto_config_add_boolean persist
  	proto_config_add_int maxfail
  	proto_config_add_int holdoff
-@@ -90,7 +91,7 @@ ppp_generic_setup() {
+ 	proto_config_add_boolean sourcefilter
+ 	proto_config_add_boolean delegate
++	proto_config_add_boolean norelease
+ }
+ 
+ ppp_generic_setup() {
  	local config="$1"; shift
  	local localip
  
 -	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered persist maxfail holdoff peerdns sourcefilter delegate
-+	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered reqprefix persist maxfail holdoff peerdns sourcefilter delegate
++	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered reqprefix persist maxfail holdoff peerdns sourcefilter delegate norelease
  
  	[ ! -e /proc/sys/net/ipv6 ] && ipv6=0 || json_get_var ipv6 ipv6
  
-@@ -101,6 +102,8 @@ ppp_generic_setup() {
+@@ -101,6 +103,11 @@ ppp_generic_setup() {
  		autoipv6=1
  	fi
  
-+	[ "$autoipv6" = 1 ] || reqprefix=""
++	if [ "$autoipv6" != 1 ]; then
++		reqprefix=""
++		norelease=""
++	fi
 +
  	if [ "${demand:-0}" -gt 0 ]; then
  		demand="precompiled-active-filter /etc/ppp/filter demand idle $demand"
  	else
-@@ -145,6 +148,7 @@ ppp_generic_setup() {
+@@ -145,6 +152,8 @@ ppp_generic_setup() {
  		${lcp_failure:+lcp-echo-interval $lcp_interval lcp-echo-failure $lcp_failure $lcp_adaptive} \
  		${ipv6:++ipv6} \
  		${autoipv6:+set AUTOIPV6=1} \
 +		${reqprefix:+set REQPREFIX=$reqprefix} \
++		${norelease:+set NORELEASE=1} \
  		${ip6table:+set IP6TABLE=$ip6table} \
  		${peerdns:+set PEERDNS=$peerdns} \
  		${sourcefilter:+set NOSOURCEFILTER=1} \

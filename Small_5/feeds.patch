@@ -492,11 +492,14 @@
  				E('th', { 'class': 'th', 'title': table_title }, [ _('Table') ]),
 --- a/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
 +++ b/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
-@@ -59,6 +59,9 @@ return network.registerProtocol('pppoe', {
+@@ -59,6 +59,12 @@ return network.registerProtocol('pppoe', {
  			o.default = 'auto';
  		}
  
-+		o = s.taboption('advanced', form.Value, 'reqprefix', _('IPv6 assignment hint'), _('Assign prefix parts using this hexadecimal subprefix ID for this interface.'));
++		o = s.taboption('advanced', form.Value, 'reqprefix', _('Request IPv6-prefix of length'));
++		o.depends("ppp_ipv6", "auto");
++
++		o = s.taboption('advanced', form.Flag, 'norelease', _('Do not send a Release when restarting'), _('Enable to minimise the chance of prefix change after a restart'));
 +		o.depends("ppp_ipv6", "auto");
 +
  		o = s.taboption('advanced', form.Value, '_keepalive_failure', _('LCP echo failure threshold'), _('Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures'));
