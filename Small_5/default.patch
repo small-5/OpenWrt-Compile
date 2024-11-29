@@ -558,6 +558,30 @@
  		${ip6table:+set IP6TABLE=$ip6table} \
  		${peerdns:+set PEERDNS=$peerdns} \
  		${sourcefilter:+set NOSOURCEFILTER=1} \
+@@ -215,6 +224,7 @@ proto_pppoe_init_config() {
+ 	ppp_generic_init_config
+ 	proto_config_add_string "ac"
+ 	proto_config_add_string "service"
++	proto_config_add_string "ac_mac"
+ 	proto_config_add_string "host_uniq"
+ 	proto_config_add_int "padi_attempts"
+ 	proto_config_add_int "padi_timeout"
+@@ -233,6 +243,7 @@ proto_pppoe_setup() {
+ 
+ 	json_get_var ac ac
+ 	json_get_var service service
++	json_get_var ac_mac ac_mac
+ 	json_get_var host_uniq host_uniq
+ 	json_get_var padi_attempts padi_attempts
+ 	json_get_var padi_timeout padi_timeout
+@@ -241,6 +252,7 @@ proto_pppoe_setup() {
+ 		plugin pppoe.so \
+ 		${ac:+rp_pppoe_ac "$ac"} \
+ 		${service:+rp_pppoe_service "$service"} \
++		${ac_mac:+pppoe-mac "$ac_mac"} \
+ 		${host_uniq:+host-uniq "$host_uniq"} \
+ 		${padi_attempts:+pppoe-padi-attempts $padi_attempts} \
+ 		${padi_timeout:+pppoe-padi-timeout $padi_timeout} \
 --- a/package/network/services/uhttpd/files/uhttpd.config
 +++ b/package/network/services/uhttpd/files/uhttpd.config
 @@ -1,151 +1,31 @@

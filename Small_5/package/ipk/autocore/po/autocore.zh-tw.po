@@ -48,3 +48,9 @@ msgstr "發送丟棄"
 
 msgid "Collisions seen"
 msgstr "衝突封包"
+
+msgid "AC MAC Address"
+msgstr "存取集訊器MAC位址"
+
+msgid "Only connect to specified MAC address"
+msgstr "僅連接指定的MAC位址"
