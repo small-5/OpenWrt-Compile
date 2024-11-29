@@ -411,13 +411,13 @@
  #LUCI_LANG_END
  
  # Submenu titles
-@@ -67,8 +67,8 @@ LUCI_MENU.lib=6. Libraries
+@@ -67,8 +67,7 @@ LUCI_MENU.lib=6. Libraries
  LUCI_LC_ALIAS.bn_BD=bn
  LUCI_LC_ALIAS.nb_NO=no
  LUCI_LC_ALIAS.pt_BR=pt-br
 -LUCI_LC_ALIAS.zh_Hans=zh-cn
- LUCI_LC_ALIAS.zh_Hant=zh-tw
-+LUCI_LC_ALIAS.zh_Hans=zh-cn
+-LUCI_LC_ALIAS.zh_Hant=zh-tw
++LUCI_LC_ALIAS.zh_Hant=zh-cn
  
  # Default locations
  HTDOCS = /www
@@ -426,7 +426,7 @@
 @@ -1,5 +1,5 @@
  config core main
 -	option lang auto
-+	option lang zh_tw
++	option lang zh_cn
  	option mediaurlbase /luci-static/bootstrap
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
