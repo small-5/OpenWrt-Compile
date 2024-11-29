@@ -288,6 +288,17 @@
  		"action": {
  			"type": "view",
  			"path": "ksmbd"
+--- a/feeds/luci/applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua
++++ b/feeds/luci/applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua
+@@ -18,7 +18,7 @@ function index()
+ 	e.leaf = true
+ 	e.acl_depends = { "luci-app-nft-qos" }
+ 
+-	e = entry({"admin", "services", "nft-qos"}, cbi("nft-qos/nft-qos"), _("QoS over Nftables"), 60)
++	e = entry({"admin", "network", "nft-qos"}, cbi("nft-qos/nft-qos"), _("QoS over Nftables"), 60)
+ 	e.leaf = true
+ 	e.acl_depends = { "luci-app-nft-qos" }
+ end
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 @@ -130,6 +130,9 @@

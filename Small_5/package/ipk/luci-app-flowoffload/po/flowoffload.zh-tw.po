@@ -1,14 +1,14 @@
 msgid "Turbo ACC Center"
-msgstr "Turbo ACC 網路加速"
+msgstr "Turbo ACC網路加速"
 
 msgid "Turbo ACC Acceleration Settings"
-msgstr "Turbo ACC 網路加速設定"
+msgstr "Turbo ACC網路加速設定"
 
 msgid "Opensource Linux Flow Offload driver (Fast Path or HWNAT)"
-msgstr "開源 Linux Flow Offload 驅動 (支持 Fast Path 或者 HWNAT)"
+msgstr "開源Linux Flow Offload驅動（支援Fast Path或HWNAT）"
 
 msgid "Enable BBR"
-msgstr "啟用 BBR"
+msgstr "啟用BBR"
 
-msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
+msgid "Bottleneck Bandwidth and Round-trip propagation time(BBR)"
 msgstr "BBR擁塞控制算法可以加強TCP應用表現，但會降低路由器本機上的WIFI吞吐性能"

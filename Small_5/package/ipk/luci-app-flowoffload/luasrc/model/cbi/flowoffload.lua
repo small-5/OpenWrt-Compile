@@ -8,6 +8,6 @@ s.addremove=false
 s.anonymous=true
 
 o=s:option(Flag,"bbr",translate("Enable BBR"))
-o.description=translate("Bottleneck Bandwidth and Round-trip propagation time (BBR)")
+o.description=translate("Bottleneck Bandwidth and Round-trip propagation time(BBR)")
 
 return m
