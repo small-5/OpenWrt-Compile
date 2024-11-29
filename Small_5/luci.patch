@@ -503,6 +503,53 @@
  		}
  	}
  };
+--- a/feeds/luci/modules/luci-base/ucode/zoneinfo.uc
++++ b/feeds/luci/modules/luci-base/ucode/zoneinfo.uc
+@@ -226,17 +226,19 @@ export default {
+ 	'Asia/Brunei': '<+08>-8',
+ 	'Asia/Chita': '<+09>-9',
+ 	'Asia/Choibalsan': '<+08>-8',
++	'Asia/Chongqing': 'LST-7',
+ 	'Asia/Colombo': '<+0530>-5:30',
+ 	'Asia/Damascus': '<+03>-3',
+ 	'Asia/Dhaka': '<+06>-6',
++	'Asia/Dihua': 'XST-6',
+ 	'Asia/Dili': '<+09>-9',
+ 	'Asia/Dubai': '<+04>-4',
+ 	'Asia/Dushanbe': '<+05>-5',
+ 	'Asia/Famagusta': 'EET-2EEST,M3.5.0/3,M10.5.0/4',
+ 	'Asia/Gaza': 'EET-2EEST,M3.4.4/50,M10.4.4/50',
++	'Asia/Haerbin': 'CPST-8:30',
+ 	'Asia/Hebron': 'EET-2EEST,M3.4.4/50,M10.4.4/50',
+ 	'Asia/Ho Chi Minh': '<+07>-7',
+-	'Asia/Hong Kong': 'HKT-8',
+ 	'Asia/Hovd': '<+07>-7',
+ 	'Asia/Irkutsk': '<+08>-8',
+ 	'Asia/Jakarta': 'WIB-7',
+@@ -245,6 +247,7 @@ export default {
+ 	'Asia/Kabul': '<+0430>-4:30',
+ 	'Asia/Kamchatka': '<+12>-12',
+ 	'Asia/Karachi': 'PKT-5',
++	'Asia/Kashi': 'KST-5:30',
+ 	'Asia/Kathmandu': '<+0545>-5:45',
+ 	'Asia/Khandyga': '<+09>-9',
+ 	'Asia/Kolkata': 'IST-5:30',
+@@ -252,7 +255,6 @@ export default {
+ 	'Asia/Kuala Lumpur': '<+08>-8',
+ 	'Asia/Kuching': '<+08>-8',
+ 	'Asia/Kuwait': '<+03>-3',
+-	'Asia/Macau': 'CST-8',
+ 	'Asia/Magadan': '<+11>-11',
+ 	'Asia/Makassar': 'WITA-8',
+ 	'Asia/Manila': 'PST-8',
+@@ -275,7 +277,6 @@ export default {
+ 	'Asia/Shanghai': 'CST-8',
+ 	'Asia/Singapore': '<+08>-8',
+ 	'Asia/Srednekolymsk': '<+11>-11',
+-	'Asia/Taipei': 'CST-8',
+ 	'Asia/Tashkent': '<+05>-5',
+ 	'Asia/Tbilisi': '<+04>-4',
+ 	'Asia/Tehran': '<+0330>-3:30',
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 @@ -1,6 +1,5 @@
@@ -512,6 +559,64 @@
  			<%- end %>
  			<div class="cbi-value-description">
  				<%=self.description%>
+--- a/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzdata.lua
++++ b/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzdata.lua
+@@ -232,17 +232,19 @@ TZ = {
+ 	{ 'Asia/Brunei', '<+08>-8' },
+ 	{ 'Asia/Chita', '<+09>-9' },
+ 	{ 'Asia/Choibalsan', '<+08>-8' },
++	{ 'Asia/Chongqing', 'LST-7' },
+ 	{ 'Asia/Colombo', '<+0530>-5:30' },
+ 	{ 'Asia/Damascus', '<+03>-3' },
+ 	{ 'Asia/Dhaka', '<+06>-6' },
++	{ 'Asia/Dihua', 'XST-6' },
+ 	{ 'Asia/Dili', '<+09>-9' },
+ 	{ 'Asia/Dubai', '<+04>-4' },
+ 	{ 'Asia/Dushanbe', '<+05>-5' },
+ 	{ 'Asia/Famagusta', 'EET-2EEST,M3.5.0/3,M10.5.0/4' },
+ 	{ 'Asia/Gaza', 'EET-2EEST,M3.4.4/50,M10.4.4/50' },
++	{ 'Asia/Haerbin', 'CPST-8:30' },
+ 	{ 'Asia/Hebron', 'EET-2EEST,M3.4.4/50,M10.4.4/50' },
+ 	{ 'Asia/Ho Chi Minh', '<+07>-7' },
+-	{ 'Asia/Hong Kong', 'HKT-8' },
+ 	{ 'Asia/Hovd', '<+07>-7' },
+ 	{ 'Asia/Irkutsk', '<+08>-8' },
+ 	{ 'Asia/Jakarta', 'WIB-7' },
+@@ -251,6 +253,7 @@ TZ = {
+ 	{ 'Asia/Kabul', '<+0430>-4:30' },
+ 	{ 'Asia/Kamchatka', '<+12>-12' },
+ 	{ 'Asia/Karachi', 'PKT-5' },
++	{ 'Asia/Kashi', 'KST-5:30' },
+ 	{ 'Asia/Kathmandu', '<+0545>-5:45' },
+ 	{ 'Asia/Khandyga', '<+09>-9' },
+ 	{ 'Asia/Kolkata', 'IST-5:30' },
+@@ -258,7 +261,6 @@ TZ = {
+ 	{ 'Asia/Kuala Lumpur', '<+08>-8' },
+ 	{ 'Asia/Kuching', '<+08>-8' },
+ 	{ 'Asia/Kuwait', '<+03>-3' },
+-	{ 'Asia/Macau', 'CST-8' },
+ 	{ 'Asia/Magadan', '<+11>-11' },
+ 	{ 'Asia/Makassar', 'WITA-8' },
+ 	{ 'Asia/Manila', 'PST-8' },
+@@ -281,7 +283,6 @@ TZ = {
+ 	{ 'Asia/Shanghai', 'CST-8' },
+ 	{ 'Asia/Singapore', '<+08>-8' },
+ 	{ 'Asia/Srednekolymsk', '<+11>-11' },
+-	{ 'Asia/Taipei', 'CST-8' },
+ 	{ 'Asia/Tashkent', '<+05>-5' },
+ 	{ 'Asia/Tbilisi', '<+04>-4' },
+ 	{ 'Asia/Tehran', '<+0330>-3:30' },
+--- a/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzoffset.lua
++++ b/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzoffset.lua
+@@ -28,7 +28,7 @@ OFFSET = {
+ 	aedt  =  39600,	-- AEDT
+ 	nzst  =  43200,	-- NZST
+ 	nzdt  =  46800,	-- NZDT
+-	hkt   =  28800,	-- HKT
++	lst   =  25200,	-- LST
+ 	wib   =  25200,	-- WIB
+ 	wit   =  32400,	-- WIT
+ 	ist   =   7200,	-- IST
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 @@ -648,10 +648,12 @@ return view.extend({
@@ -572,7 +677,7 @@
  return baseclass.extend({
  	title: _('System'),
  
-@@ -25,14 +35,18 @@ return baseclass.extend({
+@@ -25,24 +35,49 @@ return baseclass.extend({
  		return Promise.all([
  			L.resolveDefault(callSystemBoard(), {}),
  			L.resolveDefault(callSystemInfo(), {}),
@@ -593,16 +698,28 @@
  
  		luciversion = luciversion.branch + ' ' + luciversion.revision;
  
-@@ -40,9 +54,20 @@ return baseclass.extend({
- 
+-		var datestr = null;
+-
  		if (systeminfo.localtime) {
  			var date = new Date(systeminfo.localtime * 1000);
-+			var Year = null;
++			var datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d';
++			var Year = date.getUTCFullYear() - 1911;
 +
 +			switch(timezone.result) {
-+				case 'CST-8': case 'HKT-8': case '':
-+					datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d \u4e2d\u539f\u6a19\u6e96\u6642\u9593';
-+					Year = date.getUTCFullYear() - 1911;
++				case 'CST-8': case '':
++					datestr = datestr + ' \u4e2d\u539f\u6a19\u6e96\u6642\u9593';
++					break;
++				case 'LST-7':
++					datestr = datestr + ' \u96b4\u8700\u6a19\u6e96\u6642\u9593';
++					break;
++				case 'XST-6':
++					datestr = datestr + ' \u65b0\u85cf\u6a19\u6e96\u6642\u9593';
++					break;
++				case 'CPST-8:30':
++					datestr = datestr + ' \u9577\u767d\u6a19\u6e96\u6642\u9593';
++					break;
++				case 'KST-5:30':
++					datestr = datestr + ' \u5d11\u5d19\u6a19\u6e96\u6642\u9593';
 +					break;
 +				default:
 +					datestr = '%04d-%02d-%02d %02d:%02d:%02d';
@@ -616,7 +733,7 @@
  				date.getUTCMonth() + 1,
  				date.getUTCDate(),
  				date.getUTCHours(),
-@@ -64,7 +89,8 @@ return baseclass.extend({
+@@ -64,7 +99,8 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0

@@ -14,7 +14,7 @@
  
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -79,8 +79,8 @@ return baseclass.extend({
+@@ -89,8 +89,8 @@ return baseclass.extend({
  		var fields = [
  			_('Hostname'),         boardinfo.hostname,
  			_('Model'),            boardinfo.model,
@@ -24,7 +24,7 @@
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
  			_('Local Time'),       datestr,
-@@ -90,7 +90,7 @@ return baseclass.extend({
+@@ -100,7 +100,7 @@ return baseclass.extend({
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
  			) : null,

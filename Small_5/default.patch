@@ -97,7 +97,7 @@
  		add system system
  		set system.@system[-1].hostname='OpenWrt'
 -		set system.@system[-1].timezone='UTC'
-+		set system.@system[-1].zonename='Asia/Taipei'
++		set system.@system[-1].zonename='Asia/Chongqing'
 +		set system.@system[-1].timezone='CST-8'
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='128'
