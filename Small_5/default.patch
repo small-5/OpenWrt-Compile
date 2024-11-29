@@ -19,6 +19,20 @@
  		help
  		  If you don't know, 5 seconds is a reasonable default.
  
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -90,11 +90,6 @@ else
+   endif
+ endif
+ 
+-# include ujail on systems with enough storage
+-ifeq ($(filter small_flash,$(FEATURES)),)
+-  DEFAULT_PACKAGES+=procd-ujail
+-endif
+-
+ # Add device specific packages (here below to allow device type set from subtarget)
+ DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
+ 
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
 @@ -49,7 +49,7 @@ generate_static_network() {
@@ -107,7 +121,7 @@
  	if json_is_a system object; then
 --- a/package/base-files/files/etc/board.d/99-default_network
 +++ b/package/base-files/files/etc/board.d/99-default_network
-@@ -8,8 +8,15 @@
+@@ -8,8 +8,15 @@ board_config_update
  
  json_is_a network object && exit 0
  
@@ -452,7 +466,7 @@
 -	option ignore	1
 --- a/package/network/services/odhcpd/files/odhcpd.defaults
 +++ b/package/network/services/odhcpd/files/odhcpd.defaults
-@@ -11,41 +11,20 @@
+@@ -11,41 +11,20 @@ json_get_vars protocol
  json_select ..
  json_select ..
  
@@ -765,17 +779,3 @@
 -#	option prefix /protected/url/path
 -#	option username user
 -#	option password 'plaintext_or_md5_or_$p$user_for_system_user'
---- a/include/target.mk
-+++ b/include/target.mk
-@@ -90,11 +90,6 @@ else
-   endif
- endif
- 
--# include ujail on systems with enough storage
--ifeq ($(filter small_flash,$(FEATURES)),)
--  DEFAULT_PACKAGES+=procd-ujail
--endif
--
- # Add device specific packages (here below to allow device type set from subtarget)
- DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
- 

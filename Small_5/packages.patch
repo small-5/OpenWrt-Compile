@@ -1,0 +1,1413 @@
+--- a/feeds/packages/net/aria2/files/aria2.conf
++++ b/feeds/packages/net/aria2/files/aria2.conf
+@@ -1,12 +1,4 @@
+ 
+-# You can use most aria2 command-line options, replace '-' with '_'.
+-# eg. 'rpc-secret' ==> 'rpc_secret'
+-#
+-# We do not support all options at this time. But you can add any option
+-# with 'list extra_settings'.
+-#
+-# You can also add new config sections to define multi instance.
+-#
+ config aria2 'main'
+ 	option enabled '0'
+ 	option user 'aria2'
+@@ -18,14 +10,3 @@ config aria2 'main'
+ 	option file_allocation 'none'
+ 	option save_session_interval '30'
+ 
+-	# Add addition Headers here.
+-	# eg. list header 'Content-Encoding: gzip'
+-	list header ''
+-
+-	# Add BT trackers here.
+-	# eg. list bt_tracker 'http://tracker.example.com/announce'
+-	list bt_tracker ''
+-
+-	# Add extra settings here.
+-	# eg. list extra_settings 'option=value'
+-	list extra_settings ''
+--- a/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
++++ b/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
+@@ -27,9 +27,8 @@
+ [ $use_https -eq 0 ] && use_https=1	# force HTTPS
+ 
+ # used variables
+-local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED
++local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED __TTL
+ local __URLBASE="https://api.cloudflare.com/client/v4"
+-local __TTL=120
+ 
+ # split __HOST __DOMAIN from $domain
+ # given data:
+@@ -188,6 +187,7 @@ __DATA=$(grep -o '"content":\s*"[^"]*' $DATFILE | grep -o '[^"]*$' | head -1)
+ # let's build data to send
+ # set proxied parameter
+ __PROXIED=$(grep -o '"proxied":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
++__TTL=$(grep -o '"ttl":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
+ 
+ # use file to work around " needed for json
+ cat > $DATFILE << EOF
+--- a/feeds/packages/net/frp/Makefile
++++ b/feeds/packages/net/frp/Makefile
+@@ -1,12 +1,16 @@
+ include $(TOPDIR)/rules.mk
+ 
++PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
++PKG_SOURCE_VERSION:=8593eff752117aaa3775db498eb0e553a251c4f6
++
+ PKG_NAME:=frp
+-PKG_VERSION:=0.51.3
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=0.61.0.113.11.20
+ PKG_RELEASE:=1
+ 
++PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
+-PKG_HASH:=83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef
++PKG_SOURCE_PROTO:=git
+ 
+ PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
+ PKG_LICENSE:=Apache-2.0
+@@ -25,8 +29,6 @@ include ../../lang/golang/golang-package.mk
+ define Package/frp/install
+ 	$(INSTALL_DIR) $(1)/usr/bin/
+ 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/$(2) $(1)/usr/bin/
+-	$(INSTALL_DIR) $(1)/etc/frp/$(2).d/
+-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/conf/$(2)_full.ini $(1)/etc/frp/$(2).d/
+ 	$(INSTALL_DIR) $(1)/etc/config/
+ 	$(INSTALL_CONF) ./files/$(2).config $(1)/etc/config/$(2)
+ 	$(INSTALL_DIR) $(1)/etc/init.d/
+--- a/feeds/packages/net/frp/files/frpc.config
++++ b/feeds/packages/net/frp/files/frpc.config
+@@ -1,23 +1,13 @@
++
+ config init
+-	option stdout 1
+-	option stderr 1
+-	option user frpc
+-	option group frpc
+-	option respawn 1
+-#	OS environments pass to frp for config file template, see
+-#	https://github.com/fatedier/frp#configuration-file-template
+-#	list env 'ENV_NAME=value'
+-#	Config files include in temporary config file.
+-#	list conf_inc '/etc/frp/frpc.d/frpc_full.ini'
++	option stdout '1'
++	option stderr '1'
++	option respawn '1'
++	option user 'root'
++	option group 'root'
+ 
+ config conf 'common'
+-	option server_addr 127.0.0.1
+-	option server_port 7000
+-#	List options with name="_" will be directly appended to config file
+-#	list _ '# Key-A=Value-A'
++	option server_addr '127.0.0.1'
++	option server_port '7000'
++	option tls_enable 'false'
+ 
+-config conf 'ssh'
+-	option type tcp
+-	option local_ip 127.0.0.1
+-	option local_port 22
+-	option remote_port 6000
+--- a/feeds/packages/net/frp/files/frpc.init
++++ b/feeds/packages/net/frp/files/frpc.init
+@@ -13,7 +13,6 @@ _err() {
+ 
+ config_cb() {
+ 	[ $# -eq 0 ] && return
+-
+ 	local type="$1"
+ 	local name="$2"
+ 	if [ "$type" = "conf" ]; then
+@@ -21,6 +20,7 @@ config_cb() {
+ 		option_cb() {
+ 			local option="$1"
+ 			local value="$2"
++			[ "$1" = enabled ] && return 0
+ 			[ "$option" = "name" ] && \
+ 			sed -i "s/$CONFIG_SECTION/$value/g" "$conf_file" || \
+ 			echo "$option = $value" >> "$conf_file";
+@@ -43,6 +43,7 @@ service_triggers()
+ }
+ 
+ start_service() {
++	[ "$(uci -q get frpc.common.enabled)" = 1 ] || return 0
+ 	local init_cfg=" "
+ 	local conf_file="/var/etc/$NAME.ini"
+ 
+@@ -69,7 +70,6 @@ start_service() {
+ 
+ 	procd_open_instance
+ 	procd_set_param command "$PROG" -c "$conf_file"
+-	procd_set_param file $conf_file
+ 	procd_set_param stdout $stdout
+ 	procd_set_param stderr $stderr
+ 	[ -n "$user" ] && procd_set_param user "$user"
+@@ -78,3 +78,11 @@ start_service() {
+ 	[ -n "$env" ] && config_list_foreach "$init_cfg" env "procd_append_param env"
+ 	procd_close_instance
+ }
++
++stop_service(){
++	rm -f /var/etc/$NAME.ini
++}
++
++reload_service() {
++	restart
++}
+--- a/feeds/packages/net/kcptun/Makefile
++++ b/feeds/packages/net/kcptun/Makefile
+@@ -1,12 +1,16 @@
+ include $(TOPDIR)/rules.mk
+ 
++PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
++PKG_SOURCE_VERSION:=df42df9d20a2a292ad3e36d1beca2890dd393a7f
++
+ PKG_NAME:=kcptun
+-PKG_VERSION:=20230207
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=20241119
+ PKG_RELEASE:=1
+ 
++PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/xtaci/kcptun/tar.gz/v${PKG_VERSION}?
+-PKG_HASH:=09054b52d5799a8e47edb36f2db335d929d5bbb63a26f7ba2fe03c64ec39d550
++PKG_SOURCE_PROTO:=git
+ 
+ PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
+ PKG_LICENSE:=MIT
+@@ -23,26 +27,6 @@ GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
+ include $(INCLUDE_DIR)/package.mk
+ include ../../lang/golang/golang-package.mk
+ 
+-define Package/kcptun-config
+-  SECTION:=net
+-  CATEGORY:=Network
+-  SUBMENU:=Web Servers/Proxies
+-  TITLE:=Kcptun Config Scripts
+-  URL:=https://github.com/xtaci/kcptun
+-  DEPENDS:=$(GO_ARCH_DEPENDS)
+-endef
+-
+-define Package/kcptun-config/conffiles
+-/etc/config/kcptun
+-endef
+-
+-define Package/kcptun-config/install
+-	$(INSTALL_DIR) $(1)/etc/config
+-	$(INSTALL_CONF) ./files/kcptun.config $(1)/etc/config/kcptun
+-	$(INSTALL_DIR) $(1)/etc/init.d
+-	$(INSTALL_BIN) ./files/kcptun.init $(1)/etc/init.d/kcptun
+-endef
+-
+ define Package/kcptun/Default
+   define Package/kcptun-$(1)
+     SECTION:=net
+@@ -50,7 +34,6 @@ define Package/kcptun/Default
+     SUBMENU:=Web Servers/Proxies
+     TITLE:=KCP-based Secure Tunnel $(1)
+     URL:=https://github.com/xtaci/kcptun
+-    DEPENDS:=+kcptun-config
+   endef
+ 
+   define Package/kcptun-$(1)/description
+@@ -66,7 +49,6 @@ This package only contains kcptun $(1).
+   endef
+ endef
+ 
+-$(eval $(call BuildPackage,kcptun-config))
+ KCPTUN_COMPONENTS:=server client
+ $(foreach component,$(KCPTUN_COMPONENTS), \
+   $(eval $(call Package/kcptun/Default,$(component))) \
+--- a/feeds/packages/net/microsocks/Makefile
++++ b/feeds/packages/net/microsocks/Makefile
+@@ -1,47 +1,37 @@
+ include $(TOPDIR)/rules.mk
+ 
++PKG_LICENSE:=MIT
++PKG_LICENSE_FILES:=LICENSE
++
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/rofl0r/microsocks.git
++PKG_SOURCE_VERSION:=98421a21c4adc4c77c0cf3a5d650cc28ad3e0107
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
+ PKG_NAME:=microsocks
+-PKG_VERSION:=1.0.4
++PKG_VERSION=113.5.25
+ PKG_RELEASE:=1
+ 
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/rofl0r/microsocks/tar.gz/v$(PKG_VERSION)?
+-PKG_HASH:=130127a87f55870f18fbe47a64d9b9533020e2900802d36a0f6fd2b074313deb
+-
+-PKG_MAINTAINER:=Mateusz Korniak <matkorgithubcom@ant.gliwice.pl>
+-PKG_LICENSE:=MIT
+-PKG_LICENSE_FILES:=COPYING
+-
+-PKG_BUILD_FLAGS:=lto
++PKG_SOURCE_SUBDIR:=$(PKG_NAME)
++PKG_SOURCE:=$(PKG_NAME).$(PKG_VERSION).$(PKG_RELEASE).tar.gz
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
++PKG_BUILD_PARALLEL:=1
+ 
+ include $(INCLUDE_DIR)/package.mk
+ 
+ define Package/microsocks
+-  SECTION:=net
+-  SUBMENU:=Web Servers/Proxies
+-  CATEGORY:=Network
+-  TITLE:=SOCKS5 TCP/IP only proxy
++	SECTION:=net
++	CATEGORY:=Network
++	TITLE:=microsocks for OpenWRT
++	DEPENDS:=
+ endef
+ 
+ define Package/microsocks/description
+-  Low resource SOCKS5 proxy.
+-  Supports only SOCKS5 protocol and forwarding only TCP/IP connections.
++	microsocks is a Tiny Proxy in C.
+ endef
+ 
+-define Package/microsocks/conffiles
+-/etc/config/microsocks
+-endef
+-
+-TARGET_LDFLAGS+= -Wl,--gc-sections,--as-needed
+-
+ define Package/microsocks/install
+ 	$(INSTALL_DIR) $(1)/usr/bin
+-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/microsocks $(1)/usr/bin
+-
+-	$(INSTALL_DIR) $(1)/etc/config
+-	$(INSTALL_CONF) ./files/microsocks.config $(1)/etc/config/microsocks
+-	$(INSTALL_DIR) $(1)/etc/init.d
+-	$(INSTALL_BIN) ./files/microsocks.init $(1)/etc/init.d/microsocks
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/microsocks $(1)/usr/bin/microsocks
+ endef
+ 
+ $(eval $(call BuildPackage,microsocks))
+--- a/feeds/packages/net/miniupnpc/Makefile
++++ b/feeds/packages/net/miniupnpc/Makefile
+@@ -8,13 +8,14 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=miniupnpc
+-PKG_VERSION:=2.2.8
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
++PKG_SOURCE_DATE:=113.10.10
++PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
++PKG_MIRROR_HASH:=skip
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
+ PKG_RELEASE:=1
+ 
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
+-PKG_HASH:=05b929679091b9921b6b6c1f25e39e4c8d1f4d46c8feb55a412aa697aee03a93
+-
+ PKG_MAINTAINER:=
+ PKG_LICENSE:=BSD-3-Clause
+ PKG_LICENSE_FILES:=LICENSE
+@@ -23,6 +24,9 @@ PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnpc
+ include $(INCLUDE_DIR)/package.mk
+ include $(INCLUDE_DIR)/cmake.mk
+ 
++TAR_OPTIONS+= --strip-components 1
++TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
++
+ define Package/miniupnpc/Default
+   TITLE:=Lightweight UPnP
+   URL:=https://miniupnp.tuxfamily.org
+--- a/feeds/packages/net/miniupnpd/Makefile
++++ b/feeds/packages/net/miniupnpd/Makefile
+@@ -8,13 +8,14 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=miniupnpd
+-PKG_VERSION:=2.3.7
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
++PKG_SOURCE_DATE:=113.10.10
++PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
++PKG_MIRROR_HASH:=skip
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
+ PKG_RELEASE:=1
+ 
+-PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_HASH:=fbdd5501039730f04a8420ea2f8f54b7df63f9f04cde2dc67fa7371e80477bbe
+-
+ PKG_MAINTAINER:=
+ PKG_LICENSE:=BSD-3-Clause
+ PKG_LICENSE_FILES:=LICENSE
+@@ -26,6 +27,9 @@ PKG_BUILD_PARALLEL:=1
+ include $(INCLUDE_DIR)/package.mk
+ include $(INCLUDE_DIR)/version.mk
+ 
++TAR_OPTIONS+= --strip-components 1
++TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
++
+ define Package/miniupnpd/Default
+   SECTION:=net
+   CATEGORY:=Network
+--- a/feeds/packages/net/miniupnpd/files/miniupnpd.init
++++ b/feeds/packages/net/miniupnpd/files/miniupnpd.init
+@@ -63,6 +63,7 @@ upnpd() {
+ 	local use_stun stun_host stun_port uuid notify_interval presentation_url
+ 	local upnp_lease_file clean_ruleset_threshold clean_ruleset_interval
+ 	local ipv6_disable
++	local force_forwarding
+ 
+ 	local enabled
+ 	config_get_bool enabled config enabled 1
+@@ -90,6 +91,7 @@ upnpd() {
+ 	config_get clean_ruleset_threshold config clean_ruleset_threshold
+ 	config_get clean_ruleset_interval config clean_ruleset_interval
+ 	config_get ipv6_disable config ipv6_disable 0
++	config_get force_forwarding config force_forwarding 0
+ 
+ 	local conf ifname ifname6
+ 
+@@ -142,6 +144,7 @@ upnpd() {
+ 		upnpd_write_bool igdv1 0 force_igd_desc_v1
+ 		upnpd_write_bool use_stun 0 ext_perform_stun
+ 		upnpd_write_bool ipv6_disable $ipv6_disable
++		upnpd_write_bool force_forwarding $force_forwarding
+ 
+ 		[ "$use_stun" -eq 0 ] || {
+ 			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"
+--- a/feeds/packages/net/miniupnpd/files/upnpd.config
++++ b/feeds/packages/net/miniupnpd/files/upnpd.config
+@@ -1,28 +1,23 @@
+-config upnpd config
+-	option enabled		0
+-	option enable_natpmp	1
+-	option enable_upnp	1
+-	option secure_mode	1
+-	option log_output	0
+-	option download		1024
+-	option upload		512
+-#by default, looked up dynamically from ubus
+-#	option external_iface	wan
+-	option internal_iface	lan
+-	option port		5000
+-	option upnp_lease_file	/var/run/miniupnpd.leases
+-	option igdv1		1
++
++config upnpd 'config'
++	option enabled '0'
++	option download '1024'
++	option upload '512'
++	option internal_iface 'lan'
++	option port '5000'
++	option upnp_lease_file '/var/run/miniupnpd.leases'
+ 
+ config perm_rule
+-	option action		allow
+-	option ext_ports	1024-65535
+-	option int_addr		0.0.0.0/0	# Does not override secure_mode
+-	option int_ports	1024-65535
+-	option comment		"Allow high ports"
++	option comment 'Allow high ports'
++	option ext_ports '1024-65535'
++	option int_addr '0.0.0.0/0'
++	option int_ports '1024-65535'
++	option action 'allow'
+ 
+ config perm_rule
+-	option action		deny
+-	option ext_ports	0-65535
+-	option int_addr		0.0.0.0/0
+-	option int_ports	0-65535
+-	option comment		"Default deny"
++	option comment 'Default deny'
++	option ext_ports '0-65535'
++	option int_addr '0.0.0.0/0'
++	option int_ports '0-65535'
++	option action 'deny'
++
+--- a/feeds/packages/net/miniupnpd/patches/200-remove-default-cflags.patch
++++ b/feeds/packages/net/miniupnpd/patches/200-remove-default-cflags.patch
+@@ -1,18 +1,25 @@
+ --- a/Makefile.linux
+ +++ b/Makefile.linux
+-@@ -25,16 +25,16 @@ CONFIG_OPTIONS ?= $(cat .configure.cache
+- CONFIG_OPTIONS += --firewall=iptables
++@@ -28,21 +28,21 @@ endif
++ 
++ # Make sucks, prove me wrong
++ , := ,
++-ifeq ($(filter -D_FORTIFY_SOURCE=% -Wp$(,)-D_FORTIFY_SOURCE=%,$(CPPFLAGS) $(CFLAGS)),)
++-CPPFLAGS += -D_FORTIFY_SOURCE=2
++-endif
+++#ifeq ($(filter -D_FORTIFY_SOURCE=% -Wp$(,)-D_FORTIFY_SOURCE=%,$(CPPFLAGS) $(CFLAGS)),)
+++#CPPFLAGS += -D_FORTIFY_SOURCE=2
+++#endif
++ CPPFLAGS += -D_GNU_SOURCE
++ 
+  #CFLAGS = -O -g -DDEBUG
+  CFLAGS ?= -Os
+ -CFLAGS += -fno-strict-aliasing
+ -CFLAGS += -fno-common
+ -CFLAGS += -fstack-protector -fPIE
+--CFLAGS += -D_FORTIFY_SOURCE=2
+ +#CFLAGS += -fno-strict-aliasing
+ +#CFLAGS += -fno-common
+ +#CFLAGS += -fstack-protector -fPIE
+-+#CFLAGS += -D_FORTIFY_SOURCE=2
+- CPPFLAGS += -D_GNU_SOURCE
+  CFLAGS += -Wall
+  CFLAGS += -Wextra -Wstrict-prototypes -Wdeclaration-after-statement
+  #CFLAGS += -Wno-missing-field-initializers
+--- a/feeds/packages/net/miniupnpd/patches/300-macos-compat.patch
++++ /dev/null
+@@ -1,22 +0,0 @@
+---- a/Makefile.linux
+-+++ b/Makefile.linux
+-@@ -96,13 +96,13 @@ endif # ($(TEST),1)
+- endif # ($(TARGET_OPENWRT,)
+- 
+- ifneq ($(shell ldd --version | grep GLIBC),)
+--GLIBC_VERSION := $(shell ldd --version | head -n 1 | sed 's/^.* //')
+--GLIBC_VERSION_MAJOR = $(shell echo $(GLIBC_VERSION) | cut -f 1 -d . )
+--GLIBC_VERSION_MINOR = $(shell echo $(GLIBC_VERSION) | cut -f 2 -d . )
+-+#GLIBC_VERSION := $(shell ldd --version | head -n 1 | sed 's/^.* //')
+-+#GLIBC_VERSION_MAJOR = $(shell echo $(GLIBC_VERSION) | cut -f 1 -d . )
+-+#GLIBC_VERSION_MINOR = $(shell echo $(GLIBC_VERSION) | cut -f 2 -d . )
+- # clock_gettime() needs -lrt when glibc version < 2.17
+--LDLIBS += $(shell if [ $(GLIBC_VERSION_MAJOR) -lt 2 ] \
+--  || [ \( $(GLIBC_VERSION_MAJOR) -eq 2 \) -a \( $(GLIBC_VERSION_MINOR) -lt 17 \) ] ; \
+--  then echo "-lrt" ; fi )
+-+#LDLIBS += $(shell if [ $(GLIBC_VERSION_MAJOR) -lt 2 ] \
+-+#  || [ \( $(GLIBC_VERSION_MAJOR) -eq 2 \) -a \( $(GLIBC_VERSION_MINOR) -lt 17 \) ] ; \
+-+#  then echo "-lrt" ; fi )
+- endif
+- 
+- TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+--- a/feeds/packages/net/nft-qos/files/nft-qos.config
++++ b/feeds/packages/net/nft-qos/files/nft-qos.config
+@@ -1,119 +1,6 @@
+-#
+-# Copyright (C) 2018 rosysong@rosinson.com
+-#
+-# This is the sample for nft-qos configuration file,
+-# which will generate a nftables script in /tmp/qos.nft
+-#
+ 
+-# Getting Started
+-# Official site      :
+-#  https://netfilter.org/projects/nftables/index.html
+-# What is nftables   :
+-#  https://wiki.nftables.org/wiki-nftables/index.php/Main_Page
+-#
+-
+-# Basic Operations
+-# Configuring Tables :
+-#  https://wiki.nftables.org/wiki-nftables/index.php/Configuring_tables
+-# Configuring Chains :
+-#  https://wiki.nftables.org/wiki-nftables/index.php/Configuring_chains
+-# Configuring Rules  :
+-#  https://wiki.nftables.org/wiki-nftables/index.php/Simple_rule_management
+-# Quick Reference (recommended)   :
+-#  https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes
+-#  https://netfilter.org/projects/nftables/manpage.html
+-#
+-
+-config default default
+-	# Enable Flag for limit rate
+-	option limit_enable '1'
+-
+-	# Options for enable Static QoS (rate limit)
+-	option limit_type 'static'
+-	# Options for Static QoS (rate limit)
+-	option static_unit_dl 'kbytes'
+-	option static_unit_ul 'kbytes'
+-	option static_rate_dl '50'
+-	option static_rate_ul '50'
+-
+-	# Options for enable Dynamic QoS
+-	# This option can not compatible with Static QoS
+-	# option limit_type 'dynamic'
+-
+-	# For Dynamic QoS Samples (unit of bandwidth is Mbps):
+-	option dynamic_cidr '192.168.1.0/24'
+-	option dynamic_cidr6 'AAAA:BBBB::1/64'
+-	option dynamic_bw_up '100'
+-	option dynamic_bw_down '100'
+-
+-	# White list for static/dynamic limit
+-	# list limit_whitelist '192.168.1.225'
+-	# list limit_whitelist '192.168.1.0/24'
+-	# list limit_whitelist 'ABCD:CDEF::1/64'
+-
+-	# Option for Mac address based traffic control
++config default 'default'
++	option limit_enable '0'
+ 	option limit_mac_enable '0'
+-
+-	# Options for Traffic Priority
+ 	option priority_enable '0'
+-	option priority_netdev 'lan'
+-
+ 
+-#
+-# For Static QoS Rate Limit Samples :
+-#
+-# For Download :
+-#config download
+-#	option hostname 'My PC'
+-#	option unit 'kbytes'
+-#	option ipaddr '192.168.1.224'
+-#	option rate '128'
+-#
+-# For Upload :
+-#config upload
+-#	option hostname 'office-pc'
+-#	option unit 'mbytes'
+-#	option ipaddr 'ABCD:FFED::1/64'
+-#	option rate '1024'
+-#
+-# For MAC address based traffic control Samples :
+-#
+-#config client
+-#	option drunit 'kbytes'
+-#	option urunit 'kbytes'
+-#	option hostname 'tvbox'
+-#	option macaddr '00:00:00:00:00:00'
+-#	option drate '300'
+-#	option urate '30'
+-#
+-# Traffic Priority Samples :
+-#
+-# protocol : tcp, udp, udplite, sctp, dccp, tcp is default
+-# priority : integer between 1-11, 1 is default and the highest
+-# service : you can input a integer or service name,
+-#           e.g. '22', '11-22', 'telnet', 'ssh, http, ftp', etc
+-#
+-#config priority
+-#	option protocol 'tcp'
+-#	option priority '-400'
+-#	option service '23'
+-#	option comment '?'
+-#
+-#config priority
+-#	option protocol 'udp'
+-#	option priority '-400'
+-#	option service 'https'
+-#	option comment '?'
+-#
+-#config priority
+-#	option protocol 'dccp'
+-#	option priority '0'
+-#	option service '22-35'
+-#	option comment '?'
+-#
+-#config priority
+-#	option protocol 'dccp'
+-#	option priority '300'
+-#	option service 'ftp,ssh,http'
+-#	option comment '?'
+-#
+--- a/feeds/packages/net/openvpn/Makefile
++++ b/feeds/packages/net/openvpn/Makefile
+@@ -90,20 +90,13 @@ define Build/Configure
+ 	)
+ endef
+ 
+-define Package/openvpn-$(BUILD_VARIANT)/conffiles
+-/etc/config/openvpn
+-/etc/openvpn.user
+-endef
+-
+ define Package/openvpn-$(BUILD_VARIANT)/install
+ 	$(INSTALL_DIR) \
+ 		$(1)/usr/sbin \
+ 		$(1)/usr/share/openvpn \
+ 		$(1)/etc/init.d \
+-		$(1)/etc/config \
+ 		$(1)/etc/openvpn \
+ 		$(1)/lib/functions \
+-		$(1)/lib/upgrade/keep.d \
+ 		$(1)/usr/libexec \
+ 		$(1)/etc/hotplug.d/openvpn
+ 
+@@ -129,18 +122,11 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+ 
+ 	$(INSTALL_DATA) \
+ 		files/etc/openvpn.user \
+-		$(1)/etc/openvpn.user
++		$(1)/etc/openvpn/openvpn.user
+ 
+ 	$(INSTALL_DATA) \
+ 		files/openvpn.options \
+ 		$(1)/usr/share/openvpn/openvpn.options
+-
+-	$(INSTALL_CONF) files/openvpn.config \
+-		$(1)/etc/config/openvpn
+-
+-	$(INSTALL_DATA) \
+-		files/openvpn.upgrade \
+-		$(1)/lib/upgrade/keep.d/openvpn
+ endef
+ 
+ $(eval $(call BuildPackage,openvpn-openssl))
+--- a/feeds/packages/net/openvpn/files/etc/hotplug.d/openvpn/01-user
++++ b/feeds/packages/net/openvpn/files/etc/hotplug.d/openvpn/01-user
+@@ -1,9 +1,9 @@
+ #!/bin/sh
+ 
+-[ -e "/etc/openvpn.user" ] && {
++[ -e /etc/openvpn/openvpn.user ] && {
+ 	env -i ACTION="$ACTION" INSTANCE="$INSTANCE" \
+ 		/bin/sh \
+-		/etc/openvpn.user \
++		/etc/openvpn/openvpn.user \
+ 		$*
+ }
+ 
+--- a/feeds/packages/net/openvpn/files/openvpn.init
++++ b/feeds/packages/net/openvpn/files/openvpn.init
+@@ -10,12 +10,13 @@ STOP=10
+ USE_PROCD=1
+ PROG=/usr/sbin/openvpn
+ 
+-PATH_INSTANCE_DIR="/etc/openvpn"
+ LIST_SEP="
+ "
+ 
+ UCI_STARTED=
+ UCI_DISABLED=
++CRON_FILE=/etc/crontabs/root
++LOG=/var/log/openvpn
+ 
+ append_param() {
+ 	local s="$1"
+@@ -43,9 +44,8 @@ append_params() {
+ 		config_get v "$s" "$p"
+ 		IFS="$LIST_SEP"
+ 		for v in $v; do
+-			[ "$v" = "frames_only" ] && [ "$p" = "compress" ] && unset v && append_param "$s" "$p" && echo >> "/var/etc/openvpn-$s.conf"
+-			[ -n "$v" ] && [ "$p" != "push" ] && append_param "$s" "$p" && echo " $v" >> "/var/etc/openvpn-$s.conf"
+-			[ -n "$v" ] && [ "$p" = "push" ] && append_param "$s" "$p" && echo " \"$v\"" >> "/var/etc/openvpn-$s.conf"
++			[ -n "$v" ] && [ "$p" != push ] && append_param "$s" "$p" && echo " $v" >> "/var/etc/openvpn-$s.conf"
++			[ -n "$v" ] && [ "$p" = push ] && append_param "$s" "$p" && echo " \"$v\"" >> "/var/etc/openvpn-$s.conf"
+ 		done
+ 		unset IFS
+ 	done
+@@ -71,14 +71,6 @@ section_enabled() {
+ 	[ $enable -gt 0 ] || [ $enabled -gt 0 ]
+ }
+ 
+-create_temp_file() {
+-	mkdir -p "$(dirname "$1")"
+-	rm -f "$1"
+-	touch "$1"
+-	chown root "$1"
+-	chmod 0600 "$1"
+-}
+-
+ openvpn_get_dev() {
+ 	local dev dev_type
+ 	local name="$1"
+@@ -113,69 +105,21 @@ openvpn_get_dev() {
+ 	echo "--dev-type $dev_type --dev $dev"
+ }
+ 
+-openvpn_get_credentials() {
+-	local name="$1"
+-	local ret=""
+-
+-	config_get cert_password "$name" cert_password
+-	config_get password "$name" password
+-	config_get username "$name" username
+-
+-	if [ -n "$cert_password" ]; then
+-		create_temp_file /var/run/openvpn.$name.pass
+-		echo "$cert_password" > /var/run/openvpn.$name.pass
+-		ret=" --askpass /var/run/openvpn.$name.pass "
+-	fi
+-
+-	if [ -n "$username" ]; then
+-		create_temp_file /var/run/openvpn.$name.userpass
+-		echo "$username" > /var/run/openvpn.$name.userpass
+-		echo "$password" >> /var/run/openvpn.$name.userpass
+-		ret=" --auth-user-pass /var/run/openvpn.$name.userpass "
+-	fi
+-
+-	# Return overrides
+-	echo "$ret"
+-}
+-
+ openvpn_add_instance() {
+ 	local name="$1"
+ 	local dir="$2"
+-	local conf=$(basename "$3")
+-	local security="$4"
+-	local up="$5"
+-	local down="$6"
+-	local route_up="$7"
+-	local route_pre_down="$8"
+-	local ipchange="$9"
+-	local client=$(grep -qEx "client|tls-client" "$dir/$conf" && echo 1)
++	local conf="$3"
+ 
+ 	procd_open_instance "$name"
+ 	procd_set_param command "$PROG"	\
+-		--syslog "openvpn($name)" \
++		--log-append "$LOG" \
+ 		--status "/var/run/openvpn.$name.status" \
+ 		--cd "$dir" \
+-		--config "$conf"
+-	# external scripts can only be called on script-security 2 or higher
+-	if [ "${security:-2}" -lt 2 ]; then
+-		logger -t "openvpn(${name})" "not adding hotplug scripts due to script-security ${security:-2}"
+-	else
+-		procd_append_param command \
+-			--up "/usr/libexec/openvpn-hotplug up $name" \
+-			--down "/usr/libexec/openvpn-hotplug down $name" \
+-			--route-up "/usr/libexec/openvpn-hotplug route-up $name" \
+-			--route-pre-down "/usr/libexec/openvpn-hotplug route-pre-down $name" \
+-			${client:+--ipchange "/usr/libexec/openvpn-hotplug ipchange $name"} \
+-			${up:+--setenv user_up "$up"} \
+-			${down:+--setenv user_down "$down"} \
+-			${route_up:+--setenv user_route_up "$route_up"} \
+-			${route_pre_down:+--setenv user_route_pre_down "$route_pre_down"} \
+-			${client:+${ipchange:+--setenv user_ipchange "$ipchange"}}
+-	fi
+-	procd_append_param command \
+-		--script-security "${security:-2}" \
+-		$(openvpn_get_dev "$name" "$conf") \
+-		$(openvpn_get_credentials "$name" "$conf")
++		--config "$conf" \
++		--up "/usr/libexec/openvpn-hotplug up $name" \
++		--down "/usr/libexec/openvpn-hotplug down $name" \
++		--script-security 2 \
++		$(openvpn_get_dev "$name" "$conf")
+ 	procd_set_param file "$dir/$conf"
+ 	procd_set_param term_timeout 15
+ 	procd_set_param respawn
+@@ -185,7 +129,7 @@ openvpn_add_instance() {
+ 	procd_close_instance
+ }
+ 
+-start_uci_instance() {
++start_instance() {
+ 	local s="$1"
+ 
+ 	config_get config "$s" config
+@@ -196,75 +140,23 @@ start_uci_instance() {
+ 		return 1
+ 	}
+ 
+-	local up down route_up route_pre_down ipchange script_security
+-	config_get up "$s" up
+-	config_get down "$s" down
+-	config_get route_up "$s" route_up
+-	config_get route_pre_down "$s" route_pre_down
+-	config_get ipchange "$s" ipchange
+-	config_get script_security "$s" script_security
+-
+ 	[ ! -d "/var/run" ] && mkdir -p "/var/run"
+ 
+ 	if [ ! -z "$config" ]; then
+ 		append UCI_STARTED "$config" "$LIST_SEP"
+-		[ -n "$script_security" ] || get_openvpn_option "$config" script_security script-security
+-		[ -n "$up" ] || get_openvpn_option "$config" up up
+-		[ -n "$down" ] || get_openvpn_option "$config" down down
+-		[ -n "$route_up" ] || get_openvpn_option "$config" route_up route-up
+-		[ -n "$route_pre_down" ] || get_openvpn_option "$config" route_pre_down route-pre-down
+-		[ -n "$ipchange" ] || get_openvpn_option "$config" ipchange ipchange
+-		openvpn_add_instance "$s" "${config%/*}" "$config" "$script_security" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
++		openvpn_add_instance "$s" "${config%/*}" "$config"
+ 		return
+ 	fi
+ 
+-	create_temp_file "/var/etc/openvpn-$s.conf"
++	[ ! -d "/var/etc" ] && mkdir -p "/var/etc"
++	[ -f "/var/etc/openvpn-$s.conf" ] && rm "/var/etc/openvpn-$s.conf"
+ 
+ 	append_bools "$s" $OPENVPN_BOOLS
+ 	append_params "$s" $OPENVPN_PARAMS
+ 	append_list "$s" $OPENVPN_LIST
++	sed -i "s/server.crt/server.crt\ncipher $(uci get openvpn.myvpn.data_ciphers)/" /var/etc/openvpn-$s.conf
+ 
+-	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf" "$script_security" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
+-}
+-
+-start_path_instances() {
+-	local path name
+-
+-	for path in ${PATH_INSTANCE_DIR}/*.conf; do
+-		[ -f "$path" ] && {
+-			name="${path##*/}"
+-			name="${name%.conf}"
+-			start_path_instance "$name"
+-		}
+-	done
+-}
+-
+-start_path_instance() {
+-	local name="$1"
+-
+-	local path name up down route_up route_pre_down ipchange
+-
+-	path="${PATH_INSTANCE_DIR}/${name}.conf"
+-
+-	# don't start configs again that are already started by uci
+-	if echo "$UCI_STARTED" | grep -qxF "$path"; then
+-		logger -t openvpn "$name.conf already started"
+-		return
+-	fi
+-
+-	# don't start configs which are set to disabled in uci
+-	if echo "$UCI_DISABLED" | grep -qxF "$path"; then
+-		logger -t openvpn "$name.conf is disabled in /etc/config/openvpn"
+-		return
+-	fi
+-
+-	get_openvpn_option "$path" up up || up=""
+-	get_openvpn_option "$path" down down || down=""
+-	get_openvpn_option "$path" route_up route-up || route_up=""
+-	get_openvpn_option "$path" route_pre_down route-pre-down || route_pre_down=""
+-	get_openvpn_option "$path" ipchange ipchange || ipchange=""
+-
+-	openvpn_add_instance "$name" "${path%/*}" "$path" "" "$up" "$down" "$route_up" "$route_pre_down" "$ipchange"
++	openvpn_add_instance "$s" "/var/etc" "openvpn-$s.conf"
+ }
+ 
+ start_service() {
+@@ -281,28 +173,43 @@ start_service() {
+ 		fi
+ 	}
+ 
+-	. /lib/functions/openvpn.sh
+ 	. /usr/share/openvpn/openvpn.options
+ 	config_load 'openvpn'
+ 
+ 	if [ -n "$instance" ]; then
+-		if [ "$instance_found" -gt 0 ]; then
+-			start_uci_instance "$instance"
+-		elif [ -f "${PATH_INSTANCE_DIR}/${instance}.conf" ]; then
+-			start_path_instance "$instance"
+-		fi
++		[ "$instance_found" -gt 0 ] || return
++		start_instance "$instance"
+ 	else
+-		config_foreach start_uci_instance 'openvpn'
++		config_foreach start_instance 'openvpn'
+ 
+-		auto="$(uci_get openvpn globals autostart 1)"
+-		if [ "$auto" = "1" ]; then
+-			start_path_instances
+-		else
+-			logger -t openvpn "Autostart for configs in '$PATH_INSTANCE_DIR/*.conf' disabled"
+-		fi
++		local path name
++		for path in /etc/openvpn/*.conf; do
++			if [ -f "$path" ]; then
++				name="${path##*/}"; name="${name%.conf}"
++
++				# don't start configs again that are already started by uci
++				if echo "$UCI_STARTED" | grep -qxF "$path"; then
++					continue
++
++				# don't start configs which are set to disabled in uci
++				elif echo "$UCI_DISABLED" | grep -qxF "$path"; then
++					logger -t openvpn "$name.conf is disabled in /etc/config/openvpn"
++					continue
++				fi
++
++				openvpn_add_instance "$name" "${path%/*}" "$path"
++			fi
++		done
++	fi
++	if ! grep -q $LOG $CRON_FILE;then
++		echo "0 1 * * * : > $LOG" >> $CRON_FILE;/etc/init.d/cron restart
+ 	fi
+ }
+ 
++reload_service() {
++	restart
++}
++
+ service_triggers() {
+ 	procd_add_reload_trigger openvpn
+ }
+--- a/feeds/packages/net/openvpn/files/openvpn.options
++++ b/feeds/packages/net/openvpn/files/openvpn.options
+@@ -23,6 +23,7 @@ connect_retry
+ connect_retry_max
+ connect_timeout
+ crl_verify
++data_ciphers
+ data_ciphers_fallback
+ dev
+ dev_node
+@@ -198,7 +199,6 @@ vlan_tagging
+ '
+ 
+ OPENVPN_LIST='
+-data_ciphers
+ ncp_ciphers
+ tls_cipher
+ tls_ciphersuites
+--- a/feeds/packages/net/smartdns/Makefile
++++ b/feeds/packages/net/smartdns/Makefile
+@@ -6,13 +6,12 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=smartdns
+-PKG_VERSION:=1.2023.43
++PKG_VERSION:=1.2099.99
+ PKG_RELEASE:=1
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
+-PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
+-PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
++PKG_SOURCE_VERSION:=fdc1a41967477698c1e320fb55592df3c6213045
+ 
+ PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
+ PKG_LICENSE:=GPL-3.0-or-later
+@@ -40,24 +39,9 @@ gets DNS query results from multiple upstream DNS servers concurrently, and retu
+ Unlike dnsmasq's all-servers, smartdns returns the fastest IP, and encrypt DNS queries with DoT or DoH. 
+ endef
+ 
+-define Package/smartdns/conffiles
+-/etc/config/smartdns
+-/etc/smartdns/address.conf
+-/etc/smartdns/blacklist-ip.conf
+-/etc/smartdns/custom.conf
+-/etc/smartdns/domain-block.list
+-/etc/smartdns/domain-forwarding.list
+-endef
+-
+ define Package/smartdns/install
+-	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/config $(1)/etc/init.d 
+-	$(INSTALL_DIR) $(1)/etc/smartdns $(1)/etc/smartdns/domain-set $(1)/etc/smartdns/conf.d/
+-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/smartdns $(1)/usr/sbin/smartdns
+-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/package/openwrt/files/etc/init.d/smartdns $(1)/etc/init.d/smartdns
+-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/package/openwrt/address.conf $(1)/etc/smartdns/address.conf
+-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/package/openwrt/blacklist-ip.conf $(1)/etc/smartdns/blacklist-ip.conf
+-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/package/openwrt/custom.conf $(1)/etc/smartdns/custom.conf
+-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/package/openwrt/files/etc/config/smartdns $(1)/etc/config/smartdns
++	$(INSTALL_DIR) $(1)/usr/bin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/smartdns $(1)/usr/bin/smartdns
+ endef
+ 
+ $(eval $(call BuildPackage,smartdns))
+--- a/feeds/packages/net/sqm-scripts/Makefile
++++ b/feeds/packages/net/sqm-scripts/Makefile
+@@ -8,13 +8,14 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=sqm-scripts
+-PKG_SOURCE_VERSION:=33a89d8e7f6c82acc0adced84cf5cd95447e6bb5
+-PKG_VERSION:=1.6.0
++PKG_SOURCE_VERSION:=95337de67a35b474d493966223f324eb1302adfc
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=1.6.0.113.6.3
+ PKG_RELEASE:=1
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
+-PKG_MIRROR_HASH:=abe04270207177fb3ba4df103ffce3db4037d52d601ce1ce4e75206ad4b21377
++PKG_MIRROR_HASH:=skip
+ 
+ PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
+ PKG_LICENSE:=GPL-2.0-only
+--- a/feeds/packages/net/xfrpc/Makefile
++++ b/feeds/packages/net/xfrpc/Makefile
+@@ -11,10 +11,10 @@ PKG_NAME:=xfrpc
+ PKG_VERSION:=3.05.661
+ PKG_RELEASE:=1
+ 
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/liudf0716/xfrpc/tar.gz/$(PKG_VERSION)?
+-PKG_HASH:=202b5eb6d4ecee5444ac5a55fea462ad106ebfb88f51ca8499553db4f701f28f
+-PKG_BUILD_DIR:=$(BUILD_DIR)/xfrpc-$(PKG_VERSION)
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
++PKG_SOURCE_VERSION:=$(PKG_VERSION)
++PKG_MIRROR_HASH:=2f955520efc8c6078e68646dcf6dff127a3a7724
+ 
+ PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
+ PKG_LICENSE:=GPL-3.0-or-later
+--- a/feeds/packages/net/xfrpc/files/xfrpc.conf
++++ b/feeds/packages/net/xfrpc/files/xfrpc.conf
+@@ -1,29 +1,9 @@
+-config xfrpc 'common'
+-	option enabled 0
+-	option loglevel 7
+-	option server_addr frps.wifidogx.online
+-	option server_port 7000
+ 
+-config tcp 'ssh01'
+-	option local_ip 127.0.0.1
+-	option local_port 22
+-	option remote_port 6000
+-	
+-#config http 'web01'
+-#	option local_ip 127.0.0.1
+-#	option local_port 8080
+-#	option custom_domains your_domain_name
+-	
+-#config https 'web02'
+-#	option local_ip 127.0.0.1
+-#	option local_port 8443
+-#	option subdomain your_domain_name
++config xfrp 'init'
++	option enabled '0'
++	option loglevel '4'
+ 
+-#config socks5 'socks01'
+-#   option remote_port 6001
++config xfrpc 'common'
++	option server_addr '0.0.0.0'
++	option server_port '7000'
+ 
+-#config plugin 'plugin01'
+-#	option remote_port 6002
+-#	option plugin_name http
+-#	option plugin_param 'youtube-url'
+-#  	option plugin_action 'download'
+--- a/feeds/packages/net/xfrpc/files/xfrpc.init
++++ b/feeds/packages/net/xfrpc/files/xfrpc.init
+@@ -1,5 +1,5 @@
+ #!/bin/sh /etc/rc.common
+-# Copyright (C) 2022 Dengfeng Liu <liudf0716@gmail.com>
++# Copyright (C) 2022 Dengfeng Liu <liu_df@qq.com>
+ #
+ # This is free software, licensed under the GNU General Public License v3.
+ # See /LICENSE for more information.
+@@ -13,107 +13,46 @@ PROG=/usr/bin/$NAME
+ 
+ 
+ handle_xfrpc() {
+-    local section="$1"
+-    local config="$2"
+-
+-    case "$section" in
+-        common)
+-            uci_validate_section xfrpc xfrpc common \
+-                'server_addr:host' \
+-                'server_port:uinteger' \
+-                'token:string:'
+-            ;;
+-    esac
+-
+-    # Write the validated settings to the config file
+-    echo "[${section}]" >> "$config"
+-    [ -z "$server_addr" ] || echo "server_addr = $server_addr" >> "$config"
+-    [ -z "$server_port" ] || echo "server_port = $server_port" >> "$config"
+-    [ -z "$token" ] || echo "token = $token" >> "$config"
+-}
+-
+-handle_tcp() {
+-	local section="$1"
++	local name="$1"
+ 	local config="$2"
+ 
+-	uci_validate_section xfrpc tcp $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'remote_port:uinteger' 
+-	
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = tcp" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$remote_port" ] || echo "remote_port = $remote_port" >> "$config"
+-}
+-
+-handle_http() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc http $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'custom_domains:string' \
+-		'subdomain:string' \
+-
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = http" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
+-	[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
+-}
+-
+-handle_https() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc https $section \
+-		'enabled:bool:1' \
+-		'local_ip:host' \
+-		'local_port:uinteger' \
+-		'custom_domains:string' \
+-		'subdomain:string' 
+-	
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = https" >> "$config"
+-	[ -z "$local_ip" ] || echo "local_ip = $local_ip" >> "$config"
+-	[ -z "$local_port" ] || echo "local_port = $local_port" >> "$config"
+-	[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
+-	[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
+-}
+-
+-handle_socks5() {
+-	local section="$1"
+-	local config="$2"
+-
+-	uci_validate_section xfrpc socks5 $section \
+-		'enabled:bool:1' \
+-		'remote_port:uinteger' 
+-
+-	# if enabled is 0, then return
+-	[ $enabled = 0 ] && return
+-
+-	# Write the validated settings to the config file
+-	echo "[${section}]" >> "$config"
+-	echo "type = socks5" >> "$config"
+-	[ -z "$remote_port" ] || echo "remote_port = $remote_port" >> "$config"
++	echo "[$name]" >> "$config"
++
++	handle_type() {
++		uci_validate_section xfrpc xfrpc "$name" \
++				'type:or("tcp", "http", "https")' \
++				'local_ip:ipaddr:127.0.0.1' \
++				'local_port:uinteger'
++
++		echo "type = $type" >> "$config"
++		echo "local_ip = $local_ip" >> "$config"
++		echo "local_port = $local_port" >> "$config"
++		case "$type" in
++		tcp|mstsc|socks5)
++			config_get remote_port "$name" remote_port
++			echo "remote_port = $remote_port" >> "$config"
++			;;
++		http|https)
++			config_get custom_domains "$name" custom_domains
++			[ -z "$custom_domains" ] || echo "custom_domains = $custom_domains" >> "$config"
++			config_get subdomain "$name" subdomain
++			[ -z "$subdomain" ] || echo "subdomain = $subdomain" >> "$config"
++			;;
++		esac
++	}
++
++	if [ "$name" = "common" ]; then
++		uci_validate_section xfrpc xfrp "$name" \
++				'server_addr:host' \
++				'server_port:uinteger' \
++				'token:string:'	
++
++		echo "server_addr = $server_addr" >> "$config"
++		echo "server_port = $server_port" >> "$config"
++		[ -z "$token" ] || echo "token = $token" >> "$config"
++	else
++		handle_type
++	fi
+ }
+ 
+ service_triggers() {
+@@ -126,7 +65,7 @@ start_service() {
+ 	> "$conf_file"
+ 	config_load "$NAME"
+ 
+-	uci_validate_section xfrpc xfrpc common \
++	uci_validate_section xfrpc xfrp init \
+ 			'enabled:bool:0' \
+ 			'loglevel:uinteger:0'
+ 
+@@ -136,10 +75,6 @@ start_service() {
+ 	fi
+ 
+ 	config_foreach handle_xfrpc xfrpc "$conf_file"
+-	config_foreach handle_tcp tcp "$conf_file"
+-	config_foreach handle_http http "$conf_file"
+-	config_foreach handle_https https "$conf_file"
+-	config_foreach handle_socks5 socks5 "$conf_file"
+ 
+ 	procd_open_instance
+ 	procd_set_param command "$PROG" -c "$conf_file" -f -d $loglevel
+--- a/feeds/packages/net/xray-core/Makefile
++++ b/feeds/packages/net/xray-core/Makefile
+@@ -1,18 +1,23 @@
+ include $(TOPDIR)/rules.mk
++PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
++PKG_SOURCE_VERSION:=513f18bf531ef5f92464c2affefed0db4f28280b
+ 
+ PKG_NAME:=xray-core
+-PKG_VERSION:=24.11.21
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=113.11.21
+ PKG_RELEASE:=1
+ 
++PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
+-PKG_HASH:=e45ad1fa11457101776d2c0d7ed8ed7c669b714e7687a85830e44a6e4a52fe05
++PKG_SOURCE_PROTO:=git
+ 
+ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
+ PKG_LICENSE:=MPL-2.0
+ PKG_LICENSE_FILES:=LICENSE
+ 
+-PKG_BUILD_DIR:=$(BUILD_DIR)/Xray-core-$(PKG_VERSION)
++PKG_CONFIG_DEPENDS:= \
++	CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE
++
+ PKG_BUILD_DEPENDS:=golang/host
+ PKG_BUILD_PARALLEL:=1
+ PKG_BUILD_FLAGS:=no-mips16
+@@ -30,7 +35,7 @@ define Package/xray/template
+   TITLE:=A proxy platform to bypass network restrictions
+   SECTION:=net
+   CATEGORY:=Network
+-  URL:=https://xtls.github.io
++  URL:=https://github.com/XTLS/Xray-core
+ endef
+ 
+ define Package/xray-core
+@@ -38,13 +43,6 @@ define Package/xray-core
+   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+ endef
+ 
+-define Package/xray-example
+-  $(call Package/xray/template)
+-  TITLE+= (example configs)
+-  DEPENDS:=xray-core
+-  PKGARCH:=all
+-endef
+-
+ define Package/xray/description
+   Xray, Penetrates Everything. It helps you to build your own computer network.
+   It secures your network connections and thus protects your privacy.
+@@ -54,36 +52,23 @@ define Package/xray-core/description
+   $(call Package/xray/description)
+ endef
+ 
+-define Package/xray-example/description
+-  $(call Package/xray/description)
++define Package/xray-core/config
++menu "Xray-core Configuration"
++	depends on PACKAGE_xray-core
+ 
+-  This includes example configuration files for xray-core.
+-endef
+-
+-define Package/xray-core/conffiles
+-/etc/xray/
+-/etc/config/xray
++config XRAY_CORE_PROVIDE_V2RAY_CORE
++	bool "Provide V2Ray binary using XRay"
++	default n
++endmenu
+ endef
+ 
+ define Package/xray-core/install
+ 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+ 	$(INSTALL_DIR) $(1)/usr/bin/
+ 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/xray
+-
+-	$(INSTALL_DIR) $(1)/etc/xray/
+-	$(INSTALL_DATA) $(CURDIR)/files/config.json.example $(1)/etc/xray/
+-
+-	$(INSTALL_DIR) $(1)/etc/config/
+-	$(INSTALL_CONF) $(CURDIR)/files/xray.conf $(1)/etc/config/xray
+-	$(INSTALL_DIR) $(1)/etc/init.d/
+-	$(INSTALL_BIN) $(CURDIR)/files/xray.init $(1)/etc/init.d/xray
+-endef
+-
+-define Package/xray-example/install
+-	$(INSTALL_DIR) $(1)/etc/xray/
+-	$(INSTALL_DATA) $(CURDIR)/files/vpoint_socks_vmess.json $(1)/etc/xray/
+-	$(INSTALL_DATA) $(CURDIR)/files/vpoint_vmess_freedom.json $(1)/etc/xray/
++ifneq ($(CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE),)
++	$(LN) xray $(1)/usr/bin/v2ray
++endif
+ endef
+ 
+ $(eval $(call BuildPackage,xray-core))
+-$(eval $(call BuildPackage,xray-example))
+--- a/feeds/packages/net/zerotier/Makefile
++++ b/feeds/packages/net/zerotier/Makefile
+@@ -5,14 +5,15 @@
+ 
+ include $(TOPDIR)/rules.mk
+ 
++PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
++PKG_SOURCE_VERSION:=b12dd19d441649ea159ba8b473e366c7694fdf76
+ PKG_NAME:=zerotier
+-PKG_VERSION:=1.14.1
++PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
++PKG_VERSION:=1.14.2.113.11.14
+ PKG_RELEASE:=1
+-
++PKG_SOURCE_PROTO:=git
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
+-PKG_HASH:=4f9f40b27c5a78389ed3f3216c850921f6298749e5819e9f2edabb2672ce9ca0
+-PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
++PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+ 
+ PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
+ PKG_LICENSE:=BSL 1.1
+@@ -62,22 +63,15 @@ endef
+ TARGET_CFLAGS += -Wl,-z,noexecstack
+ TARGET_LDFLAGS += -Wl,--as-needed -Wl,-z,noexecstack
+ 
+-define Package/zerotier/conffiles
+-/etc/config/zerotier
+-endef
+-
+ define Package/zerotier/install
+ 	$(INSTALL_DIR) $(1)/usr/bin
+ 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
+ 	$(LN) zerotier-one $(1)/usr/bin/zerotier-cli
+ 	$(LN) zerotier-one $(1)/usr/bin/zerotier-idtool
+-	$(INSTALL_DIR) $(1)/etc/uci-defaults
+ 
+ ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
+ 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
+ endif
+-
+-	$(CP) ./files/* $(1)/
+ endef
+ 
+ $(eval $(call BuildPackage,zerotier))
+--- a/feeds/packages/utils/dockerd/Makefile
++++ b/feeds/packages/utils/dockerd/Makefile
+@@ -34,7 +34,7 @@ define Package/dockerd
+   TITLE:=Docker Community Edition Daemon
+   URL:=https://www.docker.com/
+   DEPENDS:=$(GO_ARCH_DEPENDS) \
+-    +ca-certificates \
++    +ca-bundle \
+     +containerd \
+     +iptables \
+     +iptables-mod-extra \

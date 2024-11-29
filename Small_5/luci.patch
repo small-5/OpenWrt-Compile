@@ -1,0 +1,1107 @@
+--- a/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
++++ b/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
+@@ -1,5 +1,5 @@
+ {
+-	"admin/services/aria2": {
++	"admin/nas/aria2": {
+ 		"title": "Aria2",
+ 		"order": 30,
+ 		"action": {
+@@ -11,7 +11,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/aria2/config": {
++	"admin/nas/aria2/config": {
+ 		"title": "Configuration",
+ 		"order": 10,
+ 		"action": {
+@@ -20,7 +20,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/aria2/files": {
++	"admin/nas/aria2/files": {
+ 		"title": "Files",
+ 		"order": 20,
+ 		"action": {
+@@ -29,7 +29,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/aria2/log": {
++	"admin/nas/aria2/log": {
+ 		"title": "Log",
+ 		"order": 30,
+ 		"action": {
+--- a/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
++++ b/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
+@@ -56,6 +56,18 @@ return view.extend({
+ 		expect: {  }
+ 	}),
+ 
++	callReloadDDnsRule: rpc.declare({
++		object: 'luci.ddns',
++		method: 'reload_ddns_rule',
++		params: [ 'id' ]
++	}),
++
++	callStopDDnsRule: rpc.declare({
++		object: 'luci.ddns',
++		method: 'stop_ddns_rule',
++		params: [ 'id' ]
++	}),
++
+ 	services: {},
+ 
+ 	/*
+@@ -152,17 +164,14 @@ return view.extend({
+ 	},
+ 
+ 	handleReloadDDnsRule: function(m, section_id, ev) {
+-		return fs.exec('/usr/lib/ddns/dynamic_dns_lucihelper.sh',
+-							[ '-S', section_id, '--', 'start' ])
+-			.then(L.bind(m.load, m))
+-			.then(L.bind(m.render, m))
++		return this.callReloadDDnsRule(section_id)
++			.then(L.bind(this.render, this))
+ 			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
+ 	},
+ 
+ 	HandleStopDDnsRule: function(m, section_id, ev) {
+-		return fs.exec('/usr/lib/ddns/dynamic_dns_lucihelper.sh',
+-							[ '-S', section_id, '--', 'start' ])
+-			.then(L.bind(m.render, m))
++		return this.callStopDDnsRule(section_id)
++			.then(L.bind(this.render, this))
+ 			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
+ 	},
+ 
+@@ -176,7 +185,7 @@ return view.extend({
+ 
+ 	handleRestartDDns: function(m, ev) {
+ 		return this.callInitAction('ddns', 'restart')
+-			.then(L.bind(m.render, m));
++			.then(L.bind(this.render, this));
+ 	},
+ 
+ 	poll_status: function(map, data) {
+@@ -485,6 +494,7 @@ return view.extend({
+ 					uci.set('ddns', section_id, 'service_name', service_value);
+ 				}
+ 				uci.set('ddns', section_id, 'use_ipv6', ipv6_value);
++				ui.hideModal();
+ 			}).then(L.bind(m.children[1].renderMoreOptionsModal, m.children[1], section_id));
+ 		};
+ 
+--- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
++++ b/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
+@@ -3,7 +3,7 @@
+ 		"description": "Grant access to ddns procedures",
+ 		"read": {
+ 			"ubus": {
+-				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log" ],
++				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log", "reload_ddns_rule", "stop_ddns_rule" ],
+ 				"luci": [ "setInitAction" ]
+ 			},
+ 			"file": {
+--- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc
++++ b/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc
+@@ -12,11 +12,6 @@ const ddns_log_path = '/var/log/ddns';
+ const ddns_package_path = '/usr/share/ddns';
+ const ddns_run_path = '/var/run/ddns';
+ const luci_helper = '/usr/lib/ddns/dynamic_dns_lucihelper.sh';
+-const srv_name    = 'ddns-scripts';
+-const opkg_info_path    = '/usr/lib/opkg/info';
+-
+-
+-
+ 
+ function get_dateformat() {
+ 	return uci.get('ddns', 'global', 'ddns_dateformat') || '%F %R';
+@@ -158,19 +153,26 @@ const methods = {
+ 					s['check_unit'] || 'minutes'
+ 				);
+ 
+-				let convertedLastUpdate;
++				let convertedLastUpdate, timegap;
+ 				if (lastUpdate > 0) {
+ 					const epoch = time() - _uptime + lastUpdate;
+ 					convertedLastUpdate = epoch2date(epoch);
+ 					// convertedLastUpdate = get_date(epoch, dateFormat);
+-					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds);
+-					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds, dateFormat);
++					if (forceSeconds <= checkSeconds) {
++						timegap = checkSeconds;
++					} else {
++						timegap = forceSeconds - checkSeconds;
++						while (timegap > checkSeconds)
++							timegap = timegap - checkSeconds;
++					}
++					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds - timegap);
++					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds - timegap, dateFormat);
+ 				}
+ 
+-				if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - _uptime) <= 0) {
+-					nextUpdate = 'Verify';
+-				} else if (forceSeconds === 0) {
++				if (forceSeconds == 0) {
+ 					nextUpdate = 'Run once';
++				} else if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - timegap - _uptime) <= 0) {
++					nextUpdate = 'Verify';
+ 				} else if (pid == 0 && s['enabled'] == '0') {
+ 					nextUpdate = 'Disabled';
+ 				} else if (pid == 0 && s['enabled'] != '0') {
+@@ -197,21 +199,8 @@ const methods = {
+ 			const services_mtime = stat(ddns_package_path + '/list')?.mtime;
+ 			// uci.unload('ddns');
+ 			let res = {};
+-			let ver, control;
+-
+-			if (stat(opkg_info_path + `/${srv_name}.control`)?.type == 'file') {
+-				control = readfile(opkg_info_path + `/${srv_name}.control`);
+-			}
+-
+-			for (let line in split(control, '\n')) {
+-				ver = match(line, /^Version: (.+)$/)?.[1];
+-				if ( ver && length(ver) > 0 )
+-					break;
+-			}
+ 
+-			ver = ver || trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
+-
+-			res['_version'] = ver;
++			res['_version'] = trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
+ 			res['_enabled'] = init_enabled('ddns');
+ 			// res['_curr_dateformat'] = get_date(time(), dateFormat);
+ 			res['_curr_dateformat'] = epoch2date(time());
+@@ -324,6 +313,22 @@ const methods = {
+ 
+ 			return res;
+ 		}
++	},
++
++	reload_ddns_rule: {
++		args: { id: 'id' },
++		call: function(request) {
++			const result = system(`${luci_helper} -S ${request.args.id} -- start &`) == 0 ? true: false;
++			return { result: result }; 
++		}
++	},
++
++	stop_ddns_rule: {
++		args: { id: 'id' },
++		call: function(request) {
++			const result = system(`kill $(cat /tmp/run/ddns/${request.args.id}.pid) 2>/dev/null`) == 0 ? true: false;
++			return { result: result }; 
++		}
+ 	}
+ };
+ 
+--- a/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
++++ b/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
+@@ -173,10 +173,32 @@ return view.extend({
+ 			var masq_dest = uci.get('firewall', section_id, 'masq_dest')
+ 			if ((!family || family.indexOf('6') == -1) && (masq_src || masq_dest))
+ 				return _('Limited masquerading enabled');
+-
+ 			return null;
+ 		};
+ 
++		if (fw4) {
++			o = s.taboption('general', form.Flag, 'masq6', _('IPv6 Masquerading'),
++				_('Enable network address and port translation IPv6 (NAT6 or NAPT6) for outbound traffic on this zone.'));
++			o.editable = true;
++			o.tooltip = function(section_id) {
++				var family = uci.get('firewall', section_id, 'family')
++				var masq_src = uci.get('firewall', section_id, 'masq_src')
++				var masq_dest = uci.get('firewall', section_id, 'masq_dest')
++				if ((!family || family.indexOf('6') >= 0) && (masq_src || masq_dest))
++					return _('Limited masquerading enabled');
++				return null;
++			};
++		}
++
++		if (L.hasSystemFeature('fullcone')) {
++			o = s.taboption('general', form.Flag, 'fullcone', _('Full Cone NAT'));
++			o.editable = true;
++			if (fw4) {
++				o = s.taboption('general', form.Flag, 'fullcone6', _('Full Cone NAT6'));
++				o.editable = true;
++			}
++		}
++
+ 		o = s.taboption('general', form.Flag, 'mtu_fix', _('MSS clamping'));
+ 		o.modalonly = true;
+ 
+@@ -238,20 +260,6 @@ return view.extend({
+ 		o.modalonly = true;
+ 		o.multiple = true;
+ 
+-		if (fw4) {
+-			o = s.taboption('advanced', form.Flag, 'masq6', _('IPv6 Masquerading'),
+-				_('Enable network address and port translation IPv6 (NAT6 or NAPT6) for outbound traffic on this zone.'));
+-			o.modalonly = true;
+-			o.tooltip = function(section_id) {
+-				var family = uci.get('firewall', section_id, 'family')
+-				var masq_src = uci.get('firewall', section_id, 'masq_src')
+-				var masq_dest = uci.get('firewall', section_id, 'masq_dest')
+-				if ((!family || family.indexOf('6') >= 0) && (masq_src || masq_dest))
+-					return _('Limited masquerading enabled');
+-				return null;
+-			};
+-		}
+-
+ 		o = s.taboption('advanced', form.ListValue, 'family', _('Restrict to address family'));
+ 		o.value('', _('IPv4 and IPv6'));
+ 		o.value('ipv4', _('IPv4 only'));
+--- a/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
++++ b/feeds/luci/applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js
+@@ -13,10 +13,11 @@ var startupConf = [
+ 	[widgets.GroupSelect, 'group', _('Run daemon as group')],
+ 	[form.Flag, 'respawn', _('Respawn when crashed')],
+ 	[form.DynamicList, 'env', _('Environment variable'), _('OS environments pass to frp for config file template, see <a href="https://github.com/fatedier/frp#configuration-file-template">frp README</a>'), {placeholder: 'ENV_NAME=value'}],
+-	[form.DynamicList, 'conf_inc', _('Additional configs'), _('Config files include in temporary config file'), {placeholder: '/etc/frp/frpc.d/frpc_full.ini'}]
++	[form.DynamicList, 'conf_inc', _('Additional configs'), _('Config files include in temporary config file')]
+ ];
+ 
+ var commonConf = [
++	[form.Flag, 'enabled', _('Enable'), {datatype: 'bool'}],
+ 	[form.Value, 'server_addr', _('Server address'), _('ServerAddr specifies the address of the server to connect to.<br />By default, this value is "127.0.0.1".'), {datatype: 'host'}],
+ 	[form.Value, 'server_port', _('Server port'), _('ServerPort specifies the port to connect to the server on.<br />By default, this value is 7000.'), {datatype: 'port'}],
+ 	[form.Value, 'http_proxy', _('HTTP proxy'), _('HttpProxy specifies a proxy address to connect to the server through. If this value is "", the server will be connected to directly.<br />By default, this value is read from the "http_proxy" environment variable.')],
+@@ -32,7 +33,7 @@ var commonConf = [
+ 	[form.Value, 'assets_dir', _('Assets dir'), _('AssetsDir specifies the local directory that the admin server will load resources from. If this value is "", assets will be loaded from the bundled executable using statik.<br />By default, this value is "".')],
+ 	[form.Flag, 'tcp_mux', _('TCP mux'), _('TcpMux toggles TCP stream multiplexing. This allows multiple requests from a client to share a single TCP connection. If this value is true, the server must have TCP multiplexing enabled as well.<br />By default, this value is true.'), {datatype: 'bool', default: 'true'}],
+ 	[form.Value, 'user', _('User'), _('User specifies a prefix for proxy names to distinguish them from other clients. If this value is not "", proxy names will automatically be changed to "{user}.{proxy_name}".<br />By default, this value is "".')],
+-	[form.Flag, 'login_fail_exit', _('Exit when login fail'), _('LoginFailExit controls whether or not the client should exit after a failed login attempt. If false, the client will retry until a login attempt succeeds.<br />By default, this value is true.'), {datatype: 'bool', default: 'true'}],
++	[form.Flag, 'login_fail_exit', _('Exit when login fail'), _('LoginFailExit controls whether or not the client should exit after a failed login attempt. If false, the client will retry until a login attempt succeeds.<br />By default, this value is false.'), {datatype: 'bool'}],
+ 	[form.ListValue, 'protocol', _('Protocol'), _('Protocol specifies the protocol to use when interacting with the server. Valid values are "tcp", "kcp", and "websocket".<br />By default, this value is "tcp".'), {values: ['tcp', 'kcp', 'websocket']}],
+ 	[form.Flag, 'tls_enable', _('TLS'), _('TLSEnable specifies whether or not TLS should be used when communicating with the server.'), {datatype: 'bool'}],
+ 	[form.Value, 'heartbeat_interval', _('Heartbeat interval'), _('HeartBeatInterval specifies at what interval heartbeats are sent to the server, in seconds. It is not recommended to change this value.<br />By default, this value is 30.'), {datatype: 'uinteger'}],
+--- a/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
++++ b/feeds/luci/applications/luci-app-frpc/po/zh_Hant/frpc.po
+@@ -264,10 +264,10 @@ msgstr ""
+ msgid ""
+ "LoginFailExit controls whether or not the client should exit after a failed "
+ "login attempt. If false, the client will retry until a login attempt "
+-"succeeds.<br />By default, this value is true."
++"succeeds.<br />By default, this value is false."
+ msgstr ""
+ "LoginFailExit控制在嘗試登錄失敗後客戶端是否應退出。如果為false，則客戶端將重"
+-"試，直到成功登錄為止。<br />預設情況下，此值為true。"
++"試，直到成功登錄為止。<br />預設情況下，此值為false。"
+ 
+ #: applications/luci-app-frpc/htdocs/luci-static/resources/view/frpc.js:165
+ msgid "NOT RUNNING"
+--- a/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
++++ b/feeds/luci/applications/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json
+@@ -1,6 +1,7 @@
+ {
+-	"admin/services/ksmbd": {
++	"admin/nas/ksmbd": {
+ 		"title": "Network Shares",
++		"order": 2,
+ 		"action": {
+ 			"type": "view",
+ 			"path": "ksmbd"
+--- a/feeds/luci/applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua
++++ b/feeds/luci/applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua
+@@ -18,7 +18,7 @@ function index()
+ 	e.leaf = true
+ 	e.acl_depends = { "luci-app-nft-qos" }
+ 
+-	e = entry({"admin", "services", "nft-qos"}, cbi("nft-qos/nft-qos"), _("QoS over Nftables"), 60)
++	e = entry({"admin", "network", "nft-qos"}, cbi("nft-qos/nft-qos"), _("QoS over Nftables"), 60)
+ 	e.leaf = true
+ 	e.acl_depends = { "luci-app-nft-qos" }
+ end
+--- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
++++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
+@@ -130,6 +130,9 @@ return view.extend({
+ 		s.taboption('general', form.Flag, 'igdv1', _('Enable UPnP IGDv1 mode'),
+ 			_('Advertise as UPnP IGDv1 device (no IPv6) instead of IGDv2')).default = '0'
+ 
++		s.taboption('general', form.Flag, 'force_forwarding', _('Force forwarding'),
++			_('Force forwarding for private/reserved IP address'))
++
+ 		s.taboption('general', form.Flag, 'log_output', _('Enable additional logging'),
+ 			_('Puts extra debugging information into the system log'))
+ 
+--- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
++++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
+@@ -229,3 +229,9 @@ msgstr "使用 STUN"
+ #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:140
+ msgid "Value in KByte/s, informational only"
+ msgstr "值 (KByte/s) 僅供參考"
++
++msgid "Force forwarding"
++msgstr "強制轉發"
++
++msgid "Force forwarding for private/reserved IP address"
++msgstr "爲私有/保留IP位址開啟強制轉發"
+--- a/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
++++ b/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
+@@ -46,7 +46,7 @@ const methods = {
+ 
+ 			if (ipt) {
+ 				for (let line = ipt.read('line'); length(line); line = ipt.read('line')) {
+-					let m = match(line, /^([0-9]+)\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
++					let m = match(line, /^([0-9]+).+\s+([a-z]+).+dpt:([0-9]+) to:(\S+):([0-9]+)/);
+ 
+ 					if (m) {
+ 						push(rules, {
+--- a/feeds/luci/applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js
++++ b/feeds/luci/applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js
+@@ -87,9 +87,8 @@ return view.extend({
+ 		s.anonymous = true;
+ 		s.dynamic = true;
+ 
+-		o = s.option(form.Flag, 'disabled', _('Disabled xfrpc service'));
+-		o.datatype = 'bool';
+-		o.optional = true;
++		o = s.option(form.Flag, 'enabled', _('Enabled'));
++		o.rmempty = false;
+ 
+ 		o = s.option(form.ListValue, 'loglevel', _('Log level'), 
+ 			'%s <br /> %s'.format(_('LogLevel specifies the minimum log level. Valid values are "Debug", "Info", \
+--- a/feeds/luci/applications/luci-app-xfrpc/po/zh_Hant/xfrpc.po
++++ b/feeds/luci/applications/luci-app-xfrpc/po/zh_Hant/xfrpc.po
+@@ -57,8 +57,8 @@ msgid "Debug"
+ msgstr "除錯"
+ 
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:90
+-msgid "Disabled xfrpc service"
+-msgstr "禁用xfrpc服務"
++msgid "Enabled"
++msgstr "啟用"
+ 
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:105
+ msgid "Emergency"
+@@ -153,10 +153,6 @@ msgstr "執行中"
+ msgid "Remote port"
+ msgstr "遠端埠號"
+ 
+-#: applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json:3
+-msgid "Reverse proxy"
+-msgstr "反向代理"
+-
+ #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:69
+ msgid "Server address"
+ msgstr "伺服器位址"
+--- a/feeds/luci/applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json
++++ b/feeds/luci/applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json
+@@ -1,6 +1,6 @@
+ {
+ 	"admin/services/xfrpc": {
+-		"title": "Reverse proxy",
++		"title": "xfrpc",
+ 		"action": {
+ 			"type": "view",
+ 			"path": "xfrpc"
+--- a/feeds/luci/luci.mk
++++ b/feeds/luci/luci.mk
+@@ -51,8 +51,8 @@ LUCI_LANG.sv=Svenska (Swedish)
+ LUCI_LANG.tr=Türkçe (Turkish)
+ LUCI_LANG.uk=Українська (Ukrainian)
+ LUCI_LANG.vi=Tiếng Việt (Vietnamese)
++LUCI_LANG.zh_Hant=正體中文 (Chinese Traditional)
+ LUCI_LANG.zh_Hans=简体中文 (Chinese Simplified)
+-LUCI_LANG.zh_Hant=繁體中文 (Chinese Traditional)
+ #LUCI_LANG_END
+ 
+ # Submenu titles
+@@ -67,8 +67,8 @@ LUCI_MENU.lib=6. Libraries
+ LUCI_LC_ALIAS.bn_BD=bn
+ LUCI_LC_ALIAS.nb_NO=no
+ LUCI_LC_ALIAS.pt_BR=pt-br
+-LUCI_LC_ALIAS.zh_Hans=zh-cn
+ LUCI_LC_ALIAS.zh_Hant=zh-tw
++LUCI_LC_ALIAS.zh_Hans=zh-cn
+ 
+ # Default locations
+ HTDOCS = /www
+--- a/feeds/luci/modules/luci-base/root/etc/config/luci
++++ b/feeds/luci/modules/luci-base/root/etc/config/luci
+@@ -1,5 +1,5 @@
+ config core main
+-	option lang auto
++	option lang zh_tw
+ 	option mediaurlbase /luci-static/bootstrap
+ 	option resourcebase /luci-static/resources
+ 	option ubuspath /ubus/
+--- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
++++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
+@@ -8,7 +8,7 @@ import { cursor } from 'uci';
+ 
+ import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
+ import { revision, branch } from 'luci.version';
+-import { statvfs, uname } from 'luci.core';
++import { statvfs } from 'luci.core';
+ 
+ import timezones from 'luci.zoneinfo';
+ 
+@@ -197,6 +197,7 @@ const methods = {
+ 				firewall4:  access('/sbin/fw4') == true,
+ 				opkg:       access('/bin/opkg') == true,
+ 				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
++				fullcone:   access('/sys/module/xt_FULLCONENAT/refcnt') == true || access('/sys/module/nft_fullcone/refcnt') == true,
+ 				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
+ 				swconfig:   access('/sbin/swconfig') == true,
+ 				odhcpd:     access('/usr/sbin/odhcpd') == true,
+@@ -541,46 +542,15 @@ const methods = {
+ 		}
+ 	},
+ 
+-	getBuiltinEthernetPorts: {
++	getCPUInfo: {
+ 		call: function() {
+-			let fd = open('/etc/board.json', 'r');
+-			let board = fd ? json(fd) : {};
+-			let ports = [];
+-
+-			for (let k in [ 'lan', 'wan' ]) {
+-				if (!board?.network?.[k])
+-					continue;
+-
+-				if (type(board.network[k].ports) == 'array') {
+-					for (let ifname in board.network[k].ports) {
+-						push(ports, { role: k, device: ifname });
+-					}
+-				}
+-				else if (type(board.network[k].device) == 'string') {
+-					push(ports, { role: k, device: board.network[k].device });
+-				}
+-			}
+-
+-			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+-			if (uname().machine in [ 'x86_64' ] &&
+-			    match(ports[0]?.device, /^eth\d+$/)) {
+-				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
+-
+-				for (let netdev in lsdir('/sys/class/net')) {
+-					if (!match(netdev, /^eth\d+$/))
+-						continue;
+-
+-					if (length(filter(ports, port => port.device == netdev)))
+-						continue;
+-
+-					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
+-						continue;
+-
+-					push(ports, { role: 'unknown', device: netdev });
+-				}
+-			}
++			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
++		}
++	},
+ 
+-			return { result: ports };
++	getTZ: {
++		call: function() {
++			return { result: replace(popen('cat /tmp/TZ').read('all'),'\n','') };
+ 		}
+ 	}
+ };
+--- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
++++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
+@@ -1,6 +1,5 @@
+ 		<% if self.description and #self.description > 0 then -%>
+ 			<% if not luci.util.instanceof(self, luci.cbi.DynamicList) and (not luci.util.instanceof(self, luci.cbi.Flag) or self.orientation == "horizontal") then -%>
+-				<br />
+ 			<%- end %>
+ 			<div class="cbi-value-description">
+ 				<%=self.description%>
+--- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
++++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
+@@ -648,10 +648,12 @@ return view.extend({
+ 										uci.add('dhcp', 'dhcp', section_id);
+ 										uci.set('dhcp', section_id, 'interface', section_id);
+ 
+-										if (protoval == 'static') {
+-											uci.set('dhcp', section_id, 'start', 100);
++										if (protoval == 'static' || protoval == 'n2n') {
++											uci.set('dhcp', section_id, 'start', 10);
+ 											uci.set('dhcp', section_id, 'limit', 150);
+-											uci.set('dhcp', section_id, 'leasetime', '12h');
++											uci.set('dhcp', section_id, 'leasetime', '2h');
++											uci.set('dhcp', section_id, 'force', 1);
++											uci.set('dhcp', section_id, 'ra_useleasetime', 1);
+ 										}
+ 										else {
+ 											uci.set('dhcp', section_id, 'ignore', 1);
+@@ -664,11 +666,11 @@ return view.extend({
+ 
+ 					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
+ 
+-					if (protoval == 'static') {
++					if (protoval == 'static' || protoval == 'n2n') {
+ 						so = ss.taboption('general', form.Value, 'start', _('Start'), _('Lowest leased address as offset from the network address.'));
+ 						so.optional = true;
+ 						so.datatype = 'or(uinteger,ip4addr("nomask"))';
+-						so.default = '100';
++						so.default = '10';
+ 
+ 						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
+ 						so.optional = true;
+@@ -677,7 +679,7 @@ return view.extend({
+ 
+ 						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
+ 						so.optional = true;
+-						so.default = '12h';
++						so.default = '2h';
+ 
+ 						so = ss.taboption('advanced', form.Flag, 'dynamicdhcp', _('Dynamic <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr>'), _('Dynamically allocate DHCP addresses for clients. If disabled, only clients having static leases will be served.'));
+ 						so.default = so.enabled;
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
++++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+@@ -18,6 +18,16 @@ var callSystemInfo = rpc.declare({
+ 	method: 'info'
+ });
+ 
++var callCPUInfo = rpc.declare({
++	object: 'luci',
++	method: 'getCPUInfo'
++});
++
++var callLuciTimezone = rpc.declare({
++	object: 'luci',
++	method: 'getTZ'
++});
++
+ return baseclass.extend({
+ 	title: _('System'),
+ 
+@@ -25,14 +35,18 @@ return baseclass.extend({
+ 		return Promise.all([
+ 			L.resolveDefault(callSystemBoard(), {}),
+ 			L.resolveDefault(callSystemInfo(), {}),
+-			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
++			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' }),
++			L.resolveDefault(callCPUInfo(), {}),
++			L.resolveDefault(callLuciTimezone(), {})
+ 		]);
+ 	},
+ 
+ 	render: function(data) {
+ 		var boardinfo   = data[0],
+ 		    systeminfo  = data[1],
+-		    luciversion = data[2];
++		    luciversion = data[2],
++		    cpuinfo     = data[3],
++		    timezone    = data[4];
+ 
+ 		luciversion = luciversion.branch + ' ' + luciversion.revision;
+ 
+@@ -40,9 +54,20 @@ return baseclass.extend({
+ 
+ 		if (systeminfo.localtime) {
+ 			var date = new Date(systeminfo.localtime * 1000);
++			var Year = null;
++
++			switch(timezone.result) {
++				case 'CST-8': case 'HKT-8': case '':
++					datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d \u4e2d\u539f\u6a19\u6e96\u6642\u9593';
++					Year = date.getUTCFullYear() - 1911;
++					break;
++				default:
++					datestr = '%04d-%02d-%02d %02d:%02d:%02d';
++					Year = date.getUTCFullYear();
++			}
+ 
+-			datestr = '%04d-%02d-%02d %02d:%02d:%02d'.format(
+-				date.getUTCFullYear(),
++			datestr = datestr.format(
++				Year,
+ 				date.getUTCMonth() + 1,
+ 				date.getUTCDate(),
+ 				date.getUTCHours(),
+@@ -64,7 +89,8 @@ return baseclass.extend({
+ 				systeminfo.load[0] / 65535.0,
+ 				systeminfo.load[1] / 65535.0,
+ 				systeminfo.load[2] / 65535.0
+-			) : null
++			) : null,
++			_('CPU usage (%)'),    cpuinfo.result
+ 		];
+ 
+ 		var table = E('table', { 'class': 'table' });
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
++++ /dev/null
+@@ -1,386 +0,0 @@
+-'use strict';
+-'require baseclass';
+-'require fs';
+-'require ui';
+-'require uci';
+-'require rpc';
+-'require network';
+-'require firewall';
+-
+-var callGetBuiltinEthernetPorts = rpc.declare({
+-	object: 'luci',
+-	method: 'getBuiltinEthernetPorts',
+-	expect: { result: [] }
+-});
+-
+-function isString(v)
+-{
+-	return typeof(v) === 'string' && v !== '';
+-}
+-
+-function resolveVLANChain(ifname, bridges, mapping)
+-{
+-	while (!mapping[ifname]) {
+-		var m = ifname.match(/^(.+)\.([^.]+)$/);
+-
+-		if (!m)
+-			break;
+-
+-		if (bridges[m[1]]) {
+-			if (bridges[m[1]].vlan_filtering)
+-				mapping[ifname] = bridges[m[1]].vlans[m[2]];
+-			else
+-				mapping[ifname] = bridges[m[1]].ports;
+-		}
+-		else if (/^[0-9]{1,4}$/.test(m[2]) && m[2] <= 4095) {
+-			mapping[ifname] = [ m[1] ];
+-		}
+-		else {
+-			break;
+-		}
+-
+-		ifname = m[1];
+-	}
+-}
+-
+-function buildVLANMappings(mapping)
+-{
+-	var bridge_vlans = uci.sections('network', 'bridge-vlan'),
+-	    vlan_devices = uci.sections('network', 'device'),
+-	    interfaces = uci.sections('network', 'interface'),
+-	    bridges = {};
+-
+-	/* find bridge VLANs */
+-	for (var i = 0, s; (s = bridge_vlans[i]) != null; i++) {
+-		if (!isString(s.device) || !/^[0-9]{1,4}$/.test(s.vlan) || +s.vlan > 4095)
+-			continue;
+-
+-		var aliases = L.toArray(s.alias),
+-		    ports = L.toArray(s.ports),
+-		    br = bridges[s.device] = (bridges[s.device] || { ports: [], vlans: {}, vlan_filtering: true });
+-
+-		br.vlans[s.vlan] = [];
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			var port = ports[j].replace(/:[ut*]+$/, '');
+-
+-			if (br.ports.indexOf(port) === -1)
+-				br.ports.push(port);
+-
+-			br.vlans[s.vlan].push(port);
+-		}
+-
+-		for (var j = 0; j < aliases.length; j++)
+-			if (aliases[j] != s.vlan)
+-				br.vlans[aliases[j]] = br.vlans[s.vlan];
+-	}
+-
+-	/* find bridges, VLAN devices */
+-	for (var i = 0, s; (s = vlan_devices[i]) != null; i++) {
+-		if (s.type == 'bridge') {
+-			if (!isString(s.name))
+-				continue;
+-
+-			var ports = L.toArray(s.ports),
+-			    br = bridges[s.name] || (bridges[s.name] = { ports: [], vlans: {}, vlan_filtering: false });
+-
+-			if (s.vlan_filtering == '0')
+-				br.vlan_filtering = false;
+-			else if (s.vlan_filtering == '1')
+-				br.vlan_filtering = true;
+-
+-			for (var j = 0; j < ports.length; j++)
+-				if (br.ports.indexOf(ports[j]) === -1)
+-					br.ports.push(ports[j]);
+-
+-			mapping[s.name] = br.ports;
+-		}
+-		else if (s.type == '8021q' || s.type == '8021ad') {
+-			if (!isString(s.name) || !isString(s.vid) || !isString(s.ifname))
+-				continue;
+-
+-			/* parent device is a bridge */
+-			if (bridges[s.ifname]) {
+-				/* parent bridge is VLAN enabled, device refers to VLAN ports */
+-				if (bridges[s.ifname].vlan_filtering)
+-					mapping[s.name] = bridges[s.ifname].vlans[s.vid];
+-
+-				/* parent bridge is not VLAN enabled, device refers to all bridge ports */
+-				else
+-					mapping[s.name] = bridges[s.ifname].ports;
+-			}
+-
+-			/* parent is a simple netdev */
+-			else {
+-				mapping[s.name] = [ s.ifname ];
+-			}
+-
+-			resolveVLANChain(s.ifname, bridges, mapping);
+-		}
+-	}
+-
+-	/* resolve VLAN tagged interfaces in bridge ports */
+-	for (var brname in bridges) {
+-		for (var i = 0; i < bridges[brname].ports.length; i++)
+-			resolveVLANChain(bridges[brname].ports[i], bridges, mapping);
+-
+-		for (var vid in bridges[brname].vlans)
+-			for (var i = 0; i < bridges[brname].vlans[vid].length; i++)
+-				resolveVLANChain(bridges[brname].vlans[vid][i], bridges, mapping);
+-	}
+-
+-	/* find implicit VLAN devices */
+-	for (var i = 0, s; (s = interfaces[i]) != null; i++) {
+-		if (!isString(s.device))
+-			continue;
+-
+-		resolveVLANChain(s.device, bridges, mapping);
+-	}
+-}
+-
+-function resolveVLANPorts(ifname, mapping, seen)
+-{
+-	var ports = [];
+-
+-	if (!seen)
+-		seen = {};
+-
+-	if (mapping[ifname]) {
+-		for (var i = 0; i < mapping[ifname].length; i++) {
+-			if (!seen[mapping[ifname][i]]) {
+-				seen[mapping[ifname][i]] = true;
+-				ports.push.apply(ports, resolveVLANPorts(mapping[ifname][i], mapping, seen));
+-			}
+-		}
+-	}
+-	else {
+-		ports.push(ifname);
+-	}
+-
+-	return ports.sort(L.naturalCompare);
+-}
+-
+-function buildInterfaceMapping(zones, networks) {
+-	var vlanmap = {},
+-	    portmap = {},
+-	    netmap = {};
+-
+-	buildVLANMappings(vlanmap);
+-
+-	for (var i = 0; i < networks.length; i++) {
+-		var l3dev = networks[i].getDevice();
+-
+-		if (!l3dev)
+-			continue;
+-
+-		var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-		for (var j = 0; j < ports.length; j++) {
+-			portmap[ports[j]] = portmap[ports[j]] || { networks: [], zones: [] };
+-			portmap[ports[j]].networks.push(networks[i]);
+-		}
+-
+-		netmap[networks[i].getName()] = networks[i];
+-	}
+-
+-	for (var i = 0; i < zones.length; i++) {
+-		var networknames = zones[i].getNetworks();
+-
+-		for (var j = 0; j < networknames.length; j++) {
+-			if (!netmap[networknames[j]])
+-				continue;
+-
+-			var l3dev = netmap[networknames[j]].getDevice();
+-
+-			if (!l3dev)
+-				continue;
+-
+-			var ports = resolveVLANPorts(l3dev.getName(), vlanmap);
+-
+-			for (var k = 0; k < ports.length; k++) {
+-				portmap[ports[k]] = portmap[ports[k]] || { networks: [], zones: [] };
+-
+-				if (portmap[ports[k]].zones.indexOf(zones[i]) === -1)
+-					portmap[ports[k]].zones.push(zones[i]);
+-			}
+-		}
+-	}
+-
+-	return portmap;
+-}
+-
+-function formatSpeed(carrier, speed, duplex) {
+-	if ((speed > 0) && duplex) {
+-		var d = (duplex == 'half') ? '\u202f(H)' : '',
+-		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
+-
+-		switch (speed) {
+-		case 10:    e.innerText = '10\u202fM' + d;  break;
+-		case 100:   e.innerText = '100\u202fM' + d; break;
+-		case 1000:  e.innerText = '1\u202fGbE' + d; break;
+-		case 2500:  e.innerText = '2.5\u202fGbE';   break;
+-		case 5000:  e.innerText = '5\u202fGbE';     break;
+-		case 10000: e.innerText = '10\u202fGbE';    break;
+-		case 25000: e.innerText = '25\u202fGbE';    break;
+-		case 40000: e.innerText = '40\u202fGbE';    break;
+-		default:    e.innerText = '%d\u202fMbE%s'.format(speed, d);
+-		}
+-
+-		return e;
+-	}
+-
+-	return carrier ? _('Connected') : _('no link');
+-}
+-
+-function formatStats(portdev) {
+-	var stats = portdev._devstate('stats') || {};
+-
+-	return ui.itemlist(E('span'), [
+-		_('Received bytes'), '%1024mB'.format(stats.rx_bytes),
+-		_('Received packets'), '%1000mPkts.'.format(stats.rx_packets),
+-		_('Received multicast'), '%1000mPkts.'.format(stats.multicast),
+-		_('Receive errors'), '%1000mPkts.'.format(stats.rx_errors),
+-		_('Receive dropped'), '%1000mPkts.'.format(stats.rx_dropped),
+-
+-		_('Transmitted bytes'), '%1024mB'.format(stats.tx_bytes),
+-		_('Transmitted packets'), '%1000mPkts.'.format(stats.tx_packets),
+-		_('Transmit errors'), '%1000mPkts.'.format(stats.tx_errors),
+-		_('Transmit dropped'), '%1000mPkts.'.format(stats.tx_dropped),
+-
+-		_('Collisions seen'), stats.collisions
+-	]);
+-}
+-
+-function renderNetworkBadge(network, zonename) {
+-	var l3dev = network.getDevice();
+-	var span = E('span', { 'class': 'ifacebadge', 'style': 'margin:.125em 0' }, [
+-		E('span', {
+-			'class': 'zonebadge',
+-			'title': zonename ? _('Part of zone %q').format(zonename) : _('No zone assigned'),
+-			'style': firewall.getZoneColorStyle(zonename)
+-		}, '\u202f'),
+-		'\u202f', network.getName(), ': '
+-	]);
+-
+-	if (l3dev)
+-		span.appendChild(E('img', {
+-			'title': l3dev.getI18n(),
+-			'src': L.resource('icons/%s%s.png'.format(l3dev.getType(), l3dev.isUp() ? '' : '_disabled'))
+-		}));
+-	else
+-		span.appendChild(E('em', _('(no interfaces attached)')));
+-
+-	return span;
+-}
+-
+-function renderNetworksTooltip(pmap) {
+-	var res = [ null ],
+-	    zmap = {};
+-
+-	for (var i = 0; pmap && i < pmap.zones.length; i++) {
+-		var networknames = pmap.zones[i].getNetworks();
+-
+-		for (var k = 0; k < networknames.length; k++)
+-			zmap[networknames[k]] = pmap.zones[i].getName();
+-	}
+-
+-	for (var i = 0; pmap && i < pmap.networks.length; i++)
+-		res.push(E('br'), renderNetworkBadge(pmap.networks[i], zmap[pmap.networks[i].getName()]));
+-
+-	if (res.length > 1)
+-		res[0] = N_((res.length - 1) / 2, 'Part of network:', 'Part of networks:');
+-	else
+-		res[0] = _('Port is not part of any network');
+-
+-	return E([], res);
+-}
+-
+-return baseclass.extend({
+-	title: _('Port status'),
+-
+-	load: function() {
+-		return Promise.all([
+-			L.resolveDefault(callGetBuiltinEthernetPorts(), []),
+-			L.resolveDefault(fs.read('/etc/board.json'), '{}'),
+-			firewall.getZones(),
+-			network.getNetworks(),
+-			uci.load('network')
+-		]);
+-	},
+-
+-	render: function(data) {
+-		if (L.hasSystemFeature('swconfig'))
+-			return null;
+-
+-		var board = JSON.parse(data[1]),
+-		    known_ports = [],
+-		    port_map = buildInterfaceMapping(data[2], data[3]);
+-
+-		if (Array.isArray(data[0]) && data[0].length > 0) {
+-			known_ports = data[0].map(port => ({
+-				...port,
+-				netdev: network.instantiateDevice(port.device)
+-			}));
+-		}
+-		else {
+-			if (L.isObject(board) && L.isObject(board.network)) {
+-				for (var k = 'lan'; k != null; k = (k == 'lan') ? 'wan' : null) {
+-					if (!L.isObject(board.network[k]))
+-						continue;
+-
+-					if (Array.isArray(board.network[k].ports))
+-						for (let i = 0; i < board.network[k].ports.length; i++)
+-							known_ports.push({
+-								role: k,
+-								device: board.network[k].ports[i],
+-								netdev: network.instantiateDevice(board.network[k].ports[i])
+-							});
+-					else if (typeof(board.network[k].device) == 'string')
+-						known_ports.push({
+-							role: k,
+-							device: board.network[k].device,
+-							netdev: network.instantiateDevice(board.network[k].device)
+-						});
+-				}
+-			}
+-		}
+-
+-		known_ports.sort(function(a, b) {
+-			return L.naturalCompare(a.device, b.device);
+-		});
+-
+-		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em' }, known_ports.map(function(port) {
+-			var speed = port.netdev.getSpeed(),
+-			    duplex = port.netdev.getDuplex(),
+-			    carrier = port.netdev.getCarrier(),
+-			    pmap = port_map[port.netdev.getName()],
+-			    pzones = (pmap && pmap.zones.length) ? pmap.zones.sort(function(a, b) { return L.naturalCompare(a.getName(), b.getName()) }) : [ null ];
+-
+-			return E('div', { 'class': 'ifacebox', 'style': 'margin:.25em;min-width:70px;max-width:100px' }, [
+-				E('div', { 'class': 'ifacebox-head', 'style': 'font-weight:bold' }, [ port.netdev.getName() ]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('img', { 'src': L.resource('icons/port_%s.png').format(carrier ? 'up' : 'down') }),
+-					E('br'),
+-					formatSpeed(carrier, speed, duplex)
+-				]),
+-				E('div', { 'class': 'ifacebox-head cbi-tooltip-container', 'style': 'display:flex' }, [
+-					E([], pzones.map(function(zone) {
+-						return E('div', {
+-							'class': 'zonebadge',
+-							'style': 'cursor:help;flex:1;height:3px;opacity:' + (carrier ? 1 : 0.25) + ';' + firewall.getZoneColorStyle(zone)
+-						});
+-					})),
+-					E('span', { 'class': 'cbi-tooltip left' }, [ renderNetworksTooltip(pmap) ])
+-				]),
+-				E('div', { 'class': 'ifacebox-body' }, [
+-					E('div', { 'class': 'cbi-tooltip-container', 'style': 'text-align:left;font-size:80%' }, [
+-						'\u25b2\u202f%1024.1mB'.format(port.netdev.getTXBytes()),
+-						E('br'),
+-						'\u25bc\u202f%1024.1mB'.format(port.netdev.getRXBytes()),
+-						E('span', { 'class': 'cbi-tooltip' }, formatStats(port.netdev))
+-					]),
+-				])
+-			]);
+-		}));
+-	}
+-});
+--- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
++++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/routes.js
+@@ -118,6 +118,7 @@ return view.extend({
+ 	parseRoute: function(s, networks, v6) {
+ 		var lines = s.trim().split(/\n/),
+ 		    res = [];
++		var k = 0;
+ 
+ 		for (var i = 0; i < lines.length; i++) {
+ 			var m = lines[i].match(/^(?:([a-z_]+|\d+) )?(default|[0-9a-f:.\/]+) (.+)$/),
+@@ -138,11 +139,16 @@ return view.extend({
+ 			res.push([
+ 				E('span', { 'class': 'ifacebadge' }, [ net ? net : '(%s)'.format(flags.dev) ]),
+ 				dest,
+-				(v6 ? flags.from : flags.via) || '-',
++				flags.via || '-',
+ 				String(flags.metric || 0),
+ 				flags.table || 'main',
+-				flags.proto,
++				flags.proto
+ 			]);
++
++			if (v6) {
++				res[k].splice(3, 0, flags.from || '-');
++				k++;
++			}
+ 		}
+ 
+ 		return res;
+@@ -221,6 +227,7 @@ return view.extend({
+ 			E('tr', { 'class': 'tr table-titles' }, [
+ 				E('th', { 'class': 'th', 'title': device_title }, [ _('Device') ]),
+ 				E('th', { 'class': 'th', 'title': target_title }, [ _('Target') ]),
++				E('th', { 'class': 'th', 'title': gateway_title }, [ _('Gateway') ]),
+ 				E('th', { 'class': 'th', 'title': source_title }, [ _('Source') ]),
+ 				E('th', { 'class': 'th', 'title': metric_title }, [ _('Metric') ]),
+ 				E('th', { 'class': 'th', 'title': table_title }, [ _('Table') ]),
+--- a/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
++++ b/feeds/luci/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
+@@ -3,13 +3,12 @@
+ 		"description": "Grant access to main status display",
+ 		"read": {
+ 			"file": {
+-				"/etc/board.json": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_count": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_max": [ "read" ],
+ 				"/www/luci-static/resources/view/status/include": [ "list" ]
+ 			},
+ 			"ubus": {
+-				"luci": [ "getVersion" ],
++				"luci": [ "getVersion", "getCPUInfo", "getTZ" ],
+ 				"file": [ "list", "read" ],
+ 				"system": [ "board", "info" ]
+ 			}
+--- a/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
++++ b/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
+@@ -50,6 +50,9 @@ return network.registerProtocol('pppoe', {
+ 		o = s.taboption('general', form.Value, 'service', _('Service Name'), _('Leave empty to autodetect'));
+ 		o.placeholder = _('auto');
+ 
++		o = s.taboption('general', form.Value, 'ac_mac', _('AC MAC Address'), _('Only connect to specified MAC address'));
++		o.placeholder = _('auto');
++
+ 		if (L.hasSystemFeature('ipv6')) {
+ 			o = s.taboption('advanced', form.ListValue, 'ppp_ipv6', _('Obtain IPv6 address'), _('Enable IPv6 negotiation on the PPP link'));
+ 			o.ucioption = 'ipv6';
+@@ -59,6 +62,12 @@ return network.registerProtocol('pppoe', {
+ 			o.default = 'auto';
+ 		}
+ 
++		o = s.taboption('advanced', form.Value, 'reqprefix', _('Request IPv6-prefix of length'));
++		o.depends("ppp_ipv6", "auto");
++
++		o = s.taboption('advanced', form.Flag, 'norelease', _('Do not send a Release when restarting'), _('Enable to minimise the chance of prefix change after a restart'));
++		o.depends("ppp_ipv6", "auto");
++
+ 		o = s.taboption('advanced', form.Value, '_keepalive_failure', _('LCP echo failure threshold'), _('Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures'));
+ 		o.placeholder = '5';
+ 		o.datatype    = 'uinteger';
+--- a/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
++++ b/feeds/luci/themes/luci-theme-bootstrap/ucode/template/themes/bootstrap/footer.ut
+@@ -7,7 +7,7 @@
+ 					{{ version.luciname }} ({{ version.luciversion }})</a>
+ 				/
+ 				<a href="{{ entityencode(version.disturl ?? '#', true) }}" target="_blank" rel="noreferrer">
+-					{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</a>
++					{{ version.distname }} {{ version.distversion }}</a>
+ 				{% if (lua_active): %}
+ 					/ {{ _('Lua compatibility mode active') }}
+ 				{% endif %}
