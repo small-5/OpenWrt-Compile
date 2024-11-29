@@ -1,6 +1,6 @@
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -74,7 +74,10 @@
+@@ -544,7 +544,10 @@ const methods = {
  
  	getCPUInfo: {
  		call: function() {
@@ -12,10 +12,9 @@
  		}
  	},
  
-
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -63,6 +63,7 @@
+@@ -81,6 +81,7 @@ return baseclass.extend({
  			_('Model'),            boardinfo.model,
  			_('Architecture'),     boardinfo.system,
  			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
@@ -23,7 +22,7 @@
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
  			_('Local Time'),       datestr,
-@@ -72,7 +73,7 @@
+@@ -90,7 +91,7 @@ return baseclass.extend({
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
  			) : null,
@@ -32,7 +31,6 @@
  		];
  
  		var table = E('table', { 'class': 'table' });
-
 --- a/package/ipk/luci-app-cpufreq/root/etc/config/cpufreq
 +++ b/package/ipk/luci-app-cpufreq/root/etc/config/cpufreq
 @@ -1,2 +1,6 @@
@@ -42,7 +40,6 @@
 +	option min0 '816000'
 +	option max0 '1512000'
 +
-
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
 @@ -18,8 +18,8 @@
@@ -56,7 +53,6 @@
  	;;
  friendlyarm,nanopi-r5c)
  	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
-
 --- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 +++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 @@ -22,7 +22,7 @@

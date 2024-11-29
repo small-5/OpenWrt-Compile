@@ -323,20 +323,16 @@
  	option ubuspath /ubus/
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -72,6 +72,12 @@ const methods = {
- 		}
- 	},
+@@ -8,7 +8,7 @@ import { cursor } from 'uci';
  
-+	getCPUInfo: {
-+		call: function() {
-+			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
-+		}
-+	},
-+
- 	setLocaltime: {
- 		args: { localtime: 0 },
- 		call: function(request) {
-@@ -197,6 +203,7 @@ const methods = {
+ import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
+ import { revision, branch } from 'luci.version';
+-import { statvfs, uname } from 'luci.core';
++import { statvfs } from 'luci.core';
+ 
+ import timezones from 'luci.zoneinfo';
+ 
+@@ -197,6 +197,7 @@ const methods = {
  				firewall4:  access('/sbin/fw4') == true,
  				opkg:       access('/bin/opkg') == true,
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
@@ -344,6 +340,60 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
+@@ -541,46 +542,15 @@ const methods = {
+ 		}
+ 	},
+ 
+-	getBuiltinEthernetPorts: {
++	getCPUInfo: {
+ 		call: function() {
+-			let fd = open('/etc/board.json', 'r');
+-			let board = fd ? json(fd) : {};
+-			let ports = [];
+-
+-			for (let k in [ 'lan', 'wan' ]) {
+-				if (!board?.network?.[k])
+-					continue;
+-
+-				if (type(board.network[k].ports) == 'array') {
+-					for (let ifname in board.network[k].ports) {
+-						push(ports, { role: k, device: ifname });
+-					}
+-				}
+-				else if (type(board.network[k].device) == 'string') {
+-					push(ports, { role: k, device: board.network[k].device });
+-				}
+-			}
+-
+-			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+-			if (uname().machine in [ 'x86_64' ] &&
+-			    match(ports[0]?.device, /^eth\d+$/)) {
+-				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
+-
+-				for (let netdev in lsdir('/sys/class/net')) {
+-					if (!match(netdev, /^eth\d+$/))
+-						continue;
+-
+-					if (length(filter(ports, port => port.device == netdev)))
+-						continue;
+-
+-					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
+-						continue;
+-
+-					push(ports, { role: 'unknown', device: netdev });
+-				}
+-			}
++			return { result: popen('top -n1 | awk \'/^CPU/ {printf("%d%",100-$8)}\'').read('all') };
++		}
++	},
+ 
+-			return { result: ports };
++	getTZ: {
++		call: function() {
++			return { result: replace(popen('cat /tmp/TZ').read('all'),'\n','') };
+ 		}
+ 	}
+ };
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 @@ -1,6 +1,5 @@
@@ -407,13 +457,13 @@
  			},
  			"ubus": {
 -				"luci": [ "getVersion" ],
-+				"luci": [ "getCPUInfo", "getVersion" ],
++				"luci": [ "getVersion", "getCPUInfo", "getTZ" ],
  				"file": [ "list", "read" ],
  				"system": [ "board", "info" ]
  			}
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -18,6 +18,11 @@ var callSystemInfo = rpc.declare({
+@@ -18,6 +18,16 @@ var callSystemInfo = rpc.declare({
  	method: 'info'
  });
  
@@ -422,28 +472,59 @@
 +	method: 'getCPUInfo'
 +});
 +
++var callLuciTimezone = rpc.declare({
++	object: 'luci',
++	method: 'getTZ'
++});
++
  return baseclass.extend({
  	title: _('System'),
  
-@@ -25,6 +30,7 @@ return baseclass.extend({
+@@ -25,14 +35,18 @@ return baseclass.extend({
  		return Promise.all([
  			L.resolveDefault(callSystemBoard(), {}),
  			L.resolveDefault(callSystemInfo(), {}),
+-			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
++			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' }),
 +			L.resolveDefault(callCPUInfo(), {}),
- 			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
++			L.resolveDefault(callLuciTimezone(), {})
  		]);
  	},
-@@ -32,7 +38,8 @@ return baseclass.extend({
+ 
  	render: function(data) {
  		var boardinfo   = data[0],
  		    systeminfo  = data[1],
 -		    luciversion = data[2];
-+		    cpuinfo     = data[2],
-+		    luciversion = data[3];
++		    luciversion = data[2],
++		    cpuinfo     = data[3],
++		    timezone    = data[4];
  
  		luciversion = luciversion.branch + ' ' + luciversion.revision;
  
-@@ -64,7 +71,8 @@ return baseclass.extend({
+@@ -40,9 +54,20 @@ return baseclass.extend({
+ 
+ 		if (systeminfo.localtime) {
+ 			var date = new Date(systeminfo.localtime * 1000);
++			var Year = null;
++
++			switch(timezone.result) {
++				case 'CST-8': case '':
++					datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d \u4e2d\u539f\u6a19\u6e96\u6642\u9593';
++					Year = date.getUTCFullYear() - 1911;
++					break;
++				default:
++					datestr = '%04d-%02d-%02d %02d:%02d:%02d';
++					Year = date.getUTCFullYear();
++			}
+ 
+-			datestr = '%04d-%02d-%02d %02d:%02d:%02d'.format(
+-				date.getUTCFullYear(),
++			datestr = datestr.format(
++				Year,
+ 				date.getUTCMonth() + 1,
+ 				date.getUTCDate(),
+ 				date.getUTCHours(),
+@@ -64,7 +89,8 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
@@ -2027,67 +2108,6 @@
  
  					if (m) {
  						push(rules, {
---- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-+++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -8,7 +8,7 @@ import { cursor } from 'uci';
- 
- import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
- import { revision, branch } from 'luci.version';
--import { statvfs, uname } from 'luci.core';
-+import { statvfs } from 'luci.core';
- 
- import timezones from 'luci.zoneinfo';
- 
-@@ -546,49 +546,6 @@ const methods = {
- 		call: function() {
- 			return { result: process_list() };
- 		}
--	},
--
--	getBuiltinEthernetPorts: {
--		call: function() {
--			let fd = open('/etc/board.json', 'r');
--			let board = fd ? json(fd) : {};
--			let ports = [];
--
--			for (let k in [ 'lan', 'wan' ]) {
--				if (!board?.network?.[k])
--					continue;
--
--				if (type(board.network[k].ports) == 'array') {
--					for (let ifname in board.network[k].ports) {
--						push(ports, { role: k, device: ifname });
--					}
--				}
--				else if (type(board.network[k].device) == 'string') {
--					push(ports, { role: k, device: board.network[k].device });
--				}
--			}
--
--			/* Workaround for targets that do not enumerate  all netdevs in board.json */
--			if (uname().machine in [ 'x86_64' ] &&
--			    match(ports[0]?.device, /^eth\d+$/)) {
--				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
--
--				for (let netdev in lsdir('/sys/class/net')) {
--					if (!match(netdev, /^eth\d+$/))
--						continue;
--
--					if (length(filter(ports, port => port.device == netdev)))
--						continue;
--
--					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
--						continue;
--
--					push(ports, { role: 'unknown', device: netdev });
--				}
--			}
--
--			return { result: ports };
--		}
- 	}
- };
- 
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
 +++ /dev/null
 @@ -1,386 +0,0 @@
