@@ -519,7 +519,7 @@
 +			var Year = null;
 +
 +			switch(timezone.result) {
-+				case 'CST-8': case '':
++				case 'CST-8': case 'HKT-8': case '':
 +					datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d \u4e2d\u539f\u6a19\u6e96\u6642\u9593';
 +					Year = date.getUTCFullYear() - 1911;
 +					break;
