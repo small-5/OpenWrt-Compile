@@ -1198,15 +1198,19 @@
  		if (L.hasSystemFeature('ipv6')) {
  			o = s.taboption('advanced', form.ListValue, 'ppp_ipv6', _('Obtain IPv6 address'), _('Enable IPv6 negotiation on the PPP link'));
  			o.ucioption = 'ipv6';
-@@ -59,6 +62,12 @@ return network.registerProtocol('pppoe', {
+@@ -59,6 +62,16 @@ return network.registerProtocol('pppoe', {
  			o.default = 'auto';
  		}
  
-+		o = s.taboption('advanced', form.Value, 'reqprefix', _('Request IPv6-prefix of length'));
++		o = s.taboption('advanced', form.Value, 'reqprefix', _('Request IPv6-prefix of length'),
++			_('Either a prefix length hint (e.g. 56) only, whereby the operator selects the prefix, or specify a prefix also (e.g. %s)')
++			.format('<code>2001:db8::/56</code>'));
 +		o.depends("ppp_ipv6", "auto");
 +
 +		o = s.taboption('advanced', form.Flag, 'norelease', _('Do not send a Release when restarting'), _('Enable to minimise the chance of prefix change after a restart'));
 +		o.depends("ppp_ipv6", "auto");
++		o.default = '1';
++		o.rmempty = false;
 +
  		o = s.taboption('advanced', form.Value, '_keepalive_failure', _('LCP echo failure threshold'), _('Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures'));
  		o.placeholder = '5';
