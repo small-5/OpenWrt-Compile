@@ -50,7 +50,7 @@ msgid "Enable verbose logging"
 msgstr "啟用詳細日誌"
 
 msgid "Upgrade interface"
-msgstr "指定提速接口"
+msgstr "指定提速介面"
 
 msgid "Keepalive interval"
 msgstr "保持連接周期"

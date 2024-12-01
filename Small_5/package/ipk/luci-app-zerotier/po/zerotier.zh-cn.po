@@ -8,22 +8,22 @@ msgid "Base Setting"
 msgstr "基本設定"
 
 msgid "ZeroTier is an open source,cross-platform and easy to use virtual LAN"
-msgstr "ZeroTier是一個開源，跨平台，而且適合內網穿透互聯的傻瓜配置虛擬 VPN LAN"
+msgstr "ZeroTier是一個開源，跨平台，而且適合內網穿透互聯的傻瓜配置虛擬VPN LAN"
 
 msgid "Enable"
 msgstr "啟用"
 
 msgid "Interface Info"
-msgstr "接口資訊"
+msgstr "介面資訊"
 
 msgid "ZeroTier Network ID"
-msgstr "ZeroTier 網路 ID"
+msgstr "ZeroTier網路ID"
 
 msgid "Auto NAT Clients"
-msgstr "自動允許客戶端 NAT"
+msgstr "自動允許客戶端NAT"
 
 msgid "Allow ZeroTier clients access your LAN network"
-msgstr "允許ZeroTier的撥入客戶端訪問路由器 LAN 資源（需要在ZeroTier管理頁面設定到 LAN 網段的路由表）"
+msgstr "允許ZeroTier的撥入客戶端訪問路由器LAN資源（需要在ZeroTier管理頁面設定到LAN網段的路由表）"
 
 msgid "Create or manage your ZeroTier network, and auth clients who could access"
 msgstr "點擊跳轉到ZeroTier官網管理平台，新建或者管理網路，並允許客戶端接入訪問你私人網路（新接入的節點默認不允許訪問）"

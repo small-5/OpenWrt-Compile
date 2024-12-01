@@ -386,10 +386,10 @@ msgid "Alias(optional)"
 msgstr "別名（可選）"
 
 msgid "Network interface to use"
-msgstr "選擇使用的網路接口"
+msgstr "選擇使用的網路介面"
 
 msgid "Redirect traffic to this network interface"
-msgstr "分流到這個網路接口"
+msgstr "分流到這個網路介面"
 
 msgid "Server Address"
 msgstr "伺服器位址"
