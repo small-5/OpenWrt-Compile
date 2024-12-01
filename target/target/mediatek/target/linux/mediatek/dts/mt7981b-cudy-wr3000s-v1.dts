@@ -7,15 +7,15 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "Cudy AP3000 Outdoor v1";
-	compatible = "cudy,ap3000outdoor-v1", "mediatek,mt7981-spim-snand-rfb";
+	model = "Cudy WR3000S v1";
+	compatible = "cudy,wr3000s-v1", "mediatek,mt7981-spim-snand-rfb";
 
 	aliases {
-		label-mac-device = &wifi;
-		led-boot = &led_status_green;
-		led-failsafe = &led_status_red;
-		led-running = &led_status_green;
-		led-upgrade = &led_status_red;
+		label-mac-device = &gmac0;
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
 		serial0 = &uart0;
 	};
 
@@ -42,39 +42,38 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status_green: led@0 {
+		led_status: led@0 {
 			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
-			gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
 		};
 
-		led_status_red: led_1 {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
-			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
-		};
-	};
-	gpio_export {
-		compatible = "gpio-export";
-		#size-cells = <0>;
 
-		antctrl {
-			/* Not sure if this pin does anything.
-			 * It was taken from GPL sources.
-			 * Intermediate image doesn't have it.
-			 */
-			gpio-export,name = "antctrl";
-			gpio-export,output = <1>;
-			gpios = <&pio 7 GPIO_ACTIVE_HIGH>;
+		led_internet {
+			function = LED_FUNCTION_WAN_ONLINE;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
 		};
-	};
 
-	watchdog-hw {
-		compatible = "linux,wdt-gpio";
-		gpios = <&pio 6 GPIO_ACTIVE_HIGH>;
-		hw_algo = "level";
-		hw_margin_ms = <10000>;
-		always-running;
+		led_wps {
+			function = LED_FUNCTION_WPS;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
+		};
+
+		led_wlan2g {
+			function = LED_FUNCTION_WLAN_2GHZ;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		led_wlan5g {
+			function = LED_FUNCTION_WLAN_5GHZ;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
 	};
 };
 
@@ -92,13 +91,31 @@
 
 	status = "okay";
 
-	gmac1: mac@1 {
+	gmac0: mac@0 {
 		compatible = "mediatek,eth-mac";
-		reg = <1>;
-		phy-mode = "gmii";
-		phy-handle = <&int_gbe_phy>;
+		reg = <0>;
+		phy-mode = "2500base-x";
+
 		nvmem-cell-names = "mac-address";
-		nvmem-cells = <&macaddr_bdinfo_de00 1>;
+		nvmem-cells = <&macaddr_bdinfo_de00 0>;
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+};
+
+&mdio_bus {
+	switch: switch@1f {
+		compatible = "mediatek,mt7531";
+		reg = <31>;
+		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
 	};
 };
 
@@ -174,7 +191,6 @@
 						#nvmem-cell-cells = <1>;
 					};
 				};
-
 			};
 
 			partition@3C0000 {
@@ -192,12 +208,70 @@
 	};
 };
 
-
 &pio {
 	spi0_flash_pins: spi0-pins {
 		mux {
 			function = "spi";
 			groups = "spi0", "spi0_wp_hold";
+		};
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_11>;
+		};
+
+		conf-pd {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
+		};
+	};
+};
+
+&switch {
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			label = "wan";
+
+			nvmem-cell-names = "mac-address";
+			nvmem-cells = <&macaddr_bdinfo_de00 1>;
+		};
+
+		port@1 {
+			reg = <1>;
+			label = "lan1";
+		};
+
+		port@2 {
+			reg = <2>;
+			label = "lan2";
+		};
+
+		port@3 {
+			reg = <3>;
+			label = "lan3";
+		};
+
+		port@4 {
+			reg = <4>;
+			label = "lan4";
+		};
+
+		port@6 {
+			reg = <6>;
+			label = "cpu";
+			ethernet = <&gmac0>;
+			phy-mode = "2500base-x";
+
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
 		};
 	};
 };
