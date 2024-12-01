@@ -1,34 +1,17 @@
-#
-# Copyright (C) 2017-2020 Yousong Zhou <yszhou4tech@gmail.com>
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
-
 include $(TOPDIR)/rules.mk
 
-# Checklist when bumping versions
-#
-# - update cipher list by checking src/crypto.c:crypto_init()
-# - check if default mode has changed from being tcp_only
-#
-PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-PKG_SOURCE_VERSION:=d83ace0f0d9c05656c13d66aa4a449bf70143254
-
 PKG_NAME:=shadowsocks-libev
-PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_VERSION:=3.3.5
 PKG_RELEASE:=11
-PKG_LICENSE:=GPL-3.0-or-later
-PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:shadowsocks:shadowsocks-libev
 
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
+PKG_SOURCE_VERSION:=d83ace0f0d9c05656c13d66aa4a449bf70143254
+PKG_MIRROR_HASH:=58390166a1b7885ef63e1f919df97f9c23512d0606b8df2a4636bfa1f884c5ba
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=LICENSE
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 PKG_BUILD_FLAGS:=no-mips16 lto

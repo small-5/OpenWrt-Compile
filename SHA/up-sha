@@ -28,7 +28,8 @@ tohojo/sqm-scripts|master|sqm-scripts
 XTLS/Xray-core|main|xray
 zerotier/ZeroTierOne|dev|zerotier
 pymumu/smartdns|master|smartdns
-miniupnp/miniupnp|master|miniupnp"
+miniupnp/miniupnp|master|miniupnp
+liudf0716/xfrpc|master|xfrpc"
 rm -f SHA
 for i in $A;do
 	i=$(echo $i | sed 's/|/ /g')

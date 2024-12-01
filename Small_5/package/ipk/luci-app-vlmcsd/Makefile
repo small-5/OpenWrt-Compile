@@ -6,7 +6,7 @@ PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/luci-app-vlmcsd
+define Package/$(PKG_NAME)
 	SECTION:=luci
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
@@ -16,7 +16,7 @@ define Package/luci-app-vlmcsd
 	MAINTAINER:=fuyumi
 endef
 
-define Package/luci-app-vlmcsd/description
+define Package/$(PKG_NAME)/description
 	This package contains LuCI configuration pages for openwrt-vlmcsd.
 endef
 

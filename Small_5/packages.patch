@@ -51,27 +51,25 @@
  cat > $DATFILE << EOF
 --- a/feeds/packages/net/frp/Makefile
 +++ b/feeds/packages/net/frp/Makefile
-@@ -1,12 +1,16 @@
+@@ -1,12 +1,13 @@
  include $(TOPDIR)/rules.mk
  
-+PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=8593eff752117aaa3775db498eb0e553a251c4f6
-+
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=0.61.0.113.11.20
  PKG_RELEASE:=1
  
-+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
 -PKG_HASH:=83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef
 +PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
++PKG_SOURCE_VERSION:=8593eff752117aaa3775db498eb0e553a251c4f6
++PKG_MIRROR_HASH:=f8b3069326fa754796926c5e02026f4f0752d0cdd1851087a8866a2fec0949eb
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
  PKG_LICENSE:=Apache-2.0
-@@ -25,8 +29,6 @@ include ../../lang/golang/golang-package.mk
+@@ -25,8 +26,6 @@ include ../../lang/golang/golang-package.mk
  define Package/frp/install
  	$(INSTALL_DIR) $(1)/usr/bin/
  	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/$(2) $(1)/usr/bin/
@@ -163,27 +161,25 @@
 +}
 --- a/feeds/packages/net/kcptun/Makefile
 +++ b/feeds/packages/net/kcptun/Makefile
-@@ -1,12 +1,16 @@
+@@ -1,12 +1,13 @@
  include $(TOPDIR)/rules.mk
  
-+PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=df42df9d20a2a292ad3e36d1beca2890dd393a7f
-+
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=20241119
  PKG_RELEASE:=1
  
-+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/xtaci/kcptun/tar.gz/v${PKG_VERSION}?
 -PKG_HASH:=09054b52d5799a8e47edb36f2db335d929d5bbb63a26f7ba2fe03c64ec39d550
 +PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
++PKG_SOURCE_VERSION:=df42df9d20a2a292ad3e36d1beca2890dd393a7f
++PKG_MIRROR_HASH:=96f6045fa924441a3eb260ef008efd75dd3a11f7ffdd93ad2974c911155996f0
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
  PKG_LICENSE:=MIT
-@@ -23,26 +27,6 @@ GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
+@@ -23,26 +24,6 @@ GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
  include $(INCLUDE_DIR)/package.mk
  include ../../lang/golang/golang-package.mk
  
@@ -210,7 +206,7 @@
  define Package/kcptun/Default
    define Package/kcptun-$(1)
      SECTION:=net
-@@ -50,7 +34,6 @@ define Package/kcptun/Default
+@@ -50,7 +31,6 @@ define Package/kcptun/Default
      SUBMENU:=Web Servers/Proxies
      TITLE:=KCP-based Secure Tunnel $(1)
      URL:=https://github.com/xtaci/kcptun
@@ -218,7 +214,7 @@
    endef
  
    define Package/kcptun-$(1)/description
-@@ -66,7 +49,6 @@ This package only contains kcptun $(1).
+@@ -66,7 +46,6 @@ This package only contains kcptun $(1).
    endef
  endef
  
@@ -228,16 +224,9 @@
    $(eval $(call Package/kcptun/Default,$(component))) \
 --- a/feeds/packages/net/microsocks/Makefile
 +++ b/feeds/packages/net/microsocks/Makefile
-@@ -1,47 +1,37 @@
+@@ -1,47 +1,34 @@
  include $(TOPDIR)/rules.mk
  
-+PKG_LICENSE:=MIT
-+PKG_LICENSE_FILES:=LICENSE
-+
-+PKG_SOURCE_PROTO:=git
-+PKG_SOURCE_URL:=https://github.com/rofl0r/microsocks.git
-+PKG_SOURCE_VERSION:=98421a21c4adc4c77c0cf3a5d650cc28ad3e0107
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
  PKG_NAME:=microsocks
 -PKG_VERSION:=1.0.4
 +PKG_VERSION=113.5.25
@@ -246,15 +235,17 @@
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/rofl0r/microsocks/tar.gz/v$(PKG_VERSION)?
 -PKG_HASH:=130127a87f55870f18fbe47a64d9b9533020e2900802d36a0f6fd2b074313deb
--
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/rofl0r/microsocks.git
++PKG_SOURCE_VERSION:=98421a21c4adc4c77c0cf3a5d650cc28ad3e0107
++PKG_MIRROR_HASH:=58c27a01d421e5ade758144e5098f15d6d9f909d0f3aa25bf89cf46431c76d71
+ 
 -PKG_MAINTAINER:=Mateusz Korniak <matkorgithubcom@ant.gliwice.pl>
--PKG_LICENSE:=MIT
+ PKG_LICENSE:=MIT
 -PKG_LICENSE_FILES:=COPYING
 -
 -PKG_BUILD_FLAGS:=lto
-+PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-+PKG_SOURCE:=$(PKG_NAME).$(PKG_VERSION).$(PKG_RELEASE).tar.gz
-+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
++PKG_LICENSE_FILES:=LICENSE
 +PKG_BUILD_PARALLEL:=1
  
  include $(INCLUDE_DIR)/package.mk
@@ -273,13 +264,13 @@
  define Package/microsocks/description
 -  Low resource SOCKS5 proxy.
 -  Supports only SOCKS5 protocol and forwarding only TCP/IP connections.
+-endef
+-
+-define Package/microsocks/conffiles
+-/etc/config/microsocks
 +	microsocks is a Tiny Proxy in C.
  endef
  
--define Package/microsocks/conffiles
--/etc/config/microsocks
--endef
--
 -TARGET_LDFLAGS+= -Wl,--gc-sections,--as-needed
 -
  define Package/microsocks/install
@@ -305,7 +296,7 @@
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
 +PKG_SOURCE_DATE:=113.10.10
 +PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
-+PKG_MIRROR_HASH:=skip
++PKG_MIRROR_HASH:=4809fd452c61e5f3ceb1e672e90bf67d79ef9282fd590472873fd1e3a7fc5a68
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
  
@@ -337,7 +328,7 @@
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
 +PKG_SOURCE_DATE:=113.10.10
 +PKG_SOURCE_VERSION:=0ff36e5397f36cd0bda626bc548192d10832d57f
-+PKG_MIRROR_HASH:=skip
++PKG_MIRROR_HASH:=d2dbe6074813d8b5f2f1cc43d637919f269d17e5f601d61aa0442d34e1c51392
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
  PKG_RELEASE:=1
  
@@ -386,7 +377,7 @@
  			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"
 --- a/feeds/packages/net/miniupnpd/files/upnpd.config
 +++ b/feeds/packages/net/miniupnpd/files/upnpd.config
-@@ -1,28 +1,23 @@
+@@ -1,28 +1,26 @@
 -config upnpd config
 -	option enabled		0
 -	option enable_natpmp	1
@@ -404,6 +395,9 @@
 +
 +config upnpd 'config'
 +	option enabled '0'
++	option enable_upnp '1'
++	option enable_natpmp '1'
++	option igdv1 '0'
 +	option download '1024'
 +	option upload '512'
 +	option internal_iface 'lan'
@@ -961,7 +955,7 @@
  tls_ciphersuites
 --- a/feeds/packages/net/smartdns/Makefile
 +++ b/feeds/packages/net/smartdns/Makefile
-@@ -6,13 +6,12 @@
+@@ -6,13 +6,13 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=smartdns
@@ -974,10 +968,11 @@
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
 +PKG_SOURCE_VERSION:=fdc1a41967477698c1e320fb55592df3c6213045
++PKG_MIRROR_HASH:=0746312ff9227d008e039b6ea87b64b5ea893f95a0104af7da20a3707d7e16db
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
-@@ -40,24 +39,9 @@ gets DNS query results from multiple upstream DNS servers concurrently, and retu
+@@ -40,24 +40,9 @@ gets DNS query results from multiple upstream DNS servers concurrently, and retu
  Unlike dnsmasq's all-servers, smartdns returns the fastest IP, and encrypt DNS queries with DoT or DoH. 
  endef
  
@@ -1006,28 +1001,31 @@
  $(eval $(call BuildPackage,smartdns))
 --- a/feeds/packages/net/sqm-scripts/Makefile
 +++ b/feeds/packages/net/sqm-scripts/Makefile
-@@ -8,13 +8,14 @@
+@@ -8,13 +8,13 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=sqm-scripts
 -PKG_SOURCE_VERSION:=33a89d8e7f6c82acc0adced84cf5cd95447e6bb5
 -PKG_VERSION:=1.6.0
-+PKG_SOURCE_VERSION:=95337de67a35b474d493966223f324eb1302adfc
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.6.0.113.6.3
  PKG_RELEASE:=1
  
  PKG_SOURCE_PROTO:=git
  PKG_SOURCE_URL:=https://github.com/tohojo/sqm-scripts
 -PKG_MIRROR_HASH:=abe04270207177fb3ba4df103ffce3db4037d52d601ce1ce4e75206ad4b21377
-+PKG_MIRROR_HASH:=skip
++PKG_SOURCE_VERSION:=95337de67a35b474d493966223f324eb1302adfc
++PKG_MIRROR_HASH:=5e6a11e2b9f83bb710afaf88ccaafce558457df448a6b11602ce46115680fcad
  
  PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
  PKG_LICENSE:=GPL-2.0-only
 --- a/feeds/packages/net/xfrpc/Makefile
 +++ b/feeds/packages/net/xfrpc/Makefile
-@@ -11,10 +11,10 @@ PKG_NAME:=xfrpc
- PKG_VERSION:=3.05.661
+@@ -8,13 +8,13 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=xfrpc
+-PKG_VERSION:=3.05.661
++PKG_VERSION:=113.11.29
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -1036,8 +1034,8 @@
 -PKG_BUILD_DIR:=$(BUILD_DIR)/xfrpc-$(PKG_VERSION)
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
-+PKG_SOURCE_VERSION:=$(PKG_VERSION)
-+PKG_MIRROR_HASH:=2f955520efc8c6078e68646dcf6dff127a3a7724
++PKG_SOURCE_VERSION:=9243b328bfe6efa05e70e25efade07c0aa858925
++PKG_MIRROR_HASH:=c0e9fc8f3f26d887308694afc54ea593b6992b499e42967808fe57e6908eb12b
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1256,22 +1254,21 @@
  	procd_set_param command "$PROG" -c "$conf_file" -f -d $loglevel
 --- a/feeds/packages/net/xray-core/Makefile
 +++ b/feeds/packages/net/xray-core/Makefile
-@@ -1,18 +1,23 @@
+@@ -1,18 +1,21 @@
  include $(TOPDIR)/rules.mk
-+PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=98a72b6fb49bcc403c4cae1ff529b9def43e6ad8
  
  PKG_NAME:=xray-core
 -PKG_VERSION:=24.11.21
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=113.11.30
  PKG_RELEASE:=1
  
-+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
 -PKG_HASH:=e45ad1fa11457101776d2c0d7ed8ed7c669b714e7687a85830e44a6e4a52fe05
 +PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
++PKG_SOURCE_VERSION:=98a72b6fb49bcc403c4cae1ff529b9def43e6ad8
++PKG_MIRROR_HASH:=2436303b348373694cd527a07de66f4c4a03fabbaf906d62ee2c26d37cad2f39
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
  PKG_LICENSE:=MPL-2.0
@@ -1284,7 +1281,7 @@
  PKG_BUILD_DEPENDS:=golang/host
  PKG_BUILD_PARALLEL:=1
  PKG_BUILD_FLAGS:=no-mips16
-@@ -30,7 +35,7 @@ define Package/xray/template
+@@ -30,7 +33,7 @@ define Package/xray/template
    TITLE:=A proxy platform to bypass network restrictions
    SECTION:=net
    CATEGORY:=Network
@@ -1293,7 +1290,7 @@
  endef
  
  define Package/xray-core
-@@ -38,13 +43,6 @@ define Package/xray-core
+@@ -38,13 +41,6 @@ define Package/xray-core
    DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
  endef
  
@@ -1307,7 +1304,7 @@
  define Package/xray/description
    Xray, Penetrates Everything. It helps you to build your own computer network.
    It secures your network connections and thus protects your privacy.
-@@ -54,36 +52,23 @@ define Package/xray-core/description
+@@ -54,36 +50,23 @@ define Package/xray-core/description
    $(call Package/xray/description)
  endef
  
@@ -1356,28 +1353,26 @@
 -$(eval $(call BuildPackage,xray-example))
 --- a/feeds/packages/net/zerotier/Makefile
 +++ b/feeds/packages/net/zerotier/Makefile
-@@ -5,14 +5,15 @@
- 
+@@ -6,13 +6,13 @@
  include $(TOPDIR)/rules.mk
  
-+PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
-+PKG_SOURCE_VERSION:=377a9d6f417d1b7098f38b3504feb3ee5f715ffc
  PKG_NAME:=zerotier
 -PKG_VERSION:=1.14.1
-+PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 +PKG_VERSION:=1.14.2.113.11.26
  PKG_RELEASE:=1
--
-+PKG_SOURCE_PROTO:=git
- PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ 
+-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
 -PKG_HASH:=4f9f40b27c5a78389ed3f3216c850921f6298749e5819e9f2edabb2672ce9ca0
 -PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
-+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/zerotier/ZeroTierOne.git
++PKG_SOURCE_VERSION:=377a9d6f417d1b7098f38b3504feb3ee5f715ffc
++PKG_MIRROR_HASH:=ba76d5306bb10ad7fa7073a311169a1561c8c4a761c03305bc044a38e8b8fc74
  
  PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
  PKG_LICENSE:=BSL 1.1
-@@ -62,22 +63,15 @@ endef
+@@ -62,22 +62,15 @@ endef
  TARGET_CFLAGS += -Wl,-z,noexecstack
  TARGET_LDFLAGS += -Wl,--as-needed -Wl,-z,noexecstack
  

@@ -7,18 +7,15 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
-PKG_SOURCE_VERSION:=3c1f0a9bec2c2f5ebf9a4d0852395e85a35d2900
-PKG_SOURCE_SHORTID=$(shell echo $(PKG_SOURCE_VERSION) | cut -c1-7)
 PKG_NAME:=redsocks2
 PKG_VERSION:=0.70
 PKG_RELEASE:=1
-
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_MAINTAINER:=semigodking <semigodking@gmail.com>
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
+PKG_SOURCE_VERSION:=3c1f0a9bec2c2f5ebf9a4d0852395e85a35d2900
+PKG_MIRROR_HASH:=cc9892c4089d274fa5eb2df4696644e2503100828f4eb99519d900b61cd22d89
 
 include $(INCLUDE_DIR)/package.mk
 
