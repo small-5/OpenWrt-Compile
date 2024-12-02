@@ -9,8 +9,8 @@ local socks_port=arg[4]
 local ip_addr=arg[5]
 local udp_addr=arg[6] or "127.0.0.1"
 local server=ucursor:get_all("overwall",server_section)
-local tls_host=server.tls_host or server.http_host or server.ws_host or server.h2_host or server.httpupgrade_host or server.splithttp_host or server.server
-local user_agent=server.ws_ua or server.httpupgrade_ua or server.splithttp_ua or "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1"
+local tls_host=server.tls_host or server.http_host or server.ws_host or server.h2_host or server.httpupgrade_host or server.server
+local user_agent=server.ws_ua or server.httpupgrade_ua or "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
 if server.tls=='1' then server.security="zero" end
 local function get_domain_excluded()
 	local content = fs.readfile("/etc/overwall/excluded.list")
@@ -100,7 +100,7 @@ outbounds={
 			shortId=server.shortid or nil,
 			spiderX=server.spiderx or nil
 		} or nil,
-		tcpSettings=(server.transport=="tcp" and server.tcp_guise=="http") and {
+		rawSettings=(server.transport=="tcp" and server.tcp_guise=="http") and {
 			header={
 				type=server.tcp_guise,
 				request={
@@ -129,17 +129,6 @@ outbounds={
 				UA=user_agent
 			}
 		} or nil,
-		httpSettings=(server.transport=="h2") and {
-			path=server.h2_path,
-			host={server.h2_host or server.server}
-		} or nil,
-		quicSettings=(server.transport=="quic") and {
-			security=server.quic_security,
-			key=server.quic_key,
-			header={
-				type=server.quic_guise
-			}
-		} or nil,
 		grpcSettings=(server.transport=="grpc") and {
 			serviceName=server.grpc_serviceName,
 			authority=server.grpc_authority or server.server
@@ -150,16 +139,6 @@ outbounds={
 			headers={
 				UA=user_agent
 			}
-		} or nil,
-		splithttpSettings =(server.transport=="splithttp") and {
-			path=server.splithttp_path,
-			host=server.splithttp_host or server.server,
-			headers={
-				UA=user_agent
-			},
-			maxUploadSize=server.splithttp_maxupload,
-			maxConcurrentUploads=server.splithttp_maxconupload,
-			scMinPostsIntervalMs=server.splithttp_scmin
 		} or nil
 	},
 	mux=(server.mux=="1") and {

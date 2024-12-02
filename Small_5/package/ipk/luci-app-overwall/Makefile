@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-overwall
-PKG_VERSION:=113.11.26
+PKG_VERSION:=113.12.2
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Maha_5
 

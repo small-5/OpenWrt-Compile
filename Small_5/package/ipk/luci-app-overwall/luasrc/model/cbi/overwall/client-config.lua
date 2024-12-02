@@ -230,19 +230,16 @@ for _,v in ipairs(securitys) do o:value(v,v:upper()) end
 o:depends("type","vmess")
 
 o=s:option(ListValue,"transport",translate("Transport"))
-o:value("tcp","TCP")
+o:value("tcp","RAW")
 o:value("kcp","mKCP")
 o:value("ws","WebSocket")
-o:value("h2","HTTP/2")
-o:value("quic","QUIC")
 o:value("grpc","gRPC")
 o:value("httpupgrade","HttpUpgrade")
-o:value("splithttp","SplitHTTP")
 o:depends("type","vmess")
 o:depends("type","vless")
 
 o=s:option(ListValue,"tcp_guise",translate("Camouflage Type"))
-o:value("none",translate("None"))
+o:value("",translate("None"))
 o:value("http","HTTP")
 o:depends("transport","tcp")
 
@@ -261,12 +258,6 @@ o:depends("transport","ws")
 o=s:option(Value,"ws_ua",translate("WebSocket UserAgent"))
 o:depends("transport","ws")
 
-o=s:option(Value,"h2_host",translate("HTTP/2 Host"))
-o:depends("transport","h2")
-
-o=s:option(Value,"h2_path",translate("HTTP/2 Path"))
-o:depends("transport","h2")
-
 o=s:option(Value,"httpupgrade_host",translate("HttpUpgrade Host"))
 o:depends("transport","httpupgrade")
 
@@ -275,42 +266,6 @@ o:depends("transport","httpupgrade")
 
 o=s:option(Value,"httpupgrade_ua",translate("HttpUpgrade UserAgent"))
 o:depends("transport","httpupgrade")
-
-o=s:option(Value,"splithttp_host",translate("SplitHTTP Host"))
-o:depends("transport","splithttp")
-
-o=s:option(Value,"splithttp_path",translate("SplitHTTP Path"))
-o:depends("transport","splithttp")
-
-o=s:option(Value,"splithttp_ua",translate("SplitHTTP UserAgent"))
-o:depends("transport","splithttp")
-
-o=s:option(Value,"splithttp_maxupload",translate("SplitHTTP MaxUploadSize"))
-o:depends("transport","splithttp")
-
-o=s:option(Value,"splithttp_maxconupload",translate("SplitHTTP MaxConcurrentUploads"))
-o:depends("transport","splithttp")
-
-o=s:option(Value,"splithttp_scmin",translate("SplitHTTP scMinPostsIntervalMs"))
-o:depends("transport","splithttp")
-
-o=s:option(ListValue,"quic_security",translate("QUIC Security"))
-o:value("none",translate("None"))
-o:value("aes-128-gcm",translate("aes-128-gcm"))
-o:value("chacha20-poly1305",translate("chacha20-poly1305"))
-o:depends("transport","quic")
-
-o=s:option(Value,"quic_key",translate("QUIC Key"))
-o:depends("transport","quic")
-
-o=s:option(ListValue,"quic_guise",translate("Header"))
-o:value("none",translate("None"))
-o:value("srtp",translate("VideoCall (SRTP)"))
-o:value("utp",translate("BitTorrent (uTP)"))
-o:value("wechat-video",translate("WechatVideo"))
-o:value("dtls","DTLS 1.2")
-o:value("wireguard","WireGuard")
-o:depends("transport","quic")
 
 o=s:option(Value,"grpc_serviceName","ServiceName")
 o:depends("transport","grpc")

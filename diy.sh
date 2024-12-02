@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="中華民國113年雙十國慶版 By Maha_5"
+VERSION="中華民國113年12月2日 By Maha_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
 echo "$OP_PASS" > ~/OP_PASSWORD
 A=0
@@ -19,6 +19,7 @@ case "$OP_TARGET" in
 	NANOPI-NEO2)path="NANOPI-NEO2";;
 	*)echo "No adaptation target!";exit 1;;
 esac
+find openwrt/feeds/luci -maxdepth 4 -name 'zh_Hans' -type d | xargs rm -rf
 cp -r target/$path/. Small_5
 
 if [ $A = 1 ];then

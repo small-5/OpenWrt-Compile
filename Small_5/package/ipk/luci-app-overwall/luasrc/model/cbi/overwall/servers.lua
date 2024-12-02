@@ -43,7 +43,7 @@ o.description=translate("Subscribe new add server default Auto-Switch on")
 o=s:option(Flag,"proxy",translate("Through proxy update"))
 o.description=translate("Through proxy update list,Not Recommended")
 
-o=s:option(Button,"update_Sub",translate("Update Subscribe Settings"))
+o=s:option(Button,"update_Sub",translate("Save Settings"))
 o.inputstyle="reload"
 o.description=translate("After modify the subscribe URL and settings,click this button first")
 o.write=function()

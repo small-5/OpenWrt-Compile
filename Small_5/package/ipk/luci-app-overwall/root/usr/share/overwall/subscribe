@@ -123,19 +123,17 @@ local function parseNodeUrl(A,B)
 	if not params.type then
 		params.type="tcp"
 	end
+	local htype=params.headerType
 	if params.type=='ws' then
 		result.ws_host=params.host
 		result.ws_path=params.path
-	elseif params.type=='h2' then
-		result.h2_host=params.host
-		result.h2_path=params.path
-	elseif params.type=='tcp' then
-		result.tcp_guise=params.headerType or "none"
+	elseif params.type=='tcp' and htype=='http' then
+		result.tcp_guise=htype
 		result.http_host=params.host
 		result.http_path=params.path
 	elseif params.type=='kcp' or params.type=='mkcp' then
 		params.type="kcp"
-		result.kcp_guise=params.headerType or "none"
+		result.kcp_guise=htype or "none"
 		result.mtu=1350
 		result.tti=50
 		result.uplink_capacity=5
@@ -143,23 +141,16 @@ local function parseNodeUrl(A,B)
 		result.read_buffer_size=2
 		result.write_buffer_size=2
 		result.seed=params.seed and params.seed
-	elseif params.type=='quic' then
-		result.quic_guise=params.headerType or "none"
-		result.quic_key=params.key
-		result.quic_security=params.quicSecurity or "none"
 	elseif params.type=='grpc' then
 		result.grpc_serviceName=params.serviceName
 		result.grpc_authority=params.authority
 	elseif params.type=='httpupgrade' then
 		result.httpupgrade_host=params.host
 		result.httpupgrade_path=params.path
-	elseif params.type=='splithttp' then
-		result.splithttp_host=params.host
-		result.splithttp_path=params.path
 	end
 	result.transport=params.type
 	if A=="vmess" then
-		result.security=params.encryption and params.encryption
+		if params.encryption and params.encryption~='auto' then result.security=params.encryption end
 	else
 		result.vless_encryption=params.encryption or "none"
 	end
@@ -327,13 +318,7 @@ local function processData(szType,content)
 			if info.net=='ws' then
 				result.ws_host=info.host
 				result.ws_path=info.path
-			elseif info.net=='h2' then
-				result.h2_host=info.host
-				result.h2_path=info.path
-			elseif info.net=='tcp' then
-				if info.type and info.type~="http" then
-					info.type="none"
-				end
+			elseif info.net=='tcp' and info.type=='http' then
 				result.tcp_guise=info.type
 				result.http_host=info.host
 				result.http_path=info.path
@@ -346,21 +331,14 @@ local function processData(szType,content)
 				result.downlink_capacity=20
 				result.read_buffer_size=2
 				result.write_buffer_size=2
-			elseif info.net=='quic' then
-				result.quic_guise=info.type
-				result.quic_key=info.key
-				result.quic_security=info.securty
 			elseif info.net=='grpc' then
 				result.grpc_serviceName=info.serviceName
 				result.grpc_authority=info.authority
 			elseif info.net=='httpupgrade' then
 				result.httpupgrade_host=info.host
 				result.httpupgrade_path=info.path
-			elseif info.net=='splithttp' then
-				result.splithttp_host=info.host
-				result.splithttp_path=info.path
 			end
-			if info.security then result.security=info.security end
+			if info.security and info.security~='auto' then result.security=info.security end
 			if info.tls=="tls" or info.tls=="1" then
 				result.tls="1"
 				result.tls_host=info.sni

@@ -172,31 +172,19 @@ function buildUrl(btn,urlname,sid){
 		if (v_transport=="ws"){
 			info.host=opt.get("ws_host").value;
 			info.path=opt.get("ws_path").value;
-		}else if (v_transport=="h2"){
-			info.host=opt.get("h2_host").value;
-			info.path=opt.get("h2_path").value;
-		}else if (v_transport=="tcp"){
+		}else if (v_transport=="tcp" && opt.get("tcp_guise").value=='http'){
 			info.type=opt.get("tcp_guise").value;
-			if (info.type=='http'){
-				info.host=opt.get("http_host").value;
-				info.path=opt.get("http_path").value;
-			}
+			info.host=opt.get("http_host").value;
+			info.path=opt.get("http_path").value;
 		}else if (v_transport=="kcp"){
 			info.type=opt.get("kcp_guise").value;
 			info.seed=opt.get("seed").value;
-		}else if (v_transport=="quic"){
-			info.type=opt.get("quic_guise").value;
-			info.key=opt.get("quic_key").value;
-			info.securty=opt.get("quic_security").value;
 		}else if (v_transport=="grpc"){
 			info.serviceName=opt.get("grpc_serviceName").value;
 			info.authority=opt.get("grpc_authority").value;
 		}else if (v_transport=="httpupgrade"){
 			info.host=opt.get("httpupgrade_host").value;
 			info.path=opt.get("httpupgrade_path").value;
-		}else if (v_transport=="splithttp"){
-			info.host=opt.get("splithttp_host").value;
-			info.path=opt.get("splithttp_path").value;
 		}
 		if (info.path && info.path!=''){
 			info.path=encodeURI(info.path);
@@ -228,29 +216,19 @@ function buildUrl(btn,urlname,sid){
 		if (v_transport=="ws"){
 			params+=opt.query("host","ws_host");
 			params+=opt.query("path","ws_path");
-		}else if (v_transport=="h2"){
-			params+=opt.query("host","h2_host");
-			params+=opt.query("path","h2_path");
-		}else if (v_transport=="tcp"){
+		}else if (v_transport=="tcp" && opt.get("tcp_guise").value=='http'){
 			params+=opt.query("headerType","tcp_guise");
 			params+=opt.query("host","http_host");
 			params+=opt.query("path","http_path");
 		}else if (v_transport=="kcp"){
 			params+=opt.query("headerType","kcp_guise");
 			params+=opt.query("seed","seed");
-		}else if (v_transport=="quic"){
-			params+=opt.query("headerType","quic_guise");
-			params+=opt.query("key","quic_key");
-			params+=opt.query("quicSecurity","quic_security");
 		}else if (v_transport=="grpc"){
 			params+=opt.query("serviceName","grpc_serviceName");
 			params+=opt.query("authority","grpc_authority");
 		}else if (v_transport=="httpupgrade"){
 			params+=opt.query("host","httpupgrade_host");
 			params+=opt.query("path","httpupgrade_path");
-		}else if (v_transport=="splithttp"){
-			params+=opt.query("host","splithttp_host");
-			params+=opt.query("path","splithttp_path");
 		}
 		params+="&type="+v_transport;
 		params+=opt.query("encryption","vless_encryption");
@@ -535,8 +513,6 @@ function fromUrl(btn,urlname,sid){
 				ssm.type=queryParam.headerType || "none"
 				ssm.host=queryParam.host || ''
 				ssm.path=queryParam.path || ''
-				ssm.securty=queryParam.quicSecurity
-				ssm.key=queryParam.key
 				ssm.seed=queryParam.seed
 				ssm.serviceName=queryParam.serviceName
 				ssm.allowInsecure=queryParam.allowInsecure
@@ -571,30 +547,20 @@ function fromUrl(btn,urlname,sid){
 		if (ssm.net=="ws"){
 			opt.set('ws_host',ssm.host);
 			opt.set('ws_path',ssm.path);
-		}else if (ssm.net=="h2"){
-			opt.set('h2_host',ssm.host);
-			opt.set('h2_path',ssm.path);
 		}else if (ssm.net=="tcp"){
-			opt.set('tcp_guise',ssm.type);
+			opt.set('tcp_guise',ssm.type=="http" ? "http":'');
 			opt.get('tcp_guise').dispatchEvent(event);
 			opt.set('http_host',ssm.host);
 			opt.set('http_path',ssm.path);
 		}else if (ssm.net=="kcp"){
 			opt.set('kcp_guise',ssm.type);
 			opt.set('seed',ssm.seed || '');
-		}else if (ssm.net=="quic"){
-			opt.set('quic_guise',ssm.type);
-			opt.set('quic_key',ssm.key);
-			opt.set('quic_security',ssm.securty);
 		}else if (ssm.net=="grpc"){
 			opt.set('grpc_serviceName',ssm.serviceName || '');
 			opt.set('grpc_authority',ssm.authority || '');
 		}else if (ssm.net=="httpupgrade"){
 			opt.set('httpupgrade_host',ssm.host);
 			opt.set('httpupgrade_path',ssm.path);
-		}else if (ssm.net=="splithttp"){
-			opt.set('splithttp_host',ssm.host);
-			opt.set('splithttp_path',ssm.path);
 		}
 		break;
 	case "vless":
@@ -647,30 +613,20 @@ function fromUrl(btn,urlname,sid){
 		if (queryParam.type=="ws"){
 			opt.set('ws_host',queryParam.host || '');
 			opt.set('ws_path',queryParam.path || '');
-		}else if (queryParam.type=="h2"){
-			opt.set('h2_host',queryParam.host || '');
-			opt.set('h2_path',queryParam.path || '');
 		}else if (queryParam.type=="tcp"){
-			opt.set('tcp_guise',queryParam.headerType || "none");
+			opt.set('tcp_guise',queryParam.headerType=="http" ? "http":'');
 			opt.get('tcp_guise').dispatchEvent(event);
 			opt.set('http_host',queryParam.host || '');
 			opt.set('http_path',queryParam.path || '');
 		}else if (queryParam.type=="kcp"){
 			opt.set('kcp_guise',queryParam.headerType || "none");
 			opt.set('seed',queryParam.seed || '');
-		}else if (queryParam.type=="quic"){
-			opt.set('quic_guise',queryParam.headerType || "none");
-			opt.set('quic_key',queryParam.key);
-			opt.set('quic_security',queryParam.quicSecurity);
 		}else if (queryParam.type=="grpc"){
 			opt.set('grpc_serviceName',queryParam.serviceName || '');
 			opt.set('grpc_authority',queryParam.authority || '');
 		}else if (queryParam.type=="httpupgrade"){
 			opt.set('httpupgrade_host',queryParam.host || '');
 			opt.set('httpupgrade_path',queryParam.path || '');
-		}else if (queryParam.type=="splithttp"){
-			opt.set('splithttp_host',queryParam.host || '');
-			opt.set('splithttp_path',queryParam.path || '');
 		}
 	}
 	s.innerHTML="<font color='green'><%:Import Successful%></font>";

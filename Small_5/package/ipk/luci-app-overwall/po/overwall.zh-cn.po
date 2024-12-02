@@ -298,8 +298,8 @@ msgstr "通過代理更新"
 msgid "Through proxy update list,Not Recommended"
 msgstr "通過路由器自身代理更新訂閱"
 
-msgid "Update Subscribe Settings"
-msgstr "更新訂閱設定"
+msgid "Save Settings"
+msgstr "保存設定"
 
 msgid "After modify the subscribe URL and settings,click this button first"
 msgstr "修改訂閱URL和設定後，先點擊此按鈕"
@@ -413,10 +413,10 @@ msgid "Plugin Opts"
 msgstr "插件參數"
 
 msgid "Protocol"
-msgstr "傳輸協議"
+msgstr "傳輸協定"
 
 msgid "Protocol param(optional)"
-msgstr "傳輸協議參數（可選）"
+msgstr "傳輸協定參數（可選）"
 
 msgid "Obfs"
 msgstr "混淆插件"
@@ -428,16 +428,7 @@ msgid "VLESS Encryption"
 msgstr "VLESS加密"
 
 msgid "Transport"
-msgstr "傳輸協議"
-
-msgid "VideoCall (SRTP)"
-msgstr "視頻通話(SRTP)"
-
-msgid "BitTorrent (uTP)"
-msgstr "BT下載(uTP)"
-
-msgid "WechatVideo"
-msgstr "微信視訊通話"
+msgstr "傳輸方式"
 
 msgid "Camouflage Type"
 msgstr "偽裝類型"
