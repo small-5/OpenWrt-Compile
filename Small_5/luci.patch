@@ -333,7 +333,7 @@
 @@ -253,3 +253,9 @@
  msgctxt "Use %s (%s = STUN)"
  msgid "Use %s"
- msgstr "使用 %s"
+ msgstr "使用%s"
 +
 +msgid "Force forwarding"
 +msgstr "強制轉發"

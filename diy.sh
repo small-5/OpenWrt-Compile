@@ -94,7 +94,7 @@ cat > shadow.patch  <<EOF
  network:*:0:0:99999:7:::
 EOF
 
-for i in default.patch luci.patch packages.patch version.patch shadow.patch $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
-	patch -p1 -E < $i;rm $i
+for i in default.patch i18n-backports.patch luci.patch packages.patch version.patch shadow.patch $(find -maxdepth 1 -name 'Patch-*.patch' | sed 's#.*/##');do
+	[ -s $i ] && patch -p1 -E < $i;rm $i
 done
 echo "Model:$OP_TARGET"
