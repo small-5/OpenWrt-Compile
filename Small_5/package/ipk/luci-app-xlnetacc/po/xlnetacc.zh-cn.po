@@ -35,7 +35,7 @@ msgid "General Settings"
 msgstr "一般設定"
 
 msgid "Enabled"
-msgstr "啟用"
+msgstr "已啟用"
 
 msgid "Enable DownLink Upgrade"
 msgstr "開啟下行提速"

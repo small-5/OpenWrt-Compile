@@ -247,6 +247,15 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1564
  msgid "Enabled (all CPUs)"
+@@ -4738,7 +4738,7 @@ msgstr "IPv6 流量表 \"%h\""
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:90
+ msgid "IPv6-PD"
+-msgstr "IPv6首碼代理"
++msgstr "IPv6首碼委派"
+ 
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:1263
+ msgid "IPv6-Suffix (hex)"
 @@ -7057,7 +7057,7 @@ msgstr "只接受來自下列位址的響應"
  
  #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:185
@@ -313,3 +322,75 @@
  
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1407
  #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1408
+--- a/feeds/luci/applications/luci-app-aria2/po/zh_Hant/aria2.po
++++ b/feeds/luci/applications/luci-app-aria2/po/zh_Hant/aria2.po
+@@ -15,7 +15,7 @@ msgstr ""
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:433
+ msgid "<abbr title=\"Local Peer Discovery\">LPD</abbr> enabled"
+-msgstr "啟用 <abbr title=\"Local Peer Discovery\">LPD</abbr>"
++msgstr "啟用<abbr title=\"Local Peer Discovery\">LPD</abbr>"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:551
+ msgid "Additional BT tracker"
+@@ -65,7 +65,7 @@ msgstr "BitTorrent 監聽埠號"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:329
+ msgid "CA certificate"
+-msgstr "CA 憑證"
++msgstr "CA憑證"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:334
+ msgid "Certificate"
+@@ -119,7 +119,7 @@ msgid ""
+ "Disable IPv6. This is useful if you have to use broken DNS and want to avoid "
+ "terribly slow AAAA record lookup."
+ msgstr ""
+-"停用 IPv6；如果您的 IPv6 連線不穩定，並希望 DNS 避免查詢緩慢的 AAAA 紀錄，請"
++"停用IPv6；如果您的IPv6連線不穩定，並希望DNS避免查詢緩慢的AAAA紀錄，請"
+ "啟用此選項。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:577
+@@ -143,11 +143,11 @@ msgstr "下載目錄"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:417
+ msgid "Enable IPv4 DHT functionality. It also enables UDP tracker support."
+ msgstr ""
+-"啟用 IPv4「分散式雜湊表」功能；這將同時啟用對「UDP tracker 協定」的支援。"
++"啟用IPv4「分散式雜湊表」功能；這將同時啟用對「UDP tracker 協定」的支援。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:427
+ msgid "Enable IPv6 DHT functionality."
+-msgstr "啟用 IPv6「分散式雜湊表」功能。"
++msgstr "啟用IPv6「分散式雜湊表」功能。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:435
+ msgid "Enable Local Peer Discovery."
+@@ -167,7 +167,7 @@ msgstr "啟用日誌"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:442
+ msgid "Enable peer exchange"
+-msgstr "啟用 PEX"
++msgstr "啟用PEX"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:306
+ msgid "Enable proxy"
+@@ -175,7 +175,7 @@ msgstr "啟用代理"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:206
+ msgid "Enabled"
+-msgstr "啟用"
++msgstr "已啟用"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:234
+ msgid "Error"
+--- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
++++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
+@@ -225,7 +225,7 @@ msgstr "啟用與 DDNS 提供者的安全通訊"
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:617
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:1143
+ msgid "Enabled"
+-msgstr "啟用"
++msgstr "已啟用"
+ 
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:960
+ msgid "Error"

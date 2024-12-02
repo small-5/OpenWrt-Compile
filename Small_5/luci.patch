@@ -374,7 +374,7 @@
 -msgid "Disabled xfrpc service"
 -msgstr "禁用xfrpc服務"
 +msgid "Enabled"
-+msgstr "啟用"
++msgstr "已啟用"
  
  #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:105
  msgid "Emergency"
