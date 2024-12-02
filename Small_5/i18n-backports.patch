@@ -1,380 +1,56 @@
---- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
-+++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
-@@ -4,7 +4,7 @@
- msgid ""
- msgstr ""
- "Project-Id-Version: PACKAGE VERSION\n"
--"PO-Revision-Date: 2024-11-29 00:10+0000\n"
-+"PO-Revision-Date: 2024-12-01 21:35+0000\n"
- "Last-Translator: Yuan Lau <traverslombard@outlook.com>\n"
- "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
- "projects/openwrt/luciapplicationsupnp/zh_Hant/>\n"
-@@ -22,7 +22,7 @@ msgctxt ""
- msgid ""
- "A 900s interval will result in %s notifications with the minimum max-age of "
- "1800s"
--msgstr ""
-+msgstr "900秒間隔將產生%s條通知，通知最大存留期的最小值為1800秒"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:196
- msgid ""
-@@ -37,11 +37,11 @@ msgstr "操作"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:113
- msgid "Active Service Port Maps"
--msgstr "動態重新導向"
-+msgstr "活動的連接埠轉發"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:31
- msgid "Active UPnP IGD & PCP/NAT-PMP Port Maps"
--msgstr ""
-+msgstr "活動的UPnP & PCP/NAT-PMP連接埠轉發"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:119
- msgid "Advanced Settings"
-@@ -49,7 +49,7 @@ msgstr "進階設定"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:130
- msgid "Advertise as IGDv1 (IPv4 only) device instead of IGDv2"
--msgstr "宣傳為 IGDv1 裝置，而非 IGDv2"
-+msgstr "宣告為IGDv1裝置，而非IGDv2"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:216
- msgid "Allow"
-@@ -76,7 +76,7 @@ msgstr "用戶端位址"
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:43
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:83
- msgid "Client Name"
--msgstr ""
-+msgstr "用戶端名稱"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:45
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:85
-@@ -113,11 +113,11 @@ msgstr "下行鏈路"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:127
- msgid "Enable PCP/NAT-PMP protocols"
--msgstr "啓用NAT-PMP功能"
-+msgstr "啓用PCP/NAT-PMP功能"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:125
- msgid "Enable UPnP IGD protocol"
--msgstr "启用 UPnP IGD 协议"
-+msgstr "启用UPnP"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:189
- msgid "Enable additional logging"
-@@ -143,7 +143,7 @@ msgstr "通知時間間隔"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:171
- msgid "Presentation URL"
--msgstr "存在URL"
-+msgstr "簡報網址"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:47
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:87
-@@ -156,15 +156,15 @@ msgstr "將額外的除錯資訊寫入系統日誌"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:172
- msgid "Report custom router web interface (presentation) URL"
--msgstr ""
-+msgstr "設定路由器web介面自訂（簡報）網址"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:136
- msgid "Report maximum download speed in kByte/s"
--msgstr ""
-+msgstr "設定最大下載速率(kByte/s)"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:140
- msgid "Report maximum upload speed in kByte/s"
--msgstr ""
-+msgstr "設定最大上傳速率(kByte/s)"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:185
- msgid "Report system instead of service uptime"
-@@ -200,7 +200,7 @@ msgstr "服务租约文件"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:122
- msgid "Start autonomous port mapping service"
--msgstr ""
-+msgstr "啟動連接埠轉發服務"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:121
- msgid "Start service"
-@@ -225,7 +225,7 @@ msgstr "沒有活動的連接埠轉發。"
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:144
- msgid ""
- "To detect the public IPv4 address for unrestricted full-cone/one-to-one NATs"
--msgstr ""
-+msgstr "偵測不受限制的全錐/一對一NAT的公共IPv4位址"
- 
- #: applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json:3
- msgid "UPnP IGD & PCP"
-@@ -233,11 +233,11 @@ msgstr "UPnP IGD & PCP"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:75
- msgid "UPnP IGD & PCP/NAT-PMP Service"
--msgstr "UPnP & NAT-PMP服務"
-+msgstr "UPnP & PCP/NAT-PMP服務"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:129
- msgid "UPnP IGDv1 compatibility mode"
--msgstr "啟用 UPnP IGDv1 模式"
-+msgstr "啟用UPnP IGDv1模式"
- 
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:57
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:53
-@@ -252,4 +252,4 @@ msgstr "上行鏈路"
- #: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:143
- msgctxt "Use %s (%s = STUN)"
- msgid "Use %s"
--msgstr "使用 %s"
-+msgstr "使用%s"
---- a/feeds/luci/applications/luci-app-wol/po/zh_Hant/wol.po
-+++ b/feeds/luci/applications/luci-app-wol/po/zh_Hant/wol.po
-@@ -6,20 +6,20 @@ msgstr ""
- "Project-Id-Version: PACKAGE VERSION\n"
- "Report-Msgid-Bugs-To: \n"
- "POT-Creation-Date: 2010-04-19 00:29+0200\n"
--"PO-Revision-Date: 2023-08-06 10:10+0000\n"
--"Last-Translator: Trevor <wowpapa3232@gmail.com>\n"
--"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
--"openwrt/luciapplicationswol/zh_Hant/>\n"
-+"PO-Revision-Date: 2024-12-01 21:35+0000\n"
-+"Last-Translator: Yuan Lau <traverslombard@outlook.com>\n"
-+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
-+"projects/openwrt/luciapplicationswol/zh_Hant/>\n"
- "Language: zh_Hant\n"
- "MIME-Version: 1.0\n"
- "Content-Type: text/plain; charset=UTF-8\n"
- "Content-Transfer-Encoding: 8bit\n"
- "Plural-Forms: nplurals=1; plural=0;\n"
--"X-Generator: Weblate 5.0-dev\n"
-+"X-Generator: Weblate 5.9-dev\n"
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:65
- msgid "Choose the host to wake up or enter a custom MAC address to use"
--msgstr "選擇要喚醒的主機，或者輸入 MAC 位址"
-+msgstr "選擇要喚醒的主機，或者輸入MAC位址"
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:123
- msgid "Dismiss"
-@@ -27,7 +27,7 @@ msgstr "關閉"
- 
- #: applications/luci-app-wol/root/usr/share/rpcd/acl.d/luci-app-wol.json:3
- msgid "Grant access to wake-on-lan executables"
--msgstr "授予存取 Wake-on-LAN 執行檔的權限"
-+msgstr "授予存取網路喚醒的權限"
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:64
- msgid "Host to wake up"
-@@ -52,11 +52,11 @@ msgstr "這兩個工具有時只有一個生效。如果其中一個失效，請
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:53
- msgid "Specifies the interface the WoL packet is sent on"
--msgstr "指定 WoL 封包傳送的介面"
-+msgstr "指定WoL封包傳送的介面"
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:112
- msgid "Starting WoL utility…"
--msgstr "啟動 WoL 工具中…"
-+msgstr "啟動WoL工具中…"
- 
- #: applications/luci-app-wol/htdocs/luci-static/resources/view/wol.js:38
- #: applications/luci-app-wol/root/usr/share/luci/menu.d/luci-app-wol.json:3
---- a/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-+++ b/feeds/luci/modules/luci-base/po/zh_Hant/base.po
-@@ -1,7 +1,7 @@
- msgid ""
- msgstr ""
- "Project-Id-Version: PACKAGE VERSION\n"
--"PO-Revision-Date: 2024-11-29 19:50+0000\n"
-+"PO-Revision-Date: 2024-12-01 21:35+0000\n"
- "Last-Translator: Yuan Lau <traverslombard@outlook.com>\n"
- "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
- "projects/openwrt/luci/zh_Hant/>\n"
-@@ -1623,7 +1623,7 @@ msgstr "cname或fqdn"
- 
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/processes.js:72
- msgid "CPU usage (%)"
--msgstr "CPU 使用率 (%)"
-+msgstr "CPU使用率(%)"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:388
- msgid "Cache"
-@@ -1894,7 +1894,7 @@ msgstr "要求DHCP時傳送的用戶ID"
- #: modules/luci-base/htdocs/luci-static/resources/form.js:2722
- #: modules/luci-base/htdocs/luci-static/resources/form.js:2726
- msgid "Clone"
--msgstr ""
-+msgstr "克隆"
- 
- #: modules/luci-base/htdocs/luci-static/resources/ui.js:4609
- #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/sshkeys.js:173
-@@ -2261,7 +2261,7 @@ msgstr "DHCPv4<code>租約</code>被用作IPv6首碼的限制和首選租期。"
- #: modules/luci-compat/luasrc/model/network/proto_dhcpv6.lua:7
- #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/dhcpv6.js:7
- msgid "DHCPv6 client"
--msgstr "DHCPv6 客戶端"
-+msgstr "DHCPv6用戶端"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:952
- msgctxt "DHCPv6 option 56. RFC5908 link"
-@@ -2806,7 +2806,7 @@ msgstr ""
- #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/nftables.js:96
- msgctxt "nft notrack action"
- msgid "Do not track"
--msgstr ""
-+msgstr "不追蹤"
- 
- #: modules/luci-base/htdocs/luci-static/resources/ui.js:2928
- msgid "Do you really want to delete \"%s\" ?"
-@@ -3070,7 +3070,7 @@ msgstr "出口設備名稱"
- msgid ""
- "Either a prefix length hint (e.g. 56) only, whereby the operator selects the "
- "prefix, or specify a prefix also (e.g. %s)"
--msgstr ""
-+msgstr "僅設定首碼長度（例如56）或指定首碼（例如%s）"
- 
- #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:193
- msgid "Emergency"
-@@ -3306,7 +3306,7 @@ msgstr "啟用單播泛洪"
- #: protocols/luci-proto-mbim/htdocs/luci-static/resources/protocol/mbim.js:109
- #: protocols/luci-proto-mbim/htdocs/luci-static/resources/protocol/mbim.js:118
- msgid "Enabled"
--msgstr "啟用"
-+msgstr "已啟用"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:1564
- msgid "Enabled (all CPUs)"
-@@ -4738,7 +4738,7 @@ msgstr "IPv6 流量表 \"%h\""
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js:90
- msgid "IPv6-PD"
--msgstr "IPv6首碼代理"
-+msgstr "IPv6首碼委派"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:1263
- msgid "IPv6-Suffix (hex)"
-@@ -7057,7 +7057,7 @@ msgstr "只接受來自下列位址的響應"
- 
- #: modules/luci-mod-system/htdocs/luci-static/resources/view/system/system.js:185
- msgid "Only affects dmesg kernel log"
--msgstr ""
-+msgstr "只影響dmesg內核日誌"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/tools/network.js:769
- msgid "Only allow communication with non-isolated bridge ports when enabled"
-@@ -8482,7 +8482,7 @@ msgstr "替代性無線設定"
- #: protocols/luci-proto-vxlan/htdocs/luci-static/resources/protocol/vxlan.js:108
- #: protocols/luci-proto-vxlan/htdocs/luci-static/resources/protocol/vxlan6.js:108
- msgid "Reply on Neighbour request when mapping found in VXLAN FDB"
--msgstr "在 VXLAN FDB 中找到映射時應答鄰居請求"
-+msgstr "在VXLAN FDB中找到映射時應答鄰居請求"
- 
- #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/dhcpv6.js:17
- msgid "Request IPv6-address"
-@@ -8490,7 +8490,7 @@ msgstr "要求IPv6位址"
- 
- #: protocols/luci-proto-ipv6/htdocs/luci-static/resources/protocol/dhcpv6.js:22
- msgid "Request IPv6-prefix"
--msgstr ""
-+msgstr "要求IPv6首碼"
- 
- #: modules/luci-base/htdocs/luci-static/resources/rpc.js:408
- msgid "Request timeout"
-@@ -8545,32 +8545,32 @@ msgstr "必填：如果 RADIUS 伺服器未提供適當的 VLAN 屬性，則拒
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1393
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1394
- msgid "Requires hostapd"
--msgstr "要求 hostapd"
-+msgstr "要求hostapd"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1399
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1400
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1401
- msgid "Requires hostapd with EAP Suite-B support"
--msgstr "要求 hostapd支援EAP Suite-B"
-+msgstr "要求hostapd支援EAP Suite-B"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1397
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1398
- msgid "Requires hostapd with EAP support"
--msgstr "要求 hostapd支援EAP"
-+msgstr "要求hostapd支援EAP"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1402
- msgid "Requires hostapd with OWE support"
--msgstr "要求 hostapd支援OWE"
-+msgstr "要求hostapd支援OWE"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1395
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1396
- msgid "Requires hostapd with SAE support"
--msgstr "要求 hostapd支援SAE"
-+msgstr "要求hostapd支援SAE"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1390
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1391
- msgid "Requires hostapd with WEP support"
--msgstr "要求 hostapd支援WEP"
-+msgstr "要求hostapd支援WEP"
- 
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1407
- #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js:1408
 --- a/feeds/luci/applications/luci-app-aria2/po/zh_Hant/aria2.po
 +++ b/feeds/luci/applications/luci-app-aria2/po/zh_Hant/aria2.po
-@@ -15,7 +15,7 @@ msgstr ""
+@@ -31,7 +31,7 @@ msgstr "全部代理"
  
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:433
- msgid "<abbr title=\"Local Peer Discovery\">LPD</abbr> enabled"
--msgstr "啟用 <abbr title=\"Local Peer Discovery\">LPD</abbr>"
-+msgstr "啟用<abbr title=\"Local Peer Discovery\">LPD</abbr>"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:365
+ msgid "Append HEADERs to HTTP request header."
+-msgstr "附加該值到 HTTP 請求頭。"
++msgstr "附加這些值到HTTP請求標頭。"
  
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:551
- msgid "Additional BT tracker"
-@@ -65,7 +65,7 @@ msgstr "BitTorrent 監聽埠號"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:188
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:194
+@@ -45,7 +45,7 @@ msgstr "Aria2"
+ msgid ""
+ "Aria2 is a lightweight multi-protocol &amp; multi-source, cross platform "
+ "download utility."
+-msgstr "Aria2 是一個輕量化且支援多協定、多來源的跨平台下載工具。"
++msgstr "Aria2是一個輕量化且支援多協定、多來源的跨平台下載工具。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:565
+ msgid "Auto save interval"
+@@ -57,11 +57,11 @@ msgstr "基本選項"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:413
+ msgid "BitTorrent Options"
+-msgstr "BitTorrent 選項"
++msgstr "BitTorrent選項"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:472
+ msgid "BitTorrent listen port"
+-msgstr "BitTorrent 監聽埠號"
++msgstr "BitTorrent監聽連接埠"
  
  #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:329
  msgid "CA certificate"
--msgstr "CA 憑證"
-+msgstr "CA憑證"
+@@ -79,7 +79,7 @@ msgstr "檢查憑證"
+ msgid ""
+ "Close connection if download speed is lower than or equal to this value "
+ "(bytes per sec). 0 means has no lowest speed limit."
+-msgstr "下載速度小於或等於該值（單位：B/s）時關閉連線，輸入 0 則表示不限速。"
++msgstr "下載速度小於或等於該值（單位：B/s）時關閉連線，輸入0則表示不限速。"
  
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:334
- msgid "Certificate"
-@@ -119,7 +119,7 @@ msgid ""
- "Disable IPv6. This is useful if you have to use broken DNS and want to avoid "
- "terribly slow AAAA record lookup."
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:29
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/log.js:51
+@@ -128,7 +128,7 @@ msgstr "磁碟快取"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:396
+ msgid "Don't split less than 2*SIZE byte range. Possible values: 1M-1024M."
  msgstr ""
--"停用 IPv6；如果您的 IPv6 連線不穩定，並希望 DNS 避免查詢緩慢的 AAAA 紀錄，請"
-+"停用IPv6；如果您的IPv6連線不穩定，並希望DNS避免查詢緩慢的AAAA紀錄，請"
- "啟用此選項。"
+-"檔案的最小分割大小（取值範圍：1-1024M）；如果「檔案大小」小於該值的 2 倍，則"
++"檔案的最小分割大小（取值範圍：1-1024M）；如果「檔案大小」小於該值的2倍，則"
+ "不會分割此檔案。"
  
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:577
-@@ -143,11 +143,11 @@ msgstr "下載目錄"
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:417
- msgid "Enable IPv4 DHT functionality. It also enables UDP tracker support."
- msgstr ""
--"啟用 IPv4「分散式雜湊表」功能；這將同時啟用對「UDP tracker 協定」的支援。"
-+"啟用IPv4「分散式雜湊表」功能；這將同時啟用對「UDP tracker 協定」的支援。"
- 
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:427
- msgid "Enable IPv6 DHT functionality."
--msgstr "啟用 IPv6「分散式雜湊表」功能。"
-+msgstr "啟用IPv6「分散式雜湊表」功能。"
- 
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:435
- msgid "Enable Local Peer Discovery."
-@@ -167,7 +167,7 @@ msgstr "啟用日誌"
- 
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:442
- msgid "Enable peer exchange"
--msgstr "啟用 PEX"
-+msgstr "啟用PEX"
- 
- #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:306
- msgid "Enable proxy"
-@@ -175,7 +175,7 @@ msgstr "啟用代理"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:391
+@@ -173,7 +173,7 @@ msgstr "啟用代理"
  
  #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:206
  msgid "Enabled"
@@ -383,9 +59,472 @@
  
  #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:234
  msgid "Error"
+@@ -202,7 +202,7 @@ msgstr "下載種子後自動建立其下載任務"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:190
+ msgid "For more information, please visit: %s."
+-msgstr "更多資訊，請存取：%s。"
++msgstr "更多資訊，請訪問：%s。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:597
+ msgid "Force save"
+@@ -214,7 +214,7 @@ msgstr "隨機產生"
+ 
+ #: applications/luci-app-aria2/root/usr/share/rpcd/acl.d/luci-app-aria2.json:3
+ msgid "Grant UCI access for luci-app-aria2"
+-msgstr "授予 luci-app-aria2 擁有 UCI 存取的權限"
++msgstr "授予luci-app-aria2存取UCI的權限"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:347
+ msgid "HTTP accept gzip"
+@@ -222,11 +222,11 @@ msgstr "啟用HTTP壓縮"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:356
+ msgid "HTTP no cache"
+-msgstr "HTTP 不快取"
++msgstr "HTTP不快取"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:304
+ msgid "HTTP/FTP/SFTP Options"
+-msgstr "HTTP/FTP/SFTP 選項"
++msgstr "HTTP/FTP/SFTP選項"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:364
+ msgid "Header"
+@@ -234,7 +234,7 @@ msgstr "頭欄位"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/files.js:46
+ msgid "Here shows the files used by aria2."
+-msgstr "在這裡顯示 Aria2 使用的檔案。"
++msgstr "在這裡顯示Aria2使用的檔案。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:415
+ msgid "IPv4 <abbr title=\"Distributed Hash Table\">DHT</abbr> enabled"
+@@ -242,11 +242,11 @@ msgstr "啟用IPv4<abbr title=\"Distributed Hash Table\">DHT</abbr>"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:425
+ msgid "IPv6 <abbr title=\"Distributed Hash Table\">DHT</abbr> enabled"
+-msgstr "啟用IPv6 <abbr title=\"Distributed Hash Table\">DHT</abbr>"
++msgstr "啟用IPv6<abbr title=\"Distributed Hash Table\">DHT</abbr>"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:558
+ msgid "IPv6 disabled"
+-msgstr "停用 IPv6"
++msgstr "IPv6已停用"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:516
+ msgid ""
+@@ -255,7 +255,7 @@ msgid ""
+ "Configuring this option with your preferred download speed can increase your "
+ "download speed in some cases."
+ msgstr ""
+-"如果某個 BT 任務的下載速度小於設定的速度，Aria2 會臨時提高 Peer 的數量來嘗試"
++"如果某個BT任務的下載速度小於設定的速度，Aria2會臨時提高Peer的數量來嘗試"
+ "取得更大的下載速度。在某些情況下，設定此選項能提高您的下載速度。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:231
+@@ -264,11 +264,11 @@ msgstr "資訊"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:41
+ msgid "Installed web interface:"
+-msgstr "已安装的 Web 介面："
++msgstr "已安装的Web介面："
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:301
+ msgid "Json-RPC URL"
+-msgstr "JSON-RPC URL"
++msgstr "JSON-RPC網址"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:488
+ msgid "Keep in memory"
+@@ -276,11 +276,11 @@ msgstr "是，但不會儲存種子"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/log.js:31
+ msgid "Last 50 lines of log file:"
+-msgstr "日誌檔最後 50 行內容："
++msgstr "日誌檔最後50行內容："
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/log.js:36
+ msgid "Last 50 lines of syslog:"
+-msgstr "系統日誌最後 50 行內容："
++msgstr "系統日誌最後50行內容："
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:210
+ msgid "Leave blank to use default user."
+@@ -288,14 +288,14 @@ msgstr "如果不選擇，則使用預設使用者。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:552
+ msgid "List of additional BitTorrent tracker's announce URI."
+-msgstr "附加 BitTorrent tracker 清單的發布 URI。"
++msgstr "附加BitTorrent tracker清單的發布URI。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:625
+ msgid ""
+ "List of extra settings. Format: option=value, eg. <code>netrc-path=/tmp/."
+ "netrc</code>."
+ msgstr ""
+-"額外設定清單；格式為 option=value（例如：<code>netrc-path=/tmp/.netrc</"
++"額外設定清單；格式為option=value（例如：<code>netrc-path=/tmp/.netrc</"
+ "code>）。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/log.js:49
+@@ -405,11 +405,11 @@ msgstr "請輸入權杖長度："
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:530
+ msgid "Prefix of peer ID"
+-msgstr "Peer ID 字首"
++msgstr "Peer ID首碼"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:341
+ msgid "Private key"
+-msgstr "私鑰"
++msgstr "私密金鑰"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:317
+ msgid "Proxy password"
+@@ -421,51 +421,51 @@ msgstr "代理使用者名稱"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:240
+ msgid "RPC Options"
+-msgstr "RPC 選項"
++msgstr "RPC選項"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:257
+ msgid "RPC authentication method"
+-msgstr "RPC 認證方法"
++msgstr "RPC認證方法"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:283
+ msgid "RPC certificate"
+-msgstr "RPC 憑證"
++msgstr "RPC憑證"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:265
+ msgid "RPC password"
+-msgstr "RPC 密碼"
++msgstr "RPC密碼"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:253
+ msgid "RPC port"
+-msgstr "RPC 埠號"
++msgstr "RPC連接埠"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:293
+ msgid "RPC private key"
+-msgstr "RPC 私鑰"
++msgstr "RPC私密金鑰"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:276
+ msgid "RPC secure"
+-msgstr "RPC 加密"
++msgstr "RPC安全"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:269
+ msgid "RPC token"
+-msgstr "RPC 權杖"
++msgstr "RPC權杖"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:277
+ msgid ""
+ "RPC transport will be encrypted by SSL/TLS. The RPC clients must use https "
+ "scheme to access the server. For WebSocket client, use wss scheme."
+ msgstr ""
+-"通過 SSL/TLS 加密 RPC 傳輸；RPC 客戶端必須使用「HTTPS 協定」來存取伺服器，"
+-"WebSocket 客戶端則使用「WWS 協定」。"
++"通過SSL/TLS加密RPC傳輸；RPC用戶端必須使用「HTTPS協定」來存取伺服器，"
++"WebSocket用戶端則使用「WWS協定」。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:262
+ msgid "RPC username"
+-msgstr "RPC 使用者名稱"
++msgstr "RPC用戶名稱"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/log.js:62
+ msgid "Refresh every %s seconds."
+-msgstr "每 %s 秒更新。"
++msgstr "每%s秒重新整理。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:459
+ msgid "Remove unselected file"
+@@ -477,7 +477,7 @@ msgid ""
+ "Please use this option with care because it will actually remove files from "
+ "your disk."
+ msgstr ""
+-"BitTorrent 下載完成時移除未選擇的檔案；檔案將從您的磁碟中永久移除，請小心使用"
++"BitTorrent下載完成時移除未選擇的檔案；檔案將從您的磁碟中永久移除，請小心使用"
+ "此選項。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:514
+@@ -501,7 +501,7 @@ msgid ""
+ "Save a control file (*.aria2) every N seconds. If 0 is given, a control file "
+ "is not saved during download."
+ msgstr ""
+-"每 N 秒儲存下載「控制檔案」(*.aria2)。設定 0 表示在下載過程中不儲存控制檔案。"
++"每N秒儲存下載「控制檔案」(*.aria2)。設定0表示在下載過程中不儲存控制檔案。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:598
+ msgid ""
+@@ -518,7 +518,7 @@ msgid ""
+ "Save error/unfinished downloads to session file every N seconds. If 0 is "
+ "given, file will be saved only when aria2 exits."
+ msgstr ""
+-"每 N 秒將失敗的/未完成的下載儲存到工作階段檔案。設定 0 則僅在 Aria2 退出時儲"
++"每N秒將失敗的/未完成的下載儲存到工作階段檔案。設定0則僅在Aria2退出時儲"
+ "存。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:453
+@@ -527,8 +527,8 @@ msgid ""
+ "BitTorrent Magnet URI is used. The file name is hex encoded info hash with "
+ "suffix \".torrent\"."
+ msgstr ""
+-"儲存元資料為 \".torrent\" 檔案；此選項僅在使用 BitTorrent 磁力連結下載時生"
+-"效。檔案名稱（包含字尾 \".torrent\"）為十六進位編碼的雜湊值。"
++"儲存元資料為「.torrent」檔案；此選項僅在使用BitTorrent磁力連結下載時生"
++"效。檔案名稱（包含字尾「.torrent」）為十六進位編碼的雜湊值。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:452
+ msgid "Save metadata"
+@@ -540,7 +540,7 @@ msgstr "工作階段儲存間隔"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:467
+ msgid "Seed previously downloaded files without verifying piece hashes."
+-msgstr "繼續之前的 BT 任務時， 無需再次校驗分片雜湊。"
++msgstr "繼續之前的BT任務時， 無需再次校驗分片雜湊。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:538
+ msgid "Seed ratio"
+@@ -561,8 +561,8 @@ msgid ""
+ "<code>Content-Encoding: deflate</code>."
+ msgstr ""
+ "傳送請求頭欄位：<code>Accept: deflate, gzip</code>；當遠端伺服器的回應頭中具"
+-"有 <code>Content-Encoding: gzip</code> 或 <code>Content-Encoding: deflate</"
+-"code> 時解壓回應資料，以提高資料傳輸速度。"
++"有<code>Content-Encoding: gzip</code>或<code>Content-Encoding: deflate</"
++"code>時解壓回應資料，以提高資料傳輸速度。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:357
+ msgid ""
+@@ -571,9 +571,9 @@ msgid ""
+ "you can add Cache-Control header with a directive you like using \"Header\" "
+ "option."
+ msgstr ""
+-"傳送 <code>Cache-Control: no-cache</code> 和 <code>Pragma: no-cache</code> 請"
+-"求標頭來防止快取內容，停用則不傳送。您也可用使用「請求標頭」選項來設定 Cache-"
+-"Control 請求標頭。"
++"傳送<code>Cache-Control: no-cache</code>和<code>Pragma: no-cache</code>請"
++"求標頭來防止快取內容，停用則不傳送。您也可用使用「請求標頭」選項來設定Cache-"
++"Control請求標頭。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:473
+ msgid ""
+@@ -581,29 +581,29 @@ msgid ""
+ "\"6881-6999\" and \"6881-6889,6999\". Make sure that the specified ports are "
+ "open for incoming TCP traffic."
+ msgstr ""
+-"為 BitTorrent 下載設定 TCP 連接埠。支援的格式：「6881,6885」，「6881-6999」和"
+-"「6881-6889,6999」。請確保正確放行了這些連接埠的 TCP 入站通信。"
++"為BitTorrent下載設定TCP連接埠。支援的格式：「6881,6885」，「6881-6999」和"
++"「6881-6889,6999」。請確保正確放行了這些連接埠的TCP入站通信。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:479
+ msgid ""
+ "Set UDP listening port used by DHT (IPv4, IPv6) and UDP tracker. Make sure "
+ "that the specified ports are open for incoming UDP traffic."
+ msgstr ""
+-"設定用於 DHT (IPv4, IPv6) 和 UDP tracker 協定的 UDP 監聽埠；請確保指定的通訊"
+-"埠允許 UDP 傳入流量。"
++"設定用於DHT(IPv4, IPv6)和UDP tracker協定的UDP監聽埠；請確保指定的連接"
++"埠允許UDP傳入流量。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:614
+ msgid ""
+ "Set max download speed per each download in bytes/sec. 0 means unrestricted."
+-msgstr "設定每個任務的最大下載速度（單位：B/s），輸入 0 則表示不限制。"
++msgstr "設定每個任務的最大下載速度（單位：B/s），輸入0則表示不限制。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:607
+ msgid "Set max overall download speed in bytes/sec. 0 means unrestricted."
+-msgstr "設定整體的最大下載速度（單位：B/s），輸入 0 則表示不限制。"
++msgstr "設定整體的最大下載速度（單位：B/s），輸入0則表示不限制。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:492
+ msgid "Set max overall upload speed in bytes/sec. 0 means unrestricted."
+-msgstr "設定整體的最大上傳速度（單位：B/s），輸入 0 則表示不限制。"
++msgstr "設定整體的最大上傳速度（單位：B/s），輸入0則表示不限制。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:499
+ msgid ""
+@@ -616,7 +616,7 @@ msgid ""
+ "server. After the connection is established, this option makes no effect and "
+ "\"Timeout\" option is used instead."
+ msgstr ""
+-"設定 HTTP、FTP 和代理伺服器的連線逾時時間。當連線建立後，該選項失去作用，而"
++"設定HTTP、FTP和代理伺服器的連線逾時時間。當連線建立後，該選項失去作用，而"
+ "「逾時時間」選項會被使用。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:404
+@@ -625,7 +625,7 @@ msgstr "設定重試的等待間隔秒數。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:409
+ msgid "Set user agent for HTTP(S) downloads."
+-msgstr "為 HTTP(S) 下載設定使用者代理。"
++msgstr "為HTTP(S)下載設定使用者代理。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:188
+ msgid "Settings"
+@@ -649,17 +649,17 @@ msgid ""
+ "FAT32 because it takes almost same time as \"prealloc\" and it blocks aria2 "
+ "entirely until allocation finishes."
+ msgstr ""
+-"指定檔案分配方式。如果您使用的檔案系統較新，例如：ext4 (支援擴展分區)、"
+-"btrfs、xfs 或者 NTFS (僅限 MinGW 版本)，強烈推薦「falloc」，這種方式幾乎能立"
+-"即分配比較大的檔案 (GB)，但是它要求您的系統必須支援 posix_fallocate(3) 函數。"
+-"不要在 ext3 或者 FAT32 這些舊檔案系統中使用「falloc」，因為它花費的時間和"
+-"「prealloc」幾乎一樣多，而且在檔案分配過程中會阻塞整個 Aria2 處理程序。"
++"指定檔案分配方式。如果您使用的檔案系統較新，例如：ext4（支援擴展分區）、"
++"btrfs、xfs或者NTFS（僅限MinGW版本），強烈推薦「falloc」，這種方式幾乎能立"
++"即分配比較大的檔案(GB)，但是它要求您的系統必須支援posix_fallocate(3)函式。"
++"不要在ext3或者FAT32這些舊檔案系統中使用「falloc」，因為它花費的時間和"
++"「prealloc」幾乎一樣多，而且在檔案分配過程中會完全阻塞Aria2直到分配完成。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:505
+ msgid ""
+ "Specify maximum number of files to open in multi-file BitTorrent download "
+ "globally."
+-msgstr "設定 BitTorrent 全域最大同時下載的檔案數量。"
++msgstr "設定BitTorrent全域最大同時下載的檔案數量。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:546
+ msgid ""
+@@ -667,8 +667,8 @@ msgid ""
+ "with this option, seeding ends when at least one of the conditions is "
+ "satisfied. Specifying 0 disables seeding after download completed."
+ msgstr ""
+-"指定做種時間 (分鍾)。如果同時指定了「做種比例」選項，那麼將在任一條件滿足時停"
+-"止做種。設定 0 表示下載完成後停止做種。"
++"以分鐘指定做種時間。如果同時指定了「做種比例」選項，那麼將在任一條件滿足時停"
++"止做種。設定0表示下載完成後停止做種。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:539
+ msgid ""
+@@ -676,8 +676,8 @@ msgid ""
+ "RATIO. You are strongly encouraged to specify equals or more than 1.0 here. "
+ "Specify 0.0 if you intend to do seeding regardless of share ratio."
+ msgstr ""
+-"指定做種比例。BT 下載完成之後持續做種，直到比例達到指定值。強烈建議將此選項設"
+-"定為大於或等於 1.0。設定為 0.0 來無限做種。"
++"指定做種比例。BT下載完成之後持續做種，直到比例達到指定值。強烈建議將此選項設"
++"定為大於或等於1.0。設定為0.0來無限做種。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:510
+ msgid "Specify the maximum number of peers per torrent, 0 means unlimited."
+@@ -690,16 +690,16 @@ msgid ""
+ "than 20 bytes are specified, random byte data are added to make its length "
+ "20 bytes."
+ msgstr ""
+-"設定 Peer ID 前綴。Peer ID 的長度為 20 位元組。如果設定超過了 20 位元組，將僅"
+-"使用前面的 20 位元組。如果設定少於 20 位元組，將加入額外的隨機字元來讓長度達"
+-"到 20 位元組。"
++"設定Peer ID首碼。Peer ID的長度為20位元組。如果設定超過了20位元組，將僅"
++"使用前面的20位元組。如果設定少於20位元組，將加入額外的隨機字元來讓長度達"
++"到20位元組。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:525
+ msgid ""
+ "Stop BitTorrent download if download speed is 0 in consecutive N seconds. If "
+ "0 is given, this feature is disabled."
+ msgstr ""
+-"當 BT 任務在 N 秒的持續時間內的下載速度一直為 0，則停止下載。0 表示停用。"
++"當BT任務在N秒的持續時間內的下載速度一直為0，則停止下載。0表示停用。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:524
+ msgid "Stop timeout"
+@@ -707,15 +707,15 @@ msgstr "停止逾時值"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:36
+ msgid "The Aria2 service is not running."
+-msgstr "Aria2 服務未執行。"
++msgstr "Aria2服務未執行。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:35
+ msgid "The Aria2 service is running."
+-msgstr "Aria2 服務執行中。"
++msgstr "Aria2服務執行中。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:217
+ msgid "The directory to store the config file, session file and DHT file."
+-msgstr "儲存設定檔、工作階段檔和 DHT 檔案的目錄。"
++msgstr "儲存設定檔、工作階段檔和DHT檔案的目錄。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:213
+ msgid ""
+@@ -759,7 +759,7 @@ msgid ""
+ "Use the certificate authorities in FILE to verify the peers. The certificate "
+ "file must be in PEM format and can contain multiple CA certificates."
+ msgstr ""
+-"使用檔案中的憑證來驗證對端。憑證檔案必須為 PEM 格式並且可以包含多個憑證。"
++"使用檔案中的憑證來驗證遠端。憑證檔案必須為PEM格式並且可以包含多個憑證。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:284
+ msgid ""
+@@ -769,9 +769,9 @@ msgid ""
+ "PKCS12 files with a blank import password can be opened!<br/>When using PEM, "
+ "you have to specify the \"RPC private key\" as well."
+ msgstr ""
+-"RPC 伺服器使用的「憑證檔」；憑證格式必須為 PKCS12 (.p12, .pfx) 或 PEM。<br/"
+-">PKCS12 檔案必須包含憑證、金鑰以及可選的附加「憑證鏈」，且該檔案不能有匯入密"
+-"碼！<br/>使用 PEM 時，您必須同時指定「RPC 私鑰」。"
++"RPC伺服器使用的憑證檔。憑證格式必須為PKCS12(.p12, .pfx)或PEM。<br/"
++">PKCS12檔案必須包含憑證、金鑰以及可選的附加憑證鏈，且該檔案不能有匯入密"
++"碼！<br/>使用PEM時，您必須同時指定RPC私密金鑰。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:335
+ msgid ""
+@@ -781,21 +781,21 @@ msgid ""
+ "PKCS12 files with a blank import password can be opened!<br/>When using PEM, "
+ "you have to specify the \"Private key\" as well."
+ msgstr ""
+-"客戶端使用的「憑證檔」；憑證格式必須為 PKCS12 (.p12, .pfx) 或 PEM。<br/"
+-">PKCS12 檔案必須包含憑證、金鑰以及可選的附加「憑證鏈」，且該檔案不能有匯入密"
+-"碼！<br/>使用 PEM 時，您必須同時指定「私鑰」。"
++"用戶端使用的憑證檔。憑證格式必須為PKCS12(.p12, .pfx)或PEM。<br/"
++">PKCS12檔案必須包含憑證、金鑰以及可選的附加憑證鏈，且該檔案不能有匯入密"
++"碼！<br/>使用PEM時，您必須同時指定私密金鑰。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:294
+ msgid ""
+ "Use the private key in FILE for RPC server. The private key must be "
+ "decrypted and in PEM format."
+-msgstr "RPC 伺服器使用的「私鑰檔」；私鑰必須被解密，且格式為 PEM。"
++msgstr "RPC伺服器使用的私密金鑰檔。私密金鑰必須被解密，且格式為PEM。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:342
+ msgid ""
+ "Use the private key in FILE. The private key must be decrypted and in PEM "
+ "format. The behavior when encrypted one is given is undefined."
+-msgstr "使用的「私鑰檔」；私鑰必須被解密，且格式為 PEM。"
++msgstr "使用的私密金鑰檔；私密金鑰必須被解密，且格式為PEM。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:408
+ msgid "User agent"
+@@ -822,7 +822,7 @@ msgstr "警告"
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:608
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:615
+ msgid "You can append K or M."
+-msgstr "您可以在該值後附加單位 K 或 M。"
++msgstr "您可以在該值後附加單位K或M。"
+ 
+ #: applications/luci-app-aria2/htdocs/luci-static/resources/view/aria2/config.js:594
+ msgid "falloc"
 --- a/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
 +++ b/feeds/luci/applications/luci-app-ddns/po/zh_Hant/ddns.po
-@@ -225,7 +225,7 @@ msgstr "啟用與 DDNS 提供者的安全通訊"
+@@ -220,12 +220,12 @@ msgstr "編輯"
+ 
+ #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:776
+ msgid "Enable secure communication with DDNS provider"
+-msgstr "啟用與 DDNS 提供者的安全通訊"
++msgstr "啟用與DDNS提供者的安全通訊"
+ 
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:617
  #: applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js:1143
  msgid "Enabled"

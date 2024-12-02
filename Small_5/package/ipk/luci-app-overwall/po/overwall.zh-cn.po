@@ -413,10 +413,10 @@ msgid "Plugin Opts"
 msgstr "插件參數"
 
 msgid "Protocol"
-msgstr "傳輸協定"
+msgstr "協定"
 
 msgid "Protocol param(optional)"
-msgstr "傳輸協定參數（可選）"
+msgstr "協定參數（可選）"
 
 msgid "Obfs"
 msgstr "混淆插件"
