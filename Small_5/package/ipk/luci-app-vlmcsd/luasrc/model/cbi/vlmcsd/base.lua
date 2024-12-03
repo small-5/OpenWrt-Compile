@@ -1,6 +1,6 @@
 m=Map("vlmcsd")
 m.title=translate("KMS Server Settings")
-m.description=translate("A KMS Serever Emulator to active your Windows or Office<br/>Current Version").."<b><font color=\"green\">: "..luci.sys.exec("vlmcsd -V | awk '{print $2}' | sed -n 1p").."</font></b>"
+m.description=translate("A KMS Serever Emulator to active your Windows or Office<br/>Current Version").."<b><font color=\"green\">: "..luci.sys.exec("vlmcsd -V | awk '{print $2}' | sed -n 1p | sed 's/,$//'").."</font></b>"
 m:section(SimpleSection).template="vlmcsd/vlmcsd_status"
 
 s=m:section(TypedSection,"vlmcsd")

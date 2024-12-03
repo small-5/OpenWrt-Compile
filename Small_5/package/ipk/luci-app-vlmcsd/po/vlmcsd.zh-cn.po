@@ -5,7 +5,7 @@ msgid "KMS NOT RUNNING"
 msgstr "KMS未執行"
 
 msgid "KMS Server"
-msgstr "KMS 伺服器"
+msgstr "KMS伺服器"
 
 msgid "Base Setting"
 msgstr "基本設定"
