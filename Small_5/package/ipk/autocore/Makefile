@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
-PKG_VERSION:=1
-PKG_RELEASE:=4
+PKG_VERSION:=113.12.3
+PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/autocore
 	TITLE:=X86/X64 auto core loadbalance script.
-	MAINTAINER:=Small_5
+	MAINTAINER:=Maha_5
 	DEPENDS:=+(TARGET_x86||TARGET_rockchip||TARGET_sunxi):ethtool +TARGET_x86:lm-sensors +TARGET_bcm27xx:bcm27xx-userland +TARGET_bcm53xx:nvram
 endef
 

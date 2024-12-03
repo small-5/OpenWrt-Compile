@@ -1,12 +1,15 @@
 --- a/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
 +++ b/feeds/luci/applications/luci-app-aria2/root/usr/share/luci/menu.d/luci-app-aria2.json
-@@ -1,5 +1,5 @@
+@@ -1,7 +1,7 @@
  {
 -	"admin/services/aria2": {
 +	"admin/nas/aria2": {
  		"title": "Aria2",
- 		"order": 30,
+-		"order": 30,
++		"order": 1,
  		"action": {
+ 			"type": "firstchild"
+ 		},
 @@ -11,7 +11,7 @@
  		}
  	},
@@ -478,6 +481,28 @@
  	option mediaurlbase /luci-static/bootstrap
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
+--- a/feeds/luci/modules/luci-base/root/usr/share/luci/menu.d/luci-base.json
++++ b/feeds/luci/modules/luci-base/root/usr/share/luci/menu.d/luci-base.json
+@@ -41,9 +41,18 @@
+ 		}
+ 	},
+ 
++	"admin/nas": {
++		"title": "NAS",
++		"order": 50,
++		"action": {
++			"type": "firstchild",
++			"recurse": true
++		}
++	},
++
+ 	"admin/network": {
+ 		"title": "Network",
+-		"order": 50,
++		"order": 60,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
 --- a/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci
 @@ -8,7 +8,7 @@ import { cursor } from 'uci';
