@@ -36,10 +36,33 @@
  		"action": {
 --- a/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
 +++ b/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
-@@ -56,6 +56,18 @@ return view.extend({
+@@ -28,14 +28,14 @@ return view.extend({
+ 		object: 'luci.ddns',
+ 		method: 'get_services_log',
+ 		params: [ 'service_name' ],
+-		expect: {  },
++		expect: {  }
+ 	}),
+ 
+ 	callInitAction: rpc.declare({
+ 		object: 'luci',
+ 		method: 'setInitAction',
+ 		params: [ 'name', 'action' ],
+-		expect: { result: false }
++		expect: {  }
+ 	}),
+ 
+ 	callDDnsGetStatus: rpc.declare({
+@@ -56,6 +56,24 @@ return view.extend({
  		expect: {  }
  	}),
  
++	callInitStatus: rpc.declare({
++		object: 'luci.ddns',
++		method: 'getInitStatus',
++		expect: { result: false }
++	}),
++
 +	callReloadDDnsRule: rpc.declare({
 +		object: 'luci.ddns',
 +		method: 'reload_ddns_rule',
@@ -55,7 +78,7 @@
  	services: {},
  
  	/*
-@@ -152,17 +164,14 @@ return view.extend({
+@@ -152,31 +170,27 @@ return view.extend({
  	},
  
  	handleReloadDDnsRule: function(m, section_id, ev) {
@@ -77,7 +100,16 @@
  			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
  	},
  
-@@ -176,7 +185,7 @@ return view.extend({
+ 	handleToggleDDns: function(m, ev) {
+-		return this.callInitAction('ddns', 'enable')
+-			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'disable' : 'enable')}, this))
+-			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'stop' : 'start')}, this))
+-			.then(L.bind(m.render, m))
++		return this.callInitStatus('ddns')
++			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'disable' : 'enable'), this.callInitAction('ddns', action ? 'stop' : 'start')}, this))
++			.then(L.bind(this.render, this))
+ 			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
+ 	},
  
  	handleRestartDDns: function(m, ev) {
  		return this.callInitAction('ddns', 'restart')
@@ -86,14 +118,15 @@
  	},
  
  	poll_status: function(map, data) {
-@@ -485,6 +494,7 @@ return view.extend({
- 					uci.set('ddns', section_id, 'service_name', service_value);
- 				}
- 				uci.set('ddns', section_id, 'use_ipv6', ipv6_value);
-+				ui.hideModal();
- 			}).then(L.bind(m.children[1].renderMoreOptionsModal, m.children[1], section_id));
- 		};
+@@ -399,7 +413,7 @@ return view.extend({
+ 		o.optional = true;
  
+ 		o = s.taboption('global', form.Value, 'ddns_dateformat', _('Date format'));
+-		o.description = '<a href="http://www.cplusplus.com/reference/ctime/strftime/" target="_blank">'
++		o.description = '<a href="https://www.cplusplus.com/reference/ctime/strftime/" target="_blank">'
+ 			+ _("For supported codes look here")
+ 			+ '</a><br />' +
+ 			_('Current setting: ') + '<b>' + status['_curr_dateformat'] + '</b>';
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
 +++ b/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
 @@ -3,7 +3,7 @@
@@ -101,7 +134,7 @@
  		"read": {
  			"ubus": {
 -				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log" ],
-+				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log", "reload_ddns_rule", "stop_ddns_rule" ],
++				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log", "getInitStatus", "reload_ddns_rule", "stop_ddns_rule" ],
  				"luci": [ "setInitAction" ]
  			},
  			"file": {
@@ -129,25 +162,25 @@
  					const epoch = time() - _uptime + lastUpdate;
  					convertedLastUpdate = epoch2date(epoch);
  					// convertedLastUpdate = get_date(epoch, dateFormat);
--					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds);
--					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds, dateFormat);
-+					if (forceSeconds <= checkSeconds) {
-+						timegap = checkSeconds;
+-					nextUpdate = epoch2date(epoch + forcedUpdateInterval + checkInterval);
+-					// nextUpdate = get_date(epoch + forcedUpdateInterval + checkInterval, dateFormat);
++					if (forcedUpdateInterval <= checkInterval) {
++						timegap = checkInterval;
 +					} else {
-+						timegap = forceSeconds - checkSeconds;
-+						while (timegap > checkSeconds)
-+							timegap = timegap - checkSeconds;
++						timegap = forcedUpdateInterval - checkInterval;
++						while (timegap > checkInterval)
++							timegap = timegap - checkInterval;
 +					}
-+					nextUpdate = epoch2date(epoch + forceSeconds + checkSeconds - timegap);
-+					// nextUpdate = get_date(epoch + forceSeconds + checkSeconds - timegap, dateFormat);
++					nextUpdate = epoch2date(epoch + forcedUpdateInterval + checkInterval - timegap);
++					// nextUpdate = get_date(epoch + forcedUpdateInterval + checkInterval - timegap, dateFormat);
  				}
  
--				if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - _uptime) <= 0) {
+-				if (pid > 0 && (lastUpdate + forcedUpdateInterval + checkInterval - _uptime) <= 0) {
 -					nextUpdate = 'Verify';
--				} else if (forceSeconds === 0) {
-+				if (forceSeconds == 0) {
+-				} else if (forcedUpdateInterval === 0) {
++				if (forcedUpdateInterval === 0) {
  					nextUpdate = 'Run once';
-+				} else if (pid > 0 && (lastUpdate + forceSeconds + checkSeconds - timegap - _uptime) <= 0) {
++				} else if (pid > 0 && (lastUpdate + forcedUpdateInterval + checkInterval - timegap - _uptime) <= 0) {
 +					nextUpdate = 'Verify';
  				} else if (pid == 0 && s['enabled'] == '0') {
  					nextUpdate = 'Disabled';
@@ -157,7 +190,7 @@
  			// uci.unload('ddns');
  			let res = {};
 -			let ver, control;
--
+ 
 -			if (stat(opkg_info_path + `/${srv_name}.control`)?.type == 'file') {
 -				control = readfile(opkg_info_path + `/${srv_name}.control`);
 -			}
@@ -167,7 +200,7 @@
 -				if ( ver && length(ver) > 0 )
 -					break;
 -			}
- 
+-
 -			ver = ver || trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
 -
 -			res['_version'] = ver;
@@ -175,10 +208,16 @@
  			res['_enabled'] = init_enabled('ddns');
  			// res['_curr_dateformat'] = get_date(time(), dateFormat);
  			res['_curr_dateformat'] = epoch2date(time());
-@@ -324,6 +313,22 @@ const methods = {
+@@ -331,6 +320,28 @@ const methods = {
  
  			return res;
  		}
++	},
++
++	getInitStatus: {
++		call: function() {
++			return { result: init_enabled('ddns') }; 
++		}
 +	},
 +
 +	reload_ddns_rule: {
