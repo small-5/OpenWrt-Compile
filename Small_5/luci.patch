@@ -130,6 +130,15 @@
  			+ _("For supported codes look here")
  			+ '</a><br />' +
  			_('Current setting: ') + '<b>' + status['_curr_dateformat'] + '</b>';
+@@ -1068,7 +1082,7 @@ return view.extend({
+ 					log_box.render = L.bind(function() {
+ 						return E([
+ 							E('p', {}, _('This is the current content of the log file in %h for this service.').format(logdir)),
+-							E('p', {}, E('textarea', { 'style': 'width:100%; font-size: 10px', 'rows': 20, 'readonly' : 'readonly', 'id' : 'syslog' }, _('Please press [Read] button') ))
++							E('p', {}, E('textarea', { 'style': 'width:100%', 'rows': 20, 'readonly' : 'readonly', 'id' : 'syslog' }, _('Please press [Read] button') ))
+ 						]);
+ 					}, o, this);
+ 				}
 --- a/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
 +++ b/feeds/luci/applications/luci-app-ddns/root/usr/share/rpcd/acl.d/luci-app-ddns.json
 @@ -3,7 +3,7 @@
