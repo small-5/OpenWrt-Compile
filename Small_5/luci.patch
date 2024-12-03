@@ -366,7 +366,7 @@
  end
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
-@@ -132,6 +132,9 @@ return view.extend({
+@@ -139,6 +139,9 @@ return view.extend({
  		o.rmempty = false;
  		o.depends('enable_upnp', '1');
  

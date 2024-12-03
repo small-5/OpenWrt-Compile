@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="中華民國113年12月2日 By Maha_5"
+VERSION="中華民國113年12月3日 By Maha_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
 echo "$OP_PASS" > ~/OP_PASSWORD
 A=0

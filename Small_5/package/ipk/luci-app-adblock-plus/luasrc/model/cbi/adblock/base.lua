@@ -35,7 +35,7 @@ ad_count=tonumber(SYS.exec("cat /tmp/adblock/adblock.conf | wc -l"))
 o=s:option(DummyValue,"0",translate("Adblock Plus Data"))
 o.rawhtml=true
 o.template="adblock/refresh"
-o.value=ad_count.." "..translate("Records")
+o.value=ad_count..translate("Records")
 o.description=string.format("<strong>"..translate("Last Update Checked")..":</strong> %s<br/>",UD)
 end
 

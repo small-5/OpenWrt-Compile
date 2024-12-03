@@ -337,7 +337,7 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_refresh0"><%:GFW List Data%><br/><span id="refresh0_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/gfw.list | wc -l")%><%:Records%></span></h4>
+					<h4 id="status_refresh0"><%:GFW List Data%><br/><span id="refresh0_status" class="green"><%=luci.sys.exec("echo -n $(wc -l < /tmp/overwall/gfw.list)")%><%:Records%></span></h4>
 				</div>
 			</div>
 		</div>
@@ -352,7 +352,7 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_refresh1"><%:IPv4 Data%><br/><span id="refresh1_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/ipv4.txt | wc -l")%><%:Records%></span></h4>
+					<h4 id="status_refresh1"><%:IPv4 Data%><br/><span id="refresh1_status" class="green"><%=luci.sys.exec("echo -n $(wc -l < /tmp/overwall/ipv4.txt)")%><%:Records%></span></h4>
 				</div>
 			</div>
 		</div>
@@ -367,7 +367,7 @@ local uci=luci.model.uci.cursor()
 					</div>
 				</div>
 				<div class="pure-u-16-24">
-					<h4 id="status_refresh2"><%:IPv6 Data%><br/><span id="refresh2_status" class="green"><%=luci.sys.exec("cat /tmp/overwall/ipv6.txt | wc -l")%><%:Records%></span></h4>
+					<h4 id="status_refresh2"><%:IPv6 Data%><br/><span id="refresh2_status" class="green"><%=luci.sys.exec("echo -n $(wc -l < /tmp/overwall/ipv6.txt)")%><%:Records%></span></h4>
 				</div>
 			</div>
 		</div>
@@ -512,7 +512,7 @@ local uci=luci.model.uci.cursor()
 							}else{
 								s.className="red";
 							}
-							s.innerHTML=rv.ret+" ms";
+							s.innerHTML=rv.ret+"ms";
 						}
 						div.setAttribute('onclick','check_connect("'+url+'")');
 					}

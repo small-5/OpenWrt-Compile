@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-adblock-plus
-PKG_VERSION:=113.11.26
+PKG_VERSION:=113.12.3
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Maha_5
 
