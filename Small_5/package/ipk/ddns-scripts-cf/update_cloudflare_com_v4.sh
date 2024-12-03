@@ -17,7 +17,7 @@ local __TMP __I __DOMAIN __TYPE __CMDBASE __ZONEID __POST __POST2 __RECIP __RECI
 # 構造基本通訊命令
 build_command(){
 	__CMDBASE="$CURL -Ssm 5"
-	# 綁定用於通訊的主機/IP
+	# 繫結用於通訊的主機/IP
 	if [ -n "$bind_network" ];then
 		local __DEVICE
 		network_get_device __DEVICE $bind_network || write_log 13 "Can not detect local device using 'network_get_device $bind_network' - Error: '$?'"

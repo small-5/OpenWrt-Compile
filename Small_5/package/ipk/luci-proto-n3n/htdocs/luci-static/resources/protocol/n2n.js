@@ -218,6 +218,6 @@ return network.registerProtocol('n2n', {
 
 		o = s.taboption('advanced', form.Flag, 'pmtu', _('Enable PMTU discovery'), _("PMTU discovery can reduce fragmentation but causes connections stall when not properly supported"));
 
-		o = s.taboption('advanced', form.Flag, 'nop2p', _('Disable P2P connect'), _("Do not connect P2P. Always use the supernode"));
+		o = s.taboption('advanced', form.Flag, 'nop2p', _('Disable P2P connect'), _("Do not connect P2P, Always use the supernode"));
 	}
 });

@@ -96,7 +96,7 @@ o:value("5","OpenDNS")
 o:depends("dns_mode",0)
 
 o=s:option(Value,"tcp_dns",translate("Foreign DNS"),
-translate("Custom DNS format is 1.1.1.1:53,1.0.0.1 ,Port optional"))
+translate("Custom DNS format is 1.1.1.1:53,1.0.0.1,Port optional"))
 o:value("","1.1.1.1,1.0.0.1 (Cloudflare)")
 o:value("2","8.8.8.8,8.8.4.4 ("..translate("Google")..")")
 o:value("3","9.9.9.9,149.112.112.112 (Quad9)")
@@ -120,7 +120,7 @@ translate("Use ISP DNS to resolve DoH domain"))
 o:depends("dns_mode_l",0)
 
 o=s:option(Value,"udp_dns",translate("Domestic DNS"),
-translate("Custom DNS format is 223.5.5.5:53,223.6.6.6 ,Port optional"))
+translate("Custom DNS format is 223.5.5.5:53,223.6.6.6,Port optional"))
 o:value("",translate("ISP"))
 o:value("223.5.5.5,223.6.6.6","223.5.5.5,223.6.6.6 ("..translate("Ali").."DNS)")
 o:value("119.29.29.29,182.254.116.116","119.29.29.29,182.254.116.116 (Dnspod)")

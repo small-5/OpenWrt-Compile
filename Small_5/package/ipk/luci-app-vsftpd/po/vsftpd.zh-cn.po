@@ -32,7 +32,7 @@ msgid "Both download and upload"
 msgstr "下載和上傳"
 
 msgid "Can not be zero, default is 3"
-msgstr "不能為 0，默認為 3"
+msgstr "不能為 0，預設為 3"
 
 msgid "Connection Settings"
 msgstr "連接設定"
@@ -146,7 +146,7 @@ msgid "Leave empty will use user's home directory"
 msgstr "留空將使用用戶主目錄"
 
 msgid "Listen Port"
-msgstr "監聽通訊埠"
+msgstr "監聽連接埠"
 
 msgid "Listening Settings"
 msgstr "監聽設定"
@@ -215,7 +215,7 @@ msgid "in KB/s, 0 means no limitation"
 msgstr "單位為 KB/s，0 表明不限制"
 
 msgid "Pasv Min Port"
-msgstr "Pasv 模式最小通訊埠"
+msgstr "Pasv 模式最小連接埠"
 
 msgid "Pasv Max Port"
-msgstr "Pasv 模式最大通訊埠"
+msgstr "Pasv 模式最大連接埠"

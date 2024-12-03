@@ -39,7 +39,7 @@
  		"action": {
 --- a/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
 +++ b/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
-@@ -28,14 +28,14 @@ return view.extend({
+@@ -28,7 +28,7 @@ return view.extend({
  		object: 'luci.ddns',
  		method: 'get_services_log',
  		params: [ 'service_name' ],
@@ -48,24 +48,10 @@
  	}),
  
  	callInitAction: rpc.declare({
- 		object: 'luci',
- 		method: 'setInitAction',
- 		params: [ 'name', 'action' ],
--		expect: { result: false }
-+		expect: {  }
- 	}),
- 
- 	callDDnsGetStatus: rpc.declare({
-@@ -56,6 +56,24 @@ return view.extend({
+@@ -56,6 +56,18 @@ return view.extend({
  		expect: {  }
  	}),
  
-+	callInitStatus: rpc.declare({
-+		object: 'luci.ddns',
-+		method: 'getInitStatus',
-+		expect: { result: false }
-+	}),
-+
 +	callReloadDDnsRule: rpc.declare({
 +		object: 'luci.ddns',
 +		method: 'reload_ddns_rule',
@@ -81,7 +67,7 @@
  	services: {},
  
  	/*
-@@ -152,31 +170,27 @@ return view.extend({
+@@ -152,31 +164,31 @@ return view.extend({
  	},
  
  	handleReloadDDnsRule: function(m, section_id, ev) {
@@ -108,8 +94,12 @@
 -			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'disable' : 'enable')}, this))
 -			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'stop' : 'start')}, this))
 -			.then(L.bind(m.render, m))
-+		return this.callInitStatus('ddns')
-+			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'disable' : 'enable'), this.callInitAction('ddns', action ? 'stop' : 'start')}, this))
++		return this.callDDnsGetStatus()
++			.then(L.bind(function(resp) { return resp['_enabled'] }, this))
++			.then(L.bind(function (is_enabled) {
++				this.callInitAction('ddns', is_enabled ? 'stop' : 'start');
++				return this.callInitAction('ddns', is_enabled ? 'disable' : 'enable');
++			}, this))
 +			.then(L.bind(this.render, this))
  			.catch(function(e) { ui.addNotification(null, E('p', e.message)) });
  	},
@@ -121,7 +111,7 @@
  	},
  
  	poll_status: function(map, data) {
-@@ -399,7 +413,7 @@ return view.extend({
+@@ -399,7 +411,7 @@ return view.extend({
  		o.optional = true;
  
  		o = s.taboption('global', form.Value, 'ddns_dateformat', _('Date format'));
@@ -130,7 +120,7 @@
  			+ _("For supported codes look here")
  			+ '</a><br />' +
  			_('Current setting: ') + '<b>' + status['_curr_dateformat'] + '</b>';
-@@ -1068,7 +1082,7 @@ return view.extend({
+@@ -1068,7 +1080,7 @@ return view.extend({
  					log_box.render = L.bind(function() {
  						return E([
  							E('p', {}, _('This is the current content of the log file in %h for this service.').format(logdir)),
@@ -146,7 +136,7 @@
  		"read": {
  			"ubus": {
 -				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log" ],
-+				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log", "getInitStatus", "reload_ddns_rule", "stop_ddns_rule" ],
++				"luci.ddns": [ "get_services_status", "get_ddns_state", "get_env", "get_services_log", "reload_ddns_rule", "stop_ddns_rule" ],
  				"luci": [ "setInitAction" ]
  			},
  			"file": {
@@ -202,7 +192,7 @@
  			// uci.unload('ddns');
  			let res = {};
 -			let ver, control;
- 
+-
 -			if (stat(opkg_info_path + `/${srv_name}.control`)?.type == 'file') {
 -				control = readfile(opkg_info_path + `/${srv_name}.control`);
 -			}
@@ -212,7 +202,7 @@
 -				if ( ver && length(ver) > 0 )
 -					break;
 -			}
--
+ 
 -			ver = ver || trimnonewline(popen(`${luci_helper} -V | awk {'print $2'}`, 'r')?.read?.('line'));
 -
 -			res['_version'] = ver;
@@ -220,16 +210,10 @@
  			res['_enabled'] = init_enabled('ddns');
  			// res['_curr_dateformat'] = get_date(time(), dateFormat);
  			res['_curr_dateformat'] = epoch2date(time());
-@@ -331,6 +320,28 @@ const methods = {
+@@ -331,6 +320,22 @@ const methods = {
  
  			return res;
  		}
-+	},
-+
-+	getInitStatus: {
-+		call: function() {
-+			return { result: init_enabled('ddns') }; 
-+		}
 +	},
 +
 +	reload_ddns_rule: {
@@ -376,6 +360,17 @@
  	e.leaf = true
  	e.acl_depends = { "luci-app-nft-qos" }
  end
+--- a/feeds/luci/applications/luci-app-package-manager/htdocs/luci-static/resources/view/package-manager.js
++++ b/feeds/luci/applications/luci-app-package-manager/htdocs/luci-static/resources/view/package-manager.js
+@@ -1260,7 +1260,7 @@ return view.extend({
+ 				E('tr', { 'class': 'tr cbi-section-table-titles' }, [
+ 					E('th', { 'class': 'th col-2 left' }, [ _('Package name') ]),
+ 					E('th', { 'class': 'th col-2 left version' }, [ _('Version') ]),
+-					E('th', { 'class': 'th col-1 center size'}, [ _('Size (%s)').format(L.hasSystemFeature('apk') ? '.ipk' : '.apk') ]),
++					E('th', { 'class': 'th col-1 center size'}, [ _('Size (%s)').format(L.hasSystemFeature('apk') ? '.apk' : '.ipk') ]),
+ 					E('th', { 'class': 'th col-10 left' }, [ _('Description') ]),
+ 					E('th', { 'class': 'th right cbi-section-actions' }, [ '\u00a0' ])
+ 				])
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 @@ -139,6 +139,9 @@ return view.extend({

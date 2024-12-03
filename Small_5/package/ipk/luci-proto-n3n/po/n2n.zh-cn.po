@@ -2,7 +2,7 @@ msgid "Supernode address"
 msgstr "超級節點位址"
 
 msgid "The format is [Address]:[Port]<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777"
-msgstr "格式為: [位址]:[通訊埠]<br/>例如: 192.168.1.1:3333 或 supernode.ntop.org:7777"
+msgstr "格式為：[位址]:[連接埠]<br/>例如：192.168.1.1:3333或supernode.ntop.org:7777"
 
 msgid "Community Name"
 msgstr "網路組名稱"
@@ -29,19 +29,19 @@ msgid "Registration interval"
 msgstr "注冊間隔"
 
 msgid "For NAT hole punching (default 20 seconds)"
-msgstr "設定NAT打孔間隔(默認20秒)"
+msgstr "設定NAT打洞間隔（預設20秒）"
 
 msgid "For registration packet when UDP NAT hole punching through supernode (default 0 for not set)"
-msgstr "設定NAT通過超級節點打孔的封包的TTL值(默認為0，不設定)"
+msgstr "設定NAT通過超級節點打洞的封包的TTL值（預設為0，不設定）"
 
 msgid "Bind UDP port and IP"
-msgstr "綁定UDP通訊埠和IP"
+msgstr "繫結UDP連接埠和IP"
 
 msgid "Bind local UDP port and local IP address only (IP address is optional,the default is any)<br/>For example: 192.168.1.1:3333 or 3333"
-msgstr "綁定本地UDP通訊埠和本地IP位址 (IP位址可選，只填通訊埠則綁定所有位址)<br/>例如: 192.168.1.1:3333 或 3333"
+msgstr "繫結本地UDP連接埠和本地IP位址（IP位址可選，只填連接埠則繫結所有位址）<br/>例如：192.168.1.1:3333或3333"
 
 msgid "Management UDP Port"
-msgstr "UDP管理通訊埠"
+msgstr "UDP管理連接埠"
 
 msgid "For multiple edges on a machine"
 msgstr "用於同一個設備上使用多個邊緣節點"
@@ -68,13 +68,13 @@ msgid "Enable PMTU discovery"
 msgstr "啟用PMTU檢測"
 
 msgid "PMTU discovery can reduce fragmentation but causes connections stall when not properly supported"
-msgstr "PMTU檢測可以減少IP分片，但如果不能正確支持，則會導致連接停止"
+msgstr "PMTU檢測可以減少IP分片，但如果不能正確支援，則會導致連接停止"
 
 msgid "Disable P2P connect"
 msgstr "禁用P2P連接"
 
-msgid "Do not connect P2P. Always use the supernode"
-msgstr "不使用邊緣節點之間的P2P連接.只通過超級節點轉發"
+msgid "Do not connect P2P, Always use the supernode"
+msgstr "不使用邊緣節點之間的P2P連接，只通過超級節點轉發"
 
 msgid "Enable multicast MAC addresses"
 msgstr "啟用多播MAC位址"

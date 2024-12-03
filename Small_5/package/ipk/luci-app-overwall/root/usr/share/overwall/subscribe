@@ -349,7 +349,7 @@ local function processData(szType,content)
 			if content:find("@")==37 then
 				parseNodeUrl(szType,content)
 			else
-				log('不支持非JSON+Base64類型的VMESS節點訂閱，跳過此節點。')
+				log('不支援非JSON+Base64類型的VMESS節點訂閱，跳過此節點。')
 				return nil
 			end
 		end
@@ -357,11 +357,11 @@ local function processData(szType,content)
 		if content:find("@") then
 			parseNodeUrl(szType,content)
 		else
-			log('不支持Base64類型的VLESS節點訂閱，跳過此節點。')
+			log('不支援Base64類型的VLESS節點訂閱，跳過此節點。')
 			return nil
 		end
 	else
-		log('暫時不支持'..szType..'類型的節點訂閱，跳過此節點。')
+		log('暫時不支援'..szType..'類型的節點訂閱，跳過此節點。')
 		return nil
 	end
 	if not result.alias then

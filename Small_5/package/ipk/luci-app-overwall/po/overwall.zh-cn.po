@@ -26,10 +26,10 @@ msgid "TG Server"
 msgstr "TG伺服器"
 
 msgid "Socks5 Server"
-msgstr "Socks5服務端"
+msgstr "Socks5伺服器"
 
 msgid "Local Servers"
-msgstr "本機服務端"
+msgstr "本地伺服器"
 
 msgid "Google Delay"
 msgstr "谷歌延遲"
@@ -152,7 +152,7 @@ msgid "Disable GFW List"
 msgstr "禁用GFW列表"
 
 msgid "Load GFW list by default"
-msgstr "默認加載GFW列表"
+msgstr "預設加載GFW列表"
 
 msgid "Load Netflix IP Range"
 msgstr "加載Netflix IP段"
@@ -164,16 +164,16 @@ msgid "Preload IP"
 msgstr "預加載IP"
 
 msgid "Preload Google and Telegram IP segments (GFW mode only)"
-msgstr "預加載谷歌與Telegram IP段(僅GFW模式生效)"
+msgstr "預加載谷歌與Telegram IP段（僅GFW模式生效）"
 
 msgid "Preload Domain"
 msgstr "預加載網域"
 
 msgid "Preload the domain name (GFW mode only,Solve the problem that the terminal fails to access the website in the list after Overwall restart or switch node)"
-msgstr "預加載網域(僅GFW模式生效，有效解決重啟Overwall或者切換節點以後訪問預加載名單內的網站失敗)"
+msgstr "預加載網域（僅GFW模式生效，有效解決重啟Overwall或者切換節點以後訪問預加載名單內的網站失敗）"
 
 msgid "All Ports"
-msgstr "所有連接埠（默認）"
+msgstr "所有連接埠（預設）"
 
 msgid "Only Common Ports"
 msgstr "僅常用連接埠（不走P2P流量到代理）"
@@ -185,10 +185,10 @@ msgid "Custom format is 22,53,80,143,443,465,587,853,993,995,9418"
 msgstr "自定義連接埠格式為22,53,80,143,443,465,587,853,993,995,9418"
 
 msgid "Take over LAN DNS"
-msgstr "接管局域網DNS"
+msgstr "接管區域網路DNS"
 
 msgid "Redirect LAN device DNS to router(Don’t disable if you don’t understand)"
-msgstr "將局域網設備的DNS重定向到路由器(如果不了解,不要禁用)"
+msgstr "將區域網路裝置的DNS轉發到路由器（如果不了解，不要禁用）"
 
 msgid "Foreign Resolve Dns Mode"
 msgstr "牆外DNS解析方式"
@@ -211,7 +211,7 @@ msgstr "谷歌"
 msgid "Foreign DNS"
 msgstr "牆外DNS"
 
-msgid "Custom DNS format is 1.1.1.1:53,1.0.0.1 ,Port optional"
+msgid "Custom DNS format is 1.1.1.1:53,1.0.0.1,Port optional"
 msgstr "自定義DNS格式為1.1.1.1:53,1.0.0.1，連接埠可選"
 
 msgid "Domestic Resolve Dns Mode"
@@ -244,8 +244,8 @@ msgstr "使用運營商DNS解析DoH網域"
 msgid "Domestic DNS"
 msgstr "牆內DNS"
 
-msgid "Custom DNS format is 223.5.5.5:53,223.6.6.6 ,Port optional"
-msgstr "自定義DNS格式為223.5.5.5:53,223.6.6.6 ,連接埠可選"
+msgid "Custom DNS format is 223.5.5.5:53,223.6.6.6,Port optional"
+msgstr "自定義DNS格式為223.5.5.5:53,223.6.6.6，連接埠可選"
 
 msgid "Severs Nodes"
 msgstr "伺服器節點"
@@ -290,7 +290,7 @@ msgid "Subscribe Default Auto-Switch"
 msgstr "訂閱新節點自動切換設定"
 
 msgid "Subscribe new add server default Auto-Switch on"
-msgstr "訂閱加入的新節點默認開啟自動切換"
+msgstr "訂閱新增的節點預設開啟自動切換"
 
 msgid "Through proxy update"
 msgstr "通過代理更新"
@@ -533,10 +533,10 @@ msgid "External Proxy Mode"
 msgstr "分流伺服器（前置）代理"
 
 msgid "Forward Youtube Proxy through Main Proxy"
-msgstr "Youtube伺服器流量通過主服務節點中轉代理轉發"
+msgstr "Youtube伺服器流量通過主伺服器代理轉發"
 
 msgid "Forward Netflix Proxy through Main Proxy"
-msgstr "Netflix伺服器流量通過主服務節點中轉代理轉發"
+msgstr "Netflix伺服器流量通過主伺服器代理轉發"
 
 msgid "Youtube Resolve Dns Mode"
 msgstr "Youtube DNS解析方式"
@@ -551,7 +551,7 @@ msgid "Do not use the same DNS server as the Foreign DNS or Youtube DNS"
 msgstr "不要使用與牆外DNS或者Youtube DNS相同的DNS"
 
 msgid "Forward Custom Proxy through Main Proxy"
-msgstr "自定義伺服器流量通過主服務節點中轉代理轉發"
+msgstr "自定義伺服器流量通過主伺服器代理轉發"
 
 msgid "Custom Server Resolve Dns Mode"
 msgstr "自定義伺服器DNS解析方式"
@@ -569,7 +569,7 @@ msgid "Telegram Server"
 msgstr "Telegram伺服器"
 
 msgid "Forward Telegram Proxy through Main Proxy"
-msgstr "Telegram伺服器流量通過主服務節點中轉代理轉發"
+msgstr "Telegram伺服器流量通過主伺服器代理轉發"
 
 msgid "Access Control"
 msgstr "訪問控制"
@@ -632,7 +632,7 @@ msgid "Proxy IP by Telegram Server"
 msgstr "通過Telegram伺服器代理的IP"
 
 msgid "Telegram IP ranges has been proxied by default,No need to add"
-msgstr "默認已代理Telegram IP段,無需加入"
+msgstr "預設已代理Telegram IP段，無需增加"
 
 msgid "Domain List"
 msgstr "網域列表"
@@ -641,7 +641,7 @@ msgid "Direct Domain List"
 msgstr "不走代理的網域"
 
 msgid "Direct Domain List(For Vmess/Vless/SS2022)"
-msgstr "直連網域(適用於Vmess/Vless/SS2022)"
+msgstr "直連網域（適用於Vmess/Vless/SS2022）"
 
 msgid "When using Vmess/VLESS/SS2022, this list is used first and clear the Direct Domain List"
 msgstr "當使用Vmess/Vless/SS2022時請使用此列表並清空不走代理的網域列表"
@@ -662,10 +662,10 @@ msgid "Oversea Domain List"
 msgstr "回牆模式網域列表"
 
 msgid "Excluded Domain List(For Vmess/Vless/SS2022)"
-msgstr "排除嗅探網域列表(適用於Vmess/Vless/SS2022)"
+msgstr "排除嗅探網域列表（適用於Vmess/Vless/SS2022）"
 
 msgid "Preload Domain List(GFW Only)"
-msgstr "預加載網域列表(僅GFW模式)"
+msgstr "預加載網域列表（僅GFW模式）"
 
 msgid "CNAME Domain List"
 msgstr "CNAME網域列表"
@@ -692,25 +692,25 @@ msgid "Check Try Count"
 msgstr "切換檢查重試次數"
 
 msgid "Global Socks5 Proxy Server"
-msgstr "Socks5 代理服務端（全局）"
+msgstr "Socks5代理伺服器（全局）"
 
 msgid "Server"
 msgstr "伺服器"
 
 msgid "Overwall Server"
-msgstr "服務端"
+msgstr "伺服器"
 
 msgid "Global Setting"
 msgstr "全局設定"
 
 msgid "Enable Server"
-msgstr "啟動服務端"
+msgstr "啟用伺服器"
 
 msgid "Server Setting"
-msgstr "服務端配置"
+msgstr "伺服器配置"
 
 msgid "Server Type"
-msgstr "服務端類型"
+msgstr "伺服器類型"
 
 msgid "Encrypt Method (SS)"
 msgstr "加密方式(SS)"
@@ -752,7 +752,7 @@ msgid "Encrypted Code"
 msgstr "加密代碼"
 
 msgid "Hardware Code"
-msgstr "硬件碼"
+msgstr "硬體ID"
 
 msgid "Auth Page"
 msgstr "授權頁面"
@@ -767,13 +767,13 @@ msgid "Enter Code"
 msgstr "輸入代碼"
 
 msgid "Hardware Code List"
-msgstr "硬件碼列表"
+msgstr "硬體ID列表"
 
 msgid "Add Hardware Code"
-msgstr "添加硬件碼"
+msgstr "添加硬體ID"
 
 msgid "Replace Hardware Code"
-msgstr "替換硬件碼"
+msgstr "替換硬體ID"
 
 msgid "Enter Old Code"
 msgstr "輸入舊代碼"
@@ -782,7 +782,7 @@ msgid "Enter New Code"
 msgstr "輸入新代碼"
 
 msgid "Del Hardware Code"
-msgstr "刪除硬件碼"
+msgstr "刪除硬體ID"
 
 msgid "Query Auth Code"
 msgstr "查詢授權碼"

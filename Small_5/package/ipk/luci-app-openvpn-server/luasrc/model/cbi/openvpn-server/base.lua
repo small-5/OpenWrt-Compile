@@ -12,7 +12,7 @@ o.default=0
 o.rmempty=false
 
 o=s:option(Value,"ddns",translate("Address"))
-o.description=translate("DDNS address or IP of the WAN port")
+o.description=translate("DDNS domain or IP of the WAN interface")
 o.datatype="host"
 o.default="exmple.com"
 o.rmempty=false
@@ -41,13 +41,13 @@ o.rmempty=false
 
 o=s:option(Value,"server_ipv6",translate("IPV6 Address"))
 o.datatype="ip6addr"
-o.description=translate("For example: fd80::1 or fd80::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
+o.description=translate("For example: fd80::1 or fd80::1/64<br/>The default prefix length is 64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool")
 o:depends("d_ipv6","0")
 o.placeholder="fd80::1"
 
 o=s:option(Value,"ifconfig_ipv6",translate("IPV6 Address"))
 o.datatype="string"
-o.description=translate("For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
+o.description=translate("For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is 64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool")
 o:depends("d_ipv6","1")
 o.placeholder="fd80::1 fd80::1"
 

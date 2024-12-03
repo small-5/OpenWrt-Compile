@@ -20,10 +20,10 @@ msgid "ZeroTier Network ID"
 msgstr "ZeroTier網路ID"
 
 msgid "Auto NAT Clients"
-msgstr "自動允許客戶端NAT"
+msgstr "自動用戶端NAT"
 
 msgid "Allow ZeroTier clients access your LAN network"
-msgstr "允許ZeroTier的撥入客戶端訪問路由器LAN資源（需要在ZeroTier管理頁面設定到LAN網段的路由表）"
+msgstr "允許ZeroTier的用戶端訪問區域網路"
 
 msgid "Create or manage your ZeroTier network, and auth clients who could access"
-msgstr "點擊跳轉到ZeroTier官網管理平台，新建或者管理網路，並允許客戶端接入訪問你私人網路（新接入的節點默認不允許訪問）"
+msgstr "在ZeroTier網站新建或者管理網路，並允許用戶端訪問區域網路"

@@ -1,17 +1,17 @@
 msgid "OpenVPN Server"
-msgstr "OpenVPN 伺服器"
+msgstr "OpenVPN伺服器"
 
 msgid "Base Setting"
 msgstr "基本設定"
 
 msgid "An easy config OpenVPN Server Web-UI"
-msgstr "易於使用的 OpenVPN 伺服器 Web-UI"
+msgstr "易於使用的OpenVPN伺服器Web-UI"
 
 msgid "OpenVPN Server RUNNING"
-msgstr "OpenVPN 伺服器執行中"
+msgstr "OpenVPN伺服器執行中"
 
 msgid "OpenVPN Server NOT RUNNING"
-msgstr "OpenVPN 伺服器未執行"
+msgstr "OpenVPN伺服器未執行"
 
 msgid "Certificate Generated"
 msgstr "憑證已生成"
@@ -28,23 +28,23 @@ msgstr "禁用"
 msgid "Address"
 msgstr "位址"
 
-msgid "DDNS address or IP of the WAN port"
-msgstr "WAN口的DDNS位址或者IP位址"
+msgid "DDNS domain or IP of the WAN interface"
+msgstr "WAN介面的DDNS網域或者IP"
 
 msgid "Port"
-msgstr "通訊埠"
+msgstr "連接埠"
 
 msgid "Proto"
-msgstr "協議"
+msgstr "協定"
 
 msgid "Client Network"
 msgstr "用戶端網段"
 
 msgid "VPN Client Network IP with subnet"
-msgstr "用戶端分配的網段位址（默認為 10.8.0.0 255.255.255.0）"
+msgstr "用戶端分配的網段位址（預設為10.8.0.0 255.255.255.0）"
 
 msgid "IPv6 Mode"
-msgstr "IPv6 模式"
+msgstr "IPv6模式"
 
 msgid "Helper Mode"
 msgstr "助手模式"
@@ -53,22 +53,22 @@ msgid "Expanded Mode"
 msgstr "擴展模式"
 
 msgid "IPV6 Address"
-msgstr "IPV6 位址"
+msgstr "IPV6位址"
 
 msgid "Select mode of IPv6 client Network"
 msgstr "選擇IPv6用戶端網段模式"
 
-msgid "For example: fd80::1 or fd80::1/64<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
-msgstr "例如：fd80::1 或者 fd80::1/64<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下不需要設定IPv6位址池"
+msgid "For example: fd80::1 or fd80::1/64<br/>The default prefix length is 64<br/>The length between 64-112 is supported<br/>This mode does not need to set the IPV6 address pool"
+msgstr "例如：fd80::1或者fd80::1/64<br/>預設首碼長度為64<br/>首碼長度支援64-112之間<br/>這個模式下不需要設定IPv6位址池"
 
-msgid "For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is /64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
-msgstr "例如：fd80::1 fd80::1 或者 fd80::1/64 fd80::1<br/>這個模式需要設定2個IPv6位址<br/>默認前綴長度為/64<br/>前綴長度支持64-112之間<br/>這個模式下需要設定IPv6位址池"
+msgid "For example: fd80::1 fd80::1 or fd80::1/64 fd80::1<br/>2 IPv6 addresses need to be set in this mode<br/>The default prefix length is 64<br/>The length between 64-112 is supported<br/>This mode need to set the IPV6 address pool"
+msgstr "例如：fd80::1 fd80::1或者fd80::1/64 fd80::1<br/>這個模式需要設定2個IPv6位址<br/>預設首碼長度為64<br/>首碼長度支援64-112之間<br/>這個模式下需要設定IPv6位址池"
 
 msgid "IPv6 Pool"
-msgstr "IPv6 位址池"
+msgstr "IPv6位址池"
 
 msgid "If the server IPv6 address is fd80::1 ,it needs to be set to fd80::2 or higher"
-msgstr "例如服務端IPv6位址設定為fd80::1 ，那麽起始位址需要設定為fd80::2或者更高"
+msgstr "例如伺服器IPv6位址設定為fd80::1，那麽起始位址需要設定為fd80::2或者更高"
 
 msgid "Max-clients"
 msgstr "最大連接數"
@@ -77,10 +77,10 @@ msgid "Set maximum number of connections"
 msgstr "設定最大連接數"
 
 msgid "Data Ciphers"
-msgstr "加密方式"
+msgstr "密碼套件"
 
 msgid "AES-256-GCM is the default encryption method"
-msgstr "默認使用AES-256-GCM加密"
+msgstr "預設使用AES-256-GCM"
 
 msgid "Remote-cert-tls"
 msgstr "檢查遠端憑證"
@@ -149,7 +149,7 @@ msgid "Choose global routing and modify DNS according to the actual situation<br
 msgstr "選擇全局路由與修改DNS推送<br/>全局路由不可多選"
 
 msgid "OpenVPN Client config file"
-msgstr "OpenVPN 用戶端設定檔案"
+msgstr "OpenVPN用戶端設定檔案"
 
 msgid "Only IPv4 Global Routing"
 msgstr "僅IPv4全局路由"
@@ -167,7 +167,7 @@ msgid "Download .ovpn file"
 msgstr "下載.ovpn檔案"
 
 msgid "If you are using iOS client, download this .ovpn file and send it via Email to your iOS device<br/>After modifying the configuration, you need to download the .ovpn file again<br/>Re-download the .ovpn file after generating the certificate"
-msgstr "如果你使用的是iOS設備,你可以使用郵件發送到自己的設備上用 OpenVPN 用戶端打開導入<br/>修改設定以後需要重新下載.ovpn檔案<br/>生成憑證以後需要重新下載.ovpn檔案"
+msgstr "如果你使用的是iOS設備,你可以使用郵件發送到自己的設備上用OpenVPN用戶端打開導入<br/>修改設定以後需要重新下載.ovpn檔案<br/>生成憑證以後需要重新下載.ovpn檔案"
 
 msgid "Generate certificate"
 msgstr "生成憑證"
@@ -185,7 +185,7 @@ msgid "Client configuration"
 msgstr "用戶端設定"
 
 msgid "The code added to .ovpn file"
-msgstr "加入到.ovpn檔案里的代碼"
+msgstr "新增至.ovpn檔案里的代碼"
 
 msgid "Username and Password"
 msgstr "用戶名和密碼"
@@ -197,7 +197,7 @@ msgid "Certificate option"
 msgstr "憑證選項"
 
 msgid "Edit certificate generation options,keep the default for normal users"
-msgstr "編輯憑證選項，普通用戶請保持默認"
+msgstr "編輯憑證選項，普通用戶請保持預設"
 
 msgid "Log"
 msgstr "日誌"
