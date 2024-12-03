@@ -237,6 +237,15 @@
  	}
  };
  
+--- a/feeds/luci/applications/luci-app-filemanager/root/usr/share/luci/menu.d/luci-app-filemanager.json
++++ b/feeds/luci/applications/luci-app-filemanager/root/usr/share/luci/menu.d/luci-app-filemanager.json
+@@ -1,5 +1,5 @@
+ {
+-	"admin/system/filemanager": {
++	"admin/nas/filemanager": {
+ 		"title": "File Manager",
+ 		"order": 80,
+ 		"action": {
 --- a/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/feeds/luci/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
 @@ -173,10 +173,32 @@ return view.extend({
@@ -741,7 +750,7 @@
 -
  		if (systeminfo.localtime) {
  			var date = new Date(systeminfo.localtime * 1000);
-+			var datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%02d\u6708%02d\u65e5 %02d:%02d:%02d';
++			var datestr = '\u4e2d\u83ef\u6c11\u570b%d\u5e74%d\u6708%d\u65e5 %02d:%02d:%02d';
 +			var Year = date.getUTCFullYear() - 1911;
 +
 +			switch(timezone.result) {
