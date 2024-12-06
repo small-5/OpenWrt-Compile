@@ -360,17 +360,6 @@
  	e.leaf = true
  	e.acl_depends = { "luci-app-nft-qos" }
  end
---- a/feeds/luci/applications/luci-app-package-manager/htdocs/luci-static/resources/view/package-manager.js
-+++ b/feeds/luci/applications/luci-app-package-manager/htdocs/luci-static/resources/view/package-manager.js
-@@ -1260,7 +1260,7 @@ return view.extend({
- 				E('tr', { 'class': 'tr cbi-section-table-titles' }, [
- 					E('th', { 'class': 'th col-2 left' }, [ _('Package name') ]),
- 					E('th', { 'class': 'th col-2 left version' }, [ _('Version') ]),
--					E('th', { 'class': 'th col-1 center size'}, [ _('Size (%s)').format(L.hasSystemFeature('apk') ? '.ipk' : '.apk') ]),
-+					E('th', { 'class': 'th col-1 center size'}, [ _('Size (%s)').format(L.hasSystemFeature('apk') ? '.apk' : '.ipk') ]),
- 					E('th', { 'class': 'th col-10 left' }, [ _('Description') ]),
- 					E('th', { 'class': 'th right cbi-section-actions' }, [ '\u00a0' ])
- 				])
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 @@ -139,6 +139,9 @@ return view.extend({
