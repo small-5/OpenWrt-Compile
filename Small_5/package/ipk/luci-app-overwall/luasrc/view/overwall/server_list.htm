@@ -23,7 +23,7 @@
 					}else{
 						port.innerHTML='<font color="#ff0000"><%:fail%></font>';
 					}
-					dom.innerHTML=`<font color=${col}>${(result.ping?result.ping:"--")+" ms"}</font>`
+					dom.innerHTML=`<font color=${col}>${result.ping?result.ping+"ms":"-"}</font>`
 					res();
 				});
 			})

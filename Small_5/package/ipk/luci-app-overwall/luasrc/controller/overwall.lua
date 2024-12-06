@@ -172,9 +172,9 @@ function checksrv()
 			else
 				col='#fb6340'
 			end
-			r=r..'<font color="'..col..'">['..string.upper(s.type)..'] ['..n..'] '..t..' ms</font><br/>'
+			r=r..'<font color="'..col..'">['..string.upper(s.type)..'] '..n..' '..EXEC("echo -n "..t)..'ms</font><br/>'
 		else
-			r=r..'<font color="red">['..string.upper(s.type)..'] ['..n..'] ERROR</font><br/>'
+			r=r..'<font color="red">['..string.upper(s.type)..'] '..n..' ERROR</font><br/>'
 		end
 		if iret==0 then CALL("ipset del over_wan_ac "..ip.." 2>/dev/null || ipset del over_wan_ac_v6 "..ip.." 2>/dev/null") end
 	end)
