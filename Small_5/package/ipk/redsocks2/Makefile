@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=redsocks2
-PKG_VERSION:=0.70
+PKG_VERSION:=0.71
 PKG_RELEASE:=1
 PKG_MAINTAINER:=semigodking <semigodking@gmail.com>
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
-PKG_SOURCE_VERSION:=f1837c869fc34b7da21142a0a34191d5c8eea88c
-PKG_MIRROR_HASH:=8605c55367df2769e32ccf594f206f53662e64f7cc19f5ef60e0f1bbf0afa19d
+PKG_SOURCE_VERSION:=5d2db3e15543854da30e88af40748dfe63af2c28
+PKG_MIRROR_HASH:=fc22906d809044bcf065b3fa1ddbdfd5e8afcf4e59c0c28193c132ede80a17ac
 
 include $(INCLUDE_DIR)/package.mk
 

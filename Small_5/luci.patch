@@ -120,7 +120,7 @@
  			+ _("For supported codes look here")
  			+ '</a><br />' +
  			_('Current setting: ') + '<b>' + status['_curr_dateformat'] + '</b>';
-@@ -1068,7 +1080,7 @@ return view.extend({
+@@ -1070,7 +1082,7 @@ return view.extend({
  					log_box.render = L.bind(function() {
  						return E([
  							E('p', {}, _('This is the current content of the log file in %h for this service.').format(logdir)),
@@ -424,7 +424,7 @@
  msgid "Emergency"
 @@ -153,10 +153,6 @@ msgstr "執行中"
  msgid "Remote port"
- msgstr "遠端埠號"
+ msgstr "遠端連接埠"
  
 -#: applications/luci-app-xfrpc/root/usr/share/luci/menu.d/luci-app-xfrpc.json:3
 -msgid "Reverse proxy"
