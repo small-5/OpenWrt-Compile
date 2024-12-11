@@ -203,7 +203,7 @@ msgid "Foreign DoT"
 msgstr "牆外DoT"
 
 msgid "Custom DNS format:<br/>one.one.one.one -tls-host-verify one.one.one.one or dns.google -tls-host-verify dns.google -host-ip 8.8.8.8"
-msgstr "自定義DNS格式:<br/>one.one.one.one -tls-host-verify one.one.one.one 或 dns.google -tls-host-verify dns.google -host-ip 8.8.8.8"
+msgstr "自定義DNS格式:<br/>one.one.one.one -tls-host-verify one.one.one.one或dns.google -tls-host-verify dns.google -host-ip 8.8.8.8"
 
 msgid "Google"
 msgstr "谷歌"
