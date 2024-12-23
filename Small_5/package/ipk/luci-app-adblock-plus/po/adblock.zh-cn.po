@@ -80,7 +80,7 @@ msgid "White Domain List"
 msgstr "網域白名單"
 
 msgid "Will Never filter these Domain"
-msgstr "永不篩選白名單內的網域"
+msgstr "永不封鎖白名單內的網域"
 
 msgid "Block Domain List"
 msgstr "網域黑名單"
