@@ -10,7 +10,7 @@
 command -v openssl >/dev/null 2>&1 || write_log 13 "Openssl-util support is required to use Huawei API, please install first"
 
 # 變量聲明
-local __TMP __I __N __APIHOST __HOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __RECIP __RECID __TTL __CNT __A
+local __TMP __I __N __APIHOST __DOMAIN __TYPE __CMDBASE __POST __POST1 __RECIP __RECID __TTL __CNT __A
 __APIHOST=dns.myhuaweicloud.com
 
 # 設定紀錄類型
