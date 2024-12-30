@@ -124,8 +124,8 @@ outbounds={
 		} or nil,
 		wsSettings=(server.transport=="ws") and {
 			path=server.ws_path,
+			Host=server.ws_host or server.server,
 			headers={
-				Host=server.ws_host or server.server,
 				UA=user_agent
 			}
 		} or nil,
