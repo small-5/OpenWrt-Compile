@@ -2,7 +2,7 @@ local SYS=require "luci.sys"
 
 m=Map("adblock")
 m.title=translate("Adblock Plus+")
-m.description=translate("Support AdGuardHome/Host/DNSMASQ Rules")
+m.description=translate("Support AdGuardHome/Host/Dnsmasq Rules")
 m:section(SimpleSection).template="adblock/adblock_status"
 
 s=m:section(TypedSection,"adblock")
@@ -47,7 +47,7 @@ o=s:option(DummyValue,"1",translate("Subscribe 3rd Rules Data"))
 o.rawhtml=true
 o.template="adblock/refresh"
 o.value=rule_count.." "..translate("Records")
-o.description=translate("AdGuardHome/Host/DNSMASQ rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)")
+o.description=translate("AdGuardHome/Host/Dnsmasq rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)")
 end
 
 o=s:option(Flag,"flash")

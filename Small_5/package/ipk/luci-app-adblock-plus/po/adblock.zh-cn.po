@@ -1,8 +1,8 @@
 msgid "Base Setting"
 msgstr "基本設定"
 
-msgid "Support AdGuardHome/Host/DNSMASQ Rules"
-msgstr "支援AdGuardHome/Host/DNSMASQ規則"
+msgid "Support AdGuardHome/Host/Dnsmasq Rules"
+msgstr "支援AdGuardHome/Host/Dnsmasq規則"
 
 msgid "RUNNING"
 msgstr "執行中"
@@ -55,8 +55,8 @@ msgstr "上一次檢查規則更新"
 msgid "Subscribe 3rd Rules Data"
 msgstr "訂閱第三方去廣告規則"
 
-msgid "AdGuardHome/Host/DNSMASQ rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)"
-msgstr "AdGuardHome/Host/DNSMASQ規則自動識別<br/>自動去除重覆的規則(包括Adblock Plus規則)"
+msgid "AdGuardHome/Host/Dnsmasq rules auto-convert<br/>Automatically remove duplicate rules(including Adblock Plus Rules)"
+msgstr "AdGuardHome/Host/Dnsmasq規則自動識別<br/>自動去除重覆的規則(包括Adblock Plus規則)"
 
 msgid "Save 3rd rules to flash"
 msgstr "儲存第三方規則到閃存"
