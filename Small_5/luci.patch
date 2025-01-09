@@ -1254,17 +1254,18 @@
  			}
 --- a/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
 +++ b/feeds/luci/protocols/luci-proto-ppp/htdocs/luci-static/resources/protocol/pppoe.js
-@@ -50,6 +50,9 @@ return network.registerProtocol('pppoe', {
+@@ -50,6 +50,10 @@ return network.registerProtocol('pppoe', {
  		o = s.taboption('general', form.Value, 'service', _('Service Name'), _('Leave empty to autodetect'));
  		o.placeholder = _('auto');
  
-+		o = s.taboption('general', form.Value, 'ac_mac', _('AC MAC Address'), _('Only connect to specified MAC address'));
++		o = s.taboption('general', form.Value, 'ac_mac', _('AC MAC Address'), _('Leave empty to autodetect'));
 +		o.placeholder = _('auto');
++		o.datatype    = 'macaddr';
 +
  		if (L.hasSystemFeature('ipv6')) {
  			o = s.taboption('advanced', form.ListValue, 'ppp_ipv6', _('Obtain IPv6 address'), _('Enable IPv6 negotiation on the PPP link'));
  			o.ucioption = 'ipv6';
-@@ -59,6 +62,16 @@ return network.registerProtocol('pppoe', {
+@@ -59,6 +63,16 @@ return network.registerProtocol('pppoe', {
  			o.default = 'auto';
  		}
  

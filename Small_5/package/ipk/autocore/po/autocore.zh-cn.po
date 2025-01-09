@@ -52,8 +52,5 @@ msgstr "衝突封包"
 msgid "AC MAC Address"
 msgstr "存取集訊器MAC位址"
 
-msgid "Only connect to specified MAC address"
-msgstr "僅連接指定的MAC位址"
-
 msgid "NAS"
 msgstr "網路儲存"
