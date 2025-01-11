@@ -683,6 +683,17 @@
  	wib   =  25200,	-- WIB
  	wit   =  32400,	-- WIT
  	ist   =   7200,	-- IST
+--- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js
++++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js
+@@ -1088,7 +1088,7 @@ return view.extend({
+ 			uci.set('dhcp', section, this.option, encodedArr);
+ 		}
+ 
+-		so = ss.option(form.Value, 'dnsrr', _('Resource Record Name'));
++		so = ss.option(form.Value, 'rrname', _('Resource Record Name'));
+ 		so.rmempty = false;
+ 		so.datatype = 'hostname';
+ 		so.placeholder = 'svcb.example.com.';
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 @@ -648,10 +648,12 @@ return view.extend({
