@@ -377,7 +377,7 @@
  			[ -n "$stun_host" ] && echo "ext_stun_host=$stun_host"
 --- a/feeds/packages/net/miniupnpd/files/upnpd.config
 +++ b/feeds/packages/net/miniupnpd/files/upnpd.config
-@@ -1,28 +1,26 @@
+@@ -1,28 +1,24 @@
 -config upnpd config
 -	option enabled		0
 -	option enable_natpmp	1
@@ -395,8 +395,6 @@
 +
 +config upnpd 'config'
 +	option enabled '0'
-+	option enable_upnp '1'
-+	option enable_natpmp '1'
 +	option igdv1 '0'
 +	option download '1024'
 +	option upload '512'
