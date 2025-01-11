@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-n3n-supernode
-PKG_VERSION:=113.11.21
+PKG_VERSION:=114.01.12
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk

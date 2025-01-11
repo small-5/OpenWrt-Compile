@@ -7,7 +7,12 @@
 }
 
 add_param(){
-	append $3 "$([ $3 = SERVER ] && echo -l) $1"
+	local A=$1
+	if [ $3 = SERVER ];then
+		echo ${A%:*} | grep -q : && A="[${A%:*}]:${A##*:}"
+		A="-l $A"
+	fi
+	append $3 "$A"
 }
 
 proto_n2n_setup() {

@@ -45,8 +45,10 @@ return network.registerProtocol('n2n', {
 	renderFormOptions: function(s) {
 		var dev = this.getL3Device() || this.getDevice(), o;
 
-		o = s.taboption('general', form.DynamicList, 'server', _('Supernode address'), _('The format is [Address]:[Port]<br/>For example: 192.168.1.1:3333 or supernode.ntop.org:7777'));
+		o = s.taboption('general', form.DynamicList, 'server', _('Supernode address'), _('For example: 192.168.1.1:7777 or example.com:7777'));
+		//o = s.taboption('general', form.DynamicList, 'server', _('Supernode address'), _('For example: 192.168.1.1:7777 or 2000::1:7777 or example.com:7777'));
 		o.datatype = 'hostport';
+		//o.datatype = 'or(hostport,ipaddrport)';
 		o.rmempty = false;
 
 		o = s.taboption('general', form.Value, 'community', _('Community Name'));
