@@ -1,6 +1,6 @@
 --- a/src/dns_conf.c
 +++ b/src/dns_conf.c
-@@ -602,10 +602,9 @@ static int _config_rule_group_setup_value(struct dns_conf_group_info *group_info
+@@ -603,10 +603,9 @@ static int _config_rule_group_setup_value(struct dns_conf_group_info *group_info
  
  	memset(soa_table, 0, soa_talbe_size);
  	memcpy(&group_rule->check_orders, &dns_conf_default_check_orders, sizeof(group_rule->check_orders));

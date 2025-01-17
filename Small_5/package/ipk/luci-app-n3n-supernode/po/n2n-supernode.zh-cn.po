@@ -35,7 +35,7 @@ msgid "Supernode Address"
 msgstr "超級節點位址"
 
 msgid "Address of other supernodes for multi supernodes connections<br/>For example: 192.168.1.1:7777 or example.com:7777"
-msgstr "用於互聯的其他超級節點位址<br/>例如：192.168.1.1:3333或supernode.ntop.org:7777"
+msgstr "用於互聯的其他超級節點位址<br/>例如：192.168.1.1:7777或supernode.ntop.org:7777"
 
 msgid "Enable community verification"
 msgstr "啟用網路組驗證"

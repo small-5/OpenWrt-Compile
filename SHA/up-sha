@@ -24,7 +24,7 @@ openwrt/rtl8168|master|rtl8168
 fatedier/frp|dev|frp
 xtaci/kcptun|master|kcptun
 shadowsocks/shadowsocks-libev|master|shadowsocks-libev
-tohojo/sqm-scripts|master|sqm-scripts
+tohojo/sqm-scripts|main|sqm-scripts
 XTLS/Xray-core|main|xray
 zerotier/ZeroTierOne|dev|zerotier
 pymumu/smartdns|master|smartdns

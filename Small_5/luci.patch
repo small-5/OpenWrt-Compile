@@ -362,7 +362,7 @@
  end
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
-@@ -139,6 +139,9 @@ return view.extend({
+@@ -150,6 +150,9 @@ return view.extend({
  		o.rmempty = false;
  		o.depends('enable_upnp', '1');
  
@@ -374,7 +374,7 @@
  		o.depends('enable_upnp', '1');
 --- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
 +++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
-@@ -253,3 +253,9 @@
+@@ -257,3 +257,9 @@
  msgctxt "Use %s (%s = STUN)"
  msgid "Use %s"
  msgstr "使用%s"
@@ -507,15 +507,15 @@
  
  import timezones from 'luci.zoneinfo';
  
-@@ -197,6 +197,7 @@ const methods = {
- 				firewall4:  access('/sbin/fw4') == true,
- 				opkg:       access('/bin/opkg') == true,
+@@ -199,6 +199,7 @@ const methods = {
+ 				bonding:    access('/sys/module/bonding'),
+ 				mii_tool:   access('/usr/sbin/mii-tool'),
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
 +				fullcone:   access('/sys/module/xt_FULLCONENAT/refcnt') == true || access('/sys/module/nft_fullcone/refcnt') == true,
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
-@@ -541,46 +542,15 @@ const methods = {
+@@ -544,46 +545,15 @@ const methods = {
  		}
  	},
  
@@ -696,7 +696,7 @@
  		so.placeholder = 'svcb.example.com.';
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -648,10 +648,12 @@ return view.extend({
+@@ -644,10 +644,11 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -708,11 +708,10 @@
 -											uci.set('dhcp', section_id, 'leasetime', '12h');
 +											uci.set('dhcp', section_id, 'leasetime', '2h');
 +											uci.set('dhcp', section_id, 'force', 1);
-+											uci.set('dhcp', section_id, 'ra_useleasetime', 1);
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -664,11 +666,11 @@ return view.extend({
+@@ -660,11 +661,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -726,15 +725,15 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -677,7 +679,7 @@ return view.extend({
+@@ -673,7 +674,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
 -						so.default = '12h';
 +						so.default = '2h';
- 
- 						so = ss.taboption('advanced', form.Flag, 'dynamicdhcp', _('Dynamic <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr>'), _('Dynamically allocate DHCP addresses for clients. If disabled, only clients having static leases will be served.'));
- 						so.default = so.enabled;
+ 						so.validate = function (section_id, value) {
+ 							if (value === "infinite" || value === "deprecated") {
+ 								return true;
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 @@ -18,6 +18,16 @@ var callSystemInfo = rpc.declare({
@@ -822,7 +821,7 @@
  		var table = E('table', { 'class': 'table' });
 --- a/feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/29_ports.js
 +++ /dev/null
-@@ -1,386 +0,0 @@
+@@ -1,390 +0,0 @@
 -'use strict';
 -'require baseclass';
 -'require fs';
@@ -1039,16 +1038,20 @@
 -		var d = (duplex == 'half') ? '\u202f(H)' : '',
 -		    e = E('span', { 'title': _('Speed: %d Mibit/s, Duplex: %s').format(speed, duplex) });
 -
--		switch (speed) {
--		case 10:    e.innerText = '10\u202fM' + d;  break;
--		case 100:   e.innerText = '100\u202fM' + d; break;
--		case 1000:  e.innerText = '1\u202fGbE' + d; break;
--		case 2500:  e.innerText = '2.5\u202fGbE';   break;
--		case 5000:  e.innerText = '5\u202fGbE';     break;
--		case 10000: e.innerText = '10\u202fGbE';    break;
--		case 25000: e.innerText = '25\u202fGbE';    break;
--		case 40000: e.innerText = '40\u202fGbE';    break;
--		default:    e.innerText = '%d\u202fMbE%s'.format(speed, d);
+-		switch (true) {
+-		case (speed < 1000):
+-			e.innerText = '%d\u202fM%s'.format(speed, d);
+-			break;
+-		case (speed == 1000):
+-			e.innerText = '1\u202fGbE' + d;
+-			break;
+-		case (speed >= 1e6 && speed < 1e9):
+-			e.innerText = '%f\u202fTbE'.format(speed / 1e6);
+-			break;
+-		case (speed >= 1e9):
+-			e.innerText = '%f\u202fPbE'.format(speed / 1e9);
+-			break;
+-		default: e.innerText = '%f\u202fGbE'.format(speed / 1000);
 -		}
 -
 -		return e;

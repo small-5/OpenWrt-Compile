@@ -28,27 +28,6 @@
 -	# Add extra settings here.
 -	# eg. list extra_settings 'option=value'
 -	list extra_settings ''
---- a/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
-+++ b/feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
-@@ -27,9 +27,8 @@
- [ $use_https -eq 0 ] && use_https=1	# force HTTPS
- 
- # used variables
--local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED
-+local __HOST __DOMAIN __TYPE __URLBASE __PRGBASE __RUNPROG __DATA __IPV6 __ZONEID __RECID __PROXIED __TTL
- local __URLBASE="https://api.cloudflare.com/client/v4"
--local __TTL=120
- 
- # split __HOST __DOMAIN from $domain
- # given data:
-@@ -188,6 +187,7 @@ __DATA=$(grep -o '"content":\s*"[^"]*' $DATFILE | grep -o '[^"]*$' | head -1)
- # let's build data to send
- # set proxied parameter
- __PROXIED=$(grep -o '"proxied":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
-+__TTL=$(grep -o '"ttl":\s*[^",]*' $DATFILE | grep -o '[^:]*$')
- 
- # use file to work around " needed for json
- cat > $DATFILE << EOF
 --- a/feeds/packages/net/frp/Makefile
 +++ b/feeds/packages/net/frp/Makefile
 @@ -1,12 +1,13 @@
@@ -56,7 +35,7 @@
  
  PKG_NAME:=frp
 -PKG_VERSION:=0.51.3
-+PKG_VERSION:=0.61.0.113.12.2
++PKG_VERSION:=0.61.0.114.1.16
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -64,8 +43,8 @@
 -PKG_HASH:=83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/fatedier/frp.git
-+PKG_SOURCE_VERSION:=03581139489a19d7215dacdaf65173b6ce6c0910
-+PKG_MIRROR_HASH:=2f27c89862cbaf5e78bc3981ff87b6849f906d6105001fffe6d10afa6ce746ce
++PKG_SOURCE_VERSION:=450b8393bc5a06fd1182690b967e8deb0c20b606
++PKG_MIRROR_HASH:=cc042bf4b0e601f3f9f740cd46d656b74e728e313a888974e7b5ec671eef52f5
  
  PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
  PKG_LICENSE:=Apache-2.0
@@ -166,7 +145,7 @@
  
  PKG_NAME:=kcptun
 -PKG_VERSION:=20230207
-+PKG_VERSION:=20241205
++PKG_VERSION:=20241227
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -174,8 +153,8 @@
 -PKG_HASH:=09054b52d5799a8e47edb36f2db335d929d5bbb63a26f7ba2fe03c64ec39d550
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/xtaci/kcptun.git
-+PKG_SOURCE_VERSION:=3584a4de9da90966676c549491117bbc520512dd
-+PKG_MIRROR_HASH:=3d7cd20c049f13ab29088ae62bee5c34e0b8f04a103f62c2f1cb35e57557f23f
++PKG_SOURCE_VERSION:=863833353cfb3ba9dbbe4a080982da2c2eb214d3
++PKG_MIRROR_HASH:=71929139d495bbdc2d9331bb9e152871a156040cec0a27071e801bb6a4cb0059
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
  PKG_LICENSE:=MIT
@@ -222,6 +201,175 @@
  KCPTUN_COMPONENTS:=server client
  $(foreach component,$(KCPTUN_COMPONENTS), \
    $(eval $(call Package/kcptun/Default,$(component))) \
+--- a/feeds/packages/net/microsocks/patches/001-use-a-bigger-thread-stack-by-default.patch
++++ /dev/null
+@@ -1,24 +0,0 @@
+-From c81760cc3f1b6db22c7c9694efe7f3be115c2caf Mon Sep 17 00:00:00 2001
+-From: rofl0r <rofl0r@users.noreply.github.com>
+-Date: Fri, 17 May 2024 14:38:16 +0000
+-Subject: [PATCH] use a bigger thread stack by default
+-
+-apparently newer musl versions require more stack for the TCP-based
+-DNS resolver.
+-
+-closes #73
+----
+- sockssrv.c | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+---- a/sockssrv.c
+-+++ b/sockssrv.c
+-@@ -47,7 +47,7 @@
+- #endif
+- 
+- #ifdef PTHREAD_STACK_MIN
+--#define THREAD_STACK_SIZE MAX(8*1024, PTHREAD_STACK_MIN)
+-+#define THREAD_STACK_SIZE MAX(16*1024, PTHREAD_STACK_MIN)
+- #else
+- #define THREAD_STACK_SIZE 64*1024
+- #endif
+--- a/feeds/packages/net/microsocks/patches/002-mute-warning-about-shadow-declaration-of-bind_addr.patch
++++ /dev/null
+@@ -1,22 +0,0 @@
+-From 0343813e0410b469d591bc61b9a546ee2c2c15f6 Mon Sep 17 00:00:00 2001
+-From: rofl0r <rofl0r@users.noreply.github.com>
+-Date: Fri, 17 May 2024 14:40:11 +0000
+-Subject: [PATCH] mute warning about shadow declaration of bind_addr
+-
+----
+- sockssrv.c | 4 ++--
+- 1 file changed, 2 insertions(+), 2 deletions(-)
+-
+---- a/sockssrv.c
+-+++ b/sockssrv.c
+-@@ -112,8 +112,8 @@ struct thread {
+- static void dolog(const char* fmt, ...) { }
+- #endif
+- 
+--static struct addrinfo* addr_choose(struct addrinfo* list, union sockaddr_union* bind_addr) {
+--	int af = SOCKADDR_UNION_AF(bind_addr);
+-+static struct addrinfo* addr_choose(struct addrinfo* list, union sockaddr_union* bindaddr) {
+-+	int af = SOCKADDR_UNION_AF(bindaddr);
+- 	if(af == AF_UNSPEC) return list;
+- 	struct addrinfo* p;
+- 	for(p=list; p; p=p->ai_next)
+--- a/feeds/packages/net/microsocks/patches/003-improve-throughput-in-copyloop-using-bigger-buffer.patch
++++ /dev/null
+@@ -1,114 +0,0 @@
+-From 98421a21c4adc4c77c0cf3a5d650cc28ad3e0107 Mon Sep 17 00:00:00 2001
+-From: rofl0r <rofl0r@users.noreply.github.com>
+-Date: Fri, 24 May 2024 23:02:34 +0000
+-Subject: [PATCH] improve throughput in copyloop() using bigger buffer
+-
+-- refactored clientthread to put the handshake code into its own
+-  function, since it used its own 1K stack buffer.
+-  by returning from the function before calling copyloop, we have
+-  that space available in the new stackframe.
+-- since getaddrinfo() was the main stack consumer in the entire
+-  code, we can safely use at least half the available thread
+-  stack size for the copyloop to achieve higher throughput.
+-  in my testing with pyhttpd it turned out that 64k is the sweet
+-  spot to have minimal syscall overhead, but 16k is very close,
+-  and it allows us to keep the minimal memory usage profile.
+-
+-this is in response to https://github.com/rofl0r/microsocks/issues/58#issuecomment-2118389063
+-which links to a repo that tests different socks5 servers
+-performance on gigabit links.
+-
+-also closes #10
+----
+- sockssrv.c | 35 +++++++++++++++++++----------------
+- 1 file changed, 19 insertions(+), 16 deletions(-)
+-
+---- a/sockssrv.c
+-+++ b/sockssrv.c
+-@@ -44,6 +44,7 @@
+- 
+- #ifndef MAX
+- #define MAX(x, y) ((x) > (y) ? (x) : (y))
+-+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+- #endif
+- 
+- #ifdef PTHREAD_STACK_MIN
+-@@ -282,7 +283,10 @@ static void copyloop(int fd1, int fd2) {
+- 		}
+- 		int infd = (fds[0].revents & POLLIN) ? fd1 : fd2;
+- 		int outfd = infd == fd2 ? fd1 : fd2;
+--		char buf[1024];
+-+		/* since the biggest stack consumer in the entire code is
+-+		   libc's getaddrinfo(), we can safely use at least half the
+-+		   available stacksize to improve throughput. */
+-+		char buf[MIN(16*1024, THREAD_STACK_SIZE/2)];
+- 		ssize_t sent = 0, n = read(infd, buf, sizeof buf);
+- 		if(n <= 0) return;
+- 		while(sent < n) {
+-@@ -310,14 +314,12 @@ static enum errorcode check_credentials(
+- 	return EC_NOT_ALLOWED;
+- }
+- 
+--static void* clientthread(void *data) {
+--	struct thread *t = data;
+--	t->state = SS_1_CONNECTED;
+-+static int handshake(struct thread *t) {
+- 	unsigned char buf[1024];
+- 	ssize_t n;
+- 	int ret;
+--	int remotefd = -1;
+- 	enum authmethod am;
+-+	t->state = SS_1_CONNECTED;
+- 	while((n = recv(t->client.fd, buf, sizeof buf, 0)) > 0) {
+- 		switch(t->state) {
+- 			case SS_1_CONNECTED:
+-@@ -325,13 +327,13 @@ static void* clientthread(void *data) {
+- 				if(am == AM_NO_AUTH) t->state = SS_3_AUTHED;
+- 				else if (am == AM_USERNAME) t->state = SS_2_NEED_AUTH;
+- 				send_auth_response(t->client.fd, 5, am);
+--				if(am == AM_INVALID) goto breakloop;
+-+				if(am == AM_INVALID) return -1;
+- 				break;
+- 			case SS_2_NEED_AUTH:
+- 				ret = check_credentials(buf, n);
+- 				send_auth_response(t->client.fd, 1, ret);
+- 				if(ret != EC_SUCCESS)
+--					goto breakloop;
+-+					return -1;
+- 				t->state = SS_3_AUTHED;
+- 				if(auth_ips && !pthread_rwlock_wrlock(&auth_ips_lock)) {
+- 					if(!is_in_authed_list(&t->client.addr))
+-@@ -343,23 +345,24 @@ static void* clientthread(void *data) {
+- 				ret = connect_socks_target(buf, n, &t->client);
+- 				if(ret < 0) {
+- 					send_error(t->client.fd, ret*-1);
+--					goto breakloop;
+-+					return -1;
+- 				}
+--				remotefd = ret;
+- 				send_error(t->client.fd, EC_SUCCESS);
+--				copyloop(t->client.fd, remotefd);
+--				goto breakloop;
+--
+-+				return ret;
+- 		}
+- 	}
+--breakloop:
+-+	return -1;
+-+}
+- 
+--	if(remotefd != -1)
+-+static void* clientthread(void *data) {
+-+	struct thread *t = data;
+-+	int remotefd = handshake(t);
+-+	if(remotefd != -1) {
+-+		copyloop(t->client.fd, remotefd);
+- 		close(remotefd);
+--
+-+	}
+- 	close(t->client.fd);
+- 	t->done = 1;
+--
+- 	return 0;
+- }
+- 
 --- a/feeds/packages/net/microsocks/Makefile
 +++ b/feeds/packages/net/microsocks/Makefile
 @@ -1,47 +1,34 @@
@@ -229,8 +377,9 @@
  
  PKG_NAME:=microsocks
 -PKG_VERSION:=1.0.4
+-PKG_RELEASE:=2
 +PKG_VERSION=113.5.25
- PKG_RELEASE:=1
++PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/rofl0r/microsocks/tar.gz/v$(PKG_VERSION)?
@@ -285,6 +434,22 @@
  endef
  
  $(eval $(call BuildPackage,microsocks))
+--- a/feeds/packages/net/miniupnpc/patches/200-miniupnpc_desc.patch
++++ b/feeds/packages/net/miniupnpc/patches/200-miniupnpc_desc.patch
+@@ -1,6 +1,6 @@
+ --- a/src/upnpcommands.c
+ +++ b/src/upnpcommands.c
+-@@ -371,7 +371,7 @@ UPNP_AddPortMapping(const char * control
++@@ -371,7 +371,7 @@ UPNP_AddPortMapping(const char * controlURL, const char * servicetype,
+  	AddPortMappingArgs[5].elt = "NewEnabled";
+  	AddPortMappingArgs[5].val = "1";
+  	AddPortMappingArgs[6].elt = "NewPortMappingDescription";
+@@ -8,4 +8,4 @@
+ +	AddPortMappingArgs[6].val = desc?desc:"miniupnpc";
+  	AddPortMappingArgs[7].elt = "NewLeaseDuration";
+  	AddPortMappingArgs[7].val = leaseDuration?leaseDuration:"0";
+- 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
++ 	buffer = simpleUPnPcommand(controlURL, servicetype,
 --- a/feeds/packages/net/miniupnpc/Makefile
 +++ b/feeds/packages/net/miniupnpc/Makefile
 @@ -8,13 +8,14 @@
@@ -294,9 +459,9 @@
 -PKG_VERSION:=2.2.8
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=114.01.10
-+PKG_SOURCE_VERSION:=f39e4997591a98e7ee6711eabc8b50feeef1bd67
-+PKG_MIRROR_HASH:=7b9f883cc97fc27c4dfeec24a55eefeab4a05c0f7c501d7762b138798b80f690
++PKG_SOURCE_DATE:=114.1.13
++PKG_SOURCE_VERSION:=003e88b11562bf66fe6ef1d683b1d8d33049d8b4
++PKG_MIRROR_HASH:=93213ecd3f40b3229a02903e415dd8484e5639d6104b0d5d224063b689daebca
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpc
  PKG_RELEASE:=1
  
@@ -326,9 +491,9 @@
 -PKG_VERSION:=2.3.7
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp.git
-+PKG_SOURCE_DATE:=114.01.10
-+PKG_SOURCE_VERSION:=f39e4997591a98e7ee6711eabc8b50feeef1bd67
-+PKG_MIRROR_HASH:=cb60be242fa0ddc49048f8019dee5cf3985d1f8cf1ffb624847ed2e734a9d24a
++PKG_SOURCE_DATE:=114.1.13
++PKG_SOURCE_VERSION:=003e88b11562bf66fe6ef1d683b1d8d33049d8b4
++PKG_MIRROR_HASH:=a84e68b5d90f89ab95bb3e3e6d6717d00cb1ae22ed9b23619edffb8bc6d9f9cf
 +PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)/miniupnpd
  PKG_RELEASE:=1
  
@@ -965,8 +1130,8 @@
  PKG_SOURCE_URL:=https://www.github.com/pymumu/smartdns.git
 -PKG_SOURCE_VERSION:=1ba6ee7cb98b5b6448bc2a2be318eb3518d4de79
 -PKG_MIRROR_HASH:=522078cc35611b0ddddb93381507885222d2396ff4f1429ed6e93a82000b2d46
-+PKG_SOURCE_VERSION:=fdc1a41967477698c1e320fb55592df3c6213045
-+PKG_MIRROR_HASH:=0746312ff9227d008e039b6ea87b64b5ea893f95a0104af7da20a3707d7e16db
++PKG_SOURCE_VERSION:=b969ee66dffbb0d8c400e04244f151ca9f01b064
++PKG_MIRROR_HASH:=33080a2049bbca6214543e5e3f6da328f3138c69878f8d0f6909635c80500c9b
  
  PKG_MAINTAINER:=Nick Peng <pymumu@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1023,7 +1188,7 @@
  
  PKG_NAME:=xfrpc
 -PKG_VERSION:=3.05.661
-+PKG_VERSION:=113.11.29
++PKG_VERSION:=3.12.832
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -1032,8 +1197,8 @@
 -PKG_BUILD_DIR:=$(BUILD_DIR)/xfrpc-$(PKG_VERSION)
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/liudf0716/xfrpc.git
-+PKG_SOURCE_VERSION:=9243b328bfe6efa05e70e25efade07c0aa858925
-+PKG_MIRROR_HASH:=c0e9fc8f3f26d887308694afc54ea593b6992b499e42967808fe57e6908eb12b
++PKG_SOURCE_VERSION:=448df0b349258e116eb242c191b8db33643bd376
++PKG_MIRROR_HASH:=ed743f1a3ea3f128bebd1a4bcd3505057d738fc9e3ce9c5c17cf068098ccf5ce
  
  PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>
  PKG_LICENSE:=GPL-3.0-or-later
@@ -1256,17 +1421,17 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=xray-core
--PKG_VERSION:=24.11.21
-+PKG_VERSION:=113.12.7
+-PKG_VERSION:=24.12.31
++PKG_VERSION:=114.1.16
  PKG_RELEASE:=1
  
 -PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
--PKG_HASH:=e45ad1fa11457101776d2c0d7ed8ed7c669b714e7687a85830e44a6e4a52fe05
+-PKG_HASH:=e3c24b561ab422785ee8b7d4a15e44db159d9aa249eb29a36ad1519c15267be0
 +PKG_SOURCE_PROTO:=git
 +PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core.git
-+PKG_SOURCE_VERSION:=46d8d9ef02f61ac22c629a3fc7373b20c13c2608
-+PKG_MIRROR_HASH:=e9b55d801506d096315a5b9aaf97c86f0e37fdb36960b09754e008bb38272ccc
++PKG_SOURCE_VERSION:=f1ff454e670f4173d40678c3d94fbc381510c893
++PKG_MIRROR_HASH:=e3c6c2efad66c12e0c0aad7c52b9f7024737209138bd86623078b200be809199
  
  PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
  PKG_LICENSE:=MPL-2.0

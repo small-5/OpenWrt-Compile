@@ -5,9 +5,9 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.10
+PKG_VERSION:=2025.01
 PKG_RELEASE:=1
-PKG_HASH:=b28daf4ac17e43156363078bf510297584137f6df50fced9b12df34f61a92fb0
+PKG_HASH:=cdef7d507c93f1bbd9f015ea9bc21fa074268481405501945abc6f854d5b686f
 
 PKG_MAINTAINER:=Sarah Maedel <openwrt@tbspace.de>
 
@@ -236,6 +236,13 @@ define U-Boot/lyt-t68m-rk3568
     lyt_t68m
 endef
 
+define U-Boot/mmbox-anas3035-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=MMBOX ANAS3035
+  BUILD_DEVICES:= \
+    mmbox_anas3035
+endef
+
 define U-Boot/mrkaio-m68s-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=Mrkaio M68S
@@ -401,6 +408,7 @@ UBOOT_TARGETS := \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   lyt-t68m-rk3568 \
+  mmbox-anas3035-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
@@ -434,6 +442,7 @@ UBOOT_CUSTOMIZE_CONFIG := \
 		--disable EFI_CAPSULE_FIRMWARE_RAW \
 		--disable SPL_FIT_SIGNATURE \
 		--disable USB_FUNCTION_FASTBOOT \
+		--disable VIDEO \
 	)
 
 UBOOT_MAKE_FLAGS += \

@@ -11,16 +11,13 @@ case $board in
 friendlyarm,nanopi-r2c|\
 friendlyarm,nanopi-r2c-plus|\
 friendlyarm,nanopi-r2s|\
-xunlong,orangepi-r1-plus|\
-xunlong,orangepi-r1-plus-lts)
-	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
-	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0"
-	;;
 friendlyarm,nanopi-r3s|\
 friendlyarm,nanopi-r4s|\
 friendlyarm,nanopi-r4se|\
 friendlyarm,nanopi-r4s-enterprise|\
-friendlyarm,nanopi-r6c)
+friendlyarm,nanopi-r6c|\
+xunlong,orangepi-r1-plus|\
+xunlong,orangepi-r1-plus-lts)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth0"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth1"
 	;;
