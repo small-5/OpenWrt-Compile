@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="中華民國114年1月17日 By Maha_5"
+VERSION="中華民國114年1月20日 By Maha_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
 echo "$OP_PASS" > ~/OP_PASSWORD
 A=0
@@ -31,7 +31,6 @@ elif [ $A = 2 ];then
 elif [ $A = 3 ];then
 	rm -rf openwrt/package/boot/{arm-trusted-firmware-mediatek,uboot-mediatek} openwrt/package/boot/uboot-envtools/files/{mediatek_filogic,mediatek_mt7622,mediatek_mt7623,mediatek_mt7629} openwrt/target/linux/mediatek
 	cp -r target/target/mediatek/. Small_5
-	chmod +x Small_5/target/linux/mediatek/base-files/etc/hotplug.d/iface/99-mtk-lro
 	chmod +x Small_5/target/linux/mediatek/filogic/base-files/etc/init.d/bootcount
 	chmod +x Small_5/target/linux/mediatek/filogic/base-files/lib/upgrade/platform.sh
 	chmod +x Small_5/target/linux/mediatek/mt7622/base-files/etc/init.d/bootcount
