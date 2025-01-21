@@ -35,7 +35,7 @@
  
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
-@@ -49,7 +49,7 @@ generate_static_network() {
+@@ -49,10 +49,13 @@ generate_static_network() {
  			uci -q batch <<-EOF
  				delete network.globals
  				set network.globals='globals'
@@ -44,7 +44,13 @@
  			EOF
  		}
  
-@@ -162,8 +162,8 @@ generate_network() {
++	uci -q get network.globals >/dev/null || uci set network.globals='globals'
++	uci set network.globals.packet_steering="0"
++
+ 	if json_is_a dsl object; then
+ 		json_select dsl
+ 			if json_is_a atmbridge object; then
+@@ -162,8 +165,8 @@ generate_network() {
  		static)
  			local ipad
  			case "$1" in
@@ -55,7 +61,7 @@
  			esac
  
  			netm=${netmask:-"255.255.255.0"}
-@@ -177,18 +177,7 @@ generate_network() {
+@@ -177,18 +180,7 @@ generate_network() {
  		;;
  
  		dhcp)
@@ -74,7 +80,7 @@
  		;;
  
  		pppoe)
-@@ -196,16 +185,8 @@ generate_network() {
+@@ -196,16 +188,8 @@ generate_network() {
  				set network.$1.proto='pppoe'
  				set network.$1.username='username'
  				set network.$1.password='password'
@@ -92,7 +98,7 @@
  		;;
  
  		ncm|\
-@@ -312,8 +293,8 @@ generate_static_system() {
+@@ -312,8 +296,8 @@ generate_static_system() {
  		delete system.@system[0]
  		add system system
  		set system.@system[-1].hostname='OpenWrt'
@@ -103,7 +109,7 @@
  		set system.@system[-1].ttylogin='0'
  		set system.@system[-1].log_size='128'
  		set system.@system[-1].urandom_seed='0'
-@@ -321,11 +302,11 @@ generate_static_system() {
+@@ -321,11 +305,11 @@ generate_static_system() {
  		delete system.ntp
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
