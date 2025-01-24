@@ -494,7 +494,7 @@ msgid "Upload"
 msgstr "上傳"
 
 msgid "Create upload file error"
-msgstr "創建憑證文件失敗"
+msgstr "創建上傳檔案失敗"
 
 msgid "No specify upload file"
 msgstr "沒有上傳憑證"

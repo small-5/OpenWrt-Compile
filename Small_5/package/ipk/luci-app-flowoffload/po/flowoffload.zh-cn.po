@@ -7,6 +7,12 @@ msgstr "Turbo ACC網路加速設定"
 msgid "Opensource Linux Flow Offload driver (Fast Path or HWNAT)"
 msgstr "開源Linux Flow Offload驅動（支援Fast Path或HWNAT）"
 
+msgid "Full Cone NAT"
+msgstr "全錐形NAT"
+
+msgid "Full Cone NAT6"
+msgstr "全錐形NAT6"
+
 msgid "Enable BBR"
 msgstr "啟用BBR"
 

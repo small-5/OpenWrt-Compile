@@ -68,7 +68,7 @@ msgid "Delete All Subscribe Rules"
 msgstr "清空所有訂閱的規則庫"
 
 msgid "Delete 3rd rules files and delete the subscription link<br/>There is no need to click for modify the subscription link,The script will automatically replace the old rule file"
-msgstr "清空第三方規則文件，並且刪除所有的訂閱鏈接<br/>如果只是修改訂閱鏈接不需要清空，腳本會自動覆蓋舊的規則文件"
+msgstr "清空第三方規則檔案，並且刪除所有的訂閱鏈接<br/>如果只是修改訂閱鏈接不需要清空，腳本會自動覆蓋舊的規則檔案"
 
 msgid "Delete Subscribe Rules On The Flash"
 msgstr "清空閃存上的訂閱規則庫"

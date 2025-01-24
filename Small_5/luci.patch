@@ -366,24 +366,24 @@
  		o.rmempty = false;
  		o.depends('enable_upnp', '1');
  
-+		s.taboption('setup', form.Flag, 'force_forwarding', _('Force forwarding'),
-+			_('Force forwarding for private/reserved IP address'))
++		s.taboption('setup', form.Flag, 'force_forwarding', _('Force mapping'),
++			_('Force mapping for private/reserved IP address'))
 +
  		o = s.taboption('setup', form.Value, 'download', _('Download speed'),
  			_('Report maximum download speed in kByte/s'));
  		o.depends('enable_upnp', '1');
 --- a/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
 +++ b/feeds/luci/applications/luci-app-upnp/po/zh_Hant/upnp.po
-@@ -257,3 +257,9 @@
+@@ -256,3 +256,9 @@ msgstr "上傳速度"
  msgctxt "Use %s (%s = STUN)"
  msgid "Use %s"
  msgstr "使用%s"
 +
-+msgid "Force forwarding"
-+msgstr "強制轉發"
++msgid "Force mapping"
++msgstr "強制映射"
 +
-+msgid "Force forwarding for private/reserved IP address"
-+msgstr "爲私有/保留IP位址開啟強制轉發"
++msgid "Force mapping for private/reserved IP address"
++msgstr "強制為私有/保留IP位址映射"
 --- a/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
 +++ b/feeds/luci/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
 @@ -46,7 +46,7 @@ const methods = {

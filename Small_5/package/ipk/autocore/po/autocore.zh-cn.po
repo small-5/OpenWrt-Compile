@@ -5,16 +5,16 @@ msgid "Port Status"
 msgstr "接口資訊"
 
 msgid "Speed: %d Mbps Full-Duplex"
-msgstr "速度: %d Mbps 全雙工"
+msgstr "速度：%d Mbps 全雙工"
 
 msgid "Speed: %d Mbps Half-Duplex"
-msgstr "速度: %d Mbps 半雙工"
+msgstr "速度：%d Mbps 半雙工"
 
 msgid "Part of network:"
-msgstr "網路歸屬:"
+msgstr "網路歸屬："
 
 msgid "Part of networks:"
-msgstr "網路歸屬:"
+msgstr "網路歸屬："
 
 msgid "Port is not part of any network"
 msgstr "接口不屬於任何網路"
@@ -35,16 +35,16 @@ msgid "Receive dropped"
 msgstr "接收丟棄"
 
 msgid "Transmitted bytes"
-msgstr "已發送字節"
+msgstr "已傳送字節"
 
 msgid "Transmitted packets"
-msgstr "已發送封包"
+msgstr "已傳送封包"
 
 msgid "Transmit errors"
-msgstr "發送錯誤"
+msgstr "傳送錯誤"
 
 msgid "Transmit dropped"
-msgstr "發送丟棄"
+msgstr "傳送丟棄"
 
 msgid "Collisions seen"
 msgstr "衝突封包"

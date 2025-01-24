@@ -48,7 +48,7 @@ uci_get_by_bool(){
 	esac
 }
 
-# 日志和狀態欄輸出。1 日志文件, 2 系統日志, 4 詳細模式, 8 下行狀態欄, 16 上行狀態欄, 32 失敗狀態
+# 日志和狀態欄輸出。1 日志檔案, 2 系統日志, 4 詳細模式, 8 下行狀態欄, 16 上行狀態欄, 32 失敗狀態
 _log(){
 	local msg=$1 flag=$2 timestamp=$(date +'%Y/%m/%d %H:%M:%S')
 	[ -z "$msg" ] && return
@@ -80,7 +80,7 @@ _log(){
 clean_log(){
 	[ $logging = 1 -a -f "$LOGFILE" ] || return
 	[ $(wc -l "$LOGFILE" | awk '{print $1}') -le 800 ] && return
-	_log "清理日志文件"
+	_log "清理日志檔案"
 	local logdata=$(tail -n 500 "$LOGFILE")
 	echo "$logdata" > $LOGFILE 2> /dev/null
 	unset logdata

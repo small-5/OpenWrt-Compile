@@ -1,26 +1,26 @@
 msgid "Choose local file:"
-msgstr "選擇本地文件："
+msgstr "選擇本地檔案："
 
 msgid "Couldn't open file:"
-msgstr "無法打開文件："
+msgstr "無法打開檔案："
 
 msgid "Create upload file error"
-msgstr "創建上傳文件失敗"
+msgstr "創建上傳檔案失敗"
 
 msgid "Download"
 msgstr "下載"
 
 msgid "Download file"
-msgstr "下載文件"
+msgstr "下載檔案"
 
 msgid "File name"
-msgstr "文件名"
+msgstr "檔案名"
 
 msgid "File saved to"
-msgstr "文件儲存到"
+msgstr "檔案儲存到"
 
 msgid "FileTransfer"
-msgstr "文件傳輸"
+msgstr "檔案傳輸"
 
 msgid "Install"
 msgstr "安裝"
@@ -32,7 +32,7 @@ msgid "Modify time"
 msgstr "修改時間"
 
 msgid "No specify upload file"
-msgstr "未指定上傳文件"
+msgstr "未指定上傳檔案"
 
 msgid "Path on Route:"
 msgstr "路由上目錄"
@@ -47,7 +47,7 @@ msgid "Upload"
 msgstr "上傳"
 
 msgid "Upload file list"
-msgstr "上傳文件列表"
+msgstr "上傳檔案列表"
 
 msgid "Upload file to '/tmp/upload/'"
-msgstr "將文件上傳到'/tmp/upload/'"
+msgstr "將檔案上傳到'/tmp/upload/'"

@@ -59,10 +59,10 @@ msgid "Local Port"
 msgstr "本地連接埠"
 
 msgid "Config File"
-msgstr "設定檔"
+msgstr "設定檔案"
 
 msgid "This file is /etc/vlmcsd.ini"
-msgstr "這個文件是/etc/vlmcsd.ini,可以增加新的產品主密鑰"
+msgstr "此檔案是/etc/vlmcsd.ini"
 
 msgid "Log"
 msgstr "日誌"

@@ -6,7 +6,7 @@
 -This script requires that cake is selected as qdisc, and forces its usage.
 -See: http://www.bufferbloat.net/projects/codel/wiki/Cake for more information
 +這個cake列隊規則使用HTB作為過濾器，使用fq_codel作為葉列隊規則。
-+這個cake規則將不同的文件分為不同的“層次”優先級。
++這個cake規則將不同的檔案分為不同的“層次”優先級。
 +該腳本需要將該cake選為列隊規則。
 +請參閱：http://www.bufferbloat.net/projects/codel/wiki/Cake 獲取更多信息
 
