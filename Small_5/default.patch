@@ -189,8 +189,8 @@
 +	option output 'ACCEPT'
 +	option forward 'DROP'
 +	option masq '1'
-+	option mtu_fix '1'
 +	option fullcone '1'
++	option mtu_fix '1'
 +	list network 'wan'
  
  config forwarding
