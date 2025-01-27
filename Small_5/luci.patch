@@ -698,7 +698,7 @@
  		so.placeholder = 'svcb.example.com.';
 --- a/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/feeds/luci/modules/luci-mod-network/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -644,10 +644,11 @@ return view.extend({
+@@ -641,10 +641,11 @@ return view.extend({
  										uci.add('dhcp', 'dhcp', section_id);
  										uci.set('dhcp', section_id, 'interface', section_id);
  
@@ -713,7 +713,7 @@
  										}
  										else {
  											uci.set('dhcp', section_id, 'ignore', 1);
-@@ -660,11 +661,11 @@ return view.extend({
+@@ -657,11 +658,11 @@ return view.extend({
  
  					ss.taboption('general', form.Flag, 'ignore', _('Ignore interface'), _('Disable <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr> for this interface.'));
  
@@ -727,7 +727,7 @@
  
  						so = ss.taboption('general', form.Value, 'limit', _('Limit'), _('Maximum number of leased addresses.'));
  						so.optional = true;
-@@ -673,7 +674,7 @@ return view.extend({
+@@ -670,7 +671,7 @@ return view.extend({
  
  						so = ss.taboption('general', form.Value, 'leasetime', _('Lease time'), _('Expiry time of leased addresses, minimum is 2 minutes (<code>2m</code>).'));
  						so.optional = true;
