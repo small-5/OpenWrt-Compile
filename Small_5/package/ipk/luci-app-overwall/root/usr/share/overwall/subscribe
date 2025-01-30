@@ -167,7 +167,7 @@ local function parseNodeUrl(A,B)
 			result.spiderx=params.spx
 		end
 		result.vless_flow=params.flow
-		result.tls_host=params.sni
+		result.sni=params.sni
 	end
 	result.server_port=port
 end
@@ -302,7 +302,7 @@ local function processData(szType,content)
 			end
 			if params.peer or params.sni then
 				result.tls='1'
-				result.tls_host=params.peer or params.sni
+				result.sni=params.peer or params.sni
 			end
 			result.insecure=params.allowinsecure=='1' and '1'
 			result.server_port=port
@@ -341,7 +341,7 @@ local function processData(szType,content)
 			if info.security and info.security~='auto' then result.security=info.security end
 			if info.tls=="tls" or info.tls=="1" then
 				result.tls="1"
-				result.tls_host=info.sni
+				result.sni=info.sni
 				result.fingerprint=info.fp
 				result.insecure=info.allowInsecure=='1' and '1'
 			end
