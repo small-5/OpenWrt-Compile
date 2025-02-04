@@ -39,7 +39,7 @@
  		"action": {
 --- a/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
 +++ b/feeds/luci/applications/luci-app-ddns/htdocs/luci-static/resources/view/ddns/overview.js
-@@ -28,7 +28,7 @@ return view.extend({
+@@ -29,7 +29,7 @@ return view.extend({
  		object: 'luci.ddns',
  		method: 'get_services_log',
  		params: [ 'service_name' ],
@@ -48,7 +48,7 @@
  	}),
  
  	callInitAction: rpc.declare({
-@@ -56,6 +56,18 @@ return view.extend({
+@@ -57,6 +57,18 @@ return view.extend({
  		expect: {  }
  	}),
  
@@ -67,7 +67,7 @@
  	services: {},
  
  	/*
-@@ -152,31 +164,31 @@ return view.extend({
+@@ -163,31 +175,31 @@ return view.extend({
  	},
  
  	handleReloadDDnsRule: function(m, section_id, ev) {
@@ -111,7 +111,7 @@
  	},
  
  	poll_status: function(map, data) {
-@@ -399,7 +411,7 @@ return view.extend({
+@@ -412,7 +424,7 @@ return view.extend({
  		o.optional = true;
  
  		o = s.taboption('global', form.Value, 'ddns_dateformat', _('Date format'));
@@ -120,7 +120,7 @@
  			+ _("For supported codes look here")
  			+ '</a><br />' +
  			_('Current setting: ') + '<b>' + status['_curr_dateformat'] + '</b>';
-@@ -1070,7 +1082,7 @@ return view.extend({
+@@ -1097,7 +1109,7 @@ return view.extend({
  					log_box.render = L.bind(function() {
  						return E([
  							E('p', {}, _('This is the current content of the log file in %h for this service.').format(logdir)),
@@ -431,7 +431,7 @@
  
  #: applications/luci-app-xfrpc/htdocs/luci-static/resources/view/xfrpc.js:90
 -msgid "Disabled xfrpc service"
--msgstr "禁用xfrpc服務"
+-msgstr "停用xfrpc服務"
 +msgid "Enabled"
 +msgstr "已啟用"
  
@@ -485,7 +485,7 @@
 @@ -1,5 +1,5 @@
  config core main
 -	option lang auto
-+	option lang zh_cn
++	option lang zh
  	option mediaurlbase /luci-static/bootstrap
  	option resourcebase /luci-static/resources
  	option ubuspath /ubus/
@@ -732,7 +732,7 @@
  
 -					if (protoval == 'static') {
 +					if (protoval == 'static' || protoval == 'n2n') {
- 						so = ss.taboption('general', form.Value, 'start', _('Start'), _('Lowest leased address as offset from the network address.'));
+ 						so = ss.taboption('general', form.Value, 'start', _('Start', 'DHCP IP range start address'), _('Lowest leased address as offset from the network address.'));
  						so.optional = true;
  						so.datatype = 'or(uinteger,ip4addr("nomask"))';
 -						so.default = '100';

@@ -38,5 +38,5 @@
 +++ b/src/simplest_tbf.qos.help
 @@ -1,2 +1 @@
 -Simplest possible configuration (TBF): TBF rate limiter with your qdisc attached.
--TBF may give better performance than HTB on some architectures.
+-TBF may give better performance than HTB on some architectures. This script forces fq_codel usage if cake is selected as qdisc.
 +最簡單的配置（TBF）：使用帶有TBF過濾器的列隊規則來進行速率限制。在某些架構上，TBF可能會比HTB提供更好的性能。

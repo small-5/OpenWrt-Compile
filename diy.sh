@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="中華民國114年1月20日 By Maha_5"
+VERSION="中華民國114年2月5日 By Maha_5"
 OP_PASS=$(echo ${VERSION}1912-ROCForever | openssl aes-256-cbc -md sha256 -a -A -pbkdf2 -nosalt -k "1912-$VERSION" | sed 's/[^A-Za-z0-9]//g' | cut -c 1-24)
 echo "$OP_PASS" > ~/OP_PASSWORD
 A=0
@@ -82,7 +82,7 @@ cat > version.patch  <<EOF
  VERSION_ID="%v"
  HOME_URL="%u"
  BUG_URL="%b"
-@@ -15,5 +15,5 @@
+@@ -16,5 +16,5 @@ OPENWRT_DEVICE_MANUFACTURER="%M"
  OPENWRT_DEVICE_MANUFACTURER_URL="%m"
  OPENWRT_DEVICE_PRODUCT="%P"
  OPENWRT_DEVICE_REVISION="%h"
