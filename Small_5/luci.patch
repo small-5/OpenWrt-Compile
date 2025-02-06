@@ -586,10 +586,10 @@
  };
 --- a/feeds/luci/modules/luci-base/ucode/zoneinfo.uc
 +++ b/feeds/luci/modules/luci-base/ucode/zoneinfo.uc
-@@ -226,17 +226,19 @@ export default {
+@@ -225,18 +225,19 @@ export default {
+ 	'Asia/Bishkek': '<+06>-6',
  	'Asia/Brunei': '<+08>-8',
  	'Asia/Chita': '<+09>-9',
- 	'Asia/Choibalsan': '<+08>-8',
 +	'Asia/Chongqing': 'LST-7',
  	'Asia/Colombo': '<+0530>-5:30',
  	'Asia/Damascus': '<+03>-3',
@@ -604,10 +604,11 @@
  	'Asia/Hebron': 'EET-2EEST,M3.4.4/50,M10.4.4/50',
  	'Asia/Ho Chi Minh': '<+07>-7',
 -	'Asia/Hong Kong': 'HKT-8',
- 	'Asia/Hovd': '<+07>-7',
+-	'Asia/Hovd': '<+07>-7',
  	'Asia/Irkutsk': '<+08>-8',
  	'Asia/Jakarta': 'WIB-7',
-@@ -245,6 +247,7 @@ export default {
+ 	'Asia/Jayapura': 'WIT-9',
+@@ -244,6 +245,7 @@ export default {
  	'Asia/Kabul': '<+0430>-4:30',
  	'Asia/Kamchatka': '<+12>-12',
  	'Asia/Karachi': 'PKT-5',
@@ -615,7 +616,7 @@
  	'Asia/Kathmandu': '<+0545>-5:45',
  	'Asia/Khandyga': '<+09>-9',
  	'Asia/Kolkata': 'IST-5:30',
-@@ -252,7 +255,6 @@ export default {
+@@ -251,7 +253,6 @@ export default {
  	'Asia/Kuala Lumpur': '<+08>-8',
  	'Asia/Kuching': '<+08>-8',
  	'Asia/Kuwait': '<+03>-3',
@@ -623,7 +624,7 @@
  	'Asia/Magadan': '<+11>-11',
  	'Asia/Makassar': 'WITA-8',
  	'Asia/Manila': 'PST-8',
-@@ -275,7 +277,6 @@ export default {
+@@ -274,15 +275,12 @@ export default {
  	'Asia/Shanghai': 'CST-8',
  	'Asia/Singapore': '<+08>-8',
  	'Asia/Srednekolymsk': '<+11>-11',
@@ -631,6 +632,14 @@
  	'Asia/Tashkent': '<+05>-5',
  	'Asia/Tbilisi': '<+04>-4',
  	'Asia/Tehran': '<+0330>-3:30',
+ 	'Asia/Thimphu': '<+06>-6',
+ 	'Asia/Tokyo': 'JST-9',
+ 	'Asia/Tomsk': '<+07>-7',
+-	'Asia/Ulaanbaatar': '<+08>-8',
+-	'Asia/Urumqi': '<+06>-6',
+ 	'Asia/Ust-Nera': '<+10>-10',
+ 	'Asia/Vientiane': '<+07>-7',
+ 	'Asia/Vladivostok': '<+10>-10',
 --- a/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 +++ b/feeds/luci/modules/luci-compat/luasrc/view/cbi/full_valuefooter.htm
 @@ -1,6 +1,5 @@
@@ -642,10 +651,11 @@
  				<%=self.description%>
 --- a/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzdata.lua
 +++ b/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzdata.lua
-@@ -232,17 +232,19 @@ TZ = {
+@@ -231,19 +231,19 @@ TZ = {
+ 	{ 'Asia/Bishkek', '<+06>-6' },
  	{ 'Asia/Brunei', '<+08>-8' },
  	{ 'Asia/Chita', '<+09>-9' },
- 	{ 'Asia/Choibalsan', '<+08>-8' },
+-	{ 'Asia/Choibalsan', '<+08>-8' },
 +	{ 'Asia/Chongqing', 'LST-7' },
  	{ 'Asia/Colombo', '<+0530>-5:30' },
  	{ 'Asia/Damascus', '<+03>-3' },
@@ -660,10 +670,11 @@
  	{ 'Asia/Hebron', 'EET-2EEST,M3.4.4/50,M10.4.4/50' },
  	{ 'Asia/Ho Chi Minh', '<+07>-7' },
 -	{ 'Asia/Hong Kong', 'HKT-8' },
- 	{ 'Asia/Hovd', '<+07>-7' },
+-	{ 'Asia/Hovd', '<+07>-7' },
  	{ 'Asia/Irkutsk', '<+08>-8' },
  	{ 'Asia/Jakarta', 'WIB-7' },
-@@ -251,6 +253,7 @@ TZ = {
+ 	{ 'Asia/Jayapura', 'WIT-9' },
+@@ -251,6 +251,7 @@ TZ = {
  	{ 'Asia/Kabul', '<+0430>-4:30' },
  	{ 'Asia/Kamchatka', '<+12>-12' },
  	{ 'Asia/Karachi', 'PKT-5' },
@@ -671,7 +682,7 @@
  	{ 'Asia/Kathmandu', '<+0545>-5:45' },
  	{ 'Asia/Khandyga', '<+09>-9' },
  	{ 'Asia/Kolkata', 'IST-5:30' },
-@@ -258,7 +261,6 @@ TZ = {
+@@ -258,7 +259,6 @@ TZ = {
  	{ 'Asia/Kuala Lumpur', '<+08>-8' },
  	{ 'Asia/Kuching', '<+08>-8' },
  	{ 'Asia/Kuwait', '<+03>-3' },
@@ -679,7 +690,7 @@
  	{ 'Asia/Magadan', '<+11>-11' },
  	{ 'Asia/Makassar', 'WITA-8' },
  	{ 'Asia/Manila', 'PST-8' },
-@@ -281,7 +283,6 @@ TZ = {
+@@ -281,15 +281,12 @@ TZ = {
  	{ 'Asia/Shanghai', 'CST-8' },
  	{ 'Asia/Singapore', '<+08>-8' },
  	{ 'Asia/Srednekolymsk', '<+11>-11' },
@@ -687,6 +698,14 @@
  	{ 'Asia/Tashkent', '<+05>-5' },
  	{ 'Asia/Tbilisi', '<+04>-4' },
  	{ 'Asia/Tehran', '<+0330>-3:30' },
+ 	{ 'Asia/Thimphu', '<+06>-6' },
+ 	{ 'Asia/Tokyo', 'JST-9' },
+ 	{ 'Asia/Tomsk', '<+07>-7' },
+-	{ 'Asia/Ulaanbaatar', '<+08>-8' },
+-	{ 'Asia/Urumqi', '<+06>-6' },
+ 	{ 'Asia/Ust-Nera', '<+10>-10' },
+ 	{ 'Asia/Vientiane', '<+07>-7' },
+ 	{ 'Asia/Vladivostok', '<+10>-10' },
 --- a/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzoffset.lua
 +++ b/feeds/luci/modules/luci-lua-runtime/luasrc/sys/zoneinfo/tzoffset.lua
 @@ -28,7 +28,7 @@ OFFSET = {
