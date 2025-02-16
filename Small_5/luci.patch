@@ -362,19 +362,6 @@
  	e.leaf = true
  	e.acl_depends = { "luci-app-nft-qos" }
  end
---- a/feeds/luci/applications/luci-app-package-manager/root/usr/libexec/package-manager-call
-+++ b/feeds/luci/applications/luci-app-package-manager/root/usr/libexec/package-manager-call
-@@ -93,6 +93,10 @@ case "$action" in
- 				code=$?
- 				stdout=$(cat /tmp/ipkg.out)
- 				stderr=$(cat /tmp/ipkg.err)
-+				if [ $ipkg_bin = "apk" -a $code = 0 ];then
-+					stdout=$(echo -e "$stderr\n$stdout")
-+					unset stderr
-+				fi
- 			else
- 				code=255
- 				stderr="Failed to acquire lock"
 --- a/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 +++ b/feeds/luci/applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js
 @@ -150,6 +150,9 @@ return view.extend({
