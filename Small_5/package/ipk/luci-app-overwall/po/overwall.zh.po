@@ -140,7 +140,7 @@ msgid "GFW List Mode"
 msgstr "GFW列表模式"
 
 msgid "Smart Mode"
-msgstr "智能模式"
+msgstr "智慧模式"
 
 msgid "Global Mode"
 msgstr "全局模式"

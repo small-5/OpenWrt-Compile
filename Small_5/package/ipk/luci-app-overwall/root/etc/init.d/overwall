@@ -908,7 +908,7 @@ gen_dns(){
 	smartdns_flag=1
 	mkdir -p $DNS_DI $SDNS $DNS_DIR
 	cat > $DNS_T <<EOF
-force-AAAA-SOA yes
+$([ $run_mode = router ] || (echo force-AAAA-SOA yes))
 speed-check-mode none
 cache-persist no
 cache-size 0
